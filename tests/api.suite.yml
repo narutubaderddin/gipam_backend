@@ -1,0 +1,39 @@
+actor: ApiTester
+modules:
+    enabled:
+        - REST:
+              url: /
+              depends: Symfony
+              part: Json
+        - Symfony:
+              app_path: 'src'
+              environment: 'test'
+              kernel_class: 'App\Kernel'
+        - Doctrine2:
+              depends: Symfony
+              cleanup: true
+              populate: false
+        - Asserts
+        - \App\Tests\Helper\Api
+#        - Db:
+#              dsn: 'mysql://root:@127.0.0.1:3308/gipam?serverVersion=5.7'
+#              user: 'root'
+#              password: ''
+#              dump: 'tests/_data/dump.sql'
+#              populate: true
+#              cleanup: true
+#              reconnect: true
+#              waitlock: 10
+#              ssl_key: '/path/to/client-key.pem'
+#              ssl_cert: '/path/to/client-cert.pem'
+#              ssl_ca: '/path/to/ca-cert.pem'
+#              ssl_verify_server_cert: false
+#              ssl_cipher: 'AES256-SHA'
+#              initial_queries:
+#                - 'CREATE DATABASE IF NOT EXISTS temp_db;'
+#                - 'USE temp_db;'
+#                - 'SET NAMES utf8;'
+
+params:
+    username: "admin@talan.com"
+    password: "admin"
