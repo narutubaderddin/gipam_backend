@@ -1,0 +1,10 @@
+parameters:
+  hash: $2y$13$ZOKLCRV9Gm7U6d/XKAtmNuVk8gDrDJXhuSVPOmjoHriuNP573R6k2 #admin
+  email: 'admin@talan.com'
+App\Entity\User:
+  user_1:
+    firstName: <firstName()>
+    lastName: <lastName()>
+    username: <{email}>
+    password: <{hash}>
+    roles: ['ROLE_USER']
