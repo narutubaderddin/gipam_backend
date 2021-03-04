@@ -10,6 +10,9 @@
 
 // $_SERVER['HTTP_X_CODECEPTION_CODECOVERAGE_DEBUG'] = 1;
 
+use SebastianBergmann\CodeCoverage\Driver\Driver;
+use SebastianBergmann\CodeCoverage\Filter as CodeCoverageFilter;
+
 if (isset($_COOKIE['CODECEPTION_CODECOVERAGE'])) {
     $cookie = json_decode($_COOKIE['CODECEPTION_CODECOVERAGE'], true);
 
@@ -167,6 +170,17 @@ if (!defined('C3_CODECOVERAGE_MEDIATE_STORAGE')) {
         return $path . '.crap4j.xml';
     }
 
+    function __c3_build_cobertura_report(PHP_CodeCoverage $codeCoverage, $path)
+    {
+        if (!class_exists(\SebastianBergmann\CodeCoverage\Report\Cobertura::class)) {
+            throw new Exception("Cobertura report requires php-code-coverage >= 9.2");
+        }
+        $writer = new \SebastianBergmann\CodeCoverage\Report\Cobertura();
+        $writer->process($codeCoverage, $path . '.cobertura.xml');
+
+        return $path . '.cobertura.xml';
+    }
+
     function __c3_build_phpunit_report(PHP_CodeCoverage $codeCoverage, $path)
     {
         $writer = new PHP_CodeCoverage_Report_XML(\PHPUnit_Runner_Version::id());
@@ -226,10 +240,18 @@ if (!defined('C3_CODECOVERAGE_MEDIATE_STORAGE')) {
             } else {
                 $phpCoverage = unserialize(file_get_contents($filename));
             }
-            
+
             return array($phpCoverage, $file);
         } else {
-            $phpCoverage = new PHP_CodeCoverage();
+            if (method_exists(Driver::class, 'forLineCoverage')) {
+                //php-code-coverage 9+
+                $filter = new CodeCoverageFilter();
+                $driver = Driver::forLineCoverage($filter);
+                $phpCoverage = new PHP_CodeCoverage($driver, $filter);
+            } else {
+                //php-code-coverage 8 or older
+                $phpCoverage = new PHP_CodeCoverage();
+            }
         }
 
         if (isset($_SERVER['HTTP_X_CODECEPTION_CODECOVERAGE_SUITE'])) {
@@ -324,6 +346,13 @@ if ($requestedC3Report) {
         case 'phpunit':
             try {
                 __c3_send_file(__c3_build_phpunit_report($codeCoverage, $path));
+            } catch (Exception $e) {
+                __c3_error($e->getMessage());
+            }
+            return __c3_exit();
+        case 'cobertura':
+            try {
+                __c3_send_file(__c3_build_cobertura_report($codeCoverage, $path));
             } catch (Exception $e) {
                 __c3_error($e->getMessage());
             }
