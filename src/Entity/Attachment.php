@@ -1,0 +1,109 @@
+<?php
+
+namespace App\Entity;
+
+use App\Repository\AttachmentRepository;
+use Doctrine\ORM\Mapping as ORM;
+
+/**
+ * @ORM\Entity(repositoryClass=AttachmentRepository::class)
+ */
+class Attachment
+{
+    /**
+     * @ORM\Id
+     * @ORM\GeneratedValue
+     * @ORM\Column(type="integer")
+     */
+    private $id;
+
+    /**
+     * @ORM\Column(type="datetime")
+     */
+    private $date;
+
+    /**
+     * @ORM\Column(type="text", nullable=true)
+     */
+    private $comment;
+
+    /**
+     * @ORM\Column(type="string", length=255)
+     */
+    private $link;
+
+    /**
+     * @ORM\Column(type="boolean")
+     */
+    private $principleImage;
+
+    /**
+     * @ORM\ManyToOne(targetEntity=Furniture::class, inversedBy="attachments")
+     */
+    private $furniture;
+
+    public function getId(): ?int
+    {
+        return $this->id;
+    }
+
+    public function getDate(): ?\DateTimeInterface
+    {
+        return $this->date;
+    }
+
+    public function setDate(\DateTimeInterface $date): self
+    {
+        $this->date = $date;
+
+        return $this;
+    }
+
+    public function getComment(): ?string
+    {
+        return $this->comment;
+    }
+
+    public function setComment(?string $comment): self
+    {
+        $this->comment = $comment;
+
+        return $this;
+    }
+
+    public function getLink(): ?string
+    {
+        return $this->link;
+    }
+
+    public function setLink(string $link): self
+    {
+        $this->link = $link;
+
+        return $this;
+    }
+
+    public function getPrincipleImage(): ?bool
+    {
+        return $this->principleImage;
+    }
+
+    public function setPrincipleImage(bool $principleImage): self
+    {
+        $this->principleImage = $principleImage;
+
+        return $this;
+    }
+
+    public function getFurniture(): ?Furniture
+    {
+        return $this->furniture;
+    }
+
+    public function setFurniture(?Furniture $furniture): self
+    {
+        $this->furniture = $furniture;
+
+        return $this;
+    }
+}

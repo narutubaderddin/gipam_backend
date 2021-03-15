@@ -49,9 +49,20 @@ class Establishment
      */
     private $locations;
 
+    /**
+     * @ORM\ManyToOne(targetEntity=Ministry::class, inversedBy="establishments")
+     */
+    private $ministry;
+
+    /**
+     * @ORM\OneToMany(targetEntity=Correspondent::class, mappedBy="establishment")
+     */
+    private $correspondents;
+
     public function __construct()
     {
         $this->locations = new ArrayCollection();
+        $this->correspondents = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -143,6 +154,48 @@ class Establishment
             // set the owning side to null (unless already changed)
             if ($location->getEstablishment() === $this) {
                 $location->setEstablishment(null);
+            }
+        }
+
+        return $this;
+    }
+
+    public function getMinistry(): ?Ministry
+    {
+        return $this->ministry;
+    }
+
+    public function setMinistry(?Ministry $ministry): self
+    {
+        $this->ministry = $ministry;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|Correspondent[]
+     */
+    public function getCorrespondents(): Collection
+    {
+        return $this->correspondents;
+    }
+
+    public function addCorrespondent(Correspondent $correspondent): self
+    {
+        if (!$this->correspondents->contains($correspondent)) {
+            $this->correspondents[] = $correspondent;
+            $correspondent->setEstablishment($this);
+        }
+
+        return $this;
+    }
+
+    public function removeCorrespondent(Correspondent $correspondent): self
+    {
+        if ($this->correspondents->removeElement($correspondent)) {
+            // set the owning side to null (unless already changed)
+            if ($correspondent->getEstablishment() === $this) {
+                $correspondent->setEstablishment(null);
             }
         }
 

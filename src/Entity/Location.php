@@ -3,6 +3,8 @@
 namespace App\Entity;
 
 use App\Repository\LocationRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
@@ -31,6 +33,16 @@ class Location
      * @ORM\ManyToOne(targetEntity=SubDivision::class, inversedBy="locations")
      */
     private $subDivision;
+
+    /**
+     * @ORM\OneToMany(targetEntity=Movement::class, mappedBy="location")
+     */
+    private $movements;
+
+    public function __construct()
+    {
+        $this->movements = new ArrayCollection();
+    }
 
     public function getId(): ?int
     {
@@ -69,6 +81,36 @@ class Location
     public function setSubDivision(?SubDivision $subDivision): self
     {
         $this->subDivision = $subDivision;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|Movement[]
+     */
+    public function getMovements(): Collection
+    {
+        return $this->movements;
+    }
+
+    public function addMovement(Movement $movement): self
+    {
+        if (!$this->movements->contains($movement)) {
+            $this->movements[] = $movement;
+            $movement->setLocation($this);
+        }
+
+        return $this;
+    }
+
+    public function removeMovement(Movement $movement): self
+    {
+        if ($this->movements->removeElement($movement)) {
+            // set the owning side to null (unless already changed)
+            if ($movement->getLocation() === $this) {
+                $movement->setLocation(null);
+            }
+        }
 
         return $this;
     }

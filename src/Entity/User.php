@@ -57,9 +57,30 @@ class User implements userInterface
      */
     private $roles = [];
 
+    /**
+     * @ORM\Column(type="text", nullable=true)
+     */
+    private $comment;
+
+    /**
+     * @ORM\Column(type="datetime", nullable=true)
+     */
+    private $startDate;
+
+    /**
+     * @ORM\Column(type="datetime", nullable=true)
+     */
+    private $endDate;
+
+    /**
+     * @ORM\OneToMany(targetEntity=ArtWorkLog::class, mappedBy="user")
+     */
+    private $artWorkLogs;
+
     public function __construct()
     {
         $this->roles = ['ROLE_COLLABORATOR'];
+        $this->artWorkLogs = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -181,6 +202,72 @@ class User implements userInterface
             array_unshift($this->roles, $role);
 
         }
+        return $this;
+    }
+
+    public function getComment(): ?string
+    {
+        return $this->comment;
+    }
+
+    public function setComment(?string $comment): self
+    {
+        $this->comment = $comment;
+
+        return $this;
+    }
+
+    public function getStartDate(): ?\DateTimeInterface
+    {
+        return $this->startDate;
+    }
+
+    public function setStartDate(?\DateTimeInterface $startDate): self
+    {
+        $this->startDate = $startDate;
+
+        return $this;
+    }
+
+    public function getEndDate(): ?\DateTimeInterface
+    {
+        return $this->endDate;
+    }
+
+    public function setEndDate(?\DateTimeInterface $endDate): self
+    {
+        $this->endDate = $endDate;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|ArtWorkLog[]
+     */
+    public function getArtWorkLogs(): Collection
+    {
+        return $this->artWorkLogs;
+    }
+
+    public function addArtWorkLog(ArtWorkLog $artWorkLog): self
+    {
+        if (!$this->artWorkLogs->contains($artWorkLog)) {
+            $this->artWorkLogs[] = $artWorkLog;
+            $artWorkLog->setUser($this);
+        }
+
+        return $this;
+    }
+
+    public function removeArtWorkLog(ArtWorkLog $artWorkLog): self
+    {
+        if ($this->artWorkLogs->removeElement($artWorkLog)) {
+            // set the owning side to null (unless already changed)
+            if ($artWorkLog->getUser() === $this) {
+                $artWorkLog->setUser(null);
+            }
+        }
+
         return $this;
     }
 }
