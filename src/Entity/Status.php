@@ -6,15 +6,17 @@ namespace App\Entity;
 
 use App\Repository\StatusRepository;
 use DateTimeInterface;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
  * @ORM\Entity(repositoryClass=StatusRepository::class)
  * @ORM\InheritanceType("JOINED")
  * @ORM\DiscriminatorColumn(name="discr", type="string")
- * @ORM\DiscriminatorMap({"status"="Status","propertyStatus"="PropertyStatus", "depositStatus"="DepositStatus"})
+ * @ORM\DiscriminatorMap({"propertyStatus"="PropertyStatus", "depositStatus"="DepositStatus"})
  */
-class Status
+abstract class Status
 {
     /**
      * @ORM\Id
@@ -42,6 +44,16 @@ class Status
      * @ORM\Column(type="text", nullable=true)
      */
     protected $comment;
+
+    /**
+     * @ORM\OneToMany(targetEntity=Furniture::class, mappedBy="status")
+     */
+    protected $furniture;
+
+    public function __construct()
+    {
+        $this->furniture = new ArrayCollection();
+    }
 
     public function getId(): ?int
     {
@@ -92,6 +104,36 @@ class Status
     public function setComment(?string $comment): self
     {
         $this->comment = $comment;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|Furniture[]
+     */
+    public function getFurniture(): Collection
+    {
+        return $this->furniture;
+    }
+
+    public function addFurniture(Furniture $furniture): self
+    {
+        if (!$this->furniture->contains($furniture)) {
+            $this->furniture[] = $furniture;
+            $furniture->setStatus($this);
+        }
+
+        return $this;
+    }
+
+    public function removeFurniture(Furniture $furniture): self
+    {
+        if ($this->furniture->removeElement($furniture)) {
+            // set the owning side to null (unless already changed)
+            if ($furniture->getStatus() === $this) {
+                $furniture->setStatus(null);
+            }
+        }
 
         return $this;
     }

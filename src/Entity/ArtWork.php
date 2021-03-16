@@ -12,13 +12,6 @@ use Doctrine\ORM\Mapping as ORM;
 class ArtWork extends Furniture
 {
     /**
-     * @ORM\Id
-     * @ORM\GeneratedValue
-     * @ORM\Column(type="integer")
-     */
-    private $id;
-
-    /**
      * @ORM\Column(type="datetime", nullable=true)
      */
     private $creationDate;
@@ -69,10 +62,11 @@ class ArtWork extends Furniture
      */
     private $stopNumber;
 
-    public function getId(): ?int
-    {
-        return $this->id;
-    }
+    // todo: meaning and type. In UML class "autres inscriptions"
+    /**
+     * @ORM\Column(type="string", length=255, nullable=true)
+     */
+    private $otherRegistrations;
 
     public function getCreationDate(): ?DateTimeInterface
     {
@@ -190,6 +184,18 @@ class ArtWork extends Furniture
     public function setStopNumber(?string $stopNumber): self
     {
         $this->stopNumber = $stopNumber;
+
+        return $this;
+    }
+
+    public function getOtherRegistrations(): ?string
+    {
+        return $this->otherRegistrations;
+    }
+
+    public function setOtherRegistrations(?string $otherRegistrations): self
+    {
+        $this->otherRegistrations = $otherRegistrations;
 
         return $this;
     }

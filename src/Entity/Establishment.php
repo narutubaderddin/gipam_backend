@@ -3,6 +3,7 @@
 namespace App\Entity;
 
 use App\Repository\EstablishmentRepository;
+use DateTimeInterface;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
@@ -40,11 +41,6 @@ class Establishment
     private $disappearanceDate;
 
     /**
-     * @ORM\ManyToOne(targetEntity=EstablishmentType::class)
-     */
-    private $establishmentType;
-
-    /**
      * @ORM\OneToMany(targetEntity=location::class, mappedBy="establishment")
      */
     private $locations;
@@ -59,10 +55,21 @@ class Establishment
      */
     private $correspondents;
 
+    /**
+     * @ORM\OneToMany(targetEntity=SubDivision::class, mappedBy="establishment")
+     */
+    private $subDivisions;
+
+    /**
+     * @ORM\ManyToOne(targetEntity=EstablishmentType::class, inversedBy="establishments")
+     */
+    private $type;
+
     public function __construct()
     {
         $this->locations = new ArrayCollection();
         $this->correspondents = new ArrayCollection();
+        $this->subDivisions = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -94,38 +101,26 @@ class Establishment
         return $this;
     }
 
-    public function getStartDate(): ?\DateTimeInterface
+    public function getStartDate(): ?DateTimeInterface
     {
         return $this->startDate;
     }
 
-    public function setStartDate(?\DateTimeInterface $startDate): self
+    public function setStartDate(?DateTimeInterface $startDate): self
     {
         $this->startDate = $startDate;
 
         return $this;
     }
 
-    public function getDisappearanceDate(): ?\DateTimeInterface
+    public function getDisappearanceDate(): ?DateTimeInterface
     {
         return $this->disappearanceDate;
     }
 
-    public function setDisappearanceDate(?\DateTimeInterface $disappearanceDate): self
+    public function setDisappearanceDate(?DateTimeInterface $disappearanceDate): self
     {
         $this->disappearanceDate = $disappearanceDate;
-
-        return $this;
-    }
-
-    public function getEstablishmentType(): ?EstablishmentType
-    {
-        return $this->establishmentType;
-    }
-
-    public function setEstablishmentType(?EstablishmentType $establishmentType): self
-    {
-        $this->establishmentType = $establishmentType;
 
         return $this;
     }
@@ -198,6 +193,48 @@ class Establishment
                 $correspondent->setEstablishment(null);
             }
         }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|SubDivision[]
+     */
+    public function getSubDivisions(): Collection
+    {
+        return $this->subDivisions;
+    }
+
+    public function addSubDivision(SubDivision $subDivision): self
+    {
+        if (!$this->subDivisions->contains($subDivision)) {
+            $this->subDivisions[] = $subDivision;
+            $subDivision->setEstablishment($this);
+        }
+
+        return $this;
+    }
+
+    public function removeSubDivision(SubDivision $subDivision): self
+    {
+        if ($this->subDivisions->removeElement($subDivision)) {
+            // set the owning side to null (unless already changed)
+            if ($subDivision->getEstablishment() === $this) {
+                $subDivision->setEstablishment(null);
+            }
+        }
+
+        return $this;
+    }
+
+    public function getType(): ?EstablishmentType
+    {
+        return $this->type;
+    }
+
+    public function setType(?EstablishmentType $type): self
+    {
+        $this->type = $type;
 
         return $this;
     }

@@ -10,7 +10,7 @@ use Doctrine\Migrations\AbstractMigration;
 /**
  * Auto-generated Migration: Please modify to your needs!
  */
-final class Version20210315172347 extends AbstractMigration
+final class Version20210316102720 extends AbstractMigration
 {
     public function getDescription() : string
     {
@@ -24,12 +24,12 @@ final class Version20210315172347 extends AbstractMigration
         $this->addSql('CREATE TABLE action_movement (action_id INT NOT NULL, movement_id INT NOT NULL, INDEX IDX_230AE5919D32F035 (action_id), INDEX IDX_230AE591229E70A7 (movement_id), PRIMARY KEY(action_id, movement_id)) DEFAULT CHARACTER SET utf8mb4 COLLATE `utf8mb4_unicode_ci` ENGINE = InnoDB');
         $this->addSql('CREATE TABLE action_type (id INT AUTO_INCREMENT NOT NULL, label VARCHAR(255) NOT NULL, PRIMARY KEY(id)) DEFAULT CHARACTER SET utf8mb4 COLLATE `utf8mb4_unicode_ci` ENGINE = InnoDB');
         $this->addSql('CREATE TABLE alert (id INT AUTO_INCREMENT NOT NULL, action_id INT DEFAULT NULL, date DATETIME NOT NULL, INDEX IDX_17FD46C19D32F035 (action_id), PRIMARY KEY(id)) DEFAULT CHARACTER SET utf8mb4 COLLATE `utf8mb4_unicode_ci` ENGINE = InnoDB');
-        $this->addSql('CREATE TABLE art_work (id INT NOT NULL, creation_date DATETIME DEFAULT NULL, total_length DOUBLE PRECISION DEFAULT NULL, total_width DOUBLE PRECISION DEFAULT NULL, total_height DOUBLE PRECISION DEFAULT NULL, registration_signature VARCHAR(255) DEFAULT NULL, descriptive_words VARCHAR(255) DEFAULT NULL, insurance_value INT DEFAULT NULL, insurance_value_date DATETIME DEFAULT NULL, deposit_date DATETIME DEFAULT NULL, stop_number VARCHAR(255) DEFAULT NULL, PRIMARY KEY(id)) DEFAULT CHARACTER SET utf8mb4 COLLATE `utf8mb4_unicode_ci` ENGINE = InnoDB');
-        $this->addSql('CREATE TABLE art_work_log (id INT AUTO_INCREMENT NOT NULL, user_id INT DEFAULT NULL, furniture_id INT DEFAULT NULL, date DATETIME DEFAULT NULL, creation_date DATETIME DEFAULT NULL, total_length DOUBLE PRECISION DEFAULT NULL, total_width DOUBLE PRECISION DEFAULT NULL, total_height DOUBLE PRECISION DEFAULT NULL, registration_signature VARCHAR(255) DEFAULT NULL, descriptive_words VARCHAR(255) DEFAULT NULL, insurance_value INT DEFAULT NULL, insurance_value_date DATETIME DEFAULT NULL, deposit_date DATETIME DEFAULT NULL, stop_number VARCHAR(255) DEFAULT NULL, INDEX IDX_AC56464FA76ED395 (user_id), INDEX IDX_AC56464FCF5485C3 (furniture_id), PRIMARY KEY(id)) DEFAULT CHARACTER SET utf8mb4 COLLATE `utf8mb4_unicode_ci` ENGINE = InnoDB');
+        $this->addSql('CREATE TABLE art_work (id INT NOT NULL, creation_date DATETIME DEFAULT NULL, total_length DOUBLE PRECISION DEFAULT NULL, total_width DOUBLE PRECISION DEFAULT NULL, total_height DOUBLE PRECISION DEFAULT NULL, registration_signature VARCHAR(255) DEFAULT NULL, descriptive_words VARCHAR(255) DEFAULT NULL, insurance_value INT DEFAULT NULL, insurance_value_date DATETIME DEFAULT NULL, deposit_date DATETIME DEFAULT NULL, stop_number VARCHAR(255) DEFAULT NULL, other_registrations VARCHAR(255) DEFAULT NULL, PRIMARY KEY(id)) DEFAULT CHARACTER SET utf8mb4 COLLATE `utf8mb4_unicode_ci` ENGINE = InnoDB');
+        $this->addSql('CREATE TABLE art_work_log (id INT AUTO_INCREMENT NOT NULL, user_id INT DEFAULT NULL, furniture_id INT DEFAULT NULL, date DATETIME DEFAULT NULL, INDEX IDX_AC56464FA76ED395 (user_id), INDEX IDX_AC56464FCF5485C3 (furniture_id), PRIMARY KEY(id)) DEFAULT CHARACTER SET utf8mb4 COLLATE `utf8mb4_unicode_ci` ENGINE = InnoDB');
         $this->addSql('CREATE TABLE attachment (id INT AUTO_INCREMENT NOT NULL, furniture_id INT DEFAULT NULL, date DATETIME NOT NULL, comment LONGTEXT DEFAULT NULL, link VARCHAR(255) NOT NULL, principle_image TINYINT(1) NOT NULL, INDEX IDX_795FD9BBCF5485C3 (furniture_id), PRIMARY KEY(id)) DEFAULT CHARACTER SET utf8mb4 COLLATE `utf8mb4_unicode_ci` ENGINE = InnoDB');
         $this->addSql('CREATE TABLE author (id INT AUTO_INCREMENT NOT NULL, first_name VARCHAR(255) DEFAULT NULL, last_name VARCHAR(255) DEFAULT NULL, PRIMARY KEY(id)) DEFAULT CHARACTER SET utf8mb4 COLLATE `utf8mb4_unicode_ci` ENGINE = InnoDB');
         $this->addSql('CREATE TABLE author_type (id INT AUTO_INCREMENT NOT NULL, author_id INT DEFAULT NULL, label VARCHAR(255) DEFAULT NULL, INDEX IDX_6831DFF6F675F31B (author_id), PRIMARY KEY(id)) DEFAULT CHARACTER SET utf8mb4 COLLATE `utf8mb4_unicode_ci` ENGINE = InnoDB');
-        $this->addSql('CREATE TABLE building (id INT AUTO_INCREMENT NOT NULL, site_id INT DEFAULT NULL, commune_id INT DEFAULT NULL, name VARCHAR(255) DEFAULT NULL, address VARCHAR(255) DEFAULT NULL, distrib VARCHAR(255) DEFAULT NULL, start_date DATETIME DEFAULT NULL, disappearance_date DATETIME DEFAULT NULL, INDEX IDX_E16F61D4F6BD1646 (site_id), INDEX IDX_E16F61D4131A4F72 (commune_id), PRIMARY KEY(id)) DEFAULT CHARACTER SET utf8mb4 COLLATE `utf8mb4_unicode_ci` ENGINE = InnoDB');
+        $this->addSql('CREATE TABLE building (id INT AUTO_INCREMENT NOT NULL, site_id INT DEFAULT NULL, commune_id INT DEFAULT NULL, name VARCHAR(255) DEFAULT NULL, address VARCHAR(255) DEFAULT NULL, distrib VARCHAR(255) DEFAULT NULL, start_date DATETIME DEFAULT NULL, disappearance_date DATETIME DEFAULT NULL, cedex VARCHAR(255) DEFAULT NULL, INDEX IDX_E16F61D4F6BD1646 (site_id), INDEX IDX_E16F61D4131A4F72 (commune_id), PRIMARY KEY(id)) DEFAULT CHARACTER SET utf8mb4 COLLATE `utf8mb4_unicode_ci` ENGINE = InnoDB');
         $this->addSql('CREATE TABLE commune (id INT AUTO_INCREMENT NOT NULL, departement_id INT DEFAULT NULL, name VARCHAR(255) DEFAULT NULL, INDEX IDX_E2E2D1EECCF9E01E (departement_id), PRIMARY KEY(id)) DEFAULT CHARACTER SET utf8mb4 COLLATE `utf8mb4_unicode_ci` ENGINE = InnoDB');
         $this->addSql('CREATE TABLE correspondent (id INT AUTO_INCREMENT NOT NULL, establishment_id INT DEFAULT NULL, sub_division_id INT DEFAULT NULL, service_id INT DEFAULT NULL, first_name VARCHAR(255) NOT NULL, last_name VARCHAR(255) NOT NULL, phone VARCHAR(255) DEFAULT NULL, fax VARCHAR(255) DEFAULT NULL, mel VARCHAR(255) DEFAULT NULL, start_date DATETIME DEFAULT NULL, end_date DATETIME DEFAULT NULL, INDEX IDX_E3D4D17F8565851 (establishment_id), INDEX IDX_E3D4D17FA47CE717 (sub_division_id), INDEX IDX_E3D4D17FED5CA9E6 (service_id), PRIMARY KEY(id)) DEFAULT CHARACTER SET utf8mb4 COLLATE `utf8mb4_unicode_ci` ENGINE = InnoDB');
         $this->addSql('CREATE TABLE denomination (id INT AUTO_INCREMENT NOT NULL, field_id INT DEFAULT NULL, label VARCHAR(255) DEFAULT NULL, INDEX IDX_15AEA10C443707B0 (field_id), PRIMARY KEY(id)) DEFAULT CHARACTER SET utf8mb4 COLLATE `utf8mb4_unicode_ci` ENGINE = InnoDB');
@@ -37,15 +37,15 @@ final class Version20210315172347 extends AbstractMigration
         $this->addSql('CREATE TABLE departement (id INT AUTO_INCREMENT NOT NULL, region_id INT DEFAULT NULL, name VARCHAR(255) DEFAULT NULL, start_date DATETIME DEFAULT NULL, disappearance_date DATETIME DEFAULT NULL, INDEX IDX_C1765B6398260155 (region_id), PRIMARY KEY(id)) DEFAULT CHARACTER SET utf8mb4 COLLATE `utf8mb4_unicode_ci` ENGINE = InnoDB');
         $this->addSql('CREATE TABLE deposit_status (id INT NOT NULL, depositor_id INT DEFAULT NULL, inventory_number VARCHAR(255) DEFAULT NULL, INDEX IDX_6A8B385DEB8724B4 (depositor_id), PRIMARY KEY(id)) DEFAULT CHARACTER SET utf8mb4 COLLATE `utf8mb4_unicode_ci` ENGINE = InnoDB');
         $this->addSql('CREATE TABLE deposit_type (id INT AUTO_INCREMENT NOT NULL, label VARCHAR(255) DEFAULT NULL, PRIMARY KEY(id)) DEFAULT CHARACTER SET utf8mb4 COLLATE `utf8mb4_unicode_ci` ENGINE = InnoDB');
-        $this->addSql('CREATE TABLE depositor (id INT AUTO_INCREMENT NOT NULL, deposit_type_id INT DEFAULT NULL, acronym VARCHAR(255) DEFAULT NULL, name VARCHAR(255) DEFAULT NULL, address VARCHAR(255) DEFAULT NULL, city VARCHAR(255) DEFAULT NULL, dpt VARCHAR(255) DEFAULT NULL, distrib VARCHAR(255) DEFAULT NULL, phone VARCHAR(255) DEFAULT NULL, fax VARCHAR(255) DEFAULT NULL, mel VARCHAR(255) DEFAULT NULL, commune VARCHAR(255) DEFAULT NULL, start_date DATETIME DEFAULT NULL, end_date DATETIME DEFAULT NULL, contant VARCHAR(255) DEFAULT NULL, INDEX IDX_9D8D821FC48676C8 (deposit_type_id), PRIMARY KEY(id)) DEFAULT CHARACTER SET utf8mb4 COLLATE `utf8mb4_unicode_ci` ENGINE = InnoDB');
+        $this->addSql('CREATE TABLE depositor (id INT AUTO_INCREMENT NOT NULL, deposit_type_id INT DEFAULT NULL, acronym VARCHAR(255) DEFAULT NULL, name VARCHAR(255) DEFAULT NULL, address VARCHAR(255) DEFAULT NULL, city VARCHAR(255) DEFAULT NULL, dpt VARCHAR(255) DEFAULT NULL, distrib VARCHAR(255) DEFAULT NULL, phone VARCHAR(255) DEFAULT NULL, fax VARCHAR(255) DEFAULT NULL, mel VARCHAR(255) DEFAULT NULL, start_date DATETIME DEFAULT NULL, end_date DATETIME DEFAULT NULL, contant VARCHAR(255) DEFAULT NULL, comment LONGTEXT DEFAULT NULL, INDEX IDX_9D8D821FC48676C8 (deposit_type_id), PRIMARY KEY(id)) DEFAULT CHARACTER SET utf8mb4 COLLATE `utf8mb4_unicode_ci` ENGINE = InnoDB');
         $this->addSql('CREATE TABLE entry_mode (id INT AUTO_INCREMENT NOT NULL, label VARCHAR(255) DEFAULT NULL, PRIMARY KEY(id)) DEFAULT CHARACTER SET utf8mb4 COLLATE `utf8mb4_unicode_ci` ENGINE = InnoDB');
         $this->addSql('CREATE TABLE era (id INT AUTO_INCREMENT NOT NULL, label VARCHAR(255) DEFAULT NULL, PRIMARY KEY(id)) DEFAULT CHARACTER SET utf8mb4 COLLATE `utf8mb4_unicode_ci` ENGINE = InnoDB');
-        $this->addSql('CREATE TABLE establishment (id INT AUTO_INCREMENT NOT NULL, establishment_type_id INT DEFAULT NULL, ministry_id INT DEFAULT NULL, label VARCHAR(255) DEFAULT NULL, acronym VARCHAR(255) DEFAULT NULL, start_date DATETIME DEFAULT NULL, disappearance_date DATETIME DEFAULT NULL, INDEX IDX_DBEFB1EEB86BF9B6 (establishment_type_id), INDEX IDX_DBEFB1EEC7266135 (ministry_id), PRIMARY KEY(id)) DEFAULT CHARACTER SET utf8mb4 COLLATE `utf8mb4_unicode_ci` ENGINE = InnoDB');
+        $this->addSql('CREATE TABLE establishment (id INT AUTO_INCREMENT NOT NULL, ministry_id INT DEFAULT NULL, type_id INT DEFAULT NULL, label VARCHAR(255) DEFAULT NULL, acronym VARCHAR(255) DEFAULT NULL, start_date DATETIME DEFAULT NULL, disappearance_date DATETIME DEFAULT NULL, INDEX IDX_DBEFB1EEC7266135 (ministry_id), INDEX IDX_DBEFB1EEC54C8C93 (type_id), PRIMARY KEY(id)) DEFAULT CHARACTER SET utf8mb4 COLLATE `utf8mb4_unicode_ci` ENGINE = InnoDB');
         $this->addSql('CREATE TABLE establishment_type (id INT AUTO_INCREMENT NOT NULL, label VARCHAR(255) DEFAULT NULL, PRIMARY KEY(id)) DEFAULT CHARACTER SET utf8mb4 COLLATE `utf8mb4_unicode_ci` ENGINE = InnoDB');
         $this->addSql('CREATE TABLE field (id INT AUTO_INCREMENT NOT NULL, label VARCHAR(255) DEFAULT NULL, PRIMARY KEY(id)) DEFAULT CHARACTER SET utf8mb4 COLLATE `utf8mb4_unicode_ci` ENGINE = InnoDB');
-        $this->addSql('CREATE TABLE furniture (id INT AUTO_INCREMENT NOT NULL, era_id INT DEFAULT NULL, type_id INT DEFAULT NULL, style_id INT DEFAULT NULL, material_technique_id INT DEFAULT NULL, denomination_id INT DEFAULT NULL, field_id INT DEFAULT NULL, title VARCHAR(255) DEFAULT NULL, length DOUBLE PRECISION DEFAULT NULL, width DOUBLE PRECISION DEFAULT NULL, height DOUBLE PRECISION DEFAULT NULL, depth DOUBLE PRECISION DEFAULT NULL, diameter DOUBLE PRECISION DEFAULT NULL, weight DOUBLE PRECISION DEFAULT NULL, number_of_unit INT DEFAULT NULL, description LONGTEXT DEFAULT NULL, discr VARCHAR(255) NOT NULL, INDEX IDX_665DDAB3707300A1 (era_id), INDEX IDX_665DDAB3C54C8C93 (type_id), INDEX IDX_665DDAB3BACD6074 (style_id), INDEX IDX_665DDAB311F25F26 (material_technique_id), INDEX IDX_665DDAB3E9293F06 (denomination_id), INDEX IDX_665DDAB3443707B0 (field_id), PRIMARY KEY(id)) DEFAULT CHARACTER SET utf8mb4 COLLATE `utf8mb4_unicode_ci` ENGINE = InnoDB');
+        $this->addSql('CREATE TABLE furniture (id INT AUTO_INCREMENT NOT NULL, era_id INT DEFAULT NULL, type_id INT DEFAULT NULL, style_id INT DEFAULT NULL, material_technique_id INT DEFAULT NULL, denomination_id INT DEFAULT NULL, field_id INT DEFAULT NULL, status_id INT DEFAULT NULL, title VARCHAR(255) DEFAULT NULL, length DOUBLE PRECISION DEFAULT NULL, width DOUBLE PRECISION DEFAULT NULL, height DOUBLE PRECISION DEFAULT NULL, depth DOUBLE PRECISION DEFAULT NULL, diameter DOUBLE PRECISION DEFAULT NULL, weight DOUBLE PRECISION DEFAULT NULL, number_of_unit INT DEFAULT NULL, description LONGTEXT DEFAULT NULL, discr VARCHAR(255) NOT NULL, INDEX IDX_665DDAB3707300A1 (era_id), INDEX IDX_665DDAB3C54C8C93 (type_id), INDEX IDX_665DDAB3BACD6074 (style_id), INDEX IDX_665DDAB311F25F26 (material_technique_id), INDEX IDX_665DDAB3E9293F06 (denomination_id), INDEX IDX_665DDAB3443707B0 (field_id), INDEX IDX_665DDAB36BF700BD (status_id), PRIMARY KEY(id)) DEFAULT CHARACTER SET utf8mb4 COLLATE `utf8mb4_unicode_ci` ENGINE = InnoDB');
         $this->addSql('CREATE TABLE furniture_author (furniture_id INT NOT NULL, author_id INT NOT NULL, INDEX IDX_386AF69ACF5485C3 (furniture_id), INDEX IDX_386AF69AF675F31B (author_id), PRIMARY KEY(furniture_id, author_id)) DEFAULT CHARACTER SET utf8mb4 COLLATE `utf8mb4_unicode_ci` ENGINE = InnoDB');
-        $this->addSql('CREATE TABLE location (id INT AUTO_INCREMENT NOT NULL, location_type_id INT DEFAULT NULL, establishment_id INT DEFAULT NULL, sub_division_id INT DEFAULT NULL, INDEX IDX_5E9E89CB2B099F37 (location_type_id), INDEX IDX_5E9E89CB8565851 (establishment_id), INDEX IDX_5E9E89CBA47CE717 (sub_division_id), PRIMARY KEY(id)) DEFAULT CHARACTER SET utf8mb4 COLLATE `utf8mb4_unicode_ci` ENGINE = InnoDB');
+        $this->addSql('CREATE TABLE location (id INT AUTO_INCREMENT NOT NULL, establishment_id INT DEFAULT NULL, sub_division_id INT DEFAULT NULL, type_id INT DEFAULT NULL, room_id INT DEFAULT NULL, INDEX IDX_5E9E89CB8565851 (establishment_id), INDEX IDX_5E9E89CBA47CE717 (sub_division_id), INDEX IDX_5E9E89CBC54C8C93 (type_id), INDEX IDX_5E9E89CB54177093 (room_id), PRIMARY KEY(id)) DEFAULT CHARACTER SET utf8mb4 COLLATE `utf8mb4_unicode_ci` ENGINE = InnoDB');
         $this->addSql('CREATE TABLE location_type (id INT AUTO_INCREMENT NOT NULL, label VARCHAR(255) DEFAULT NULL, PRIMARY KEY(id)) DEFAULT CHARACTER SET utf8mb4 COLLATE `utf8mb4_unicode_ci` ENGINE = InnoDB');
         $this->addSql('CREATE TABLE material_technique (id INT AUTO_INCREMENT NOT NULL, label VARCHAR(255) DEFAULT NULL, type VARCHAR(255) DEFAULT NULL, PRIMARY KEY(id)) DEFAULT CHARACTER SET utf8mb4 COLLATE `utf8mb4_unicode_ci` ENGINE = InnoDB');
         $this->addSql('CREATE TABLE ministry (id INT AUTO_INCREMENT NOT NULL, name VARCHAR(255) DEFAULT NULL, acronym VARCHAR(255) DEFAULT NULL, start_date DATETIME DEFAULT NULL, disappearance_date DATETIME DEFAULT NULL, PRIMARY KEY(id)) DEFAULT CHARACTER SET utf8mb4 COLLATE `utf8mb4_unicode_ci` ENGINE = InnoDB');
@@ -67,8 +67,9 @@ final class Version20210315172347 extends AbstractMigration
         $this->addSql('CREATE TABLE site (id INT AUTO_INCREMENT NOT NULL, label VARCHAR(255) DEFAULT NULL, start_date DATETIME DEFAULT NULL, disappearance_date DATETIME DEFAULT NULL, PRIMARY KEY(id)) DEFAULT CHARACTER SET utf8mb4 COLLATE `utf8mb4_unicode_ci` ENGINE = InnoDB');
         $this->addSql('CREATE TABLE status (id INT AUTO_INCREMENT NOT NULL, type VARCHAR(255) DEFAULT NULL, start_date DATETIME DEFAULT NULL, end_date DATETIME DEFAULT NULL, comment LONGTEXT DEFAULT NULL, discr VARCHAR(255) NOT NULL, PRIMARY KEY(id)) DEFAULT CHARACTER SET utf8mb4 COLLATE `utf8mb4_unicode_ci` ENGINE = InnoDB');
         $this->addSql('CREATE TABLE style (id INT AUTO_INCREMENT NOT NULL, label VARCHAR(255) DEFAULT NULL, PRIMARY KEY(id)) DEFAULT CHARACTER SET utf8mb4 COLLATE `utf8mb4_unicode_ci` ENGINE = InnoDB');
-        $this->addSql('CREATE TABLE sub_division (id INT AUTO_INCREMENT NOT NULL, label VARCHAR(255) DEFAULT NULL, acronym VARCHAR(255) DEFAULT NULL, start_date DATETIME DEFAULT NULL, end_date DATETIME DEFAULT NULL, PRIMARY KEY(id)) DEFAULT CHARACTER SET utf8mb4 COLLATE `utf8mb4_unicode_ci` ENGINE = InnoDB');
+        $this->addSql('CREATE TABLE sub_division (id INT AUTO_INCREMENT NOT NULL, establishment_id INT DEFAULT NULL, label VARCHAR(255) DEFAULT NULL, acronym VARCHAR(255) DEFAULT NULL, start_date DATETIME DEFAULT NULL, end_date DATETIME DEFAULT NULL, INDEX IDX_AAB8A94D8565851 (establishment_id), PRIMARY KEY(id)) DEFAULT CHARACTER SET utf8mb4 COLLATE `utf8mb4_unicode_ci` ENGINE = InnoDB');
         $this->addSql('CREATE TABLE type (id INT AUTO_INCREMENT NOT NULL, label VARCHAR(255) DEFAULT NULL, PRIMARY KEY(id)) DEFAULT CHARACTER SET utf8mb4 COLLATE `utf8mb4_unicode_ci` ENGINE = InnoDB');
+        $this->addSql('CREATE TABLE user (id INT AUTO_INCREMENT NOT NULL, ministry_id INT DEFAULT NULL, username VARCHAR(50) NOT NULL, first_name VARCHAR(50) NOT NULL, last_name VARCHAR(50) NOT NULL, password VARCHAR(100) DEFAULT NULL, roles LONGTEXT DEFAULT NULL COMMENT \'(DC2Type:array)\', comment LONGTEXT DEFAULT NULL, start_date DATETIME DEFAULT NULL, end_date DATETIME DEFAULT NULL, UNIQUE INDEX UNIQ_8D93D649F85E0677 (username), INDEX IDX_8D93D649C7266135 (ministry_id), PRIMARY KEY(id)) DEFAULT CHARACTER SET utf8mb4 COLLATE `utf8mb4_unicode_ci` ENGINE = InnoDB');
         $this->addSql('ALTER TABLE action ADD CONSTRAINT FK_47CC8C92C54C8C93 FOREIGN KEY (type_id) REFERENCES action_type (id)');
         $this->addSql('ALTER TABLE action ADD CONSTRAINT FK_47CC8C92D8686660 FOREIGN KEY (movement_action_type_id) REFERENCES movement_action_type (id)');
         $this->addSql('ALTER TABLE action ADD CONSTRAINT FK_47CC8C924BD2A4C0 FOREIGN KEY (report_id) REFERENCES report (id)');
@@ -93,19 +94,21 @@ final class Version20210315172347 extends AbstractMigration
         $this->addSql('ALTER TABLE deposit_status ADD CONSTRAINT FK_6A8B385DEB8724B4 FOREIGN KEY (depositor_id) REFERENCES depositor (id)');
         $this->addSql('ALTER TABLE deposit_status ADD CONSTRAINT FK_6A8B385DBF396750 FOREIGN KEY (id) REFERENCES status (id) ON DELETE CASCADE');
         $this->addSql('ALTER TABLE depositor ADD CONSTRAINT FK_9D8D821FC48676C8 FOREIGN KEY (deposit_type_id) REFERENCES deposit_type (id)');
-        $this->addSql('ALTER TABLE establishment ADD CONSTRAINT FK_DBEFB1EEB86BF9B6 FOREIGN KEY (establishment_type_id) REFERENCES establishment_type (id)');
         $this->addSql('ALTER TABLE establishment ADD CONSTRAINT FK_DBEFB1EEC7266135 FOREIGN KEY (ministry_id) REFERENCES ministry (id)');
+        $this->addSql('ALTER TABLE establishment ADD CONSTRAINT FK_DBEFB1EEC54C8C93 FOREIGN KEY (type_id) REFERENCES establishment_type (id)');
         $this->addSql('ALTER TABLE furniture ADD CONSTRAINT FK_665DDAB3707300A1 FOREIGN KEY (era_id) REFERENCES era (id)');
         $this->addSql('ALTER TABLE furniture ADD CONSTRAINT FK_665DDAB3C54C8C93 FOREIGN KEY (type_id) REFERENCES type (id)');
         $this->addSql('ALTER TABLE furniture ADD CONSTRAINT FK_665DDAB3BACD6074 FOREIGN KEY (style_id) REFERENCES style (id)');
         $this->addSql('ALTER TABLE furniture ADD CONSTRAINT FK_665DDAB311F25F26 FOREIGN KEY (material_technique_id) REFERENCES material_technique (id)');
         $this->addSql('ALTER TABLE furniture ADD CONSTRAINT FK_665DDAB3E9293F06 FOREIGN KEY (denomination_id) REFERENCES denomination (id)');
         $this->addSql('ALTER TABLE furniture ADD CONSTRAINT FK_665DDAB3443707B0 FOREIGN KEY (field_id) REFERENCES field (id)');
+        $this->addSql('ALTER TABLE furniture ADD CONSTRAINT FK_665DDAB36BF700BD FOREIGN KEY (status_id) REFERENCES status (id)');
         $this->addSql('ALTER TABLE furniture_author ADD CONSTRAINT FK_386AF69ACF5485C3 FOREIGN KEY (furniture_id) REFERENCES furniture (id) ON DELETE CASCADE');
         $this->addSql('ALTER TABLE furniture_author ADD CONSTRAINT FK_386AF69AF675F31B FOREIGN KEY (author_id) REFERENCES author (id) ON DELETE CASCADE');
-        $this->addSql('ALTER TABLE location ADD CONSTRAINT FK_5E9E89CB2B099F37 FOREIGN KEY (location_type_id) REFERENCES location_type (id)');
         $this->addSql('ALTER TABLE location ADD CONSTRAINT FK_5E9E89CB8565851 FOREIGN KEY (establishment_id) REFERENCES establishment (id)');
         $this->addSql('ALTER TABLE location ADD CONSTRAINT FK_5E9E89CBA47CE717 FOREIGN KEY (sub_division_id) REFERENCES sub_division (id)');
+        $this->addSql('ALTER TABLE location ADD CONSTRAINT FK_5E9E89CBC54C8C93 FOREIGN KEY (type_id) REFERENCES location_type (id)');
+        $this->addSql('ALTER TABLE location ADD CONSTRAINT FK_5E9E89CB54177093 FOREIGN KEY (room_id) REFERENCES room (id)');
         $this->addSql('ALTER TABLE movement ADD CONSTRAINT FK_F4DD95F764D218E FOREIGN KEY (location_id) REFERENCES location (id)');
         $this->addSql('ALTER TABLE movement ADD CONSTRAINT FK_F4DD95F7C54C8C93 FOREIGN KEY (type_id) REFERENCES movement_type (id)');
         $this->addSql('ALTER TABLE movement ADD CONSTRAINT FK_F4DD95F7CF5485C3 FOREIGN KEY (furniture_id) REFERENCES furniture (id)');
@@ -123,7 +126,8 @@ final class Version20210315172347 extends AbstractMigration
         $this->addSql('ALTER TABLE responsible_building ADD CONSTRAINT FK_9FC4DEA34D2A7E12 FOREIGN KEY (building_id) REFERENCES building (id) ON DELETE CASCADE');
         $this->addSql('ALTER TABLE room ADD CONSTRAINT FK_729F519B4D2A7E12 FOREIGN KEY (building_id) REFERENCES building (id)');
         $this->addSql('ALTER TABLE service ADD CONSTRAINT FK_E19D9AD2A47CE717 FOREIGN KEY (sub_division_id) REFERENCES sub_division (id)');
-        $this->addSql('ALTER TABLE user ADD comment LONGTEXT DEFAULT NULL, ADD start_date DATETIME DEFAULT NULL, ADD end_date DATETIME DEFAULT NULL');
+        $this->addSql('ALTER TABLE sub_division ADD CONSTRAINT FK_AAB8A94D8565851 FOREIGN KEY (establishment_id) REFERENCES establishment (id)');
+        $this->addSql('ALTER TABLE user ADD CONSTRAINT FK_8D93D649C7266135 FOREIGN KEY (ministry_id) REFERENCES ministry (id)');
     }
 
     public function down(Schema $schema) : void
@@ -147,7 +151,8 @@ final class Version20210315172347 extends AbstractMigration
         $this->addSql('ALTER TABLE furniture DROP FOREIGN KEY FK_665DDAB3707300A1');
         $this->addSql('ALTER TABLE correspondent DROP FOREIGN KEY FK_E3D4D17F8565851');
         $this->addSql('ALTER TABLE location DROP FOREIGN KEY FK_5E9E89CB8565851');
-        $this->addSql('ALTER TABLE establishment DROP FOREIGN KEY FK_DBEFB1EEB86BF9B6');
+        $this->addSql('ALTER TABLE sub_division DROP FOREIGN KEY FK_AAB8A94D8565851');
+        $this->addSql('ALTER TABLE establishment DROP FOREIGN KEY FK_DBEFB1EEC54C8C93');
         $this->addSql('ALTER TABLE denomination DROP FOREIGN KEY FK_15AEA10C443707B0');
         $this->addSql('ALTER TABLE furniture DROP FOREIGN KEY FK_665DDAB3443707B0');
         $this->addSql('ALTER TABLE art_work DROP FOREIGN KEY FK_5A6E1E1FBF396750');
@@ -158,10 +163,11 @@ final class Version20210315172347 extends AbstractMigration
         $this->addSql('ALTER TABLE office_furniture DROP FOREIGN KEY FK_70A9B38ABF396750');
         $this->addSql('ALTER TABLE report DROP FOREIGN KEY FK_C42F7784CF5485C3');
         $this->addSql('ALTER TABLE movement DROP FOREIGN KEY FK_F4DD95F764D218E');
-        $this->addSql('ALTER TABLE location DROP FOREIGN KEY FK_5E9E89CB2B099F37');
+        $this->addSql('ALTER TABLE location DROP FOREIGN KEY FK_5E9E89CBC54C8C93');
         $this->addSql('ALTER TABLE denomination_material_technique DROP FOREIGN KEY FK_FAA0DF5411F25F26');
         $this->addSql('ALTER TABLE furniture DROP FOREIGN KEY FK_665DDAB311F25F26');
         $this->addSql('ALTER TABLE establishment DROP FOREIGN KEY FK_DBEFB1EEC7266135');
+        $this->addSql('ALTER TABLE user DROP FOREIGN KEY FK_8D93D649C7266135');
         $this->addSql('ALTER TABLE action_movement DROP FOREIGN KEY FK_230AE591229E70A7');
         $this->addSql('ALTER TABLE movement_correspondent DROP FOREIGN KEY FK_B21E7704229E70A7');
         $this->addSql('ALTER TABLE action DROP FOREIGN KEY FK_47CC8C92D8686660');
@@ -173,15 +179,18 @@ final class Version20210315172347 extends AbstractMigration
         $this->addSql('ALTER TABLE report DROP FOREIGN KEY FK_C42F7784B8C7B6F');
         $this->addSql('ALTER TABLE report_sub_type DROP FOREIGN KEY FK_AB285195A5D5F193');
         $this->addSql('ALTER TABLE responsible_building DROP FOREIGN KEY FK_9FC4DEA3602AD315');
+        $this->addSql('ALTER TABLE location DROP FOREIGN KEY FK_5E9E89CB54177093');
         $this->addSql('ALTER TABLE correspondent DROP FOREIGN KEY FK_E3D4D17FED5CA9E6');
         $this->addSql('ALTER TABLE building DROP FOREIGN KEY FK_E16F61D4F6BD1646');
         $this->addSql('ALTER TABLE deposit_status DROP FOREIGN KEY FK_6A8B385DBF396750');
+        $this->addSql('ALTER TABLE furniture DROP FOREIGN KEY FK_665DDAB36BF700BD');
         $this->addSql('ALTER TABLE property_status DROP FOREIGN KEY FK_5770A60BF396750');
         $this->addSql('ALTER TABLE furniture DROP FOREIGN KEY FK_665DDAB3BACD6074');
         $this->addSql('ALTER TABLE correspondent DROP FOREIGN KEY FK_E3D4D17FA47CE717');
         $this->addSql('ALTER TABLE location DROP FOREIGN KEY FK_5E9E89CBA47CE717');
         $this->addSql('ALTER TABLE service DROP FOREIGN KEY FK_E19D9AD2A47CE717');
         $this->addSql('ALTER TABLE furniture DROP FOREIGN KEY FK_665DDAB3C54C8C93');
+        $this->addSql('ALTER TABLE art_work_log DROP FOREIGN KEY FK_AC56464FA76ED395');
         $this->addSql('DROP TABLE action');
         $this->addSql('DROP TABLE action_movement');
         $this->addSql('DROP TABLE action_type');
@@ -231,6 +240,6 @@ final class Version20210315172347 extends AbstractMigration
         $this->addSql('DROP TABLE style');
         $this->addSql('DROP TABLE sub_division');
         $this->addSql('DROP TABLE type');
-        $this->addSql('ALTER TABLE user DROP comment, DROP start_date, DROP end_date');
+        $this->addSql('DROP TABLE user');
     }
 }

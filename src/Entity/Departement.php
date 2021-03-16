@@ -3,6 +3,7 @@
 namespace App\Entity;
 
 use App\Repository\DepartementRepository;
+use DateTimeInterface;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
@@ -22,7 +23,7 @@ class Departement
     /**
      * @ORM\Column(type="string", length=255, nullable=true)
      */
-    private $Name;
+    private $name;
 
     /**
      * @ORM\Column(type="datetime", nullable=true)
@@ -56,34 +57,34 @@ class Departement
 
     public function getName(): ?string
     {
-        return $this->Name;
+        return $this->name;
     }
 
-    public function setName(?string $Name): self
+    public function setName(?string $name): self
     {
-        $this->Name = $Name;
+        $this->name = $name;
 
         return $this;
     }
 
-    public function getStartDate(): ?\DateTimeInterface
+    public function getStartDate(): ?DateTimeInterface
     {
         return $this->startDate;
     }
 
-    public function setStartDate(?\DateTimeInterface $startDate): self
+    public function setStartDate(?DateTimeInterface $startDate): self
     {
         $this->startDate = $startDate;
 
         return $this;
     }
 
-    public function getDisappearanceDate(): ?\DateTimeInterface
+    public function getDisappearanceDate(): ?DateTimeInterface
     {
         return $this->disappearanceDate;
     }
 
-    public function setDisappearanceDate(?\DateTimeInterface $disappearanceDate): self
+    public function setDisappearanceDate(?DateTimeInterface $disappearanceDate): self
     {
         $this->disappearanceDate = $disappearanceDate;
 

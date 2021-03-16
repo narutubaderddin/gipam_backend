@@ -40,11 +40,13 @@ class Depositor
      */
     private $city;
 
+    // todo: meaning and type
     /**
      * @ORM\Column(type="string", length=255, nullable=true)
      */
     private $dpt;
 
+    // todo: meaning and type
     /**
      * @ORM\Column(type="string", length=255, nullable=true)
      */
@@ -64,11 +66,6 @@ class Depositor
      * @ORM\Column(type="string", length=255, nullable=true)
      */
     private $mel;
-
-    /**
-     * @ORM\Column(type="string", length=255, nullable=true)
-     */
-    private $commune;
 
     /**
      * @ORM\Column(type="datetime", nullable=true)
@@ -95,6 +92,11 @@ class Depositor
      * @ORM\OneToMany(targetEntity=DepositStatus::class, mappedBy="depositor")
      */
     private $depositStatuses;
+
+    /**
+     * @ORM\Column(type="text", nullable=true)
+     */
+    private $comment;
 
     public function __construct()
     {
@@ -214,18 +216,6 @@ class Depositor
         return $this;
     }
 
-    public function getCommune(): ?string
-    {
-        return $this->commune;
-    }
-
-    public function setCommune(?string $commune): self
-    {
-        $this->commune = $commune;
-
-        return $this;
-    }
-
     public function getStartDate(): ?DateTimeInterface
     {
         return $this->startDate;
@@ -300,6 +290,18 @@ class Depositor
                 $depositStatus->setDepositor(null);
             }
         }
+
+        return $this;
+    }
+
+    public function getComment(): ?string
+    {
+        return $this->comment;
+    }
+
+    public function setComment(?string $comment): self
+    {
+        $this->comment = $comment;
 
         return $this;
     }

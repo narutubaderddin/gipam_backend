@@ -3,6 +3,7 @@
 namespace App\Entity;
 
 use App\Repository\SiteRepository;
+use DateTimeInterface;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
@@ -63,24 +64,24 @@ class Site
         return $this;
     }
 
-    public function getStartDate(): ?\DateTimeInterface
+    public function getStartDate(): ?DateTimeInterface
     {
         return $this->startDate;
     }
 
-    public function setStartDate(?\DateTimeInterface $startDate): self
+    public function setStartDate(?DateTimeInterface $startDate): self
     {
         $this->startDate = $startDate;
 
         return $this;
     }
 
-    public function getDisappearanceDate(): ?\DateTimeInterface
+    public function getDisappearanceDate(): ?DateTimeInterface
     {
         return $this->disappearanceDate;
     }
 
-    public function setDisappearanceDate(?\DateTimeInterface $disappearanceDate): self
+    public function setDisappearanceDate(?DateTimeInterface $disappearanceDate): self
     {
         $this->disappearanceDate = $disappearanceDate;
 

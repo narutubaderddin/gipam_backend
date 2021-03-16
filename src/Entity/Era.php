@@ -27,11 +27,11 @@ class Era
     /**
      * @ORM\OneToMany(targetEntity=Furniture::class, mappedBy="era")
      */
-    private $furnitures;
+    private $furniture;
 
     public function __construct()
     {
-        $this->furnitures = new ArrayCollection();
+        $this->furniture = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -54,15 +54,15 @@ class Era
     /**
      * @return Collection|Furniture[]
      */
-    public function getFurnitures(): Collection
+    public function getFurniture(): Collection
     {
-        return $this->furnitures;
+        return $this->furniture;
     }
 
     public function addFurniture(Furniture $furniture): self
     {
-        if (!$this->furnitures->contains($furniture)) {
-            $this->furnitures[] = $furniture;
+        if (!$this->furniture->contains($furniture)) {
+            $this->furniture[] = $furniture;
             $furniture->setEra($this);
         }
 
@@ -71,7 +71,7 @@ class Era
 
     public function removeFurniture(Furniture $furniture): self
     {
-        if ($this->furnitures->removeElement($furniture)) {
+        if ($this->furniture->removeElement($furniture)) {
             // set the owning side to null (unless already changed)
             if ($furniture->getEra() === $this) {
                 $furniture->setEra(null);

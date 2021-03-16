@@ -37,12 +37,12 @@ class Author
     /**
      * @ORM\ManyToMany(targetEntity=Furniture::class, mappedBy="authors")
      */
-    private $furnitures;
+    private $furniture;
 
     public function __construct()
     {
         $this->types = new ArrayCollection();
-        $this->furnitures = new ArrayCollection();
+        $this->furniture = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -107,15 +107,15 @@ class Author
     /**
      * @return Collection|Furniture[]
      */
-    public function getFurnitures(): Collection
+    public function getFurniture(): Collection
     {
-        return $this->furnitures;
+        return $this->furniture;
     }
 
     public function addFurniture(Furniture $furniture): self
     {
-        if (!$this->furnitures->contains($furniture)) {
-            $this->furnitures[] = $furniture;
+        if (!$this->furniture->contains($furniture)) {
+            $this->furniture[] = $furniture;
             $furniture->addAuthor($this);
         }
 
@@ -124,7 +124,7 @@ class Author
 
     public function removeFurniture(Furniture $furniture): self
     {
-        if ($this->furnitures->removeElement($furniture)) {
+        if ($this->furniture->removeElement($furniture)) {
             $furniture->removeAuthor($this);
         }
 

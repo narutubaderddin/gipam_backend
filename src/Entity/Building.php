@@ -3,6 +3,7 @@
 namespace App\Entity;
 
 use App\Repository\BuildingRepository;
+use DateTimeInterface;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
@@ -64,6 +65,11 @@ class Building
      */
     private $responsibles;
 
+    /**
+     * @ORM\Column(type="string", length=255, nullable=true)
+     */
+    private $cedex;
+
     public function __construct()
     {
         $this->rooms = new ArrayCollection();
@@ -112,24 +118,24 @@ class Building
         return $this;
     }
 
-    public function getStartDate(): ?\DateTimeInterface
+    public function getStartDate(): ?DateTimeInterface
     {
         return $this->startDate;
     }
 
-    public function setStartDate(?\DateTimeInterface $startDate): self
+    public function setStartDate(?DateTimeInterface $startDate): self
     {
         $this->startDate = $startDate;
 
         return $this;
     }
 
-    public function getDisappearanceDate(): ?\DateTimeInterface
+    public function getDisappearanceDate(): ?DateTimeInterface
     {
         return $this->disappearanceDate;
     }
 
-    public function setDisappearanceDate(?\DateTimeInterface $disappearanceDate): self
+    public function setDisappearanceDate(?DateTimeInterface $disappearanceDate): self
     {
         $this->disappearanceDate = $disappearanceDate;
 
@@ -213,6 +219,18 @@ class Building
         if ($this->responsibles->removeElement($responsible)) {
             $responsible->removeBuilding($this);
         }
+
+        return $this;
+    }
+
+    public function getCedex(): ?string
+    {
+        return $this->cedex;
+    }
+
+    public function setCedex(?string $cedex): self
+    {
+        $this->cedex = $cedex;
 
         return $this;
     }

@@ -13,114 +13,119 @@ use Doctrine\ORM\Mapping as ORM;
  * @ORM\DiscriminatorColumn(name="discr", type="string")
  * @ORM\DiscriminatorMap({"artWork"="ArtWork", "officeFurniture"="OfficeFurniture"})
  */
-Abstract class Furniture
+abstract class Furniture
 {
     /**
      * @ORM\Id
      * @ORM\GeneratedValue
      * @ORM\Column(type="integer")
      */
-    private $id;
+    protected $id;
 
     /**
      * @ORM\Column(type="string", length=255, nullable=true)
      */
-    private $title;
+    protected $title;
 
     /**
      * @ORM\Column(type="float", nullable=true)
      */
-    private $length;
+    protected $length;
 
     /**
      * @ORM\Column(type="float", nullable=true)
      */
-    private $width;
+    protected $width;
 
     /**
      * @ORM\Column(type="float", nullable=true)
      */
-    private $height;
+    protected $height;
 
     /**
      * @ORM\Column(type="float", nullable=true)
      */
-    private $depth;
+    protected $depth;
 
     /**
      * @ORM\Column(type="float", nullable=true)
      */
-    private $diameter;
+    protected $diameter;
 
     /**
      * @ORM\Column(type="float", nullable=true)
      */
-    private $weight;
+    protected $weight;
 
     /**
      * @ORM\Column(type="integer", nullable=true)
      */
-    private $numberOfUnit;
+    protected $numberOfUnit;
 
     /**
      * @ORM\Column(type="text", nullable=true)
      */
-    private $description;
+    protected $description;
 
     /**
-     * @ORM\ManyToMany(targetEntity=Author::class, inversedBy="furnitures")
+     * @ORM\ManyToMany(targetEntity=Author::class, inversedBy="furniture")
      */
-    private $authors;
+    protected $authors;
 
     /**
-     * @ORM\ManyToOne(targetEntity=Era::class, inversedBy="furnitures")
+     * @ORM\ManyToOne(targetEntity=Era::class, inversedBy="furniture")
      */
-    private $era;
+    protected $era;
 
     /**
      * @ORM\ManyToOne(targetEntity=Type::class, inversedBy="furniture")
      */
-    private $type;
+    protected $type;
 
     /**
      * @ORM\ManyToOne(targetEntity=Style::class, inversedBy="furniture")
      */
-    private $style;
+    protected $style;
 
     /**
      * @ORM\ManyToOne(targetEntity=MaterialTechnique::class, inversedBy="furniture")
      */
-    private $materialTechnique;
+    protected $materialTechnique;
 
     /**
      * @ORM\ManyToOne(targetEntity=Denomination::class, inversedBy="furniture")
      */
-    private $denomination;
+    protected $denomination;
 
     /**
      * @ORM\ManyToOne(targetEntity=Field::class, inversedBy="furniture")
      */
-    private $field;
+    protected $field;
 
     /**
      * @ORM\OneToMany(targetEntity=ArtWorkLog::class, mappedBy="furniture")
      */
-    private $artWorkLogs;
+    protected $artWorkLogs;
 
     /**
      * @ORM\OneToMany(targetEntity=Movement::class, mappedBy="furniture")
      */
-    private $movements;
+    protected $movements;
 
     /**
      * @ORM\OneToMany(targetEntity=Report::class, mappedBy="furniture")
      */
-    private $reports;
+    protected $reports;
 
     /**
      * @ORM\OneToMany(targetEntity=Attachment::class, mappedBy="furniture")
      */
-    private $attachments;
+    protected $attachments;
+
+    /**
+     * @ORM\ManyToOne(targetEntity=Status::class, inversedBy="furniture")
+     */
+    protected $status;
 
     public function __construct()
     {
@@ -456,6 +461,18 @@ Abstract class Furniture
                 $attachment->setFurniture(null);
             }
         }
+
+        return $this;
+    }
+
+    public function getStatus(): ?Status
+    {
+        return $this->status;
+    }
+
+    public function setStatus(?Status $status): self
+    {
+        $this->status = $status;
 
         return $this;
     }

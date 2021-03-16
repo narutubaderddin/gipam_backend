@@ -3,6 +3,7 @@
 namespace App\Entity;
 
 use App\Repository\MinistryRepository;
+use DateTimeInterface;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
@@ -44,9 +45,15 @@ class Ministry
      */
     private $establishments;
 
+    /**
+     * @ORM\OneToMany(targetEntity=User::class, mappedBy="ministry")
+     */
+    private $users;
+
     public function __construct()
     {
         $this->establishments = new ArrayCollection();
+        $this->users = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -78,24 +85,24 @@ class Ministry
         return $this;
     }
 
-    public function getStartDate(): ?\DateTimeInterface
+    public function getStartDate(): ?DateTimeInterface
     {
         return $this->startDate;
     }
 
-    public function setStartDate(?\DateTimeInterface $startDate): self
+    public function setStartDate(?DateTimeInterface $startDate): self
     {
         $this->startDate = $startDate;
 
         return $this;
     }
 
-    public function getDisappearanceDate(): ?\DateTimeInterface
+    public function getDisappearanceDate(): ?DateTimeInterface
     {
         return $this->disappearanceDate;
     }
 
-    public function setDisappearanceDate(?\DateTimeInterface $disappearanceDate): self
+    public function setDisappearanceDate(?DateTimeInterface $disappearanceDate): self
     {
         $this->disappearanceDate = $disappearanceDate;
 
@@ -126,6 +133,36 @@ class Ministry
             // set the owning side to null (unless already changed)
             if ($establishment->getMinistry() === $this) {
                 $establishment->setMinistry(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|User[]
+     */
+    public function getUsers(): Collection
+    {
+        return $this->users;
+    }
+
+    public function addUser(User $user): self
+    {
+        if (!$this->users->contains($user)) {
+            $this->users[] = $user;
+            $user->setMinistry($this);
+        }
+
+        return $this;
+    }
+
+    public function removeUser(User $user): self
+    {
+        if ($this->users->removeElement($user)) {
+            // set the owning side to null (unless already changed)
+            if ($user->getMinistry() === $this) {
+                $user->setMinistry(null);
             }
         }
 

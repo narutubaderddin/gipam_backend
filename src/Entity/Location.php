@@ -20,11 +20,6 @@ class Location
     private $id;
 
     /**
-     * @ORM\ManyToOne(targetEntity=LocationType::class)
-     */
-    private $locationType;
-
-    /**
      * @ORM\ManyToOne(targetEntity=Establishment::class, inversedBy="locations")
      */
     private $establishment;
@@ -39,6 +34,16 @@ class Location
      */
     private $movements;
 
+    /**
+     * @ORM\ManyToOne(targetEntity=LocationType::class, inversedBy="locations")
+     */
+    private $type;
+
+    /**
+     * @ORM\ManyToOne(targetEntity=Room::class, inversedBy="locations")
+     */
+    private $room;
+
     public function __construct()
     {
         $this->movements = new ArrayCollection();
@@ -49,18 +54,6 @@ class Location
         return $this->id;
     }
 
-    public function getLocationType(): ?LocationType
-    {
-        return $this->locationType;
-    }
-
-    public function setLocationType(?LocationType $locationType): self
-    {
-        $this->locationType = $locationType;
-
-        return $this;
-    }
-
     public function getEstablishment(): ?Establishment
     {
         return $this->establishment;
@@ -69,7 +62,6 @@ class Location
     public function setEstablishment(?Establishment $establishment): self
     {
         $this->establishment = $establishment;
-
         return $this;
     }
 
@@ -111,6 +103,30 @@ class Location
                 $movement->setLocation(null);
             }
         }
+
+        return $this;
+    }
+
+    public function getType(): ?LocationType
+    {
+        return $this->type;
+    }
+
+    public function setType(?LocationType $type): self
+    {
+        $this->type = $type;
+
+        return $this;
+    }
+
+    public function getRoom(): ?Room
+    {
+        return $this->room;
+    }
+
+    public function setRoom(?Room $room): self
+    {
+        $this->room = $room;
 
         return $this;
     }

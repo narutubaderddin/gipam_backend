@@ -11,13 +11,6 @@ use Doctrine\ORM\Mapping as ORM;
 class OfficeFurniture extends Furniture
 {
     /**
-     * @ORM\Id
-     * @ORM\GeneratedValue
-     * @ORM\Column(type="integer")
-     */
-    private $id;
-
-    /**
      * @ORM\Column(type="string", length=255, nullable=true)
      */
     private $supplier;
@@ -36,11 +29,6 @@ class OfficeFurniture extends Furniture
      * @ORM\Column(type="float", nullable=true)
      */
     private $unitVolume;
-
-    public function getId(): ?int
-    {
-        return $this->id;
-    }
 
     public function getSupplier(): ?string
     {

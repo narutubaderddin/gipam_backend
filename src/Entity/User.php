@@ -2,14 +2,11 @@
 
 namespace App\Entity;
 
+use DateTimeInterface;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
-use Doctrine\ORM\Mapping\JoinTable;
-use Doctrine\ORM\Mapping\ManyToOne;
-use Doctrine\ORM\Mapping\OneToMany;
 use Symfony\Component\Security\Core\User\UserInterface;
-use Doctrine\ORM\Mapping\ManyToMany;
 use JMS\Serializer\Annotation as Serializer;
 
 /**
@@ -76,6 +73,11 @@ class User implements userInterface
      * @ORM\OneToMany(targetEntity=ArtWorkLog::class, mappedBy="user")
      */
     private $artWorkLogs;
+
+    /**
+     * @ORM\ManyToOne(targetEntity=Ministry::class, inversedBy="users")
+     */
+    private $ministry;
 
     public function __construct()
     {
@@ -217,24 +219,24 @@ class User implements userInterface
         return $this;
     }
 
-    public function getStartDate(): ?\DateTimeInterface
+    public function getStartDate(): ?DateTimeInterface
     {
         return $this->startDate;
     }
 
-    public function setStartDate(?\DateTimeInterface $startDate): self
+    public function setStartDate(?DateTimeInterface $startDate): self
     {
         $this->startDate = $startDate;
 
         return $this;
     }
 
-    public function getEndDate(): ?\DateTimeInterface
+    public function getEndDate(): ?DateTimeInterface
     {
         return $this->endDate;
     }
 
-    public function setEndDate(?\DateTimeInterface $endDate): self
+    public function setEndDate(?DateTimeInterface $endDate): self
     {
         $this->endDate = $endDate;
 
@@ -267,6 +269,18 @@ class User implements userInterface
                 $artWorkLog->setUser(null);
             }
         }
+
+        return $this;
+    }
+
+    public function getMinistry(): ?Ministry
+    {
+        return $this->ministry;
+    }
+
+    public function setMinistry(?Ministry $ministry): self
+    {
+        $this->ministry = $ministry;
 
         return $this;
     }

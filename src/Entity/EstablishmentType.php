@@ -3,6 +3,8 @@
 namespace App\Entity;
 
 use App\Repository\EstablishmentTypeRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
@@ -22,6 +24,16 @@ class EstablishmentType
      */
     private $label;
 
+    /**
+     * @ORM\OneToMany(targetEntity=Establishment::class, mappedBy="type")
+     */
+    private $establishments;
+
+    public function __construct()
+    {
+        $this->establishments = new ArrayCollection();
+    }
+
     public function getId(): ?int
     {
         return $this->id;
@@ -35,6 +47,36 @@ class EstablishmentType
     public function setLabel(?string $label): self
     {
         $this->label = $label;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|Establishment[]
+     */
+    public function getEstablishments(): Collection
+    {
+        return $this->establishments;
+    }
+
+    public function addEstablishment(Establishment $establishment): self
+    {
+        if (!$this->establishments->contains($establishment)) {
+            $this->establishments[] = $establishment;
+            $establishment->setType($this);
+        }
+
+        return $this;
+    }
+
+    public function removeEstablishment(Establishment $establishment): self
+    {
+        if ($this->establishments->removeElement($establishment)) {
+            // set the owning side to null (unless already changed)
+            if ($establishment->getType() === $this) {
+                $establishment->setType(null);
+            }
+        }
 
         return $this;
     }

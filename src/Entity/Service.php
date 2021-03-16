@@ -40,6 +40,21 @@ class Service
     private $disappearanceDate;
 
     /**
+     * @ORM\OneToMany(targetEntity=Correspondent::class, mappedBy="service")
+     */
+    private $correspondents;
+
+    /**
+     * @ORM\ManyToOne(targetEntity=SubDivision::class, inversedBy="services")
+     */
+    private $subDivision;
+
+    public function __construct()
+    {
+        $this->correspondents = new ArrayCollection();
+    }
+
+    /**
      * @return mixed
      */
     public function getLabel()
@@ -101,21 +116,6 @@ class Service
     public function setDisappearanceDate($disappearanceDate): void
     {
         $this->disappearanceDate = $disappearanceDate;
-    }
-
-    /**
-     * @ORM\OneToMany(targetEntity=Correspondent::class, mappedBy="service")
-     */
-    private $correspondents;
-
-    /**
-     * @ORM\ManyToOne(targetEntity=SubDivision::class, inversedBy="services")
-     */
-    private $subDivision;
-
-    public function __construct()
-    {
-        $this->correspondents = new ArrayCollection();
     }
 
     public function getId(): ?int

@@ -3,6 +3,7 @@
 namespace App\Entity;
 
 use App\Repository\SubDivisionRepository;
+use DateTimeInterface;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
@@ -54,6 +55,11 @@ class SubDivision
      */
     private $services;
 
+    /**
+     * @ORM\ManyToOne(targetEntity=Establishment::class, inversedBy="subDivisions")
+     */
+    private $establishment;
+
     public function __construct()
     {
         $this->locations = new ArrayCollection();
@@ -90,24 +96,24 @@ class SubDivision
         return $this;
     }
 
-    public function getStartDate(): ?\DateTimeInterface
+    public function getStartDate(): ?DateTimeInterface
     {
         return $this->startDate;
     }
 
-    public function setStartDate(?\DateTimeInterface $startDate): self
+    public function setStartDate(?DateTimeInterface $startDate): self
     {
         $this->startDate = $startDate;
 
         return $this;
     }
 
-    public function getEndDate(): ?\DateTimeInterface
+    public function getEndDate(): ?DateTimeInterface
     {
         return $this->endDate;
     }
 
-    public function setEndDate(?\DateTimeInterface $endDate): self
+    public function setEndDate(?DateTimeInterface $endDate): self
     {
         $this->endDate = $endDate;
 
@@ -200,6 +206,18 @@ class SubDivision
                 $service->setSubDivision(null);
             }
         }
+
+        return $this;
+    }
+
+    public function getEstablishment(): ?Establishment
+    {
+        return $this->establishment;
+    }
+
+    public function setEstablishment(?Establishment $establishment): self
+    {
+        $this->establishment = $establishment;
 
         return $this;
     }
