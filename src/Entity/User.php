@@ -185,9 +185,8 @@ class User implements userInterface
      */
     public function removeRole($role)
     {
-        if(in_array($role, $this->roles)){
+        if (in_array($role, $this->roles)) {
             unset($this->roles[array_search($role, $this->roles)]);
-
         }
         array_splice($this->roles, 1, 1);
 
@@ -200,9 +199,8 @@ class User implements userInterface
      */
     public function addRole($role)
     {
-        if(!in_array($role, $this->roles)){
+        if (!in_array($role, $this->roles)) {
             array_unshift($this->roles, $role);
-
         }
         return $this;
     }

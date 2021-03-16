@@ -12,12 +12,12 @@ use Doctrine\Migrations\AbstractMigration;
  */
 final class Version20210316102720 extends AbstractMigration
 {
-    public function getDescription() : string
+    public function getDescription(): string
     {
         return '';
     }
 
-    public function up(Schema $schema) : void
+    public function up(Schema $schema): void
     {
         // this up() migration is auto-generated, please modify it to your needs
         $this->addSql('CREATE TABLE action (id INT AUTO_INCREMENT NOT NULL, type_id INT DEFAULT NULL, movement_action_type_id INT DEFAULT NULL, report_id INT DEFAULT NULL, comment LONGTEXT DEFAULT NULL, start_date DATETIME NOT NULL, end_date DATETIME NOT NULL, period INT NOT NULL, action_nature VARCHAR(255) DEFAULT NULL, INDEX IDX_47CC8C92C54C8C93 (type_id), INDEX IDX_47CC8C92D8686660 (movement_action_type_id), INDEX IDX_47CC8C924BD2A4C0 (report_id), PRIMARY KEY(id)) DEFAULT CHARACTER SET utf8mb4 COLLATE `utf8mb4_unicode_ci` ENGINE = InnoDB');
@@ -130,7 +130,7 @@ final class Version20210316102720 extends AbstractMigration
         $this->addSql('ALTER TABLE user ADD CONSTRAINT FK_8D93D649C7266135 FOREIGN KEY (ministry_id) REFERENCES ministry (id)');
     }
 
-    public function down(Schema $schema) : void
+    public function down(Schema $schema): void
     {
         // this down() migration is auto-generated, please modify it to your needs
         $this->addSql('ALTER TABLE action_movement DROP FOREIGN KEY FK_230AE5919D32F035');

@@ -234,5 +234,4 @@ class Building
 
         return $this;
     }
-
 }
