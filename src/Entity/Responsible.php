@@ -42,7 +42,7 @@ class Responsible
     /**
      * @ORM\Column(type="string", length=255, nullable=true)
      */
-    private $mel;
+    private $mail;
 
     /**
      * @ORM\Column(type="datetime", nullable=true)
@@ -117,14 +117,14 @@ class Responsible
         return $this;
     }
 
-    public function getMel(): ?string
+    public function getMail(): ?string
     {
-        return $this->mel;
+        return $this->mail;
     }
 
-    public function setMel(?string $mel): self
+    public function setMail(?string $mail): self
     {
-        $this->mel = $mel;
+        $this->mail = $mail;
 
         return $this;
     }
