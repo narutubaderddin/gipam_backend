@@ -69,20 +69,9 @@ class User implements userInterface
      */
     private $endDate;
 
-    /**
-     * @ORM\OneToMany(targetEntity=ArtWorkLog::class, mappedBy="user")
-     */
-    private $artWorkLogs;
-
-    /**
-     * @ORM\ManyToOne(targetEntity=Ministry::class, inversedBy="users")
-     */
-    private $ministry;
-
     public function __construct()
     {
         $this->roles = ['ROLE_COLLABORATOR'];
-        $this->artWorkLogs = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -241,45 +230,4 @@ class User implements userInterface
         return $this;
     }
 
-    /**
-     * @return Collection|ArtWorkLog[]
-     */
-    public function getArtWorkLogs(): Collection
-    {
-        return $this->artWorkLogs;
-    }
-
-    public function addArtWorkLog(ArtWorkLog $artWorkLog): self
-    {
-        if (!$this->artWorkLogs->contains($artWorkLog)) {
-            $this->artWorkLogs[] = $artWorkLog;
-            $artWorkLog->setUser($this);
-        }
-
-        return $this;
-    }
-
-    public function removeArtWorkLog(ArtWorkLog $artWorkLog): self
-    {
-        if ($this->artWorkLogs->removeElement($artWorkLog)) {
-            // set the owning side to null (unless already changed)
-            if ($artWorkLog->getUser() === $this) {
-                $artWorkLog->setUser(null);
-            }
-        }
-
-        return $this;
-    }
-
-    public function getMinistry(): ?Ministry
-    {
-        return $this->ministry;
-    }
-
-    public function setMinistry(?Ministry $ministry): self
-    {
-        $this->ministry = $ministry;
-
-        return $this;
-    }
 }
