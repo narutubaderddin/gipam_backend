@@ -56,13 +56,11 @@ class ArtWork extends Furniture
      */
     private $depositDate;
 
-    // todo: meaning and type in UML class "N° arrêt"
     /**
-     * @ORM\Column(type="string", length=255, nullable=true)
+     * @ORM\Column(type="integer", nullable=true)
      */
     private $stopNumber;
 
-    // todo: meaning and type. In UML class "autres inscriptions"
     /**
      * @ORM\Column(type="string", length=255, nullable=true)
      */

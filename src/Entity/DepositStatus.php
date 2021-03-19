@@ -10,9 +10,8 @@ use Doctrine\ORM\Mapping as ORM;
  */
 class DepositStatus extends Status
 {
-    // todo: num_inv in the UML Class diagram : "numéro inventaire"
     /**
-     * @ORM\Column(type="string", length=255, nullable=true)
+     * @ORM\Column(type="integer", length=255, nullable=true)
      */
     private $inventoryNumber;
 

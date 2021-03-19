@@ -40,13 +40,11 @@ class Depositor
      */
     private $city;
 
-    // todo: meaning and type
     /**
      * @ORM\Column(type="string", length=255, nullable=true)
      */
-    private $dpt;
+    private $department;
 
-    // todo: meaning and type
     /**
      * @ORM\Column(type="string", length=255, nullable=true)
      */
@@ -77,11 +75,10 @@ class Depositor
      */
     private $endDate;
 
-    // Todo: attribute meaning and type
     /**
      * @ORM\Column(type="string", length=255, nullable=true)
      */
-    private $contant;
+    private $contact;
 
     /**
      * @ORM\ManyToOne(targetEntity=DepositType::class, inversedBy="depositors")
@@ -156,14 +153,14 @@ class Depositor
         return $this;
     }
 
-    public function getDpt(): ?string
+    public function getDepartment(): ?string
     {
-        return $this->dpt;
+        return $this->department;
     }
 
-    public function setDpt(?string $dpt): self
+    public function setDepartment(?string $department): self
     {
-        $this->dpt = $dpt;
+        $this->department = $department;
 
         return $this;
     }
@@ -240,14 +237,14 @@ class Depositor
         return $this;
     }
 
-    public function getContant(): ?string
+    public function getContact(): ?string
     {
-        return $this->contant;
+        return $this->contact;
     }
 
-    public function setContant(?string $contant): self
+    public function setContact(?string $contact): self
     {
-        $this->contant = $contant;
+        $this->contact = $contact;
 
         return $this;
     }

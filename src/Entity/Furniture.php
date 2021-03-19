@@ -78,11 +78,6 @@ abstract class Furniture
     protected $era;
 
     /**
-     * @ORM\ManyToOne(targetEntity=Type::class, inversedBy="furniture")
-     */
-    protected $type;
-
-    /**
      * @ORM\ManyToOne(targetEntity=Style::class, inversedBy="furniture")
      */
     protected $style;
