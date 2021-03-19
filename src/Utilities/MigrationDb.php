@@ -9,7 +9,6 @@ class MigrationDb
         'sub_division',
         'localisation',
         'localisationType',
-        'building',
         'room',
         'responsible',
         'movement_action_type',
@@ -23,10 +22,10 @@ class MigrationDb
         'MINISTERES' => 'ministry',
         'ETAB_DIR' => 'establishment',
         'CORRESPONDANTS' => 'correspondent',
-        'SERVICES' => 'service',
-        'SITES' => 'site',
-        'COMMUNE' => 'commune',
-        'DEPARTEMENTS' => 'departement',
+        'service' => 'SERVICES',
+        'site' => 'SITES',
+        'commune' => 'COMMUNES',
+        'departement' => 'DEPARTEMENTS',
         'MOUVEMENTS' => 'movement',
         'TYPES_MOUVEMENTS' => 'movement_type',
         'ACTIONS' => 'action',
@@ -35,7 +34,39 @@ class MigrationDb
         'ETATS' => 'report_sub_type',
         'PHOTOGRAPHIES' => 'attachment',
         'OEUVRE' => 'furniture',
-        'REGIONS' => 'furniture',
+        'region' => 'REGIONS',
+        'building' => 'SITES_6A',
+        'era' => 'EPOQUES',
+        'field' => 'DOMAINE',
+        'denomination' => 'DENOMINATIONS',
+        'style' => 'STYLES',
+        'deposit_type' => 'TYPES_DEPOSANTS',
+    ];
+
+    public const TYPES_DEPOSANTS = [
+        'id' => 'C_TYPE_DEPOSANTS',
+        'label' => 'TDEP_DEPOSANTS',
+    ];
+
+    public const STYLES = [
+        'id' => 'C_STYLE',
+        'label' => 'STY_STYLE',
+    ];
+
+    public const DENOMINATIONS = [
+        'id' => 'C_DENOMINATION',
+        'label' => 'DEN_DENOMINATION',
+        'rel_field' => 'C_DOMAINE',
+    ];
+
+    public const DOMAINES = [
+      'id' => 'C_DOMAINE',
+      'label' => 'DOM_DOMAINE',
+    ];
+
+    public const EPOQUES = [
+        'id' => 'C_EPOQUE',
+        'label' => 'EPO_EPOQUE',
     ];
 
     public const USERS = [
@@ -78,15 +109,15 @@ class MigrationDb
         'SERV_LIBELLE' => 'label',
     ];
 
-    public const SITE = [
-        'C_SITE' => 'id',
-        'SITE_NOM' => 'label',
+    public const SITES = [
+        'id' => 'C_SITE',
+        'label' => 'SITE_NOM',
     ];
 
     public const COMMUNES = [
-        'C_SITE' => 'id',
-        'SITE_NOM' => 'label',
-        'DEP' => 'rel_departement',
+        'id' => 'COM',
+        'name' => 'NCC',
+        'rel_departement' => 'DEP',
     ];
 
     public const DEPARTEMENTS = [
@@ -151,5 +182,14 @@ class MigrationDb
         'C_DOMAINE' => 'rel_field',
         'C_EPOQUE' => 'rel_era',
         'C_STYLE' => 'rel_style',
+    ];
+
+    public const SITES_6A = [
+        'id' => 'C_SITE',
+        'name' => 'SITE_NOM',
+        'distrib' => 'SITE_DISTRIB',
+        'address' => 'SITE_ADRESSE',
+        'cedex' => 'SITE_CEDEX',
+        'rel_commune' => 'COM'
     ];
 }

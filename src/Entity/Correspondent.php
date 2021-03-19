@@ -43,7 +43,7 @@ class Correspondent
     /**
      * @ORM\Column(type="string", length=255, nullable=true)
      */
-    private $mel;
+    private $mail;
 
     /**
      * @ORM\Column(type="datetime", nullable=true)
