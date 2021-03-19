@@ -1,6 +1,5 @@
 <?php
 
-
 namespace App\Form;
 
 use App\Entity\User;
@@ -27,6 +26,4 @@ class UserType extends AbstractType
             'csrf_protection' => false
         ));
     }
-
-
 }

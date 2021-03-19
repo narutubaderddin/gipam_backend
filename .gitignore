@@ -1,28 +1,50 @@
+###> IDE ###
+.idea
+.vs
+###< IDE ###
 
 ###> symfony/framework-bundle ###
 /.env.local
 /.env.local.php
 /.env.*.local
+/.env
 /config/secrets/prod/prod.decrypt.private.php
 /public/bundles/
 /var/
 /vendor/
-/files/
-/.idea/
-/composer.lock
-/symfony.lock
+reports/
+files/.*
+/files/pdf
+/files/idocs
+/files/uploads
+/files/data
+/files/history
 ###< symfony/framework-bundle ###
 
-###> symfony/phpunit-bridge ###
-.phpunit
-.phpunit.result.cache
+###> lexik/jwt-authentication-bundle ###
+/config/jwt/*.pem
+###< lexik/jwt-authentication-bundle ###
+
+###> symfony/webpack-encore-bundle ###
+/node_modules/
+/public/build/
+npm-debug.log
+yarn-error.log
+###< symfony/webpack-encore-bundle ###
+
+###> app p2g ###
+/files/mails/
+/composer.lock
+/symfony.lock
+###< app p2g ###
+
+###> phpunit/phpunit ###
 /phpunit.xml
-###< symfony/phpunit-bridge ###
+.phpunit.result.cache
+###< phpunit/phpunit ###
 
 ###> symfony/web-server-bundle ###
 /.web-server-pid
 ###< symfony/web-server-bundle ###
 
-###> lexik/jwt-authentication-bundle ###
-/config/jwt/*.pem
-###< lexik/jwt-authentication-bundle ###
+/src/Migrations/*

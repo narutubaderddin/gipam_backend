@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Created by PhpStorm.
  * User: chboutiti
@@ -8,22 +9,23 @@
 
 namespace App\Utilities;
 
-
 class StringUtilities
 {
-    const STRING_TYPE = "STRING";
+    public const STRING_TYPE = "STRING";
 
-    public static function getDomainFromEmail($email){
+    public static function getDomainFromEmail($email)
+    {
 
-        if (!$email){
+        if (!$email) {
             return null;
         }
 
-        $array = explode('@',$email);
+        $array = explode('@', $email);
         return (isset($array[1])) ? $array[1] : null ;
     }
 
-    public static function replaceSpecialChars($string){
+    public static function replaceSpecialChars($string)
+    {
         $replace = [
             '&lt;' => '', '&gt;' => '', '&#039;' => '', '&amp;' => '',
             '&quot;' => '', 'À' => 'A', 'Á' => 'A', 'Â' => 'A', 'Ã' => 'A', 'Ä' => 'Ae',
@@ -71,13 +73,12 @@ class StringUtilities
             'ш' => 'sh', 'щ' => 'sch', 'ъ' => '', 'ы' => 'y', 'ь' => '', 'э' => 'e',
             'ю' => 'yu', 'я' => 'ya'
         ];
-
-
         return str_replace(array_keys($replace), $replace, $string);
     }
 
-    public static function isNotEmpty($str = null){
-        if ($str !== null && trim($str) != ''){
+    public static function isNotEmpty($str = null)
+    {
+        if ($str !== null && trim($str) != '') {
             return true;
         }
         return false;
@@ -98,11 +99,11 @@ class StringUtilities
             }
             return $val;
         }
-
     }
 
-    public static function ifCaseIsEmptyReturnNull($t,$case){
-        if (isset($t[$case]) && self::isNotEmpty($t[$case])){
+    public static function ifCaseIsEmptyReturnNull($t, $case)
+    {
+        if (isset($t[$case]) && self::isNotEmpty($t[$case])) {
             return $t[$case];
         }
         return null;
