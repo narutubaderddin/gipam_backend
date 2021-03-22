@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Utilities;
+namespace App\Command\Utils;
 
 class MigrationDb
 {
@@ -17,6 +17,7 @@ class MigrationDb
         'art_work_log',
     ];
 
+    /*
     public const TABLE_NAME = [
         'USERS' => 'user',
         'MINISTERES' => 'ministry',
@@ -41,6 +42,33 @@ class MigrationDb
         'denomination' => 'DENOMINATIONS',
         'style' => 'STYLES',
         'deposit_type' => 'TYPES_DEPOSANTS',
+    ];
+    */
+
+    public const TABLE_NAME = [
+//        'user' => self::USERS,
+        'ministry' => self::MINISTERES,
+        'establishment' => self::ETAB_DIR,
+        'correspondent' => self::CORRESPONDANTS,
+        'service' => self::SERVICES,
+        'site' => self::SITES,
+        'commune' => self::COMMUNES,
+        'departement' => self::DEPARTEMENTS,
+        'movement' => self::MOUVEMENTS,
+        'movement_type' => self::TYPES_MOUVEMENTS,
+        'action' => self::ACTIONS,
+        'action_type' => self::TYPES_ACTIONS,
+        'report' => self::STATUS,
+//        'report_sub_type' => ETATS,
+        'attachment' => self::PHOTOGRAPHIES,
+        'furniture' => self::OEUVRE,
+        'region' => self::REGIONS,
+        'building' => self::SITES_6A,
+        'era' => self::EPOQUES,
+        'field' => self::DOMAINES,
+        'denomination' => self::DENOMINATIONS,
+        'style' => self::STYLES,
+        'deposit_type' => self::TYPES_DEPOSANTS,
     ];
 
     public const TYPES_DEPOSANTS = [
@@ -104,55 +132,44 @@ class MigrationDb
     ];
 
     public const SERVICES = [
-        'C_SERVICE' => 'id',
-        'SERV_SIGLE' => 'acronym',
-        'SERV_LIBELLE' => 'label',
+        'table' => 'MOUVEMENTS',
+        'id' => 'C_SERVICE',
+        'unique' => 'SERV_SIGLE',
+        'acronym' => 'SERV_SIGLE',
+        'label' => 'SERV_LIBELLE',
     ];
 
-    public const SITES = [
-        'id' => 'C_SITE',
-        'label' => 'SITE_NOM',
-    ];
-
-    public const COMMUNES = [
-        'id' => 'COM',
-        'name' => 'NCC',
-        'rel_departement' => 'DEP',
-    ];
-
-    public const DEPARTEMENTS = [
-        'id' => 'DEP',
-        'name' => 'NCC',
-        'rel_region' => 'REGION',
-    ];
-
-    public const REGIONS = [
-        'id' => 'REGION',
-        'name' => 'NCC',
-    ];
-
+    // todo : will be migrated in parallel with Furniture
     public const MOUVEMENTS = [
-        'C_MGPAM' => 'id',
-        'MVT_COMM' => 'comment',
-        'MVT_DATE' => 'date',
-        'C_TYPEMVT' => 'rel_movement_type',
+        'table' => 'MOUVEMENTS',
+//        'id' => 'id',
+//        'id' => 'C_MGPAM',
+        'comment' => 'MVT_COMM',
+        'date' => 'MVT_DATE',
+        'rel_movement_type' => 'C_TYPEMVT',
     ];
 
     public const TYPES_MOUVEMENTS = [
-        'C_TYPEMVT' => 'id',
-        'TMVT_MOUVEMENT' => 'label',
+        'table' => 'TYPES_MOUVEMENTS',
+        'id' => 'C_TYPEMVT',
+        'unique' => 'C_TYPEMVT',
+        'label' => 'TMVT_MOUVEMENT',
     ];
 
+    // todo : will be migrated in parallel with Furniture
     public const ACTIONS = [
-        'C_TYPEMVT' => 'id',
-        'TMVT_MOUVEMENT' => 'label',
-        'C_TYPESTATUT' => 'rel_report',
-        'C_TYPEACT' => 'rel_action_type',
+        'table' => 'ACTIONS',
+        'id' => 'C_TYPEMVT',
+        'label' => 'TMVT_MOUVEMENT',
+        'rel_report' => 'C_TYPESTATUT',
+        'rel_action_type' => 'C_TYPEACT',
     ];
 
     public const TYPES_ACTIONS = [
-        'C_TYPEACT' => 'id',
-        'TACT_ACTION' => 'label',
+        'table' => 'TYPES_ACTIONS',
+        'id' => 'C_TYPEACT',
+        'unique' => 'C_TYPEACT',
+        'label' => 'TACT_ACTION',
     ];
 
     public const STATUS = [
@@ -185,11 +202,43 @@ class MigrationDb
     ];
 
     public const SITES_6A = [
+        'table' => 'SITES_6A',
         'id' => 'C_SITE',
+        'unique' => 'SITE_NOM',
         'name' => 'SITE_NOM',
         'distrib' => 'SITE_DISTRIB',
         'address' => 'SITE_ADRESSE',
         'cedex' => 'SITE_CEDEX',
         'rel_commune' => 'COM'
+    ];
+
+    public const SITES = [
+        'table' => 'SITES',
+        'id' => 'C_SITE',
+        'unique' => 'SITE_NOM',
+        'label' => 'SITE_NOM',
+    ];
+
+    public const COMMUNES = [
+        'table' => 'COMMUNES',
+        'id' => 'COM',
+        'unique' => 'NCCENR',
+        'name' => 'NCCENR',
+        'rel_departement' => 'DEP',
+    ];
+
+    public const DEPARTEMENTS = [
+        'table' => 'DEPARTEMENTS',
+        'id' => 'DEP',
+        'unique' => 'NCCENR',
+        'name' => 'NCCENR',
+        'rel_region' => 'REGION',
+    ];
+
+    public const REGIONS = [
+        'table' => 'REGIONS',
+        'id' => 'REGION',
+        'unique' => 'NCCENR',
+        'name' => 'NCCENR',
     ];
 }
