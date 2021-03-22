@@ -6,15 +6,15 @@ class MigrationDb
 {
 
     public const NEW_TABLE_NAME = [
-        'sub_division',
+        'subdivision',
         'localisation',
         'localisationType',
         'room',
         'responsible',
-        'movement_action_type',
+        'movementactiontype',
         'alert',
-        'report_type',
-        'art_work_log',
+        'reporttype',
+        'artworklog',
     ];
 
     /*
@@ -68,7 +68,7 @@ class MigrationDb
         'field' => self::DOMAINES,
         'denomination' => self::DENOMINATIONS,
         'style' => self::STYLES,
-        'deposit_type' => self::TYPES_DEPOSANTS,
+        'deposittype' => self::TYPES_DEPOSANTS,
     ];
 
     public const TYPES_DEPOSANTS = [
@@ -202,43 +202,48 @@ class MigrationDb
     ];
 
     public const SITES_6A = [
-        'table' => 'SITES_6A',
         'id' => 'C_SITE',
         'unique' => 'SITE_NOM',
+        'table' => 'SITES_6A',
+        'rel_commune' => 'COM',
         'name' => 'SITE_NOM',
-        'distrib' => 'SITE_DISTRIB',
         'address' => 'SITE_ADRESSE',
+        'distrib' => 'SITE_DISTRIB',
         'cedex' => 'SITE_CEDEX',
-        'rel_commune' => 'COM'
+        'old_id' => 'C_SITE',
     ];
 
     public const SITES = [
-        'table' => 'SITES',
         'id' => 'C_SITE',
         'unique' => 'SITE_NOM',
+        'table' => 'SITES',
         'label' => 'SITE_NOM',
+        'old_id' => 'C_SITE',
     ];
 
     public const COMMUNES = [
-        'table' => 'COMMUNES',
         'id' => 'COM',
         'unique' => 'NCCENR',
-        'name' => 'NCCENR',
+        'table' => 'COMMUNES',
         'rel_departement' => 'DEP',
+        'name' => 'NCCENR',
+        'old_id' => 'COM',
     ];
 
     public const DEPARTEMENTS = [
-        'table' => 'DEPARTEMENTS',
         'id' => 'DEP',
         'unique' => 'NCCENR',
-        'name' => 'NCCENR',
+        'table' => 'DEPARTEMENTS',
         'rel_region' => 'REGION',
+        'name' => 'NCCENR',
+        'old_id' => 'DEP',
     ];
 
     public const REGIONS = [
-        'table' => 'REGIONS',
         'id' => 'REGION',
         'unique' => 'NCCENR',
+        'table' => 'REGIONS',
         'name' => 'NCCENR',
+        'old_id' => 'REGION',
     ];
 }

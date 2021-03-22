@@ -26,7 +26,8 @@ class MigrateDataCommand extends Command
     // number of logic group
     protected const GROUPS = [
         1 => ['ministry', 'establishment', 'service', 'correspondent'],
-        2 => ['region', 'departement', 'commune', 'site', 'building',],
+        2 => ['region', 'departement', 'commune', 'site',
+            'building',],
         3 => [
             'movement_type', 'correspondent', 'service', 'deposit_type',
             'style', 'era', 'denomination', 'field',
@@ -42,6 +43,7 @@ class MigrateDataCommand extends Command
     private $migrationRepository;
     private $stopwatch;
     private $logger;
+    private $connection;
 
     public function __construct(
         EntityManagerInterface $entityManager,
@@ -55,6 +57,7 @@ class MigrateDataCommand extends Command
         $this->migrationRepository = $migrationRepository;
         $this->stopwatch = $stopwatch;
         $this->logger = $logger;
+        $this->connection = $this->entityManager->getConnection();
     }
 
     protected function configure()
@@ -157,21 +160,48 @@ class MigrateDataCommand extends Command
     private function dropTables(array $tables)
     {
         $tables = array_reverse($tables);
-        $connection = $this->entityManager->getConnection();
+
         foreach ($tables as $table) {
-            $connection->executeQuery("TRUNCATE TABLE " . $table . " RESTART IDENTITY CASCADE");
+            $this->connection->executeQuery("TRUNCATE TABLE " . $table . " RESTART IDENTITY CASCADE");
             // todo : here we add a temporary column to map related entities
-            $connection->executeQuery("ALTER TABLE " . $table . " ADD IF NOT EXISTS old_id VARCHAR");
+            $this->connection->executeQuery("ALTER TABLE " . $table . " ADD IF NOT EXISTS old_id VARCHAR");
+        }
+
+    }
+
+    private function getOldIdColumns($table)
+    {
+        $mappingTable = MigrationDb::TABLE_NAME[$table];
+        $keys = array_keys($mappingTable);
+        $i = count($keys) - 1;
+        $columns = [];
+        while ((strpos($keys[$i], 'old_id') !== false) && $i >= 0) {
+                $columns[] = $keys[$i];
+            $i--;
+        }
+        return array_reverse($columns);
+    }
+
+    private function addOldColumn(array $tables)
+    {
+        foreach ($tables as $table) {
+            // todo : here we add the temporary column
+            $columns = $this->getOldIdColumns($table);
+            foreach ($columns as $column) {
+                $this->connection->executeQuery("ALTER TABLE " . $table . " ADD IF NOT EXISTS ' . $column . ' VARCHAR");
+            }
         }
     }
 
     private function dropOldColumn(array $tables)
     {
-        $connection = $this->entityManager->getConnection();
-        foreach ($tables as $table) {
-            // todo : here we drop the temporary column
-            $connection->executeQuery("ALTER TABLE " . $table . " DROP COLUMN IF EXISTS old_id");
-        }
+//        foreach ($tables as $table) {
+//            // todo : here we drop the temporary column
+//            $columns = $this->getOldIdColumns($table);
+//            foreach ($columns as $column) {
+//                $this->connection->executeQuery("ALTER TABLE " . $table . " DROP COLUMN IF EXISTS " . $column);
+//            }
+//        }
     }
 
     private function getClass($className)
@@ -179,10 +209,11 @@ class MigrateDataCommand extends Command
         return $className = "App\\Entity\\" . ucfirst($className);
     }
 
-    private function createEntity($entity, $oldEntity, $mappingTable, $rowCount, bool &$foundError)
+    private function createEntity($entity, $oldEntity, $mappingTable, $rowCount, bool &$foundError): array
     {
         $className = $this->getClass($entity);
-        $newEntity = new $className();
+        $newEntity = [];
+        $newEntity[] = $rowCount;
         // lower the field of $mappingTable
         $mappingTable = array_map('strtolower', $mappingTable);
         $attributes = array_keys($mappingTable);
@@ -191,78 +222,76 @@ class MigrateDataCommand extends Command
             $attribute = $attributes[$i];
             if (strpos($attribute, 'rel_') !== false) {
                 $relatedClass = explode('_', $attribute)[1];
-                $relatedEntityMappingTable = array_map('strtolower', MigrationDb::TABLE_NAME[$relatedClass]);
                 $relatedEntityId = $oldEntity[$mappingTable[$attribute]];
                 if ($relatedEntityId !== null) {
-                    $relatedEntity = $this->migrationRepository
-                        ->getById($relatedEntityMappingTable['table'], $mappingTable[$attribute], $relatedEntityId);
-                    $relatedEntityUnique = $relatedEntity[$relatedEntityMappingTable['unique']];
-                    $attributeTable = array_slice($relatedEntityMappingTable, 3, null, true);
-                    $key = array_search($relatedEntityMappingTable['unique'], $attributeTable);
-                    $relatedEntity = $this->entityManager->getRepository($this->getClass($relatedClass))
-                        ->findBy([$key => $relatedEntityUnique]);
+                    $relatedEntity = $this->migrationRepository->getByOldID($relatedClass, $relatedEntityId);
                     if (count($relatedEntity) > 1) {
+                        dd($relatedEntity, $relatedEntityId, $relatedClass);
                         $errorMsg = 'Error in creating ' . $entity . ' old table = ' . $mappingTable['table'] .
                             ' with row number = ' . $rowCount . ' with old id = ' . $oldEntity[$mappingTable['id']] .
                             ' for ' . $mappingTable[$attribute] . ' = ' . $relatedEntityId .
-                            ' related class ' . $relatedClass . ' and unique search = ' . $relatedEntityUnique;
+                            ' related class ' . $relatedClass;
                         $this->logger->info($errorMsg);
                         $foundError = true;
                     }
-                    $setter = 'set' . ucfirst($relatedClass);
                     try {
-                        $newEntity->$setter($relatedEntity[0]);
+                        $newEntity[] = $relatedEntity[0]['id'];
                     } catch (Throwable $exception) {
-                        dd($exception->getMessage(), $relatedEntity, $relatedEntityUnique);
+                        dd($exception->getMessage(), $relatedEntity, $relatedEntityId);
                     }
+                } else {
+                    // some times the entity is not related
+                    $newEntity[] = null;
                 }
                 $i++;
                 continue;
             }
-            $setter = 'set' . ucfirst($attribute);
-            $oldValue = $oldEntity[$mappingTable[$attribute]];
-            $newEntity->$setter($oldValue);
+            $newEntity[] = $oldEntity[$mappingTable[$attribute]];
             $i++;
         }
         return $newEntity;
     }
 
+    private function getColumns($mappingTable)
+    {
+        $keys = array_keys($mappingTable);
+        $i = count($keys) - 1;
+        $columns = [];
+        while ((strpos($keys[$i], 'table') === false) && $i >= 0) {
+            if (strpos($keys[$i], 'rel_') === false) {
+                $columns[] = $keys[$i];
+            } else {
+                $columns[] = explode('_', $keys[$i])[1] . '_id';
+            }
+            $i--;
+        }
+        $columns[] = 'id';
+        return array_reverse($columns);
+    }
+
+
     private function group(int $groupNumber, OutputInterface $output)
     {
-        // todo : for testing native sql with adding a temporary column
-//        $this->dropTables(['building']);
-//        $this->migrationRepository
-//            ->insertNewEntity('building', ['name', 'site_id', 'old_id'], ['Talan', 220119, '05']);
-//        /** @var Building $entity */
-//        $entity = $this->entityManager->getRepository(Building::class)->findOneBy(['name' => 'Talan']);
-////        dd($entity->getLabel());
-//        $this->dropOldColumn(['building']);
-//        dd($entity->getName());
         $group = self::GROUPS[$groupNumber];
         $this->dropTables($group);
-        $errorMsg = '';
         $foundError = false;
         $this->logger->info("================\nMigrating group " . $groupNumber . "\n ================");
         foreach ($group as $entity) {
             $mappingTable = MigrationDb::TABLE_NAME[$entity];
             $results = $this->migrationRepository->getAll($mappingTable['table']);
             $rowCount = 1;
+            $columns = $this->getColumns($mappingTable);
+            $sqlInsert = $this->migrationRepository->createInsertStatement($entity, $columns);
             foreach ($results as $oldEntity) {
                 $newEntity = $this->createEntity($entity, $oldEntity, $mappingTable, $rowCount, $foundError);
-                $this->entityManager->persist($newEntity);
+                $this->migrationRepository->insertNewEntity($sqlInsert, $newEntity);
                 $rowCount++;
                 // save created entities an empty the Entity Manager to optimize memory consumption
                 // and db connection number
                 if ($rowCount % 100 === 0) {
-                    $this->entityManager->flush();
-                    $this->entityManager->clear();
                     gc_collect_cycles();
                 }
             }
-            // save created entities an empty the Entity Manager to optimize memory consumption
-            $this->entityManager->flush();
-            $this->entityManager->clear();
-
             $rowCount--;
             if ($rowCount !== count($results)) {
                 $errorMsg = ucfirst($entity) . " migration entity count error: old entities = " . count($results) .
@@ -283,6 +312,54 @@ class MigrateDataCommand extends Command
         }
         $this->dropOldColumn($group);
     }
+
+//    private function createEntity($entity, $oldEntity, $mappingTable, $rowCount, bool &$foundError)
+//    {
+//        $className = $this->getClass($entity);
+//        $newEntity = new $className();
+//        // lower the field of $mappingTable
+//        $mappingTable = array_map('strtolower', $mappingTable);
+//        $attributes = array_keys($mappingTable);
+//        $i = 3;
+//        while ($i < count($attributes)) {
+//            $attribute = $attributes[$i];
+//            if (strpos($attribute, 'rel_') !== false) {
+//                $relatedClass = explode('_', $attribute)[1];
+//                $relatedEntityMappingTable = array_map('strtolower', MigrationDb::TABLE_NAME[$relatedClass]);
+//                $relatedEntityId = $oldEntity[$mappingTable[$attribute]];
+//                if ($relatedEntityId !== null) {
+//                    $relatedEntity = $this->migrationRepository
+//                        ->getById($relatedEntityMappingTable['table'], $mappingTable[$attribute], $relatedEntityId);
+//                    $relatedEntityUnique = $relatedEntity[$relatedEntityMappingTable['unique']];
+//                    $attributeTable = array_slice($relatedEntityMappingTable, 3, null, true);
+//                    $key = array_search($relatedEntityMappingTable['unique'], $attributeTable);
+//                    $relatedEntity = $this->entityManager->getRepository($this->getClass($relatedClass))
+//                        ->findBy([$key => $relatedEntityUnique]);
+//                    if (count($relatedEntity) > 1) {
+//                        $errorMsg = 'Error in creating ' . $entity . ' old table = ' . $mappingTable['table'] .
+//                            ' with row number = ' . $rowCount . ' with old id = ' . $oldEntity[$mappingTable['id']] .
+//                            ' for ' . $mappingTable[$attribute] . ' = ' . $relatedEntityId .
+//                            ' related class ' . $relatedClass . ' and unique search = ' . $relatedEntityUnique;
+//                        $this->logger->info($errorMsg);
+//                        $foundError = true;
+//                    }
+//                    $setter = 'set' . ucfirst($relatedClass);
+//                    try {
+//                        $newEntity->$setter($relatedEntity[0]);
+//                    } catch (Throwable $exception) {
+//                        dd($exception->getMessage(), $relatedEntity, $relatedEntityUnique);
+//                    }
+//                }
+//                $i++;
+//                continue;
+//            }
+//            $setter = 'set' . ucfirst($attribute);
+//            $oldValue = $oldEntity[$mappingTable[$attribute]];
+//            $newEntity->$setter($oldValue);
+//            $i++;
+//        }
+//        return $newEntity;
+//    }
 
     /**
      * logic for creating Regions, Departments, Communes and Sites

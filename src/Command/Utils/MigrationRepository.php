@@ -43,7 +43,13 @@ class MigrationRepository
         return $stmt->fetchAll();
     }
 
-    public function insertNewEntity($tableName, array $columns, array $values)
+    /**
+     * create an insert sql statement for a table
+     * @param $tableName
+     * @param array $columns
+     * @return string
+     */
+    public function createInsertStatement($tableName, array $columns): string
     {
         $i = 1;
         $parameters = '';
@@ -51,11 +57,34 @@ class MigrationRepository
             $parameters = '?,' . $parameters;
             $i++;
         }
-        $parameters = '(SELECT MAX(id)+1 FROM ' . $tableName . '),' . $parameters . '?';
-        $columns = 'id, ' . implode(', ', $columns);
-        $sql = sprintf("INSERT INTO %s (%s) VALUES (%s)", $tableName, $columns, $parameters);
+        $parameters = /*'(SELECT MAX(id)+1 FROM ' . $tableName . '),' . */
+            $parameters . '?';
+        $columns = /*'id, ' . */
+            implode(', ', $columns);
+        return sprintf("INSERT INTO %s (%s) VALUES (%s)", $tableName, $columns, $parameters);
+    }
+
+    public function insertNewEntity(string $sql, array $values)
+    {
         $stmt = $this->newDBConnection->prepare($sql);
         $stmt->execute($values);
     }
 
+    public function getByOldID($tableName, $id)
+    {
+        $sql = "SELECT id FROM " . $tableName . " WHERE old_id = :id";
+        $stmt = $this->newDBConnection->prepare($sql);
+        $stmt->execute(['id' => $id]);
+        return $stmt->fetchAllAssociative();
+    }
+
+    public function getByOld($tableName, array $criteria)
+    {
+        foreach ($criteria as $key => $value) {
+            $sql = "SELECT id FROM " . $tableName . " WHERE " . $key . " = :" . $key;
+        }
+        $stmt = $this->newDBConnection->prepare($sql);
+        $stmt->execute($criteria);
+        return $stmt->fetchAllAssociative();
+    }
 }
