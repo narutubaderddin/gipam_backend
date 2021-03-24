@@ -93,9 +93,9 @@ abstract class Furniture
     protected $denomination;
 
     /**
-     * @ORM\ManyToOne(targetEntity=Field::class, inversedBy="furniture")
+     * @ORM\ManyToOne(targetEntity=domaine::class, inversedBy="furniture")
      */
-    protected $field;
+    protected $domaine;
 
     /**
      * @ORM\OneToMany(targetEntity=ArtWorkLog::class, mappedBy="furniture")
@@ -328,14 +328,14 @@ abstract class Furniture
         return $this;
     }
 
-    public function getField(): ?Field
+    public function getDomaine(): ?domaine
     {
-        return $this->field;
+        return $this->domaine;
     }
 
-    public function setField(?Field $field): self
+    public function setDomaine(?domaine $domaine): self
     {
-        $this->field = $field;
+        $this->domaine = $domaine;
 
         return $this;
     }

@@ -25,9 +25,9 @@ class Denomination
     private $label;
 
     /**
-     * @ORM\ManyToOne(targetEntity=Field::class, inversedBy="denominations")
+     * @ORM\ManyToOne(targetEntity=domaine::class, inversedBy="denominations")
      */
-    private $field;
+    private $domaine;
 
     /**
      * @ORM\ManyToMany(targetEntity=MaterialTechnique::class, inversedBy="denominations")
@@ -62,14 +62,14 @@ class Denomination
         return $this;
     }
 
-    public function getField(): ?Field
+    public function getdomaine(): ?domaine
     {
-        return $this->field;
+        return $this->domaine;
     }
 
-    public function setField(?Field $field): self
+    public function setdomaine(?domaine $domaine): self
     {
-        $this->field = $field;
+        $this->domaine = $domaine;
 
         return $this;
     }

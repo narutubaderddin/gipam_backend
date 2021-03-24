@@ -2,15 +2,15 @@
 
 namespace App\Entity;
 
-use App\Repository\FieldRepository;
+use App\Repository\DomaineRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
- * @ORM\Entity(repositoryClass=FieldRepository::class)
+ * @ORM\Entity(repositoryClass=DomaineRepository::class)
  */
-class Field
+class Domaine
 {
     /**
      * @ORM\Id
@@ -25,12 +25,12 @@ class Field
     private $label;
 
     /**
-     * @ORM\OneToMany(targetEntity=Denomination::class, mappedBy="field")
+     * @ORM\OneToMany(targetEntity=Denomination::class, mappedBy="domaine")
      */
     private $denominations;
 
     /**
-     * @ORM\OneToMany(targetEntity=Furniture::class, mappedBy="field")
+     * @ORM\OneToMany(targetEntity=Furniture::class, mappedBy="domaine")
      */
     private $furniture;
 
@@ -69,7 +69,7 @@ class Field
     {
         if (!$this->denominations->contains($denomination)) {
             $this->denominations[] = $denomination;
-            $denomination->setField($this);
+            $denomination->setdomaine($this);
         }
 
         return $this;
@@ -79,8 +79,8 @@ class Field
     {
         if ($this->denominations->removeElement($denomination)) {
             // set the owning side to null (unless already changed)
-            if ($denomination->getField() === $this) {
-                $denomination->setField(null);
+            if ($denomination->getdomaine() === $this) {
+                $denomination->setdomaine(null);
             }
         }
 
@@ -99,7 +99,7 @@ class Field
     {
         if (!$this->furniture->contains($furniture)) {
             $this->furniture[] = $furniture;
-            $furniture->setField($this);
+            $furniture->setdomaine($this);
         }
 
         return $this;
@@ -109,8 +109,8 @@ class Field
     {
         if ($this->furniture->removeElement($furniture)) {
             // set the owning side to null (unless already changed)
-            if ($furniture->getField() === $this) {
-                $furniture->setField(null);
+            if ($furniture->getdomaine() === $this) {
+                $furniture->setdomaine(null);
             }
         }
 
