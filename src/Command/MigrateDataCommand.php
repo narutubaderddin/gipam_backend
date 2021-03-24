@@ -4,8 +4,8 @@ namespace App\Command;
 
 use App\Command\Utils\MigrationDb;
 use App\Command\Utils\MigrationRepository;
+use App\Services\LoggerService;
 use Doctrine\ORM\EntityManagerInterface;
-use PHPUnit\TextUI\XmlConfiguration\Migration;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
@@ -24,7 +24,7 @@ class MigrateDataCommand extends Command
     protected const GROUPS = [
         1 => ['ministry', 'establishment', 'service', 'correspondent',],
         2 => ['region', 'departement', 'commune', 'site', 'building',],
-        3 => ['deposittype', 'style', 'era', 'domaine', 'denomination',],
+        3 => [/*'deposittype', 'style', 'era', 'domaine', */'denomination',],
         4 => ['deposittype', 'depositor'],
 //        4 => ['actiontype', 'report', 'action', 'depositor'],
     ];
@@ -38,20 +38,23 @@ class MigrateDataCommand extends Command
     private $stopwatch;
     private $logger;
     private $connection;
+    private $loggerService;
 
     public function __construct(
         EntityManagerInterface $entityManager,
         MigrationRepository $migrationRepository,
         Stopwatch $stopwatch,
-        LoggerInterface $logger
-    )
-    {
+        LoggerInterface $logger,
+        LoggerService $loggerService
+    ) {
         parent::__construct();
         $this->entityManager = $entityManager;
+        $this->connection = $this->entityManager->getConnection();
         $this->migrationRepository = $migrationRepository;
         $this->stopwatch = $stopwatch;
         $this->logger = $logger;
-        $this->connection = $this->entityManager->getConnection();
+        $this->loggerService = $loggerService;
+        $loggerService->init('db_migration');
     }
 
     protected function configure()
@@ -104,7 +107,7 @@ class MigrateDataCommand extends Command
             ]);
             return 0;
         }
-
+        $startTime = time();
         $group = intval($input->getOption('group'));
         if (($group !== -1) || (array_key_exists($group, self::GROUPS))) {
             $msg = implode(', ', self::GROUPS[$group]);
@@ -119,6 +122,7 @@ class MigrateDataCommand extends Command
                 ]);
                 return 0;
             }
+            $startTime = time();
             $this->stopwatch->start('export-data');
             $this->group(intval($group), $output);
         } else {
@@ -149,9 +153,59 @@ class MigrateDataCommand extends Command
             "Time: " . sprintf("%.2f", $duration) . " minutes, Memory: " . sprintf("%.2f", $memory) . " MB",
             '',
         ]);
-
+        $this->loggerService->logMemoryUsage('Migrating Data Done with : ');
+        $endTime = time();
+        $this->loggerService->formatPeriod($endTime, $startTime, 'Migrating Data Done in : ');
         // return this if there was no problem running the command
         return 0;
+    }
+
+    private function group(int $groupNumber, OutputInterface $output)
+    {
+        $group = self::GROUPS[$groupNumber];
+        $this->dropTables($group);
+        $this->addOldColumn($group);
+        $foundError = false;
+        $this->loggerService->addInfo("================ Migrating group " . $groupNumber . " ================");
+        foreach ($group as $entity) {
+            $mappingTable = MigrationDb::TABLE_NAME[$entity];
+            $results = $this->migrationRepository
+                ->getAll(MigrationRepository::$oldDBConnection, $mappingTable['table']);
+            $rowCount = 1;
+            $columns = $this->getColumns($mappingTable);
+            $sqlInsert = $this->migrationRepository->createInsertStatement($entity, $columns);
+            foreach ($results as $oldEntity) {
+                $newEntity = $this->createEntity($entity, $oldEntity, $mappingTable, $rowCount, $foundError);
+                $this->migrationRepository->insertNewEntity($sqlInsert, $newEntity);
+                $rowCount++;
+                if ($rowCount % 100 === 0) {
+                    gc_collect_cycles();
+                }
+                unset($newEntity);
+            }
+            $rowCount--;
+            if ($rowCount !== count($results)) {
+                $errorMsg = ucfirst($entity) . " migration entity count error: old entities = " . count($results) .
+                    ' new entities = ' . $rowCount;
+                $this->loggerService->addWarning($errorMsg);
+                $foundError = true;
+            }
+            $output->writeln([
+                '===================================================',
+                'Migrate ' . $rowCount . ' / ' . count($results) . ' ' . ucfirst($entity),
+                '===================================================',
+            ]);
+            unset($results);
+            unset($columns);
+            unset($sqlInsert);
+            unset($mappingTable);
+            gc_collect_cycles();
+        }
+        if ($foundError) {
+            $output->writeln('<error> Migration Errors for group ' . $groupNumber .
+                ' please see log in : var/log/dev.log </error>');
+        }
+//        $this->dropOldColumn($group);
     }
 
     private function dropTables(array $tables)
@@ -259,7 +313,7 @@ class MigrateDataCommand extends Command
                                 ' with row number = ' . $rowCount . ' with old id = ' .
                                 $oldEntity[$mappingTable['id']] . ' for ' . $mappingTable[$attribute] . ' = ' .
                                 $relatedEntityId . ' related class ' . $relatedClass;
-                            $this->logger->info($errorMsg);
+                            $this->loggerService->addWarning($errorMsg);
                             $foundError = true;
                         }
                         $newEntity[] = $relatedEntity[0]['id'];
@@ -281,53 +335,5 @@ class MigrateDataCommand extends Command
             $i++;
         }
         return $newEntity;
-    }
-
-    private function group(int $groupNumber, OutputInterface $output)
-    {
-        $group = self::GROUPS[$groupNumber];
-        $this->dropTables($group);
-        $this->addOldColumn($group);
-        $foundError = false;
-        $this->logger->info("================ Migrating group " . $groupNumber . " ================");
-        foreach ($group as $entity) {
-            $mappingTable = MigrationDb::TABLE_NAME[$entity];
-            $results = $this->migrationRepository
-                ->getAll(MigrationRepository::$oldDBConnection, $mappingTable['table']);
-            $rowCount = 1;
-            $columns = $this->getColumns($mappingTable);
-            $sqlInsert = $this->migrationRepository->createInsertStatement($entity, $columns);
-            foreach ($results as $oldEntity) {
-                $newEntity = $this->createEntity($entity, $oldEntity, $mappingTable, $rowCount, $foundError);
-                $this->migrationRepository->insertNewEntity($sqlInsert, $newEntity);
-                $rowCount++;
-                if ($rowCount % 100 === 0) {
-                    gc_collect_cycles();
-                }
-                unset($newEntity);
-            }
-            $rowCount--;
-            if ($rowCount !== count($results)) {
-                $errorMsg = ucfirst($entity) . " migration entity count error: old entities = " . count($results) .
-                    ' new entities = ' . $rowCount;
-                $this->logger->info($errorMsg);
-                $foundError = true;
-            }
-            $output->writeln([
-                '===================================================',
-                'Migrate ' . $rowCount . ' / ' . count($results) . ' ' . ucfirst($entity),
-                '===================================================',
-            ]);
-            unset($results);
-            unset($columns);
-            unset($sqlInsert);
-            unset($mappingTable);
-            gc_collect_cycles();
-        }
-        if ($foundError) {
-            $output->writeln('<error> Migration Errors for group ' . $groupNumber .
-                ' please see log in : var/log/dev.log </error>');
-        }
-//        $this->dropOldColumn($group);
     }
 }
