@@ -14,7 +14,7 @@ use Doctrine\ORM\Mapping as ORM;
  * @ORM\Entity(repositoryClass=StatutRepository::class)
  * @ORM\InheritanceType("JOINED")
  * @ORM\DiscriminatorColumn(name="discr", type="string")
- * @ORM\DiscriminatorMap({"propertyStatut"="PropertyStatut", "depositStatut"="DepositStatut"})
+ * @ORM\DiscriminatorMap({"statutPropriete"="StatutPropriete", "statutDepot"="StatutDepot"})
  */
 abstract class Statut
 {
