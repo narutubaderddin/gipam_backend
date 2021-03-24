@@ -117,14 +117,14 @@ class Responsible
         return $this;
     }
 
-    public function getMel(): ?string
+    public function getMail(): ?string
     {
-        return $this->mel;
+        return $this->mail;
     }
 
-    public function setMel(?string $mel): self
+    public function setMail(?string $mail): self
     {
-        $this->mel = $mel;
+        $this->mail = $mail;
 
         return $this;
     }

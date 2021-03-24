@@ -24,11 +24,6 @@ class ArtWorkLog
     private $date;
 
     /**
-     * @ORM\ManyToOne(targetEntity=User::class, inversedBy="artWorkLogs")
-     */
-    private $user;
-
-    /**
      * @ORM\ManyToOne(targetEntity=Furniture::class, inversedBy="artWorkLog")
      */
     private $furniture;
@@ -50,17 +45,7 @@ class ArtWorkLog
         return $this;
     }
 
-    public function getUser(): ?User
-    {
-        return $this->user;
-    }
 
-    public function setUser(?User $user): self
-    {
-        $this->user = $user;
-
-        return $this;
-    }
 
     public function getFurniture(): ?Furniture
     {
