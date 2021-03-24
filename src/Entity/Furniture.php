@@ -98,9 +98,9 @@ abstract class Furniture
     protected $domaine;
 
     /**
-     * @ORM\OneToMany(targetEntity=ArtWorkLog::class, mappedBy="furniture")
+     * @ORM\OneToMany(targetEntity=LogOeuvre::class, mappedBy="furniture")
      */
-    protected $artWorkLogs;
+    protected $logOeuvres;
 
     /**
      * @ORM\OneToMany(targetEntity=Movement::class, mappedBy="furniture")
@@ -125,7 +125,7 @@ abstract class Furniture
     public function __construct()
     {
         $this->auteurs = new ArrayCollection();
-        $this->artWorkLogs = new ArrayCollection();
+        $this->logOeuvres = new ArrayCollection();
         $this->movements = new ArrayCollection();
         $this->reports = new ArrayCollection();
         $this->attachments = new ArrayCollection();
@@ -341,29 +341,29 @@ abstract class Furniture
     }
 
     /**
-     * @return Collection|ArtWorkLog[]
+     * @return Collection|LogOeuvre[]
      */
-    public function getArtWorkLogs(): Collection
+    public function getLogOeuvres(): Collection
     {
-        return $this->artWorkLogs;
+        return $this->logOeuvres;
     }
 
-    public function addArtWorkLog(ArtWorkLog $artWorkLog): self
+    public function addLogOeuvre(LogOeuvre $logOeuvre): self
     {
-        if (!$this->artWorkLogs->contains($artWorkLog)) {
-            $this->artWorkLogs[] = $artWorkLog;
-            $artWorkLog->setFurniture($this);
+        if (!$this->logOeuvres->contains($logOeuvre)) {
+            $this->logOeuvres[] = $logOeuvre;
+            $logOeuvre->setFurniture($this);
         }
 
         return $this;
     }
 
-    public function removeArtWorkLog(ArtWorkLog $artWorkLog): self
+    public function removeLogOeuvre(LogOeuvre $logOeuvre): self
     {
-        if ($this->artWorkLogs->removeElement($artWorkLog)) {
+        if ($this->logOeuvres->removeElement($logOeuvre)) {
             // set the owning side to null (unless already changed)
-            if ($artWorkLog->getFurniture() === $this) {
-                $artWorkLog->setFurniture(null);
+            if ($logOeuvre->getFurniture() === $this) {
+                $logOeuvre->setFurniture(null);
             }
         }
 

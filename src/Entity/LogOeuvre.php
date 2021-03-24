@@ -2,14 +2,14 @@
 
 namespace App\Entity;
 
-use App\Repository\ArtWorkLogRepository;
+use App\Repository\LogOeuvreRepository;
 use DateTimeInterface;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
- * @ORM\Entity(repositoryClass=ArtWorkLogRepository::class)
+ * @ORM\Entity(repositoryClass=LogOeuvreRepository::class)
  */
-class ArtWorkLog
+class LogOeuvre
 {
     /**
      * @ORM\Id
@@ -24,7 +24,7 @@ class ArtWorkLog
     private $date;
 
     /**
-     * @ORM\ManyToOne(targetEntity=Furniture::class, inversedBy="artWorkLog")
+     * @ORM\ManyToOne(targetEntity=Furniture::class, inversedBy="logOeuvres")
      */
     private $furniture;
 
