@@ -118,9 +118,9 @@ abstract class Furniture
     protected $attachments;
 
     /**
-     * @ORM\ManyToOne(targetEntity=Status::class, inversedBy="furniture")
+     * @ORM\ManyToOne(targetEntity=Statut::class, inversedBy="furniture")
      */
-    protected $status;
+    protected $statut;
 
     public function __construct()
     {
@@ -460,14 +460,14 @@ abstract class Furniture
         return $this;
     }
 
-    public function getStatus(): ?Status
+    public function getStatut(): ?Statut
     {
-        return $this->status;
+        return $this->statut;
     }
 
-    public function setStatus(?Status $status): self
+    public function setStatut(?Statut $statut): self
     {
-        $this->status = $status;
+        $this->statut = $statut;
 
         return $this;
     }
