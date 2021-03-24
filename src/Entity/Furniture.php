@@ -333,12 +333,12 @@ abstract class Furniture
         return $this;
     }
 
-    public function getField(): ?Field
+    public function getField(): ?Domaine
     {
         return $this->field;
     }
 
-    public function setField(?Field $field): self
+    public function setField(?Domaine $field): self
     {
         $this->field = $field;
 
