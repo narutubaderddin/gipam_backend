@@ -30,9 +30,9 @@ class Denomination
     private $domaine;
 
     /**
-     * @ORM\ManyToMany(targetEntity=MaterialTechnique::class, inversedBy="denominations")
+     * @ORM\ManyToMany(targetEntity=MatiereTechnique::class, inversedBy="denominations")
      */
-    private $materialsTechniques;
+    private $matiereTechniques;
 
     /**
      * @ORM\OneToMany(targetEntity=Furniture::class, mappedBy="denomination")
@@ -41,7 +41,7 @@ class Denomination
 
     public function __construct()
     {
-        $this->materialsTechniques = new ArrayCollection();
+        $this->matiereTechniques = new ArrayCollection();
         $this->furniture = new ArrayCollection();
     }
 
@@ -75,25 +75,25 @@ class Denomination
     }
 
     /**
-     * @return Collection|MaterialTechnique[]
+     * @return Collection|MatiereTechnique[]
      */
-    public function getMaterialsTechniques(): Collection
+    public function getMatiereTechniques(): Collection
     {
-        return $this->materialsTechniques;
+        return $this->matiereTechniques;
     }
 
-    public function addMaterialsTechnique(MaterialTechnique $materialsTechnique): self
+    public function addMatiereTechnique(MatiereTechnique $matiereTechnique): self
     {
-        if (!$this->materialsTechniques->contains($materialsTechnique)) {
-            $this->materialsTechniques[] = $materialsTechnique;
+        if (!$this->matiereTechniques->contains($matiereTechnique)) {
+            $this->matiereTechniques[] = $matiereTechnique;
         }
 
         return $this;
     }
 
-    public function removeMaterialsTechnique(MaterialTechnique $materialsTechnique): self
+    public function removeMatiereTechnique(MatiereTechnique $matiereTechnique): self
     {
-        $this->materialsTechniques->removeElement($materialsTechnique);
+        $this->matiereTechniques->removeElement($matiereTechnique);
 
         return $this;
     }

@@ -83,9 +83,9 @@ abstract class Furniture
     protected $style;
 
     /**
-     * @ORM\ManyToOne(targetEntity=MaterialTechnique::class, inversedBy="furniture")
+     * @ORM\ManyToOne(targetEntity=MatiereTechnique::class, inversedBy="furniture")
      */
-    protected $materialTechnique;
+    protected $matiereTechnique;
 
     /**
      * @ORM\ManyToOne(targetEntity=Denomination::class, inversedBy="furniture")
@@ -304,14 +304,14 @@ abstract class Furniture
         return $this;
     }
 
-    public function getMaterialTechnique(): ?MaterialTechnique
+    public function getMatiereTechnique(): ?MatiereTechnique
     {
-        return $this->materialTechnique;
+        return $this->matiereTechnique;
     }
 
-    public function setMaterialTechnique(?MaterialTechnique $materialTechnique): self
+    public function setMatiereTechnique(?MatiereTechnique $matiereTechnique): self
     {
-        $this->materialTechnique = $materialTechnique;
+        $this->matiereTechnique = $matiereTechnique;
 
         return $this;
     }
