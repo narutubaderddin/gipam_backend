@@ -22,7 +22,7 @@ class Denomination
     /**
      * @ORM\Column(type="string", length=255, nullable=true)
      */
-    private $label;
+    private $libelle;
 
     /**
      * @ORM\ManyToOne(targetEntity=domaine::class, inversedBy="denominations")
@@ -50,14 +50,14 @@ class Denomination
         return $this->id;
     }
 
-    public function getLabel(): ?string
+    public function getLibelle(): ?string
     {
-        return $this->label;
+        return $this->libelle;
     }
 
-    public function setLabel(?string $label): self
+    public function setLibelle(?string $libelle): self
     {
-        $this->label = $label;
+        $this->libelle = $libelle;
 
         return $this;
     }

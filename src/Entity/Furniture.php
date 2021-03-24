@@ -68,14 +68,14 @@ abstract class Furniture
     protected $description;
 
     /**
-     * @ORM\ManyToMany(targetEntity=Author::class, inversedBy="furniture")
+     * @ORM\ManyToMany(targetEntity=Auteur::class, inversedBy="furniture")
      */
-    protected $authors;
+    protected $auteurs;
 
     /**
-     * @ORM\ManyToOne(targetEntity=Era::class, inversedBy="furniture")
+     * @ORM\ManyToOne(targetEntity=Epoque::class, inversedBy="furniture")
      */
-    protected $era;
+    protected $epoque;
 
     /**
      * @ORM\ManyToOne(targetEntity=Style::class, inversedBy="furniture")
@@ -124,7 +124,7 @@ abstract class Furniture
 
     public function __construct()
     {
-        $this->authors = new ArrayCollection();
+        $this->auteurs = new ArrayCollection();
         $this->artWorkLogs = new ArrayCollection();
         $this->movements = new ArrayCollection();
         $this->reports = new ArrayCollection();
@@ -245,37 +245,37 @@ abstract class Furniture
     }
 
     /**
-     * @return Collection|Author[]
+     * @return Collection|Auteur[]
      */
-    public function getAuthors(): Collection
+    public function getAuteurs(): Collection
     {
-        return $this->authors;
+        return $this->auteurs;
     }
 
-    public function addAuthor(Author $author): self
+    public function addAuteur(Auteur $auteur): self
     {
-        if (!$this->authors->contains($author)) {
-            $this->authors[] = $author;
+        if (!$this->auteurs->contains($auteur)) {
+            $this->auteurs[] = $auteur;
         }
 
         return $this;
     }
 
-    public function removeAuthor(Author $author): self
+    public function removeAuteur(Auteur $auteur): self
     {
-        $this->authors->removeElement($author);
+        $this->auteurs->removeElement($auteur);
 
         return $this;
     }
 
-    public function getEra(): ?Era
+    public function getEpoque(): ?Epoque
     {
-        return $this->era;
+        return $this->epoque;
     }
 
-    public function setEra(?Era $era): self
+    public function setEra(?Epoque $epoque): self
     {
-        $this->era = $era;
+        $this->epoque = $epoque;
 
         return $this;
     }

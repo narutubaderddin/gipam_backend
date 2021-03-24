@@ -22,7 +22,7 @@ class Domaine
     /**
      * @ORM\Column(type="string", length=255, nullable=true)
      */
-    private $label;
+    private $libelle;
 
     /**
      * @ORM\OneToMany(targetEntity=Denomination::class, mappedBy="domaine")
@@ -45,14 +45,14 @@ class Domaine
         return $this->id;
     }
 
-    public function getLabel(): ?string
+    public function getLibelle(): ?string
     {
-        return $this->label;
+        return $this->libelle;
     }
 
-    public function setLabel(?string $label): self
+    public function setLibelle(?string $libelle): self
     {
-        $this->label = $label;
+        $this->libelle = $libelle;
 
         return $this;
     }
