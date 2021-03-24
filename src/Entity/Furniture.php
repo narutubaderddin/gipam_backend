@@ -273,7 +273,7 @@ abstract class Furniture
         return $this->epoque;
     }
 
-    public function setEra(?Epoque $epoque): self
+    public function setEpoque(?Epoque $epoque): self
     {
         $this->epoque = $epoque;
 

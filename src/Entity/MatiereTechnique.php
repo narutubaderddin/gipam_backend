@@ -2,15 +2,15 @@
 
 namespace App\Entity;
 
-use App\Repository\MaterialTechniqueRepository;
+use App\Repository\MatiereTechniqueRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
- * @ORM\Entity(repositoryClass=MaterialTechniqueRepository::class)
+ * @ORM\Entity(repositoryClass=MatiereTechniqueRepository::class)
  */
-class MaterialTechnique
+class MatiereTechnique
 {
     /**
      * @ORM\Id
