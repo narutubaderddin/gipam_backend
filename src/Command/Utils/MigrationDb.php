@@ -5,6 +5,9 @@ namespace App\Command\Utils;
 class MigrationDb
 {
 
+    public const UPPERCASE_NAME = true;
+    public const USE_ACCESS_DB = true;
+
     public const NEW_TABLE_NAME = [
         'subdivision',
         'localisation',
@@ -17,36 +20,7 @@ class MigrationDb
         'artworklog',
     ];
 
-    /*
     public const TABLE_NAME = [
-        'USERS' => 'user',
-        'MINISTERES' => 'ministry',
-        'ETAB_DIR' => 'establishment',
-        'CORRESPONDANTS' => 'correspondent',
-        'service' => 'SERVICES',
-        'site' => 'SITES',
-        'commune' => 'COMMUNES',
-        'departement' => 'DEPARTEMENTS',
-        'MOUVEMENTS' => 'movement',
-        'TYPES_MOUVEMENTS' => 'movement_type',
-        'ACTIONS' => 'action',
-        'TYPES_ACTIONS' => 'action_type',
-        'STATUS' => 'report',
-        'ETATS' => 'report_sub_type',
-        'PHOTOGRAPHIES' => 'attachment',
-        'OEUVRE' => 'furniture',
-        'region' => 'REGIONS',
-        'building' => 'SITES_6A',
-        'era' => 'EPOQUES',
-        'field' => 'DOMAINE',
-        'denomination' => 'DENOMINATIONS',
-        'style' => 'STYLES',
-        'deposit_type' => 'TYPES_DEPOSANTS',
-    ];
-    */
-
-    public const TABLE_NAME = [
-//        'user' => self::USERS,
         'ministry' => self::MINISTERES,
         'establishment' => self::ETAB_DIR,
         'correspondent' => self::CORRESPONDANTS,
@@ -64,11 +38,20 @@ class MigrationDb
         'region' => self::REGIONS,
         'building' => self::SITES_6A,
         'era' => self::EPOQUES,
-        'field' => self::DOMAINE,
+        'domaine' => self::DOMAINE,
         'denomination' => self::DENOMINATIONS,
         'style' => self::STYLES,
         'deposittype' => self::TYPES_DEPOSANTS,
         'depositor' => self::DEPOSANT,
+        'author' => self::AUTEUR,
+    ];
+
+    public const AUTEUR = [
+        'id' => 'C_DEPOSANT',
+        'unique' => 'C_DEPOSANT',
+        'table' => 'OEUVRES',
+        'nom' => 'OE_NOMAUTEUR',
+        'prenom' => 'OE_PRENOMAUTEUR',
     ];
 
     public const DEPOSANT = [
@@ -108,7 +91,7 @@ class MigrationDb
         'id' => 'C_DENOMINATION',
         'unique' => 'C_DENOMINATION',
         'table' => 'DENOMINATIONS',
-        'rel_field' => 'C_DOMAINE',
+        'rel_domaine' => 'C_DOMAINE',
         'label' => 'DEN_DENOMINATION',
         'old_id' => 'C_DENOMINATION'
     ];
@@ -117,7 +100,7 @@ class MigrationDb
         'id' => 'C_DOMAINE',
         'unique' => 'C_DOMAINE',
         'table' => 'DOMAINE',
-        'label' => 'DOM_DOMAINE',
+        'libelle' => 'DOM_DOMAINE',
         'old_id' => 'C_DOMAINE'
     ];
 
@@ -128,14 +111,6 @@ class MigrationDb
         'label' => 'EPO_EPOQUE',
         'old_id' => 'C_EPOQUE'
     ];
-
-//    public const USERS = [
-//        'C_USERS' => 'id',
-//        'US_NOM' => 'lastName',
-//        'US_PRENOM' => 'firstName',
-//        'US_COMM' => 'comment',
-//        'C_PROFIL' => 'roles',
-//    ];
 
     public const MINISTERES = [
         'id' => 'C_MIN',
@@ -239,7 +214,7 @@ class MigrationDb
         'OE_NB' => 'numberOfUnit',
         'OE_REPRISE' => 'description',
         'C_DENOMINATION' => 'rel_denomination',
-        'C_DOMAINE' => 'rel_field',
+        'C_DOMAINE' => 'rel_domaine',
         'C_EPOQUE' => 'rel_era',
         'C_STYLE' => 'rel_style',
     ];

@@ -9,6 +9,7 @@ use Doctrine\ORM\Mapping as ORM;
 
 /**
  * @ORM\Entity(repositoryClass=FieldRepository::class)
+ * @ORM\Table(name="domaine")
  */
 class Field
 {
@@ -20,12 +21,12 @@ class Field
     private $id;
 
     /**
-     * @ORM\Column(type="string", length=255, nullable=true)
+     * @ORM\Column(name="libelle", type="string", length=255, nullable=true)
      */
     private $label;
 
     /**
-     * @ORM\OneToMany(targetEntity=Denomination::class, mappedBy="field")
+     * @ORM\OneToMany(targetEntity=Denomination::class, mappedBy="domaine")
      */
     private $denominations;
 
@@ -69,7 +70,7 @@ class Field
     {
         if (!$this->denominations->contains($denomination)) {
             $this->denominations[] = $denomination;
-            $denomination->setField($this);
+            $denomination->setDomaine($this);
         }
 
         return $this;
@@ -79,8 +80,8 @@ class Field
     {
         if ($this->denominations->removeElement($denomination)) {
             // set the owning side to null (unless already changed)
-            if ($denomination->getField() === $this) {
-                $denomination->setField(null);
+            if ($denomination->getDomaine() === $this) {
+                $denomination->setDomaine(null);
             }
         }
 

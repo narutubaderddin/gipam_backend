@@ -10,7 +10,7 @@ use Doctrine\Migrations\AbstractMigration;
 /**
  * Auto-generated Migration: Please modify to your needs!
  */
-final class Version20210322102847 extends AbstractMigration
+final class Version20210324083152 extends AbstractMigration
 {
     public function getDescription() : string
     {
@@ -38,7 +38,6 @@ final class Version20210322102847 extends AbstractMigration
         $this->addSql('CREATE SEQUENCE Era_id_seq INCREMENT BY 1 MINVALUE 1 START 1');
         $this->addSql('CREATE SEQUENCE Establishment_id_seq INCREMENT BY 1 MINVALUE 1 START 1');
         $this->addSql('CREATE SEQUENCE EstablishmentType_id_seq INCREMENT BY 1 MINVALUE 1 START 1');
-        $this->addSql('CREATE SEQUENCE Field_id_seq INCREMENT BY 1 MINVALUE 1 START 1');
         $this->addSql('CREATE SEQUENCE Furniture_id_seq INCREMENT BY 1 MINVALUE 1 START 1');
         $this->addSql('CREATE SEQUENCE Location_id_seq INCREMENT BY 1 MINVALUE 1 START 1');
         $this->addSql('CREATE SEQUENCE LocationType_id_seq INCREMENT BY 1 MINVALUE 1 START 1');
@@ -61,6 +60,7 @@ final class Version20210322102847 extends AbstractMigration
         $this->addSql('CREATE SEQUENCE SubDivision_id_seq INCREMENT BY 1 MINVALUE 1 START 1');
         $this->addSql('CREATE SEQUENCE Type_id_seq INCREMENT BY 1 MINVALUE 1 START 1');
         $this->addSql('CREATE SEQUENCE User_id_seq INCREMENT BY 1 MINVALUE 1 START 1');
+        $this->addSql('CREATE SEQUENCE domaine_id_seq INCREMENT BY 1 MINVALUE 1 START 1');
         $this->addSql('CREATE TABLE Action (id INT NOT NULL, type_id INT DEFAULT NULL, report_id INT DEFAULT NULL, comment TEXT DEFAULT NULL, startDate TIMESTAMP(0) WITHOUT TIME ZONE NOT NULL, endDate TIMESTAMP(0) WITHOUT TIME ZONE NOT NULL, period INT NOT NULL, actionNature VARCHAR(255) DEFAULT NULL, movementActionType_id INT DEFAULT NULL, PRIMARY KEY(id))');
         $this->addSql('CREATE INDEX IDX_406089A4C54C8C93 ON Action (type_id)');
         $this->addSql('CREATE INDEX IDX_406089A4CC710B8A ON Action (movementActionType_id)');
@@ -85,12 +85,12 @@ final class Version20210322102847 extends AbstractMigration
         $this->addSql('CREATE INDEX IDX_18190382131A4F72 ON Building (commune_id)');
         $this->addSql('CREATE TABLE Commune (id INT NOT NULL, departement_id INT DEFAULT NULL, name VARCHAR(255) DEFAULT NULL, PRIMARY KEY(id))');
         $this->addSql('CREATE INDEX IDX_2D5FE872CCF9E01E ON Commune (departement_id)');
-        $this->addSql('CREATE TABLE Correspondent (id INT NOT NULL, establishment_id INT DEFAULT NULL, service_id INT DEFAULT NULL, firstName VARCHAR(255) NOT NULL, lastName VARCHAR(255) NOT NULL, phone VARCHAR(255) DEFAULT NULL, fax VARCHAR(255) DEFAULT NULL, mail VARCHAR(255) DEFAULT NULL, startDate TIMESTAMP(0) WITHOUT TIME ZONE DEFAULT NULL, endDate TIMESTAMP(0) WITHOUT TIME ZONE DEFAULT NULL, subDivision_id INT DEFAULT NULL, PRIMARY KEY(id))');
+        $this->addSql('CREATE TABLE Correspondent (id INT NOT NULL, establishment_id INT DEFAULT NULL, service_id INT DEFAULT NULL, firstName VARCHAR(255) DEFAULT NULL, lastName VARCHAR(255) DEFAULT NULL, phone VARCHAR(255) DEFAULT NULL, fax VARCHAR(255) DEFAULT NULL, mail VARCHAR(255) DEFAULT NULL, startDate TIMESTAMP(0) WITHOUT TIME ZONE DEFAULT NULL, endDate TIMESTAMP(0) WITHOUT TIME ZONE DEFAULT NULL, subDivision_id INT DEFAULT NULL, PRIMARY KEY(id))');
         $this->addSql('CREATE INDEX IDX_50AA9A8A8565851 ON Correspondent (establishment_id)');
         $this->addSql('CREATE INDEX IDX_50AA9A8A88997EEB ON Correspondent (subDivision_id)');
         $this->addSql('CREATE INDEX IDX_50AA9A8AED5CA9E6 ON Correspondent (service_id)');
-        $this->addSql('CREATE TABLE Denomination (id INT NOT NULL, field_id INT DEFAULT NULL, label VARCHAR(255) DEFAULT NULL, PRIMARY KEY(id))');
-        $this->addSql('CREATE INDEX IDX_D9F7AF4443707B0 ON Denomination (field_id)');
+        $this->addSql('CREATE TABLE Denomination (id INT NOT NULL, domaine_id INT DEFAULT NULL, label VARCHAR(255) DEFAULT NULL, PRIMARY KEY(id))');
+        $this->addSql('CREATE INDEX IDX_D9F7AF44272FC9F ON Denomination (domaine_id)');
         $this->addSql('CREATE TABLE denomination_materialtechnique (denomination_id INT NOT NULL, materialtechnique_id INT NOT NULL, PRIMARY KEY(denomination_id, materialtechnique_id))');
         $this->addSql('CREATE INDEX IDX_605345DEE9293F06 ON denomination_materialtechnique (denomination_id)');
         $this->addSql('CREATE INDEX IDX_605345DEE22B4BD0 ON denomination_materialtechnique (materialtechnique_id)');
@@ -107,7 +107,6 @@ final class Version20210322102847 extends AbstractMigration
         $this->addSql('CREATE INDEX IDX_6891FA1BC7266135 ON Establishment (ministry_id)');
         $this->addSql('CREATE INDEX IDX_6891FA1BC54C8C93 ON Establishment (type_id)');
         $this->addSql('CREATE TABLE EstablishmentType (id INT NOT NULL, label VARCHAR(255) DEFAULT NULL, PRIMARY KEY(id))');
-        $this->addSql('CREATE TABLE Field (id INT NOT NULL, label VARCHAR(255) DEFAULT NULL, PRIMARY KEY(id))');
         $this->addSql('CREATE TABLE Furniture (id INT NOT NULL, era_id INT DEFAULT NULL, type_id INT DEFAULT NULL, style_id INT DEFAULT NULL, denomination_id INT DEFAULT NULL, field_id INT DEFAULT NULL, status_id INT DEFAULT NULL, title VARCHAR(255) DEFAULT NULL, length DOUBLE PRECISION DEFAULT NULL, width DOUBLE PRECISION DEFAULT NULL, height DOUBLE PRECISION DEFAULT NULL, depth DOUBLE PRECISION DEFAULT NULL, diameter DOUBLE PRECISION DEFAULT NULL, weight DOUBLE PRECISION DEFAULT NULL, numberOfUnit INT DEFAULT NULL, description TEXT DEFAULT NULL, materialTechnique_id INT DEFAULT NULL, discr VARCHAR(255) NOT NULL, PRIMARY KEY(id))');
         $this->addSql('CREATE INDEX IDX_E4AC5810707300A1 ON Furniture (era_id)');
         $this->addSql('CREATE INDEX IDX_E4AC5810C54C8C93 ON Furniture (type_id)');
@@ -167,6 +166,7 @@ final class Version20210322102847 extends AbstractMigration
         $this->addSql('CREATE UNIQUE INDEX UNIQ_2DA17977F85E0677 ON "User" (username)');
         $this->addSql('CREATE INDEX IDX_2DA17977C7266135 ON "User" (ministry_id)');
         $this->addSql('COMMENT ON COLUMN "User".roles IS \'(DC2Type:array)\'');
+        $this->addSql('CREATE TABLE domaine (id INT NOT NULL, libelle VARCHAR(255) DEFAULT NULL, PRIMARY KEY(id))');
         $this->addSql('ALTER TABLE Action ADD CONSTRAINT FK_406089A4C54C8C93 FOREIGN KEY (type_id) REFERENCES ActionType (id) NOT DEFERRABLE INITIALLY IMMEDIATE');
         $this->addSql('ALTER TABLE Action ADD CONSTRAINT FK_406089A4CC710B8A FOREIGN KEY (movementActionType_id) REFERENCES MovementActionType (id) NOT DEFERRABLE INITIALLY IMMEDIATE');
         $this->addSql('ALTER TABLE Action ADD CONSTRAINT FK_406089A44BD2A4C0 FOREIGN KEY (report_id) REFERENCES Report (id) NOT DEFERRABLE INITIALLY IMMEDIATE');
@@ -184,7 +184,7 @@ final class Version20210322102847 extends AbstractMigration
         $this->addSql('ALTER TABLE Correspondent ADD CONSTRAINT FK_50AA9A8A8565851 FOREIGN KEY (establishment_id) REFERENCES Establishment (id) NOT DEFERRABLE INITIALLY IMMEDIATE');
         $this->addSql('ALTER TABLE Correspondent ADD CONSTRAINT FK_50AA9A8A88997EEB FOREIGN KEY (subDivision_id) REFERENCES SubDivision (id) NOT DEFERRABLE INITIALLY IMMEDIATE');
         $this->addSql('ALTER TABLE Correspondent ADD CONSTRAINT FK_50AA9A8AED5CA9E6 FOREIGN KEY (service_id) REFERENCES Service (id) NOT DEFERRABLE INITIALLY IMMEDIATE');
-        $this->addSql('ALTER TABLE Denomination ADD CONSTRAINT FK_D9F7AF4443707B0 FOREIGN KEY (field_id) REFERENCES Field (id) NOT DEFERRABLE INITIALLY IMMEDIATE');
+        $this->addSql('ALTER TABLE Denomination ADD CONSTRAINT FK_D9F7AF44272FC9F FOREIGN KEY (domaine_id) REFERENCES domaine (id) NOT DEFERRABLE INITIALLY IMMEDIATE');
         $this->addSql('ALTER TABLE denomination_materialtechnique ADD CONSTRAINT FK_605345DEE9293F06 FOREIGN KEY (denomination_id) REFERENCES Denomination (id) ON DELETE CASCADE NOT DEFERRABLE INITIALLY IMMEDIATE');
         $this->addSql('ALTER TABLE denomination_materialtechnique ADD CONSTRAINT FK_605345DEE22B4BD0 FOREIGN KEY (materialtechnique_id) REFERENCES MaterialTechnique (id) ON DELETE CASCADE NOT DEFERRABLE INITIALLY IMMEDIATE');
         $this->addSql('ALTER TABLE Departement ADD CONSTRAINT FK_47EAD4B498260155 FOREIGN KEY (region_id) REFERENCES Region (id) NOT DEFERRABLE INITIALLY IMMEDIATE');
@@ -198,7 +198,7 @@ final class Version20210322102847 extends AbstractMigration
         $this->addSql('ALTER TABLE Furniture ADD CONSTRAINT FK_E4AC5810BACD6074 FOREIGN KEY (style_id) REFERENCES Style (id) NOT DEFERRABLE INITIALLY IMMEDIATE');
         $this->addSql('ALTER TABLE Furniture ADD CONSTRAINT FK_E4AC5810FA1A9028 FOREIGN KEY (materialTechnique_id) REFERENCES MaterialTechnique (id) NOT DEFERRABLE INITIALLY IMMEDIATE');
         $this->addSql('ALTER TABLE Furniture ADD CONSTRAINT FK_E4AC5810E9293F06 FOREIGN KEY (denomination_id) REFERENCES Denomination (id) NOT DEFERRABLE INITIALLY IMMEDIATE');
-        $this->addSql('ALTER TABLE Furniture ADD CONSTRAINT FK_E4AC5810443707B0 FOREIGN KEY (field_id) REFERENCES Field (id) NOT DEFERRABLE INITIALLY IMMEDIATE');
+        $this->addSql('ALTER TABLE Furniture ADD CONSTRAINT FK_E4AC5810443707B0 FOREIGN KEY (field_id) REFERENCES domaine (id) NOT DEFERRABLE INITIALLY IMMEDIATE');
         $this->addSql('ALTER TABLE Furniture ADD CONSTRAINT FK_E4AC58106BF700BD FOREIGN KEY (status_id) REFERENCES Status (id) NOT DEFERRABLE INITIALLY IMMEDIATE');
         $this->addSql('ALTER TABLE furniture_author ADD CONSTRAINT FK_386AF69ACF5485C3 FOREIGN KEY (furniture_id) REFERENCES Furniture (id) ON DELETE CASCADE NOT DEFERRABLE INITIALLY IMMEDIATE');
         $this->addSql('ALTER TABLE furniture_author ADD CONSTRAINT FK_386AF69AF675F31B FOREIGN KEY (author_id) REFERENCES Author (id) ON DELETE CASCADE NOT DEFERRABLE INITIALLY IMMEDIATE');
@@ -251,8 +251,6 @@ final class Version20210322102847 extends AbstractMigration
         $this->addSql('ALTER TABLE Location DROP CONSTRAINT FK_A7E8EB9D8565851');
         $this->addSql('ALTER TABLE SubDivision DROP CONSTRAINT FK_646D171C8565851');
         $this->addSql('ALTER TABLE Establishment DROP CONSTRAINT FK_6891FA1BC54C8C93');
-        $this->addSql('ALTER TABLE Denomination DROP CONSTRAINT FK_D9F7AF4443707B0');
-        $this->addSql('ALTER TABLE Furniture DROP CONSTRAINT FK_E4AC5810443707B0');
         $this->addSql('ALTER TABLE ArtWork DROP CONSTRAINT FK_E79053D4BF396750');
         $this->addSql('ALTER TABLE ArtWorkLog DROP CONSTRAINT FK_5C6B2EFDCF5485C3');
         $this->addSql('ALTER TABLE Attachment DROP CONSTRAINT FK_3602DA6BCF5485C3');
@@ -289,6 +287,8 @@ final class Version20210322102847 extends AbstractMigration
         $this->addSql('ALTER TABLE Service DROP CONSTRAINT FK_2E20A34E88997EEB');
         $this->addSql('ALTER TABLE Furniture DROP CONSTRAINT FK_E4AC5810C54C8C93');
         $this->addSql('ALTER TABLE ArtWorkLog DROP CONSTRAINT FK_5C6B2EFDA76ED395');
+        $this->addSql('ALTER TABLE Denomination DROP CONSTRAINT FK_D9F7AF44272FC9F');
+        $this->addSql('ALTER TABLE Furniture DROP CONSTRAINT FK_E4AC5810443707B0');
         $this->addSql('DROP SEQUENCE Action_id_seq CASCADE');
         $this->addSql('DROP SEQUENCE ActionType_id_seq CASCADE');
         $this->addSql('DROP SEQUENCE Alert_id_seq CASCADE');
@@ -307,7 +307,6 @@ final class Version20210322102847 extends AbstractMigration
         $this->addSql('DROP SEQUENCE Era_id_seq CASCADE');
         $this->addSql('DROP SEQUENCE Establishment_id_seq CASCADE');
         $this->addSql('DROP SEQUENCE EstablishmentType_id_seq CASCADE');
-        $this->addSql('DROP SEQUENCE Field_id_seq CASCADE');
         $this->addSql('DROP SEQUENCE Furniture_id_seq CASCADE');
         $this->addSql('DROP SEQUENCE Location_id_seq CASCADE');
         $this->addSql('DROP SEQUENCE LocationType_id_seq CASCADE');
@@ -330,6 +329,7 @@ final class Version20210322102847 extends AbstractMigration
         $this->addSql('DROP SEQUENCE SubDivision_id_seq CASCADE');
         $this->addSql('DROP SEQUENCE Type_id_seq CASCADE');
         $this->addSql('DROP SEQUENCE User_id_seq CASCADE');
+        $this->addSql('DROP SEQUENCE domaine_id_seq CASCADE');
         $this->addSql('DROP TABLE Action');
         $this->addSql('DROP TABLE action_movement');
         $this->addSql('DROP TABLE ActionType');
@@ -352,7 +352,6 @@ final class Version20210322102847 extends AbstractMigration
         $this->addSql('DROP TABLE Era');
         $this->addSql('DROP TABLE Establishment');
         $this->addSql('DROP TABLE EstablishmentType');
-        $this->addSql('DROP TABLE Field');
         $this->addSql('DROP TABLE Furniture');
         $this->addSql('DROP TABLE furniture_author');
         $this->addSql('DROP TABLE Location');
@@ -380,5 +379,6 @@ final class Version20210322102847 extends AbstractMigration
         $this->addSql('DROP TABLE SubDivision');
         $this->addSql('DROP TABLE Type');
         $this->addSql('DROP TABLE "User"');
+        $this->addSql('DROP TABLE domaine');
     }
 }

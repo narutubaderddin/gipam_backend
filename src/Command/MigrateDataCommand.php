@@ -5,6 +5,7 @@ namespace App\Command;
 use App\Command\Utils\MigrationDb;
 use App\Command\Utils\MigrationRepository;
 use Doctrine\ORM\EntityManagerInterface;
+use PHPUnit\TextUI\XmlConfiguration\Migration;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
@@ -22,8 +23,8 @@ class MigrateDataCommand extends Command
     // number of logic group
     protected const GROUPS = [
         1 => ['ministry', 'establishment', 'service', 'correspondent',],
-        2 => ['region', 'departement', 'commune', 'building', 'site'],
-        3 => ['deposittype', 'style', 'era', 'field', 'denomination',],
+        2 => ['region', 'departement', 'commune', 'site', 'building',],
+        3 => ['deposittype', 'style', 'era', 'domaine', 'denomination',],
         4 => ['deposittype', 'depositor'],
 //        4 => ['actiontype', 'report', 'action', 'depositor'],
     ];
@@ -222,7 +223,9 @@ class MigrateDataCommand extends Command
     private function getRelatedEntity(array $oldEntity, string $relatedTableName)
     {
         $relatedTableNameMappingTable = MigrationDb::TABLE_NAME[$relatedTableName];
-        $relatedTableNameMappingTable = array_map('strtolower', $relatedTableNameMappingTable);
+        if (!MigrationDb::UPPERCASE_NAME) {
+            $relatedTableNameMappingTable = array_map('strtolower', $relatedTableNameMappingTable);
+        }
         $oldIdColumns = $this->getOldIdColumns($relatedTableName);
         $criteria = [];
         foreach ($oldIdColumns as $oldIdColumn) {
@@ -236,8 +239,11 @@ class MigrateDataCommand extends Command
     {
         $newEntity = [];
         $newEntity[] = $rowCount;
-        // lower the field of $mappingTable
-        $mappingTable = array_map('strtolower', $mappingTable);
+        // Here whene converting the DB System to postgres the names of tables and columns are in lowercase
+        // Option changed in MigrationDb class
+        if (!MigrationDb::UPPERCASE_NAME) {
+            $mappingTable = array_map('strtolower', $mappingTable);
+        }
         $attributes = array_keys($mappingTable);
         $i = 3;
         while ($i < count($attributes)) {
@@ -250,8 +256,8 @@ class MigrateDataCommand extends Command
                     if (count($relatedEntity) >= 1) {
                         if (count($relatedEntity) > 1) {
                             $errorMsg = 'Error in creating ' . $entity . ' old table = ' . $mappingTable['table'] .
-                                ' with row number = ' . $rowCount . ' with old id = '
-                                . $oldEntity[$mappingTable['id']] . ' for ' . $mappingTable[$attribute] . ' = ' .
+                                ' with row number = ' . $rowCount . ' with old id = ' .
+                                $oldEntity[$mappingTable['id']] . ' for ' . $mappingTable[$attribute] . ' = ' .
                                 $relatedEntityId . ' related class ' . $relatedClass;
                             $this->logger->info($errorMsg);
                             $foundError = true;
@@ -267,7 +273,11 @@ class MigrateDataCommand extends Command
                 $i++;
                 continue;
             }
-            $newEntity[] = $oldEntity[$mappingTable[$attribute]];
+            $newValue = $oldEntity[$mappingTable[$attribute]];
+            if (MigrationDb::USE_ACCESS_DB && is_string($newValue)) {
+                $newValue = utf8_encode($newValue);
+            }
+            $newEntity[] = $newValue;
             $i++;
         }
         return $newEntity;
