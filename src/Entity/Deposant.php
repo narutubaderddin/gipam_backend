@@ -2,16 +2,16 @@
 
 namespace App\Entity;
 
-use App\Repository\DepositorRepository;
+use App\Repository\DeposantRepository;
 use DateTimeInterface;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
- * @ORM\Entity(repositoryClass=DepositorRepository::class)
+ * @ORM\Entity(repositoryClass=DeposantRepository::class)
  */
-class Depositor
+class Deposant
 {
     /**
      * @ORM\Id
@@ -23,27 +23,27 @@ class Depositor
     /**
      * @ORM\Column(type="string", length=255, nullable=true)
      */
-    private $acronym;
+    private $sigle;
 
     /**
      * @ORM\Column(type="string", length=255, nullable=true)
      */
-    private $name;
+    private $nom;
 
     /**
      * @ORM\Column(type="string", length=255, nullable=true)
      */
-    private $address;
+    private $adresse;
 
     /**
      * @ORM\Column(type="string", length=255, nullable=true)
      */
-    private $city;
+    private $ville;
 
     /**
      * @ORM\Column(type="string", length=255, nullable=true)
      */
-    private $department;
+    private $departement;
 
     /**
      * @ORM\Column(type="string", length=255, nullable=true)
@@ -53,7 +53,7 @@ class Depositor
     /**
      * @ORM\Column(type="string", length=255, nullable=true)
      */
-    private $phone;
+    private $tel;
 
     /**
      * @ORM\Column(type="string", length=255, nullable=true)
@@ -68,12 +68,12 @@ class Depositor
     /**
      * @ORM\Column(type="datetime", nullable=true)
      */
-    private $startDate;
+    private $dateDebut;
 
     /**
      * @ORM\Column(type="datetime", nullable=true)
      */
-    private $endDate;
+    private $dateFin;
 
     /**
      * @ORM\Column(type="string", length=255, nullable=true)
@@ -81,23 +81,23 @@ class Depositor
     private $contact;
 
     /**
-     * @ORM\ManyToOne(targetEntity=DepositType::class, inversedBy="depositors")
+     * @ORM\ManyToOne(targetEntity=TypeDeposant::class, inversedBy="deposants")
      */
-    private $depositType;
+    private $typeDeposant;
 
     /**
-     * @ORM\OneToMany(targetEntity=DepositStatus::class, mappedBy="depositor")
+     * @ORM\OneToMany(targetEntity=StatutDepot::class, mappedBy="deposant")
      */
-    private $depositStatuses;
+    private $statutDepots;
 
     /**
      * @ORM\Column(type="text", nullable=true)
      */
-    private $comment;
+    private $commentaire;
 
     public function __construct()
     {
-        $this->depositStatuses = new ArrayCollection();
+        $this->statutDepots = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -105,62 +105,62 @@ class Depositor
         return $this->id;
     }
 
-    public function getAcronym(): ?string
+    public function getSigle(): ?string
     {
-        return $this->acronym;
+        return $this->sigle;
     }
 
-    public function setAcronym(?string $acronym): self
+    public function setSigle(?string $sigle): self
     {
-        $this->acronym = $acronym;
+        $this->sigle = $sigle;
 
         return $this;
     }
 
-    public function getName(): ?string
+    public function getNom(): ?string
     {
-        return $this->name;
+        return $this->nom;
     }
 
-    public function setName(?string $name): self
+    public function setNom(?string $nom): self
     {
-        $this->name = $name;
+        $this->nom = $nom;
 
         return $this;
     }
 
-    public function getAddress(): ?string
+    public function getAdresse(): ?string
     {
-        return $this->address;
+        return $this->adresse;
     }
 
-    public function setAddress(?string $address): self
+    public function setAdresse(?string $adresse): self
     {
-        $this->address = $address;
+        $this->adresse = $adresse;
 
         return $this;
     }
 
-    public function getCity(): ?string
+    public function getVille(): ?string
     {
-        return $this->city;
+        return $this->ville;
     }
 
-    public function setCity(?string $city): self
+    public function setVille(?string $ville): self
     {
-        $this->city = $city;
+        $this->ville = $ville;
 
         return $this;
     }
 
-    public function getDepartment(): ?string
+    public function getDepartement(): ?string
     {
-        return $this->department;
+        return $this->departement;
     }
 
-    public function setDepartment(?string $department): self
+    public function setDepartement(?string $departement): self
     {
-        $this->department = $department;
+        $this->departement = $departement;
 
         return $this;
     }
@@ -177,14 +177,14 @@ class Depositor
         return $this;
     }
 
-    public function getPhone(): ?string
+    public function getTel(): ?string
     {
-        return $this->phone;
+        return $this->tel;
     }
 
-    public function setPhone(?string $phone): self
+    public function setTel(?string $tel): self
     {
-        $this->phone = $phone;
+        $this->tel = $tel;
 
         return $this;
     }
@@ -213,26 +213,26 @@ class Depositor
         return $this;
     }
 
-    public function getStartDate(): ?DateTimeInterface
+    public function getDateDebut(): ?DateTimeInterface
     {
-        return $this->startDate;
+        return $this->dateDebut;
     }
 
-    public function setStartDate(?DateTimeInterface $startDate): self
+    public function setDateDebut(?DateTimeInterface $dateDebut): self
     {
-        $this->startDate = $startDate;
+        $this->dateDebut = $dateDebut;
 
         return $this;
     }
 
-    public function getEndDate(): ?DateTimeInterface
+    public function getDateFin(): ?DateTimeInterface
     {
-        return $this->endDate;
+        return $this->dateFin;
     }
 
-    public function setEndDate(?DateTimeInterface $endDate): self
+    public function setDateFin(?DateTimeInterface $dateFin): self
     {
-        $this->endDate = $endDate;
+        $this->dateFin = $dateFin;
 
         return $this;
     }
@@ -249,56 +249,56 @@ class Depositor
         return $this;
     }
 
-    public function getDepositType(): ?DepositType
+    public function getTypeDeposant(): ?TypeDeposant
     {
-        return $this->depositType;
+        return $this->typeDeposant;
     }
 
-    public function setDepositType(?DepositType $depositType): self
+    public function setTypeDeposant(?TypeDeposant $typeDeposant): self
     {
-        $this->depositType = $depositType;
+        $this->typeDeposant = $typeDeposant;
 
         return $this;
     }
 
     /**
-     * @return Collection|DepositStatus[]
+     * @return Collection|StatutDepot[]
      */
-    public function getDepositStatuses(): Collection
+    public function getStatutDepots(): Collection
     {
-        return $this->depositStatuses;
+        return $this->statutDepots;
     }
 
-    public function addDepositStatus(DepositStatus $depositStatus): self
+    public function addStatutDepot(StatutDepot $statutDepot): self
     {
-        if (!$this->depositStatuses->contains($depositStatus)) {
-            $this->depositStatuses[] = $depositStatus;
-            $depositStatus->setDepositor($this);
+        if (!$this->statutDepots->contains($statutDepot)) {
+            $this->statutDepots[] = $statutDepot;
+            $statutDepot->setDeposant($this);
         }
 
         return $this;
     }
 
-    public function removeDepositStatus(DepositStatus $depositStatus): self
+    public function removeStatutDepot(StatutDepot $statutDepot): self
     {
-        if ($this->depositStatuses->removeElement($depositStatus)) {
+        if ($this->statutDepots->removeElement($statutDepot)) {
             // set the owning side to null (unless already changed)
-            if ($depositStatus->getDepositor() === $this) {
-                $depositStatus->setDepositor(null);
+            if ($statutDepot->getDeposant() === $this) {
+                $statutDepot->setDeposant(null);
             }
         }
 
         return $this;
     }
 
-    public function getComment(): ?string
+    public function getCommentaire(): ?string
     {
-        return $this->comment;
+        return $this->commentaire;
     }
 
-    public function setComment(?string $comment): self
+    public function setCommentaire(?string $commentaire): self
     {
-        $this->comment = $comment;
+        $this->commentaire = $commentaire;
 
         return $this;
     }

@@ -2,15 +2,15 @@
 
 namespace App\Entity;
 
-use App\Repository\DepositTypeRepository;
+use App\Repository\TypeDeposantRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
- * @ORM\Entity(repositoryClass=DepositTypeRepository::class)
+ * @ORM\Entity(repositoryClass=TypeDeposantRepository::class)
  */
-class DepositType
+class TypeDeposant
 {
     /**
      * @ORM\Id
@@ -25,13 +25,13 @@ class DepositType
     private $label;
 
     /**
-     * @ORM\OneToMany(targetEntity=Depositor::class, mappedBy="depositType")
+     * @ORM\OneToMany(targetEntity=Deposant::class, mappedBy="typeDeposant")
      */
-    private $depositors;
+    private $deposants;
 
     public function __construct()
     {
-        $this->depositors = new ArrayCollection();
+        $this->deposants = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -52,29 +52,29 @@ class DepositType
     }
 
     /**
-     * @return Collection|Depositor[]
+     * @return Collection|Deposant[]
      */
-    public function getDepositors(): Collection
+    public function getDeposants(): Collection
     {
-        return $this->depositors;
+        return $this->deposants;
     }
 
-    public function addDepositor(Depositor $depositor): self
+    public function addDeposant(Deposant $deposant): self
     {
-        if (!$this->depositors->contains($depositor)) {
-            $this->depositors[] = $depositor;
-            $depositor->setDepositType($this);
+        if (!$this->deposants->contains($deposant)) {
+            $this->deposants[] = $deposant;
+            $deposant->setTypeDeposant($this);
         }
 
         return $this;
     }
 
-    public function removeDepositor(Depositor $depositor): self
+    public function removeDeposant(Deposant $deposant): self
     {
-        if ($this->depositors->removeElement($depositor)) {
+        if ($this->deposants->removeElement($deposant)) {
             // set the owning side to null (unless already changed)
-            if ($depositor->getDepositType() === $this) {
-                $depositor->setDepositType(null);
+            if ($deposant->getTypeDeposant() === $this) {
+                $deposant->setTypeDeposant(null);
             }
         }
 
