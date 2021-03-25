@@ -32,7 +32,7 @@ class StatutDepot extends Statut
         return $this;
     }
 
-    public function getdDeposant(): ?Deposant
+    public function getDeposant(): ?Deposant
     {
         return $this->deposant;
     }

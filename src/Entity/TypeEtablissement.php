@@ -2,15 +2,15 @@
 
 namespace App\Entity;
 
-use App\Repository\StyleRepository;
+use App\Repository\TypeEtablissementRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
- * @ORM\Entity(repositoryClass=StyleRepository::class)
+ * @ORM\Entity(repositoryClass=TypeEtablissementRepository::class)
  */
-class Style
+class TypeEtablissement
 {
     /**
      * @ORM\Id
@@ -25,13 +25,13 @@ class Style
     private $libelle;
 
     /**
-     * @ORM\OneToMany(targetEntity=ObjetMobilier::class, mappedBy="style")
+     * @ORM\OneToMany(targetEntity=Etablissement::class, mappedBy="type")
      */
-    private $objetMobiliers;
+    private $etablissements;
 
     public function __construct()
     {
-        $this->objetMobiliers = new ArrayCollection();
+        $this->etablissements = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -52,29 +52,29 @@ class Style
     }
 
     /**
-     * @return Collection|ObjetMobilier[]
+     * @return Collection|Etablissement[]
      */
-    public function getObjetMobiliers(): Collection
+    public function getEtablissements(): Collection
     {
-        return $this->objetMobiliers;
+        return $this->etablissements;
     }
 
-    public function addObjetMobilier(ObjetMobilier $objetMobilier): self
+    public function addEtablissement(Etablissement $etablissement): self
     {
-        if (!$this->objetMobiliers->contains($objetMobilier)) {
-            $this->objetMobiliers[] = $objetMobilier;
-            $objetMobilier->setStyle($this);
+        if (!$this->etablissements->contains($etablissement)) {
+            $this->etablissements[] = $etablissement;
+            $etablissement->setType($this);
         }
 
         return $this;
     }
 
-    public function removeObjetMobilier(ObjetMobilier $objetMobilier): self
+    public function removeEtablissement(Etablissement $etablissement): self
     {
-        if ($this->objetMobiliers->removeElement($objetMobilier)) {
+        if ($this->etablissements->removeElement($etablissement)) {
             // set the owning side to null (unless already changed)
-            if ($objetMobilier->getStyle() === $this) {
-                $objetMobilier->setStyle(null);
+            if ($etablissement->getType() === $this) {
+                $etablissement->setType(null);
             }
         }
 

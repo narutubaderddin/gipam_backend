@@ -30,14 +30,14 @@ class Domaine
     private $denominations;
 
     /**
-     * @ORM\OneToMany(targetEntity=Furniture::class, mappedBy="domaine")
+     * @ORM\OneToMany(targetEntity=ObjetMobilier::class, mappedBy="domaine")
      */
-    private $furniture;
+    private $objetMobiliers;
 
     public function __construct()
     {
         $this->denominations = new ArrayCollection();
-        $this->furniture = new ArrayCollection();
+        $this->objetMobiliers = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -88,29 +88,29 @@ class Domaine
     }
 
     /**
-     * @return Collection|Furniture[]
+     * @return Collection|ObjetMobilier[]
      */
-    public function getFurniture(): Collection
+    public function getObjetMobiliers(): Collection
     {
-        return $this->furniture;
+        return $this->objetMobiliers;
     }
 
-    public function addFurniture(Furniture $furniture): self
+    public function addObjetMobilier(ObjetMobilier $objetMobilier): self
     {
-        if (!$this->furniture->contains($furniture)) {
-            $this->furniture[] = $furniture;
-            $furniture->setdomaine($this);
+        if (!$this->objetMobiliers->contains($objetMobilier)) {
+            $this->objetMobiliers[] = $objetMobilier;
+            $objetMobilier->setdomaine($this);
         }
 
         return $this;
     }
 
-    public function removeFurniture(Furniture $furniture): self
+    public function removeObjetMobilier(ObjetMobilier $objetMobilier): self
     {
-        if ($this->furniture->removeElement($furniture)) {
+        if ($this->objetMobiliers->removeElement($objetMobilier)) {
             // set the owning side to null (unless already changed)
-            if ($furniture->getdomaine() === $this) {
-                $furniture->setdomaine(null);
+            if ($objetMobilier->getdomaine() === $this) {
+                $objetMobilier->setdomaine(null);
             }
         }
 

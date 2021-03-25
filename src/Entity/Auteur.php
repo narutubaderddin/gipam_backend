@@ -35,14 +35,14 @@ class Auteur
     private $types;
 
     /**
-     * @ORM\ManyToMany(targetEntity=Furniture::class, mappedBy="auteurs")
+     * @ORM\ManyToMany(targetEntity=ObjetMobilier::class, mappedBy="auteurs")
      */
-    private $furniture;
+    private $objetMobiliers;
 
     public function __construct()
     {
         $this->types = new ArrayCollection();
-        $this->furniture = new ArrayCollection();
+        $this->objetMobiliers = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -105,27 +105,27 @@ class Auteur
     }
 
     /**
-     * @return Collection|Furniture[]
+     * @return Collection|ObjetMobilier[]
      */
-    public function getFurniture(): Collection
+    public function getObjetMobiliers(): Collection
     {
-        return $this->furniture;
+        return $this->objetMobiliers;
     }
 
-    public function addFurniture(Furniture $furniture): self
+    public function addObjetMobilier(ObjetMobilier $objetMobilier): self
     {
-        if (!$this->furniture->contains($furniture)) {
-            $this->furniture[] = $furniture;
-            $furniture->addAuteur($this);
+        if (!$this->objetMobiliers->contains($objetMobilier)) {
+            $this->objetMobiliers[] = $objetMobilier;
+            $objetMobilier->addAuteur($this);
         }
 
         return $this;
     }
 
-    public function removeFurniture(Furniture $furniture): self
+    public function removeObjetMobilier(ObjetMobilier $objetMobilier): self
     {
-        if ($this->furniture->removeElement($furniture)) {
-            $furniture->removeAuteur($this);
+        if ($this->objetMobiliers->removeElement($objetMobilier)) {
+            $objetMobilier->removeAuteur($this);
         }
 
         return $this;

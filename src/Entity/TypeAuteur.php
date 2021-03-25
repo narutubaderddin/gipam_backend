@@ -49,9 +49,9 @@ class TypeAuteur
         return $this->auteur;
     }
 
-    public function setAuteur(?auteur$auteur): self
+    public function setAuteur(?auteur $auteur): self
     {
-        $this->auteur= $auteur;
+        $this->auteur = $auteur;
 
         return $this;
     }

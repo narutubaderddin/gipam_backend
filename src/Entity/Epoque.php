@@ -25,13 +25,13 @@ class Epoque
     private $libelle;
 
     /**
-     * @ORM\OneToMany(targetEntity=Furniture::class, mappedBy="era")
+     * @ORM\OneToMany(targetEntity=ObjetMobilier::class, mappedBy="era")
      */
-    private $furniture;
+    private $objetMobiliers;
 
     public function __construct()
     {
-        $this->furniture = new ArrayCollection();
+        $this->objetMobiliers = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -52,29 +52,29 @@ class Epoque
     }
 
     /**
-     * @return Collection|Furniture[]
+     * @return Collection|ObjetMobilier[]
      */
-    public function getFurniture(): Collection
+    public function getObjetMobiliers(): Collection
     {
-        return $this->furniture;
+        return $this->objetMobiliers;
     }
 
-    public function addFurniture(Furniture $furniture): self
+    public function addobjetMobilier(ObjetMobilier $objetMobilier): self
     {
-        if (!$this->furniture->contains($furniture)) {
-            $this->furniture[] = $furniture;
-            $furniture->setEra($this);
+        if (!$this->objetMobiliers->contains($objetMobilier)) {
+            $this->objetMobiliers[] = $objetMobilier;
+            $objetMobilier->setEpoque($this);
         }
 
         return $this;
     }
 
-    public function removeFurniture(Furniture $furniture): self
+    public function removeobjetMobilier(ObjetMobilier $objetMobilier): self
     {
-        if ($this->furniture->removeElement($furniture)) {
+        if ($this->objetMobiliers->removeElement($objetMobilier)) {
             // set the owning side to null (unless already changed)
-            if ($furniture->getEra() === $this) {
-                $furniture->setEra(null);
+            if ($objetMobilier->getEpoque() === $this) {
+                $objetMobilier->setEpoque(null);
             }
         }
 

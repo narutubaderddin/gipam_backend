@@ -23,28 +23,28 @@ class Site
     /**
      * @ORM\Column(type="string", length=255, nullable=true)
      */
-    private $label;
+    private $libelle;
 
     /**
      * @ORM\Column(type="datetime", nullable=true)
      */
-    private $startDate;
+    private $dateDebut;
 
     /**
      * @ORM\Column(type="datetime", nullable=true)
      */
-    private $disappearanceDate;
+    private $dateDisparition;
 
     /**
-     * @ORM\OneToMany(targetEntity=Building::class, mappedBy="site")
+     * @ORM\OneToMany(targetEntity=Batiment::class, mappedBy="site")
      */
-    private $buildings;
+    private $batiments;
 
 
 
     public function __construct()
     {
-        $this->buildings = new ArrayCollection();
+        $this->batiments = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -52,66 +52,66 @@ class Site
         return $this->id;
     }
 
-    public function getLabel(): ?string
+    public function getLibelle(): ?string
     {
-        return $this->label;
+        return $this->libelle;
     }
 
-    public function setLabel(?string $label): self
+    public function setLibelle(?string $libelle): self
     {
-        $this->label = $label;
+        $this->libelle = $libelle;
 
         return $this;
     }
 
-    public function getStartDate(): ?DateTimeInterface
+    public function getDateDebut(): ?DateTimeInterface
     {
-        return $this->startDate;
+        return $this->dateDebut;
     }
 
-    public function setStartDate(?DateTimeInterface $startDate): self
+    public function setDateDebut(?DateTimeInterface $dateDebut): self
     {
-        $this->startDate = $startDate;
+        $this->dateDebut = $dateDebut;
 
         return $this;
     }
 
-    public function getDisappearanceDate(): ?DateTimeInterface
+    public function getDateDisparition(): ?DateTimeInterface
     {
-        return $this->disappearanceDate;
+        return $this->dateDisparition;
     }
 
-    public function setDisappearanceDate(?DateTimeInterface $disappearanceDate): self
+    public function setDateDisparition(?DateTimeInterface $dateDisparition): self
     {
-        $this->disappearanceDate = $disappearanceDate;
+        $this->dateDisparition = $dateDisparition;
 
         return $this;
     }
 
     /**
-     * @return Collection|Building[]
+     * @return Collection|Batiment[]
      */
-    public function getBuildings(): Collection
+    public function getBatiments(): Collection
     {
-        return $this->buildings;
+        return $this->batiments;
     }
 
-    public function addBuilding(Building $building): self
+    public function addBatiments(Batiment $batiment): self
     {
-        if (!$this->buildings->contains($building)) {
-            $this->buildings[] = $building;
-            $building->setSite($this);
+        if (!$this->batiments->contains($batiment)) {
+            $this->batiments[] = $batiment;
+            $batiment->setSite($this);
         }
 
         return $this;
     }
 
-    public function removeBuilding(Building $building): self
+    public function removeBatiments(Batiment $batiment): self
     {
-        if ($this->buildings->removeElement($building)) {
+        if ($this->batiments->removeElement($batiment)) {
             // set the owning side to null (unless already changed)
-            if ($building->getSite() === $this) {
-                $building->setSite(null);
+            if ($batiment->getSite() === $this) {
+                $batiment->setSite(null);
             }
         }
 

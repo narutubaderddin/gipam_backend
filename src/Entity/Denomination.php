@@ -35,14 +35,14 @@ class Denomination
     private $matiereTechniques;
 
     /**
-     * @ORM\OneToMany(targetEntity=Furniture::class, mappedBy="denomination")
+     * @ORM\OneToMany(targetEntity=ObjetMobilier::class, mappedBy="denomination")
      */
-    private $furniture;
+    private $objetMobilier;
 
     public function __construct()
     {
         $this->matiereTechniques = new ArrayCollection();
-        $this->furniture = new ArrayCollection();
+        $this->objetMobilier = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -99,29 +99,29 @@ class Denomination
     }
 
     /**
-     * @return Collection|Furniture[]
+     * @return Collection|ObjetMobilier[]
      */
-    public function getFurniture(): Collection
+    public function getObjetMobilier(): Collection
     {
-        return $this->furniture;
+        return $this->objetMobilier;
     }
 
-    public function addFurniture(Furniture $furniture): self
+    public function addObjetMobilier(ObjetMobilier $objetMobilier): self
     {
-        if (!$this->furniture->contains($furniture)) {
-            $this->furniture[] = $furniture;
-            $furniture->setDenomination($this);
+        if (!$this->objetMobilier->contains($objetMobilier)) {
+            $this->objetMobilier[] = $objetMobilier;
+            $objetMobilier->setDenomination($this);
         }
 
         return $this;
     }
 
-    public function removeFurniture(Furniture $furniture): self
+    public function removeObjetMobilier(ObjetMobilier $objetMobilier): self
     {
-        if ($this->furniture->removeElement($furniture)) {
+        if ($this->objetMobilier->removeElement($objetMobilier)) {
             // set the owning side to null (unless already changed)
-            if ($furniture->getDenomination() === $this) {
-                $furniture->setDenomination(null);
+            if ($objetMobilier->getDenomination() === $this) {
+                $objetMobilier->setDenomination(null);
             }
         }
 

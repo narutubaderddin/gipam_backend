@@ -85,7 +85,7 @@ class StatutPropriete extends Statut
         return $this;
     }
 
-    public function getcategorie(): ?Categorie
+    public function getCategorie(): ?Categorie
     {
         return $this->categorie;
     }

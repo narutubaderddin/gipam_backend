@@ -63,7 +63,7 @@ class Categorie
     {
         if (!$this->statutProprietes->contains($statutPropriete)) {
             $this->statutProprietes[] = $statutPropriete;
-            $statutPropriete->setCategory($this);
+            $statutPropriete->setCategorie($this);
         }
 
         return $this;
@@ -73,8 +73,8 @@ class Categorie
     {
         if ($this->statutProprietes->removeElement($statutPropriete)) {
             // set the owning side to null (unless already changed)
-            if ($statutPropriete->getCategory() === $this) {
-                $statutPropriete->setCategory(null);
+            if ($statutPropriete->getCategorie() === $this) {
+                $statutPropriete->setCategorie(null);
             }
         }
 
