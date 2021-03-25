@@ -2,16 +2,16 @@
 
 namespace App\Entity;
 
-use App\Repository\RegionRepository;
+use App\Repository\MinistereRepository;
 use DateTimeInterface;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
- * @ORM\Entity(repositoryClass=RegionRepository::class)
+ * @ORM\Entity(repositoryClass=MinistereRepository::class)
  */
-class Region
+class Ministere
 {
     /**
      * @ORM\Id
@@ -26,6 +26,11 @@ class Region
     private $nom;
 
     /**
+     * @ORM\Column(type="string", length=255, nullable=true)
+     */
+    private $sigle;
+
+    /**
      * @ORM\Column(type="datetime", nullable=true)
      */
     private $dateDebut;
@@ -36,13 +41,14 @@ class Region
     private $dateDisparition;
 
     /**
-     * @ORM\OneToMany(targetEntity=Departement::class, mappedBy="region")
+     * @ORM\OneToMany(targetEntity=Etablissement::class, mappedBy="ministere")
      */
-    private $departements;
+    private $etablissements;
+
 
     public function __construct()
     {
-        $this->departements = new ArrayCollection();
+        $this->etablissements = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -62,7 +68,19 @@ class Region
         return $this;
     }
 
-    public function getstartDate(): ?DateTimeInterface
+    public function getSigle(): ?string
+    {
+        return $this->sigle;
+    }
+
+    public function setSigle(?string $sigle): self
+    {
+        $this->sigle = $sigle;
+
+        return $this;
+    }
+
+    public function getDateDebut(): ?DateTimeInterface
     {
         return $this->dateDebut;
     }
@@ -87,29 +105,29 @@ class Region
     }
 
     /**
-     * @return Collection|Departement[]
+     * @return Collection|Etablissement[]
      */
-    public function getDepartements(): Collection
+    public function getEtablissements(): Collection
     {
-        return $this->departements;
+        return $this->etablissements;
     }
 
-    public function addDepartement(Departement $departement): self
+    public function addEtablissement(Etablissement $etablissement): self
     {
-        if (!$this->departements->contains($departement)) {
-            $this->departements[] = $departement;
-            $departement->setRegion($this);
+        if (!$this->etablissements->contains($etablissement)) {
+            $this->etablissements[] = $etablissement;
+            $etablissement->setMinistere($this);
         }
 
         return $this;
     }
 
-    public function removeDepartement(Departement $departement): self
+    public function removeEtablissement(Etablissement $etablissement): self
     {
-        if ($this->departements->removeElement($departement)) {
+        if ($this->etablissements->removeElement($etablissement)) {
             // set the owning side to null (unless already changed)
-            if ($departement->getRegion() === $this) {
-                $departement->setRegion(null);
+            if ($etablissement->getMinistere() === $this) {
+                $etablissement->setMinistere(null);
             }
         }
 

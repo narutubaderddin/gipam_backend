@@ -22,7 +22,7 @@ class Commune
     /**
      * @ORM\Column(type="string", length=255, nullable=true)
      */
-    private $name;
+    private $nom;
 
     /**
      * @ORM\ManyToOne(targetEntity=Departement::class, inversedBy="communes")
@@ -30,13 +30,13 @@ class Commune
     private $departement;
 
     /**
-     * @ORM\OneToMany(targetEntity=Building::class, mappedBy="commune")
+     * @ORM\OneToMany(targetEntity=Batiment::class, mappedBy="commune")
      */
-    private $buildings;
+    private $batiments;
 
     public function __construct()
     {
-        $this->buildings = new ArrayCollection();
+        $this->batiments = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -45,14 +45,14 @@ class Commune
     }
 
 
-    public function getName(): ?string
+    public function getNom(): ?string
     {
-        return $this->name;
+        return $this->nom;
     }
 
-    public function setName(?string $name): self
+    public function setNom(?string $nom): self
     {
-        $this->name = $name;
+        $this->nom = $nom;
 
         return $this;
     }
@@ -70,29 +70,29 @@ class Commune
     }
 
     /**
-     * @return Collection|Building[]
+     * @return Collection|Batiment[]
      */
-    public function getBuildings(): Collection
+    public function getBatiments(): Collection
     {
-        return $this->buildings;
+        return $this->batiments;
     }
 
-    public function addBuilding(Building $building): self
+    public function addBatiment(Batiment $batiment): self
     {
-        if (!$this->buildings->contains($building)) {
-            $this->buildings[] = $building;
-            $building->setCommune($this);
+        if (!$this->batiments->contains($batiment)) {
+            $this->batiments[] = $batiment;
+            $batiment->setCommune($this);
         }
 
         return $this;
     }
 
-    public function removeBuilding(Building $building): self
+    public function removeBatiment(Batiment $batiment): self
     {
-        if ($this->buildings->removeElement($building)) {
+        if ($this->batiments->removeElement($batiment)) {
             // set the owning side to null (unless already changed)
-            if ($building->getCommune() === $this) {
-                $building->setCommune(null);
+            if ($batiment->getCommune() === $this) {
+                $batiment->setCommune(null);
             }
         }
 

@@ -46,13 +46,13 @@ abstract class Statut
     protected $commentaire;
 
     /**
-     * @ORM\OneToMany(targetEntity=Furniture::class, mappedBy="statut")
+     * @ORM\OneToMany(targetEntity=ObjetMobilier::class, mappedBy="statut")
      */
-    protected $furniture;
+    protected $objetMobiliers;
 
     public function __construct()
     {
-        $this->furniture = new ArrayCollection();
+        $this->objetMobiliers = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -109,29 +109,29 @@ abstract class Statut
     }
 
     /**
-     * @return Collection|Furniture[]
+     * @return Collection|ObjetMobilier[]
      */
-    public function getFurniture(): Collection
+    public function getObjetMobiliers(): Collection
     {
-        return $this->furniture;
+        return $this->objetMobiliers;
     }
 
-    public function addFurniture(Furniture $furniture): self
+    public function addObjetMobilier(ObjetMobilier $objetMobilier): self
     {
-        if (!$this->furniture->contains($furniture)) {
-            $this->furniture[] = $furniture;
-            $furniture->setStatut($this);
+        if (!$this->objetMobiliers->contains($objetMobilier)) {
+            $this->objetMobiliers[] = $objetMobilier;
+            $objetMobilier->setStatut($this);
         }
 
         return $this;
     }
 
-    public function removeFurniture(Furniture $furniture): self
+    public function removeObjetMobilier(ObjetMobilier $objetMobilier): self
     {
-        if ($this->furniture->removeElement($furniture)) {
+        if ($this->objetMobiliers->removeElement($objetMobilier)) {
             // set the owning side to null (unless already changed)
-            if ($furniture->getStatut() === $this) {
-                $furniture->setStatut(null);
+            if ($objetMobilier->getStatut() === $this) {
+                $objetMobilier->setStatut(null);
             }
         }
 

@@ -23,17 +23,17 @@ class Departement
     /**
      * @ORM\Column(type="string", length=255, nullable=true)
      */
-    private $name;
+    private $nom;
 
     /**
      * @ORM\Column(type="datetime", nullable=true)
      */
-    private $startDate;
+    private $dateDebut;
 
     /**
      * @ORM\Column(type="datetime", nullable=true)
      */
-    private $disappearanceDate;
+    private $dateDisparition;
 
     /**
      * @ORM\ManyToOne(targetEntity=Region::class, inversedBy="departements")
@@ -55,38 +55,38 @@ class Departement
         return $this->id;
     }
 
-    public function getName(): ?string
+    public function getNom(): ?string
     {
-        return $this->name;
+        return $this->nom;
     }
 
-    public function setName(?string $name): self
+    public function setNom(?string $nom): self
     {
-        $this->name = $name;
+        $this->nom = $nom;
 
         return $this;
     }
 
-    public function getStartDate(): ?DateTimeInterface
+    public function getDateDebut(): ?DateTimeInterface
     {
-        return $this->startDate;
+        return $this->dateDebut;
     }
 
-    public function setStartDate(?DateTimeInterface $startDate): self
+    public function setDateDebut(?DateTimeInterface $dateDebut): self
     {
-        $this->startDate = $startDate;
+        $this->dateDebut = $dateDebut;
 
         return $this;
     }
 
-    public function getDisappearanceDate(): ?DateTimeInterface
+    public function getDateDisparition(): ?DateTimeInterface
     {
-        return $this->disappearanceDate;
+        return $this->dateDisparition;
     }
 
-    public function setDisappearanceDate(?DateTimeInterface $disappearanceDate): self
+    public function setDateDisparition(?DateTimeInterface $dateDisparition): self
     {
-        $this->disappearanceDate = $disappearanceDate;
+        $this->dateDisparition = $dateDisparition;
 
         return $this;
     }

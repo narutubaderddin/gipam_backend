@@ -24,9 +24,9 @@ class LogOeuvre
     private $date;
 
     /**
-     * @ORM\ManyToOne(targetEntity=Furniture::class, inversedBy="logOeuvres")
+     * @ORM\ManyToOne(targetEntity=ObjetMobilier::class, inversedBy="logOeuvres")
      */
-    private $furniture;
+    private $objetMobilier;
 
     public function getId(): ?int
     {
@@ -47,14 +47,14 @@ class LogOeuvre
 
 
 
-    public function getFurniture(): ?Furniture
+    public function getObjetMobilier(): ?ObjetMobilier
     {
-        return $this->furniture;
+        return $this->objetMobilier;
     }
 
-    public function setFurniture(?Furniture $furniture): self
+    public function setObjetMobilier(?ObjetMobilier $objetMobilier): self
     {
-        $this->furniture = $furniture;
+        $this->objetMobilier = $objetMobilier;
 
         return $this;
     }

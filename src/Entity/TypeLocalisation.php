@@ -2,15 +2,15 @@
 
 namespace App\Entity;
 
-use App\Repository\StyleRepository;
+use App\Repository\TypeLocalisationRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
- * @ORM\Entity(repositoryClass=StyleRepository::class)
+ * @ORM\Entity(repositoryClass=TypeLocalisationRepository::class)
  */
-class Style
+class TypeLocalisation
 {
     /**
      * @ORM\Id
@@ -25,13 +25,13 @@ class Style
     private $libelle;
 
     /**
-     * @ORM\OneToMany(targetEntity=ObjetMobilier::class, mappedBy="style")
+     * @ORM\OneToMany(targetEntity=Localisation::class, mappedBy="type")
      */
-    private $objetMobiliers;
+    private $localisations;
 
     public function __construct()
     {
-        $this->objetMobiliers = new ArrayCollection();
+        $this->localisations = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -52,29 +52,29 @@ class Style
     }
 
     /**
-     * @return Collection|ObjetMobilier[]
+     * @return Collection|Localisation[]
      */
-    public function getObjetMobiliers(): Collection
+    public function getLocalisations(): Collection
     {
-        return $this->objetMobiliers;
+        return $this->localisations;
     }
 
-    public function addObjetMobilier(ObjetMobilier $objetMobilier): self
+    public function addLocalisation(Localisation $localisation): self
     {
-        if (!$this->objetMobiliers->contains($objetMobilier)) {
-            $this->objetMobiliers[] = $objetMobilier;
-            $objetMobilier->setStyle($this);
+        if (!$this->localisations->contains($localisation)) {
+            $this->localisations[] = $localisation;
+            $localisation->setType($this);
         }
 
         return $this;
     }
 
-    public function removeObjetMobilier(ObjetMobilier $objetMobilier): self
+    public function removeLocalisation(Localisation $localisation): self
     {
-        if ($this->objetMobiliers->removeElement($objetMobilier)) {
+        if ($this->localisations->removeElement($localisation)) {
             // set the owning side to null (unless already changed)
-            if ($objetMobilier->getStyle() === $this) {
-                $objetMobilier->setStyle(null);
+            if ($localisation->getType() === $this) {
+                $localisation->setType(null);
             }
         }
 
