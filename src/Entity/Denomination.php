@@ -22,17 +22,17 @@ class Denomination
     /**
      * @ORM\Column(type="string", length=255, nullable=true)
      */
-    private $label;
+    private $libelle;
 
     /**
-     * @ORM\ManyToOne(targetEntity=Field::class, inversedBy="denominations")
+     * @ORM\ManyToOne(targetEntity=domaine::class, inversedBy="denominations")
      */
     private $domaine;
 
     /**
-     * @ORM\ManyToMany(targetEntity=MaterialTechnique::class, inversedBy="denominations")
+     * @ORM\ManyToMany(targetEntity=MatiereTechnique::class, inversedBy="denominations")
      */
-    private $materialsTechniques;
+    private $matiereTechniques;
 
     /**
      * @ORM\OneToMany(targetEntity=Furniture::class, mappedBy="denomination")
@@ -41,7 +41,7 @@ class Denomination
 
     public function __construct()
     {
-        $this->materialsTechniques = new ArrayCollection();
+        $this->matiereTechniques = new ArrayCollection();
         $this->furniture = new ArrayCollection();
     }
 
@@ -50,24 +50,24 @@ class Denomination
         return $this->id;
     }
 
-    public function getLabel(): ?string
+    public function getLibelle(): ?string
     {
-        return $this->label;
+        return $this->libelle;
     }
 
-    public function setLabel(?string $label): self
+    public function setLibelle(?string $libelle): self
     {
-        $this->label = $label;
+        $this->libelle = $libelle;
 
         return $this;
     }
 
-    public function getDomaine(): ?Field
+    public function getdomaine(): ?domaine
     {
         return $this->domaine;
     }
 
-    public function setDomaine(?Field $domaine): self
+    public function setdomaine(?domaine $domaine): self
     {
         $this->domaine = $domaine;
 
@@ -75,25 +75,25 @@ class Denomination
     }
 
     /**
-     * @return Collection|MaterialTechnique[]
+     * @return Collection|MatiereTechnique[]
      */
-    public function getMaterialsTechniques(): Collection
+    public function getMatiereTechniques(): Collection
     {
-        return $this->materialsTechniques;
+        return $this->matiereTechniques;
     }
 
-    public function addMaterialsTechnique(MaterialTechnique $materialsTechnique): self
+    public function addMatiereTechnique(MatiereTechnique $matiereTechnique): self
     {
-        if (!$this->materialsTechniques->contains($materialsTechnique)) {
-            $this->materialsTechniques[] = $materialsTechnique;
+        if (!$this->matiereTechniques->contains($matiereTechnique)) {
+            $this->matiereTechniques[] = $matiereTechnique;
         }
 
         return $this;
     }
 
-    public function removeMaterialsTechnique(MaterialTechnique $materialsTechnique): self
+    public function removeMatiereTechnique(MatiereTechnique $matiereTechnique): self
     {
-        $this->materialsTechniques->removeElement($materialsTechnique);
+        $this->matiereTechniques->removeElement($matiereTechnique);
 
         return $this;
     }

@@ -2,16 +2,15 @@
 
 namespace App\Entity;
 
-use App\Repository\FieldRepository;
+use App\Repository\MatiereTechniqueRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
- * @ORM\Entity(repositoryClass=FieldRepository::class)
- * @ORM\Table(name="domaine")
+ * @ORM\Entity(repositoryClass=MatiereTechniqueRepository::class)
  */
-class Field
+class MatiereTechnique
 {
     /**
      * @ORM\Id
@@ -21,17 +20,22 @@ class Field
     private $id;
 
     /**
-     * @ORM\Column(name="libelle", type="string", length=255, nullable=true)
+     * @ORM\Column(type="string", length=255, nullable=true)
      */
     private $label;
 
     /**
-     * @ORM\OneToMany(targetEntity=Denomination::class, mappedBy="domaine")
+     * @ORM\Column(type="string", length=255, nullable=true)
+     */
+    private $type;
+
+    /**
+     * @ORM\ManyToMany(targetEntity=Denomination::class, mappedBy="materialsTechniques")
      */
     private $denominations;
 
     /**
-     * @ORM\OneToMany(targetEntity=Furniture::class, mappedBy="field")
+     * @ORM\OneToMany(targetEntity=Furniture::class, mappedBy="materialTechnique")
      */
     private $furniture;
 
@@ -58,6 +62,18 @@ class Field
         return $this;
     }
 
+    public function getType(): ?string
+    {
+        return $this->type;
+    }
+
+    public function setType(?string $type): self
+    {
+        $this->type = $type;
+
+        return $this;
+    }
+
     /**
      * @return Collection|Denomination[]
      */
@@ -70,7 +86,7 @@ class Field
     {
         if (!$this->denominations->contains($denomination)) {
             $this->denominations[] = $denomination;
-            $denomination->setDomaine($this);
+            $denomination->addMaterialsTechnique($this);
         }
 
         return $this;
@@ -79,10 +95,7 @@ class Field
     public function removeDenomination(Denomination $denomination): self
     {
         if ($this->denominations->removeElement($denomination)) {
-            // set the owning side to null (unless already changed)
-            if ($denomination->getDomaine() === $this) {
-                $denomination->setDomaine(null);
-            }
+            $denomination->removeMaterialsTechnique($this);
         }
 
         return $this;
@@ -100,7 +113,7 @@ class Field
     {
         if (!$this->furniture->contains($furniture)) {
             $this->furniture[] = $furniture;
-            $furniture->setField($this);
+            $furniture->setMaterialTechnique($this);
         }
 
         return $this;
@@ -110,8 +123,8 @@ class Field
     {
         if ($this->furniture->removeElement($furniture)) {
             // set the owning side to null (unless already changed)
-            if ($furniture->getField() === $this) {
-                $furniture->setField(null);
+            if ($furniture->getMaterialTechnique() === $this) {
+                $furniture->setMaterialTechnique(null);
             }
         }
 

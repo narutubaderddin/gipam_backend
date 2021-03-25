@@ -2,15 +2,15 @@
 
 namespace App\Entity;
 
-use App\Repository\MaterialTechniqueRepository;
+use App\Repository\DomaineRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
- * @ORM\Entity(repositoryClass=MaterialTechniqueRepository::class)
+ * @ORM\Entity(repositoryClass=DomaineRepository::class)
  */
-class MaterialTechnique
+class Domaine
 {
     /**
      * @ORM\Id
@@ -22,20 +22,15 @@ class MaterialTechnique
     /**
      * @ORM\Column(type="string", length=255, nullable=true)
      */
-    private $label;
+    private $libelle;
 
     /**
-     * @ORM\Column(type="string", length=255, nullable=true)
-     */
-    private $type;
-
-    /**
-     * @ORM\ManyToMany(targetEntity=Denomination::class, mappedBy="materialsTechniques")
+     * @ORM\OneToMany(targetEntity=Denomination::class, mappedBy="domaine")
      */
     private $denominations;
 
     /**
-     * @ORM\OneToMany(targetEntity=Furniture::class, mappedBy="materialTechnique")
+     * @ORM\OneToMany(targetEntity=Furniture::class, mappedBy="domaine")
      */
     private $furniture;
 
@@ -50,26 +45,14 @@ class MaterialTechnique
         return $this->id;
     }
 
-    public function getLabel(): ?string
+    public function getLibelle(): ?string
     {
-        return $this->label;
+        return $this->libelle;
     }
 
-    public function setLabel(?string $label): self
+    public function setLibelle(?string $libelle): self
     {
-        $this->label = $label;
-
-        return $this;
-    }
-
-    public function getType(): ?string
-    {
-        return $this->type;
-    }
-
-    public function setType(?string $type): self
-    {
-        $this->type = $type;
+        $this->libelle = $libelle;
 
         return $this;
     }
@@ -86,7 +69,7 @@ class MaterialTechnique
     {
         if (!$this->denominations->contains($denomination)) {
             $this->denominations[] = $denomination;
-            $denomination->addMaterialsTechnique($this);
+            $denomination->setdomaine($this);
         }
 
         return $this;
@@ -95,7 +78,10 @@ class MaterialTechnique
     public function removeDenomination(Denomination $denomination): self
     {
         if ($this->denominations->removeElement($denomination)) {
-            $denomination->removeMaterialsTechnique($this);
+            // set the owning side to null (unless already changed)
+            if ($denomination->getdomaine() === $this) {
+                $denomination->setdomaine(null);
+            }
         }
 
         return $this;
@@ -113,7 +99,7 @@ class MaterialTechnique
     {
         if (!$this->furniture->contains($furniture)) {
             $this->furniture[] = $furniture;
-            $furniture->setMaterialTechnique($this);
+            $furniture->setdomaine($this);
         }
 
         return $this;
@@ -123,8 +109,8 @@ class MaterialTechnique
     {
         if ($this->furniture->removeElement($furniture)) {
             // set the owning side to null (unless already changed)
-            if ($furniture->getMaterialTechnique() === $this) {
-                $furniture->setMaterialTechnique(null);
+            if ($furniture->getdomaine() === $this) {
+                $furniture->setdomaine(null);
             }
         }
 

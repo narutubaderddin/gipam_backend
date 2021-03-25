@@ -68,19 +68,14 @@ abstract class Furniture
     protected $description;
 
     /**
-     * @ORM\ManyToMany(targetEntity=Author::class, inversedBy="furniture")
+     * @ORM\ManyToMany(targetEntity=Auteur::class, inversedBy="furniture")
      */
-    protected $authors;
+    protected $auteurs;
 
     /**
-     * @ORM\ManyToOne(targetEntity=Era::class, inversedBy="furniture")
+     * @ORM\ManyToOne(targetEntity=Epoque::class, inversedBy="furniture")
      */
-    protected $era;
-
-    /**
-     * @ORM\ManyToOne(targetEntity=Type::class, inversedBy="furniture")
-     */
-    protected $type;
+    protected $epoque;
 
     /**
      * @ORM\ManyToOne(targetEntity=Style::class, inversedBy="furniture")
@@ -88,9 +83,9 @@ abstract class Furniture
     protected $style;
 
     /**
-     * @ORM\ManyToOne(targetEntity=MaterialTechnique::class, inversedBy="furniture")
+     * @ORM\ManyToOne(targetEntity=MatiereTechnique::class, inversedBy="furniture")
      */
-    protected $materialTechnique;
+    protected $matiereTechnique;
 
     /**
      * @ORM\ManyToOne(targetEntity=Denomination::class, inversedBy="furniture")
@@ -98,14 +93,14 @@ abstract class Furniture
     protected $denomination;
 
     /**
-     * @ORM\ManyToOne(targetEntity=Field::class, inversedBy="furniture")
+     * @ORM\ManyToOne(targetEntity=domaine::class, inversedBy="furniture")
      */
-    protected $field;
+    protected $domaine;
 
     /**
-     * @ORM\OneToMany(targetEntity=ArtWorkLog::class, mappedBy="furniture")
+     * @ORM\OneToMany(targetEntity=LogOeuvre::class, mappedBy="furniture")
      */
-    protected $artWorkLogs;
+    protected $logOeuvres;
 
     /**
      * @ORM\OneToMany(targetEntity=Movement::class, mappedBy="furniture")
@@ -123,14 +118,14 @@ abstract class Furniture
     protected $attachments;
 
     /**
-     * @ORM\ManyToOne(targetEntity=Status::class, inversedBy="furniture")
+     * @ORM\ManyToOne(targetEntity=Statut::class, inversedBy="furniture")
      */
-    protected $status;
+    protected $statut;
 
     public function __construct()
     {
-        $this->authors = new ArrayCollection();
-        $this->artWorkLogs = new ArrayCollection();
+        $this->auteurs = new ArrayCollection();
+        $this->logOeuvres = new ArrayCollection();
         $this->movements = new ArrayCollection();
         $this->reports = new ArrayCollection();
         $this->attachments = new ArrayCollection();
@@ -250,37 +245,37 @@ abstract class Furniture
     }
 
     /**
-     * @return Collection|Author[]
+     * @return Collection|Auteur[]
      */
-    public function getAuthors(): Collection
+    public function getAuteurs(): Collection
     {
-        return $this->authors;
+        return $this->auteurs;
     }
 
-    public function addAuthor(Author $author): self
+    public function addAuteur(Auteur $auteur): self
     {
-        if (!$this->authors->contains($author)) {
-            $this->authors[] = $author;
+        if (!$this->auteurs->contains($auteur)) {
+            $this->auteurs[] = $auteur;
         }
 
         return $this;
     }
 
-    public function removeAuthor(Author $author): self
+    public function removeAuteur(Auteur $auteur): self
     {
-        $this->authors->removeElement($author);
+        $this->auteurs->removeElement($auteur);
 
         return $this;
     }
 
-    public function getEra(): ?Era
+    public function getEpoque(): ?Epoque
     {
-        return $this->era;
+        return $this->epoque;
     }
 
-    public function setEra(?Era $era): self
+    public function setEpoque(?Epoque $epoque): self
     {
-        $this->era = $era;
+        $this->epoque = $epoque;
 
         return $this;
     }
@@ -309,14 +304,14 @@ abstract class Furniture
         return $this;
     }
 
-    public function getMaterialTechnique(): ?MaterialTechnique
+    public function getMatiereTechnique(): ?MatiereTechnique
     {
-        return $this->materialTechnique;
+        return $this->matiereTechnique;
     }
 
-    public function setMaterialTechnique(?MaterialTechnique $materialTechnique): self
+    public function setMatiereTechnique(?MatiereTechnique $matiereTechnique): self
     {
-        $this->materialTechnique = $materialTechnique;
+        $this->matiereTechnique = $matiereTechnique;
 
         return $this;
     }
@@ -333,42 +328,42 @@ abstract class Furniture
         return $this;
     }
 
-    public function getField(): ?Domaine
+    public function getDomaine(): ?domaine
     {
-        return $this->field;
+        return $this->domaine;
     }
 
-    public function setField(?Domaine $field): self
+    public function setDomaine(?domaine $domaine): self
     {
-        $this->field = $field;
+        $this->domaine = $domaine;
 
         return $this;
     }
 
     /**
-     * @return Collection|ArtWorkLog[]
+     * @return Collection|LogOeuvre[]
      */
-    public function getArtWorkLogs(): Collection
+    public function getLogOeuvres(): Collection
     {
-        return $this->artWorkLogs;
+        return $this->logOeuvres;
     }
 
-    public function addArtWorkLog(ArtWorkLog $artWorkLog): self
+    public function addLogOeuvre(LogOeuvre $logOeuvre): self
     {
-        if (!$this->artWorkLogs->contains($artWorkLog)) {
-            $this->artWorkLogs[] = $artWorkLog;
-            $artWorkLog->setFurniture($this);
+        if (!$this->logOeuvres->contains($logOeuvre)) {
+            $this->logOeuvres[] = $logOeuvre;
+            $logOeuvre->setFurniture($this);
         }
 
         return $this;
     }
 
-    public function removeArtWorkLog(ArtWorkLog $artWorkLog): self
+    public function removeLogOeuvre(LogOeuvre $logOeuvre): self
     {
-        if ($this->artWorkLogs->removeElement($artWorkLog)) {
+        if ($this->logOeuvres->removeElement($logOeuvre)) {
             // set the owning side to null (unless already changed)
-            if ($artWorkLog->getFurniture() === $this) {
-                $artWorkLog->setFurniture(null);
+            if ($logOeuvre->getFurniture() === $this) {
+                $logOeuvre->setFurniture(null);
             }
         }
 
@@ -465,14 +460,14 @@ abstract class Furniture
         return $this;
     }
 
-    public function getStatus(): ?Status
+    public function getStatut(): ?Statut
     {
-        return $this->status;
+        return $this->statut;
     }
 
-    public function setStatus(?Status $status): self
+    public function setStatut(?Statut $statut): self
     {
-        $this->status = $status;
+        $this->statut = $statut;
 
         return $this;
     }

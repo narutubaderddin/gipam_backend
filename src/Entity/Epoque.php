@@ -2,15 +2,15 @@
 
 namespace App\Entity;
 
-use App\Repository\EraRepository;
+use App\Repository\EpoqueRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
- * @ORM\Entity(repositoryClass=EraRepository::class)
+ * @ORM\Entity(repositoryClass=EpoqueRepository::class)
  */
-class Era
+class Epoque
 {
     /**
      * @ORM\Id
@@ -22,7 +22,7 @@ class Era
     /**
      * @ORM\Column(type="string", length=255, nullable=true)
      */
-    private $label;
+    private $libelle;
 
     /**
      * @ORM\OneToMany(targetEntity=Furniture::class, mappedBy="era")
@@ -39,14 +39,14 @@ class Era
         return $this->id;
     }
 
-    public function getLabel(): ?string
+    public function getLibelle(): ?string
     {
-        return $this->label;
+        return $this->libelle;
     }
 
-    public function setLabel(?string $label): self
+    public function setLibelle(?string $libelle): self
     {
-        $this->label = $label;
+        $this->libelle = $libelle;
 
         return $this;
     }
