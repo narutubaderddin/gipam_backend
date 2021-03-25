@@ -4,9 +4,9 @@ namespace App\Command;
 
 use App\Command\Utils\MigrationDb;
 use App\Command\Utils\MigrationRepository;
+use App\Entity\Author;
 use App\Services\LoggerService;
 use Doctrine\ORM\EntityManagerInterface;
-use Psr\Log\LoggerInterface;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
@@ -14,6 +14,7 @@ use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 use Symfony\Component\Stopwatch\Stopwatch;
+use const http\Client\Curl\AUTH_ANY;
 
 class MigrateDataCommand extends Command
 {
@@ -24,8 +25,10 @@ class MigrateDataCommand extends Command
     protected const GROUPS = [
         1 => ['ministry', 'establishment', 'service', 'correspondent',],
         2 => ['region', 'departement', 'commune', 'site', 'building',],
-        3 => [/*'deposittype', 'style', 'era', 'domaine', */'denomination',],
+        3 => [/*'deposittype', 'style', 'era', 'domaine', */
+            'denomination',],
         4 => ['deposittype', 'depositor'],
+        5 => ['fichierjoint']
 //        4 => ['actiontype', 'report', 'action', 'depositor'],
     ];
     /**
@@ -36,7 +39,6 @@ class MigrateDataCommand extends Command
     private $entityManager;
     private $migrationRepository;
     private $stopwatch;
-    private $logger;
     private $connection;
     private $loggerService;
 
@@ -44,15 +46,14 @@ class MigrateDataCommand extends Command
         EntityManagerInterface $entityManager,
         MigrationRepository $migrationRepository,
         Stopwatch $stopwatch,
-        LoggerInterface $logger,
         LoggerService $loggerService
-    ) {
+    )
+    {
         parent::__construct();
         $this->entityManager = $entityManager;
         $this->connection = $this->entityManager->getConnection();
         $this->migrationRepository = $migrationRepository;
         $this->stopwatch = $stopwatch;
-        $this->logger = $logger;
         $this->loggerService = $loggerService;
         $loggerService->init('db_migration');
     }
@@ -175,6 +176,16 @@ class MigrateDataCommand extends Command
             $columns = $this->getColumns($mappingTable);
             $sqlInsert = $this->migrationRepository->createInsertStatement($entity, $columns);
             foreach ($results as $oldEntity) {
+                $sameIdEntities = $this->getRelatedEntity($oldEntity, $entity);
+                if (count($sameIdEntities) > 1) {
+                    $foundError = true;
+                    $this->loggerService->addWarning(
+                        'Entity with same old id = ' . $oldEntity[$mappingTable['id']] .
+                        ' table name is ' . $entity
+                    );
+                    unset($sameIdEntities);
+                    continue;
+                }
                 $newEntity = $this->createEntity($entity, $oldEntity, $mappingTable, $rowCount, $foundError);
                 $this->migrationRepository->insertNewEntity($sqlInsert, $newEntity);
                 $rowCount++;
@@ -205,7 +216,72 @@ class MigrateDataCommand extends Command
             $output->writeln('<error> Migration Errors for group ' . $groupNumber .
                 ' please see log in : var/log/dev.log </error>');
         }
-//        $this->dropOldColumn($group);
+        $this->dropOldColumn($group);
+    }
+
+    private function createEntity($entity, $oldEntity, $mappingTable, $rowCount, bool &$foundError): array
+    {
+        $newEntity = [];
+        $newEntity[] = $rowCount;
+        // Here whene converting the DB System to postgres the names of tables and columns are in lowercase
+        // Option changed in MigrationDb class
+        if (!MigrationDb::UPPERCASE_NAME) {
+            $mappingTable = array_map('strtolower', $mappingTable);
+        }
+        $attributes = array_keys($mappingTable);
+        $i = 2;
+        // check if there is an entity created with same old_id
+
+        while ($i < count($attributes)) {
+            $attribute = $attributes[$i];
+            if (strpos($attribute, 'rel_') !== false) {
+                $relatedClass = explode('_', $attribute)[1];
+                $relatedEntityId = $oldEntity[$mappingTable[$attribute]];
+                if ($relatedEntityId !== null) {
+                    $relatedEntity = $this->getRelatedEntity($oldEntity, $relatedClass);
+                    if (count($relatedEntity) >= 1) {
+                        if (count($relatedEntity) > 1) {
+                            $errorMsg = 'Error in creating ' . $entity . ' old table = ' . $mappingTable['table'] .
+                                ' with row number = ' . $rowCount . ' with old id = ' .
+                                $oldEntity[$mappingTable['id']] . ' for ' . $mappingTable[$attribute] . ' = ' .
+                                $relatedEntityId . ' related class ' . $relatedClass;
+                            $this->loggerService->addWarning($errorMsg);
+                            $foundError = true;
+                        }
+                        $newEntity[] = $relatedEntity[0]['id'];
+                    } else {
+                        $newEntity[] = null;
+                    }
+                } else {
+                    // some times the entity is not related
+                    $newEntity[] = null;
+                }
+                $i++;
+                continue;
+            }
+            $newValue = $oldEntity[$mappingTable[$attribute]];
+            if (MigrationDb::USE_ACCESS_DB && is_string($newValue)) {
+                $newValue = utf8_encode($newValue);
+            }
+            $newEntity[] = $newValue;
+            $i++;
+        }
+        return $newEntity;
+    }
+
+    private function getRelatedEntity(array $oldEntity, string $relatedTableName)
+    {
+        $relatedTableNameMappingTable = MigrationDb::TABLE_NAME[$relatedTableName];
+        if (!MigrationDb::UPPERCASE_NAME) {
+            $relatedTableNameMappingTable = array_map('strtolower', $relatedTableNameMappingTable);
+        }
+        $oldIdColumns = $this->getOldIdColumns($relatedTableName);
+        $criteria = [];
+        foreach ($oldIdColumns as $oldIdColumn) {
+            $criteria[$oldIdColumn] = $oldEntity[$relatedTableNameMappingTable[$oldIdColumn]];
+        }
+        return $this->migrationRepository
+            ->getBy(MigrationRepository::$newDBConnection, $relatedTableName, $criteria);
     }
 
     private function dropTables(array $tables)
@@ -274,66 +350,49 @@ class MigrateDataCommand extends Command
         return array_reverse($columns);
     }
 
-    private function getRelatedEntity(array $oldEntity, string $relatedTableName)
+
+    private function migrateFurniture()
     {
-        $relatedTableNameMappingTable = MigrationDb::TABLE_NAME[$relatedTableName];
-        if (!MigrationDb::UPPERCASE_NAME) {
-            $relatedTableNameMappingTable = array_map('strtolower', $relatedTableNameMappingTable);
+        $mappingTable = MigrationDb::TABLE_NAME['oeuvreart'];
+        $results = $this->migrationRepository->getAll(MigrationRepository::$oldDBConnection, $mappingTable['table']);
+        foreach ($results as $furniture) {
+            $this->createAuthor($furniture);
         }
-        $oldIdColumns = $this->getOldIdColumns($relatedTableName);
-        $criteria = [];
-        foreach ($oldIdColumns as $oldIdColumn) {
-            $criteria[$oldIdColumn] = $oldEntity[$relatedTableNameMappingTable[$oldIdColumn]];
-        }
-        return $this->migrationRepository
-            ->getBy(MigrationRepository::$newDBConnection, $relatedTableName, $criteria);
     }
 
-    private function createEntity($entity, $oldEntity, $mappingTable, $rowCount, bool &$foundError): array
+
+    private function extractFromArray(array $input, array $keys, array $newKeys): array
     {
-        $newEntity = [];
-        $newEntity[] = $rowCount;
-        // Here whene converting the DB System to postgres the names of tables and columns are in lowercase
-        // Option changed in MigrationDb class
-        if (!MigrationDb::UPPERCASE_NAME) {
-            $mappingTable = array_map('strtolower', $mappingTable);
-        }
-        $attributes = array_keys($mappingTable);
-        $i = 3;
-        while ($i < count($attributes)) {
-            $attribute = $attributes[$i];
-            if (strpos($attribute, 'rel_') !== false) {
-                $relatedClass = explode('_', $attribute)[1];
-                $relatedEntityId = $oldEntity[$mappingTable[$attribute]];
-                if ($relatedEntityId !== null) {
-                    $relatedEntity = $this->getRelatedEntity($oldEntity, $relatedClass);
-                    if (count($relatedEntity) >= 1) {
-                        if (count($relatedEntity) > 1) {
-                            $errorMsg = 'Error in creating ' . $entity . ' old table = ' . $mappingTable['table'] .
-                                ' with row number = ' . $rowCount . ' with old id = ' .
-                                $oldEntity[$mappingTable['id']] . ' for ' . $mappingTable[$attribute] . ' = ' .
-                                $relatedEntityId . ' related class ' . $relatedClass;
-                            $this->loggerService->addWarning($errorMsg);
-                            $foundError = true;
-                        }
-                        $newEntity[] = $relatedEntity[0]['id'];
-                    } else {
-                        $newEntity[] = null;
-                    }
-                } else {
-                    // some times the entity is not related
-                    $newEntity[] = null;
-                }
-                $i++;
-                continue;
+        $output = [];
+        $iterator = 0;
+        $i = array_keys($keys);
+        while ($iterator < count($keys)) {
+            $key = $keys[$i[$iterator]];
+            if (isset($input[$key])) {
+                $newKey = $newKeys[$iterator];
+                $output[$newKey] = $input[$key];
             }
-            $newValue = $oldEntity[$mappingTable[$attribute]];
-            if (MigrationDb::USE_ACCESS_DB && is_string($newValue)) {
-                $newValue = utf8_encode($newValue);
-            }
-            $newEntity[] = $newValue;
-            $i++;
+            $iterator++;
         }
-        return $newEntity;
+        return $output;
+    }
+
+    private function checkAutorExist($furniture)
+    {
+        $mappingTable = array_slice(MigrationDb::TABLE_NAME['auteur'], 2, 2);
+        $authorTable = $mappingTable['table'];
+        $mappingTableKeys = array_slice(array_keys(MigrationDb::TABLE_NAME['auteur']), 2, 2);
+        $author = $this->extractFromArray($furniture, $mappingTable, $mappingTableKeys);
+        return $this->migrationRepository
+            ->getBy(MigrationRepository::$newDBConnection, $authorTable, $author);
+    }
+
+    private function createAuthor($furniture)
+    {
+        $author = $this->checkAutorExist($furniture);
+        if (isEmpty($author)) {
+//            $statement = $this->migrationRepository->createInsertStatement()
+        }
+        return;
     }
 }
