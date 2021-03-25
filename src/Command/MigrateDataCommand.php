@@ -4,7 +4,6 @@ namespace App\Command;
 
 use App\Command\Utils\MigrationDb;
 use App\Command\Utils\MigrationRepository;
-use App\Entity\Author;
 use App\Services\LoggerService;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Console\Command\Command;
@@ -14,7 +13,6 @@ use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 use Symfony\Component\Stopwatch\Stopwatch;
-use const http\Client\Curl\AUTH_ANY;
 
 class MigrateDataCommand extends Command
 {
@@ -23,11 +21,10 @@ class MigrateDataCommand extends Command
 
     // number of logic group
     protected const GROUPS = [
-        1 => ['ministry', 'establishment', 'service', 'correspondent',],
-        2 => ['region', 'departement', 'commune', 'site', 'building',],
-        3 => [/*'deposittype', 'style', 'era', 'domaine', */
-            'denomination',],
-        4 => ['deposittype', 'depositor'],
+        1 => ['ministere', 'etablissement', 'service', 'correspondant',],
+        2 => ['region', 'departement', 'commune', 'site', 'batiment',],
+        3 => ['style', 'epoque', 'domaine', 'denomination', 'type_deposant', 'deposant'],
+        4 => [],
         5 => ['fichierjoint']
 //        4 => ['actiontype', 'report', 'action', 'depositor'],
     ];
@@ -216,13 +213,19 @@ class MigrateDataCommand extends Command
             $output->writeln('<error> Migration Errors for group ' . $groupNumber .
                 ' please see log in : var/log/dev.log </error>');
         }
-        $this->dropOldColumn($group);
+//        $this->dropOldColumn($group);
+    }
+
+    private function getRelatedTable($relatedTableKey)
+    {
+        return substr($relatedTableKey, strlen('rel_'));
     }
 
     private function createEntity($entity, $oldEntity, $mappingTable, $rowCount, bool &$foundError): array
     {
         $newEntity = [];
-        $newEntity[] = $rowCount;
+        // for the id
+//        $newEntity[] = $rowCount;
         // Here whene converting the DB System to postgres the names of tables and columns are in lowercase
         // Option changed in MigrationDb class
         if (!MigrationDb::UPPERCASE_NAME) {
@@ -235,7 +238,7 @@ class MigrateDataCommand extends Command
         while ($i < count($attributes)) {
             $attribute = $attributes[$i];
             if (strpos($attribute, 'rel_') !== false) {
-                $relatedClass = explode('_', $attribute)[1];
+                $relatedClass = $this->getRelatedTable($attribute);
                 $relatedEntityId = $oldEntity[$mappingTable[$attribute]];
                 if ($relatedEntityId !== null) {
                     $relatedEntity = $this->getRelatedEntity($oldEntity, $relatedClass);
@@ -342,11 +345,11 @@ class MigrateDataCommand extends Command
             if (strpos($keys[$i], 'rel_') === false) {
                 $columns[] = $keys[$i];
             } else {
-                $columns[] = explode('_', $keys[$i])[1] . '_id';
+                $columns[] = $this->getRelatedTable($keys[$i]) . '_id';
             }
             $i--;
         }
-        $columns[] = 'id';
+//        $columns[] = 'id';
         return array_reverse($columns);
     }
 

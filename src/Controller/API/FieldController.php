@@ -6,7 +6,7 @@ namespace App\Controller\API;
 
 use App\Entity\Domaine;
 use App\Form\FieldType;
-use App\Repository\FieldRepository;
+use App\Repository\DomaineRepository;
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\EntityManagerInterface;
 use FOS\RestBundle\Controller\AbstractFOSRestController;
@@ -30,7 +30,7 @@ class FieldController extends AbstractFOSRestController
      */
     private $entityManager;
 
-    public function  __construct(
+    public function __construct(
         EntityManagerInterface $entityManager
 
     )
@@ -46,32 +46,35 @@ class FieldController extends AbstractFOSRestController
      * @return Domaine|View
      * @Rest\View(statusCode=201)
      */
-    public function addFieldAction(Request $request ,ValidatorInterface $validator){
-       $field = new Domaine();
-       $form = $this->createForm(FieldType::class,$field);
-       $form->submit($request->request->all(),false);
-       if(count($validatorErrors=$validator->validate($form))>0){
-           return View::create($validatorErrors,Response::HTTP_BAD_REQUEST);
-       }
-       $this->entityManager->persist($field);
+    public function addFieldAction(Request $request, ValidatorInterface $validator)
+    {
+        $field = new Domaine();
+        $form = $this->createForm(FieldType::class, $field);
+        $form->submit($request->request->all(), false);
+        if (count($validatorErrors = $validator->validate($form)) > 0) {
+            return View::create($validatorErrors, Response::HTTP_BAD_REQUEST);
+        }
+        $this->entityManager->persist($field);
 //            $this->entityManager->flush();
-            return $field;
+        return $field;
 
     }
 
     /**
      * @Rest\Get("/list",name="list_Fields")
      * @Rest\View(serializerGroups={"default"})
-     * @param FieldRepository $fieldRepository
+     * @param DomaineRepository $fieldRepository
      * @return Domaine[]
      */
-    public function listFieldsAction(FieldRepository $fieldRepository){
+    public function listFieldsAction(DomaineRepository $fieldRepository)
+    {
 
         return $fieldRepository->findAll();
 
     }
 
-    public function updateFieldAction(){
+    public function updateFieldAction()
+    {
 
     }
 

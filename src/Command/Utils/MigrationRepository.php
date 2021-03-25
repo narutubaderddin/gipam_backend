@@ -25,7 +25,8 @@ class MigrationRepository
         KernelInterface $kernel,
         EntityManagerInterface $entityManager,
         ContainerInterface $container
-    ) {
+    )
+    {
         if (!MigrationDb::USE_ACCESS_DB) {
             self::$oldDBConnection = $container->get('doctrine.orm.old_entity_manager')->getConnection();
             self::$oldDBConnection->getConfiguration()->setSQLLogger(null);
@@ -69,8 +70,8 @@ class MigrationRepository
             $parameters = '?,' . $parameters;
             $i++;
         }
-        $parameters = $parameters . '?';
-        $columns = implode(', ', $columns);
+        $parameters = "nextval('" . $tableName . "_id_seq')," . $parameters . "?";
+        $columns = 'id, ' . implode(', ', $columns);
         return sprintf("INSERT INTO %s (%s) VALUES (%s)", $tableName, $columns, $parameters);
     }
 

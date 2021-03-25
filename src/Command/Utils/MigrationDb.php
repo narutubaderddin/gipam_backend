@@ -29,23 +29,23 @@ class MigrationDb
         'commune' => self::COMMUNES,
         'departement' => self::DEPARTEMENTS,
         'mouvement' => self::MOUVEMENTS,
-        'typemouvement' => self::TYPES_MOUVEMENTS,
+        'type_mouvement' => self::TYPES_MOUVEMENTS,
         'action' => self::ACTIONS,
-        'typeaction' => self::TYPES_ACTIONS,
-        'fichierjoint' => self::PHOTOGRAPHIES,
-        'oeuvreart' => self::OEUVRES,
+        'type_action' => self::TYPES_ACTIONS,
+        'fichier_joint' => self::PHOTOGRAPHIES,
+        'oeuvre_art' => self::OEUVRES,
         'region' => self::REGIONS,
-        'building' => self::SITES_6A,
+        'batiment' => self::SITES_6A,
         'epoque' => self::EPOQUES,
         'domaine' => self::DOMAINE,
         'denomination' => self::DENOMINATIONS,
         'style' => self::STYLES,
-        'typedepot' => self::TYPES_DEPOSANTS,
+        'type_deposant' => self::TYPES_DEPOSANTS,
         'deposant' => self::DEPOSANT,
         'auteur' => self::AUTEUR,
-        'matieretechnique' => self::MATIERE,
+        'matiere_technique' => self::MATIERE,
         'constat' => self::STATUS,
-        'soustypeconstat' => self::ETAT,
+        'sous_type_constat' => self::ETAT,
     ];
 
 
@@ -71,10 +71,10 @@ class MigrationDb
     public const DEPOSANT = [
         'id' => 'C_DEPOSANT',
         'table' => 'DEPOSANT',
-        'rel_typedepot' => 'C_TYPE_DEPOSANTS',
-        'nnom' => 'DEP_DEPOSANT',
+        'rel_type_deposant' => 'C_TYPE_DEPOSANTS',
+        'nom' => 'DEP_DEPOSANT',
         'sigle' => 'DEP_SIGLE',
-        'addresse' => 'DEP_ADRESSE1',
+        'adresse' => 'DEP_ADRESSE1',
         'distrib' => 'DEP_DISTRIB',
         'tel' => 'DEP_TEL',
         'fax' => 'DEP_FAX',
@@ -125,8 +125,8 @@ class MigrationDb
         'table' => 'MINISTERES',
         'sigle' => 'MIN_SIGLELDAP',
         'nom' => 'MIN_LIBELLE',
-        'datedebut' => 'MIN_DATE_CRE',
-        'datedisparition' => 'MIN_DATE_DIS',
+        'date_debut' => 'MIN_DATE_CRE',
+        'date_disparition' => 'MIN_DATE_DIS',
         'old_id' => 'C_MIN',
     ];
 
@@ -146,7 +146,7 @@ class MigrationDb
         'rel_etablissement' => 'C_ETABDIR',
         'nom' => 'COR_NOM',
         'prenom' => 'COR_PRENOM',
-        'tel' => 'COR_TEL',
+        'telephone' => 'COR_TEL',
         'fax' => 'COR_FAX',
         'mail' => 'COR_MEL',
         'old_id' => 'C_COR',
@@ -169,7 +169,7 @@ class MigrationDb
 //        'id' => 'C_MGPAM',
         'commentaire' => 'MVT_COMM',
         'date' => 'MVT_DATE',
-        'rel_typemouvement' => 'C_TYPEMVT',
+        'rel_type_mouvement' => 'C_TYPEMVT',
     ];
 
     public const TYPES_MOUVEMENTS = [
@@ -183,9 +183,9 @@ class MigrationDb
     public const ACTIONS = [
         'id' => 'C_TYPEMVT',
         'table' => 'ACTIONS',
-        'libelle' => 'TMVT_MOUVEMENT',
         'rel_constat' => 'C_TYPESTATUT',
-        'rel_typeaction' => 'C_TYPEACT',
+        'rel_type_action' => 'C_TYPEACT',
+        'libelle' => 'TMVT_MOUVEMENT',
     ];
 
     public const TYPES_ACTIONS = [
@@ -208,11 +208,11 @@ class MigrationDb
     public const PHOTOGRAPHIES = [
         'id' => 'C_PHOTO',
         'table' => 'PHOTOGRAPHIES',
-        'rel_objetmobilier' => 'C_MGPAM',
+        'rel_objet_mobilier' => 'C_MGPAM',
         'date' => 'PH_DATE',
         'commentaire' => 'PH_COMM',
         'lien' => 'PH_LIEN',
-        'imgprinc' => 'PH_PRINC',
+        'image_principale' => 'PH_PRINC',
         'old_id' => 'C_PHOTO',
     ];
 
@@ -225,10 +225,10 @@ class MigrationDb
         'rel_epoque' => 'C_EPOQUE',
         'rel_style' => 'C_STYLE',
         'rel_auteur' => 'C_MGPAM',
-        'rel_matieretechnique' => 'C_MGPAM',
+        'rel_matiere_technique' => 'C_MGPAM',
         'titre' => 'OE_TITRE',
-        'nombreunite' => 'OE_NB',
-        'descriptioncommentaire' => 'OE_REPRISE',
+        'nombre_unite' => 'OE_NB',
+        'description_commentaire' => 'OE_REPRISE',
         'old_id' => 'C_MGPAM'
     ];
 
@@ -236,8 +236,8 @@ class MigrationDb
         'id' => 'C_SITE',
         'table' => 'SITES_6A',
         'rel_commune' => 'COM',
-        'name' => 'SITE_NOM',
-        'address' => 'SITE_ADRESSE',
+        'nom' => 'SITE_NOM',
+        'addresse' => 'SITE_ADRESSE',
         'distrib' => 'SITE_DISTRIB',
         'cedex' => 'SITE_CEDEX',
         'old_id' => 'C_SITE',

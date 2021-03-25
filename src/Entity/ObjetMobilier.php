@@ -93,7 +93,7 @@ abstract class ObjetMobilier
     protected $denomination;
 
     /**
-     * @ORM\ManyToOne(targetEntity=domaine::class, inversedBy="objetMobiliers")
+     * @ORM\ManyToOne(targetEntity=Domaine::class, inversedBy="objetMobiliers")
      */
     protected $domaine;
 
