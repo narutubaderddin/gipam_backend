@@ -29,9 +29,7 @@ class MigrationDb
         'commune' => self::COMMUNES,
         'departement' => self::DEPARTEMENTS,
         'mouvement' => self::MOUVEMENTS,
-        'type_mouvement' => self::TYPES_MOUVEMENTS,
         'action' => self::ACTIONS,
-        'type_action' => self::TYPES_ACTIONS,
         'fichier_joint' => self::PHOTOGRAPHIES,
         'oeuvre_art' => self::OEUVRES,
         'region' => self::REGIONS,
@@ -46,6 +44,8 @@ class MigrationDb
         'matiere_technique' => self::MATIERE,
         'constat' => self::STATUS,
         'sous_type_constat' => self::ETAT,
+        'type_mouvement' => self::TYPES_MOUVEMENTS,
+        'type_action' => self::TYPES_ACTIONS,
     ];
 
 
@@ -55,7 +55,6 @@ class MigrationDb
         'id' => 'C_MGPAM',
         'table' => 'OEUVRES',
         'libelle' => 'OE_MATIERES',
-        'old_id' => 'C_MGPAM'
     ];
 
     public const AUTEUR = [
@@ -63,7 +62,6 @@ class MigrationDb
         'table' => 'OEUVRES',
         'nom' => 'OE_NOMAUTEUR',
         'prenom' => 'OE_PRENOMAUTEUR',
-        'old_id' => 'C_MGPAM'
     ];
 
 

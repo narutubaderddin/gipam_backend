@@ -72,7 +72,7 @@ class MigrationRepository
         }
         $parameters = "nextval('" . $tableName . "_id_seq')," . $parameters . "?";
         $columns = 'id, ' . implode(', ', $columns);
-        return sprintf("INSERT INTO %s (%s) VALUES (%s)", $tableName, $columns, $parameters);
+        return sprintf("INSERT INTO %s (%s) VALUES (%s) RETURNING id", $tableName, $columns, $parameters);
     }
 
     public function insertNewEntity(string $sql, array $values)
