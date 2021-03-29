@@ -4,6 +4,12 @@ namespace App\Command;
 
 use App\Command\Utils\MigrationDb;
 use App\Command\Utils\MigrationRepository;
+use App\Command\Utils\MigrationTrait;
+use App\Entity\Auteur;
+use App\Entity\Epoque;
+use App\Entity\MatiereTechnique;
+use App\Entity\ObjetMobilier;
+use App\Entity\OeuvreArt;
 use App\Services\LoggerService;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Console\Command\Command;
@@ -16,6 +22,8 @@ use Symfony\Component\Stopwatch\Stopwatch;
 
 class MigrateDataCommand extends Command
 {
+    use MigrationTrait;
+
     // the name of the command (the part after "bin/console")
     protected static $defaultName = 'app:migrate';
 
@@ -25,7 +33,6 @@ class MigrateDataCommand extends Command
         2 => ['region', 'departement', 'commune', 'site', 'batiment',],
         3 => ['style', 'epoque', 'domaine', 'denomination', 'type_deposant', 'deposant'],
         4 => ['type_mouvement', 'type_action', 'auteur', 'matiere_technique',],
-        5 => [ 'auteur']
 //        4 => ['actiontype', 'report', 'action', 'depositor'],
     ];
 
@@ -155,13 +162,14 @@ class MigrateDataCommand extends Command
     private function group(int $groupNumber, OutputInterface $output)
     {
         $group = self::GROUPS[$groupNumber];
-        $this->dropTables($group);
-        $this->addOldColumn($group);
+        $this->migrationRepository->dropNewTables(array_reverse($group));
+        $this->migrationRepository->addOldColumn($group);
         $foundError = false;
         $foundWarning = false;
         $this->loggerService->addInfo("================ Migrating group " . $groupNumber . " ================");
+        $this->loggerService->addInfo(self::SEPARATOR);
         foreach ($group as $entity) {
-            $mappingTable = $this->getMappingTable($entity);
+            $mappingTable = MigrationDb::getMappingTable($entity);
             $results = $this->migrationRepository
                 ->getAll(MigrationRepository::$oldDBConnection, $mappingTable['table']);
             $rowCount = 1;
@@ -171,7 +179,7 @@ class MigrateDataCommand extends Command
                 $sameIdEntities = $this->getSameInNewDb($oldEntity, $entity);
                 if (!empty($sameIdEntities)) {
                     $foundWarning = true;
-                    $this->loggerService->addWarning(
+                    $this->loggerService->addInfo(
                         'Same entity found id = ' . $oldEntity[$mappingTable['id']] .
                         ' table name is ' . $entity
                     );
@@ -179,6 +187,7 @@ class MigrateDataCommand extends Command
                     continue;
                 }
                 $newEntity = $this->createEntity($entity, $oldEntity, $mappingTable, $foundError);
+                // Here if all columns are null we cancel adding the element
                 if (empty(array_filter($newEntity))) {
                     unset($newEntity);
                     continue;
@@ -194,33 +203,28 @@ class MigrateDataCommand extends Command
             if ($rowCount !== count($results)) {
                 $errorMsg = ucfirst($entity) . " migration entity count error: old entities = " . count($results) .
                     ' new entities = ' . $rowCount;
-                $this->loggerService->addWarning($errorMsg);
+                $this->loggerService->addInfo($errorMsg);
                 $foundError = true;
             }
+            $message = 'Migrate ' . $rowCount . ' / ' . count($results) . ' ' . ucfirst($entity);
             $output->writeln([
-                'Migrate ' . $rowCount . ' / ' . count($results) . ' ' . ucfirst($entity),
+                $message,
                 self::SEPARATOR,
             ]);
+            $this->loggerService->addInfo($message);
+            $this->loggerService->addInfo(self::SEPARATOR);
             unset($results);
             unset($columns);
             unset($sqlInsert);
             unset($mappingTable);
+            unset($message);
             gc_collect_cycles();
         }
-        if ($foundError) {
-            $output->writeln('<error> Migration Errors for group ' . $groupNumber .
-                ' please see log in : var/log/dev.log </error>');
-        }
-        if ($foundWarning) {
-            $output->writeln('<comment> Migration Errors for group ' . $groupNumber .
-                ' please see log in : var/log/dev.log </comment>');
-        }
-        $this->dropOldColumn($group);
-    }
+        $this->printWarning($foundWarning, $groupNumber, $output);
+        $this->printError($foundError, $groupNumber, $output);
 
-    private function getRelatedTable($relatedTableKey)
-    {
-        return substr($relatedTableKey, strlen('rel_'));
+        // here we drop all the old_id columns that are used for mapping the relations
+//        $this->migrationRepository->dropOldColumn($group);
     }
 
     private function createEntity($entity, $oldEntity, $mappingTable, bool &$foundError): array
@@ -236,18 +240,12 @@ class MigrateDataCommand extends Command
                 $relatedClass = $this->getRelatedTable($attribute);
                 $relatedEntityId = $oldEntity[$mappingTable[$attribute]];
                 if ($relatedEntityId !== null) {
-                    $relatedEntity = $this->getRelatedEntity($oldEntity, $relatedClass);
-                    if (!empty($relatedEntity)) {
-                        if (count($relatedEntity) > 1) {
-                            $errorMsg = 'Error in creating ' . $entity . ' old table = ' . $mappingTable['table'] .
-                                ' with old id = ' . $oldEntity[$mappingTable['id']] . ' for ' .
-                                $mappingTable[$attribute] . ' = ' . $relatedEntityId . ' related class ' . $relatedClass;
-                            $this->loggerService->addWarning($errorMsg);
-                            $foundError = true;
-                        }
-                        $newEntity[] = $relatedEntity[0]['id'];
-                    } else {
-                        $newEntity[] = null;
+                    $newEntity[] = $this->getRelatedEntity($oldEntity, $relatedClass, $foundError);
+                    if ($foundError) {
+                        $errorMsg = 'Error in creating ' . $entity . ' old table = ' . $mappingTable['table'] .
+                            ' with old id = ' . $oldEntity[$mappingTable['id']] . ' for ' .
+                            $mappingTable[$attribute] . ' = ' . $relatedEntityId . ' related class ' . $relatedClass;
+                        $this->loggerService->addInfo($errorMsg);
                     }
                 } else {
                     // some times the entity is not related
@@ -257,49 +255,16 @@ class MigrateDataCommand extends Command
                 continue;
             }
             $newValue = $oldEntity[$mappingTable[$attribute]];
-            $newEntity[] = $this->utf8Encode($newValue);
+            $newEntity[] = MigrationDb::utf8Encode($newValue);
             $i++;
         }
 
         return $newEntity;
     }
 
-
-
-    private function getMappingTable($tableName)
-    {
-        $mappingTable = MigrationDb::TABLE_NAME[$tableName];
-        // Here whene converting the DB System to postgres the names of tables and columns are in lowercase
-        // Option changed in MigrationDb class
-        if (!MigrationDb::UPPERCASE_NAME) {
-            $mappingTable = array_map('strtolower', $mappingTable);
-        }
-        return $mappingTable;
-    }
-
-    private function utf8Encode($input)
-    {
-        if (MigrationDb::USE_ACCESS_DB && is_string($input)) {
-            $input = utf8_encode($input);
-        }
-        return $input;
-    }
-
-    private function getRelatedEntity(array $oldEntity, string $relatedTableName)
-    {
-        $relatedTableNameMappingTable = $this->getMappingTable($relatedTableName);
-        $oldIdColumns = $this->getOldIdColumns($relatedTableName);
-        $criteria = [];
-        foreach ($oldIdColumns as $oldIdColumn) {
-            $criteria[$oldIdColumn] = $oldEntity[$relatedTableNameMappingTable[$oldIdColumn]];
-        }
-        return $this->migrationRepository
-            ->getBy(MigrationRepository::$newDBConnection, $relatedTableName, $criteria);
-    }
-
     private function getSameInNewDb(array $oldEntity, $newDbTableName)
     {
-        $mappingTable = $this->getMappingTable($newDbTableName);
+        $mappingTable = MigrationDb::getMappingTable($newDbTableName);
         $columns = $this->getColumns($mappingTable, false);
         $oldColumns = [];
         foreach ($columns as $column) {
@@ -313,55 +278,6 @@ class MigrateDataCommand extends Command
                 ->getBy(MigrationRepository::$newDBConnection, $newDbTableName, $criteria);
         }
         return [];
-    }
-
-    private function dropTables(array $tables)
-    {
-        $tables = array_reverse($tables);
-
-        foreach ($tables as $table) {
-            $this->connection->executeQuery("TRUNCATE TABLE " . $table . " RESTART IDENTITY CASCADE");
-        }
-    }
-
-    private function getOldIdColumns(string $table)
-    {
-        $mappingTable = MigrationDb::TABLE_NAME[$table];
-        $keys = array_keys($mappingTable);
-        $i = count($keys) - 1;
-        $columns = [];
-        while ((strpos($keys[$i], 'old_id') !== false) && $i >= 0) {
-            $columns[] = $keys[$i];
-            $i--;
-        }
-        return array_reverse($columns);
-    }
-
-    private function addOldColumn(array $tables)
-    {
-        foreach ($tables as $table) {
-            // todo : here we add the temporary column
-            $columns = $this->getOldIdColumns($table);
-            foreach ($columns as $column) {
-                $this->connection->executeQuery("ALTER TABLE " . $table . " ADD IF NOT EXISTS " . $column . " VARCHAR");
-            }
-        }
-    }
-
-    private function dropOldColumn(array $tables)
-    {
-        foreach ($tables as $table) {
-            // todo : here we drop the temporary column
-            $columns = $this->getOldIdColumns($table);
-            foreach ($columns as $column) {
-                $this->connection->executeQuery("ALTER TABLE " . $table . " DROP COLUMN IF EXISTS " . $column);
-            }
-        }
-    }
-
-    private function getClass($className)
-    {
-        return $className = "App\\Entity\\" . ucfirst($className);
     }
 
     private function getColumns($mappingTable, $withRelations = true)
@@ -389,7 +305,7 @@ class MigrateDataCommand extends Command
             $key = $keys[$i[$iterator]];
             if (isset($input[$key])) {
                 $newKey = $newKeys[$iterator];
-                $output[$newKey] = $this->utf8Encode($input[$key]);
+                $output[$newKey] = MigrationDb::utf8Encode($input[$key]);
             }
             $iterator++;
         }

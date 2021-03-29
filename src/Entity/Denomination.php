@@ -25,7 +25,7 @@ class Denomination
     private $libelle;
 
     /**
-     * @ORM\ManyToOne(targetEntity=domaine::class, inversedBy="denominations")
+     * @ORM\ManyToOne(targetEntity=Domaine::class, inversedBy="denominations")
      */
     private $domaine;
 

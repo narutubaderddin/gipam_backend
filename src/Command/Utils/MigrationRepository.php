@@ -87,9 +87,40 @@ class MigrationRepository
         foreach ($criteria as $key => $value) {
             $parameters [] = $key . " = :" . $key;
         }
-        $sql = "SELECT id FROM " . $tableName . " WHERE ( " . implode(' AND ', $parameters) . ")";
+        $sql = "SELECT * FROM " . $tableName . " WHERE ( " . implode(' AND ', $parameters) . ")";
         $stmt = $connection->prepare($sql);
         $stmt->execute($criteria);
         return $stmt->fetchAll();
+    }
+
+    public function addOldColumn(array $tables)
+    {
+        foreach ($tables as $table) {
+            // todo : here we add the temporary column
+            $columns = MigrationDb::getOldIdColumns($table);
+            foreach ($columns as $column) {
+                self::$newDBConnection
+                    ->executeQuery("ALTER TABLE " . $table . " ADD IF NOT EXISTS " . $column . " VARCHAR");
+            }
+        }
+    }
+
+    public function dropOldColumn(array $tables)
+    {
+        foreach ($tables as $table) {
+            // todo : here we drop the temporary column
+            $columns = MigrationDb::getOldIdColumns($table);
+            foreach ($columns as $column) {
+                self::$newDBConnection->executeQuery("ALTER TABLE " . $table . " DROP COLUMN IF EXISTS " . $column);
+            }
+        }
+    }
+
+    public function dropNewTables(array $tables)
+    {
+        foreach ($tables as $table) {
+            self::$newDBConnection->executeQuery("TRUNCATE TABLE " . $table . " RESTART IDENTITY CASCADE");
+            self::$newDBConnection->executeQuery("SELECT setval('" . $table . "_id_seq', 1, FALSE)");
+        }
     }
 }

@@ -222,12 +222,10 @@ class MigrationDb
         'rel_domaine' => 'C_DOMAINE',
         'rel_epoque' => 'C_EPOQUE',
         'rel_style' => 'C_STYLE',
-        'rel_auteur' => 'C_MGPAM',
-        'rel_matiere_technique' => 'C_MGPAM',
         'titre' => 'OE_TITRE',
         'nombre_unite' => 'OE_NB',
         'description_commentaire' => 'OE_REPRISE',
-        'old_id' => 'C_MGPAM'
+//        'old_id' => 'C_MGPAM'
     ];
 
     public const SITES_6A = [
@@ -271,4 +269,36 @@ class MigrationDb
         'nom' => 'NCCENR',
         'old_id' => 'REGION',
     ];
+
+    public static function utf8Encode($input)
+    {
+        if (self::USE_ACCESS_DB && is_string($input)) {
+            $input = utf8_encode($input);
+        }
+        return $input;
+    }
+
+    public static function getMappingTable($tableName)
+    {
+        $mappingTable = self::TABLE_NAME[$tableName];
+        // Here whene converting the DB System to postgres the names of tables and columns are in lowercase
+        // Option changed in MigrationDb class
+        if (!self::UPPERCASE_NAME) {
+            $mappingTable = array_map('strtolower', $mappingTable);
+        }
+        return $mappingTable;
+    }
+
+    public static function getOldIdColumns(string $table)
+    {
+        $mappingTable = self::TABLE_NAME[$table];
+        $keys = array_keys($mappingTable);
+        $i = count($keys) - 1;
+        $columns = [];
+        while ((strpos($keys[$i], 'old_id') !== false) && $i >= 0) {
+            $columns[] = $keys[$i];
+            $i--;
+        }
+        return array_reverse($columns);
+    }
 }
