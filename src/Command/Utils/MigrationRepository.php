@@ -116,10 +116,14 @@ class MigrationRepository
         }
     }
 
-    public function dropNewTables(array $tables)
+    public function dropNewTables(array $tables, $cascade = true)
     {
         foreach ($tables as $table) {
-            self::$newDBConnection->executeQuery("TRUNCATE TABLE " . $table . " RESTART IDENTITY CASCADE");
+            if ($cascade) {
+                self::$newDBConnection->executeQuery("TRUNCATE TABLE " . $table . " RESTART IDENTITY CASCADE");
+            } else {
+                self::$newDBConnection->executeQuery("TRUNCATE TABLE " . $table . " RESTART IDENTITY");
+            }
             self::$newDBConnection->executeQuery("SELECT setval('" . $table . "_id_seq', 1, FALSE)");
         }
     }

@@ -28,12 +28,11 @@ class MigrateDataCommand extends Command
     protected static $defaultName = 'app:migrate';
 
     // number of logic group
-    protected const GROUPS = [
+    public const GROUPS = [
         1 => ['ministere', 'etablissement', 'service', 'correspondant',],
         2 => ['region', 'departement', 'commune', 'site', 'batiment',],
         3 => ['style', 'epoque', 'domaine', 'denomination', 'type_deposant', 'deposant'],
-        4 => ['type_mouvement', 'type_action', 'auteur', 'matiere_technique',],
-//        4 => ['actiontype', 'report', 'action', 'depositor'],
+        4 => ['type_mouvement', 'auteur', 'matiere_technique',],
     ];
 
     protected const SEPARATOR = '===================================================';

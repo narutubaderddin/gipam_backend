@@ -21,12 +21,6 @@ class StatutPropriete extends Statut
      */
     private $marquage;
 
-    // todo: meaning in the UML class diagram: prop_1_pour_100 for Statut_Propriété
-    /**
-     * @ORM\Column(type="integer", nullable=true)
-     */
-    private $pourcentage;
-
     /**
      * @ORM\ManyToOne(targetEntity=ModeEntree::class, inversedBy="statutProprietes")
      */
@@ -36,6 +30,11 @@ class StatutPropriete extends Statut
      * @ORM\ManyToOne(targetEntity=Categorie::class, inversedBy="statutProprietes")
      */
     private $categorie;
+
+    /**
+     * @ORM\Column(type="boolean", nullable=true)
+     */
+    private $propUnPourCent;
 
     public function getDateEntree(): ?DateTimeInterface
     {
@@ -61,18 +60,6 @@ class StatutPropriete extends Statut
         return $this;
     }
 
-    public function getPourcentage(): ?int
-    {
-        return $this->pourcentage;
-    }
-
-    public function setPourcentage(?int $pourcentage): self
-    {
-        $this->pourcentage = $pourcentage;
-
-        return $this;
-    }
-
     public function getModeEntree(): ?ModeEntree
     {
         return $this->modeEntree;
@@ -93,6 +80,18 @@ class StatutPropriete extends Statut
     public function setCategorie(?Categorie $categorie): self
     {
         $this->categorie = $categorie;
+
+        return $this;
+    }
+
+    public function getPropUnPourCent(): ?bool
+    {
+        return $this->propUnPourCent;
+    }
+
+    public function setPropUnPourCent(?bool $propUnPourCent): self
+    {
+        $this->propUnPourCent = $propUnPourCent;
 
         return $this;
     }

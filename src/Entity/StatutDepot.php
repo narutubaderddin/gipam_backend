@@ -20,6 +20,11 @@ class StatutDepot extends Statut
      */
     private $deposant;
 
+    /**
+     * @ORM\Column(type="datetime", nullable=true)
+     */
+    private $dateDepot;
+
     public function getNumeroInventaire(): ?string
     {
         return $this->numeroInventaire;
@@ -40,6 +45,18 @@ class StatutDepot extends Statut
     public function setDeposant(?Deposant $deposant): self
     {
         $this->deposant = $deposant;
+
+        return $this;
+    }
+
+    public function getDateDepot(): ?\DateTimeInterface
+    {
+        return $this->dateDepot;
+    }
+
+    public function setDateDepot(?\DateTimeInterface $dateDepot): self
+    {
+        $this->dateDepot = $dateDepot;
 
         return $this;
     }

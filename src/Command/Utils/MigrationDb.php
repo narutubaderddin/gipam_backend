@@ -42,10 +42,13 @@ class MigrationDb
         'deposant' => self::DEPOSANT,
         'auteur' => self::AUTEUR,
         'matiere_technique' => self::MATIERE,
-        'constat' => self::STATUS,
-        'sous_type_constat' => self::ETAT,
+        'type_constat' => self::STATUTS,
+        'sous_type_constat' => self::ETATS,
         'type_mouvement' => self::TYPES_MOUVEMENTS,
         'type_action' => self::TYPES_ACTIONS,
+        'statut_propriete' => self::STATUT_PROPRIETE,
+        'statut_depot' => self::STATUT_DEPOT,
+        'log_oeuvre' => self::LOG_OEUVRE,
     ];
 
 
@@ -192,13 +195,16 @@ class MigrationDb
         'libelle' => 'TACT_ACTION',
     ];
 
-    public const STATUS = [
-        'C_TYPESTATUT' => 'id',
+    public const STATUTS = [
+        'id' => 'C_TYPESTATUT',
+        'table' => 'STATUTS',
+        'libelle' => 'TST_STATUT',
+        'old_id' => 'C_TYPESTATUT',
     ];
 
-    public const ETAT = [
+    public const ETATS = [
         'id' => 'C_TYPEETAT',
-        'table' => 'ETAT',
+        'table' => 'ETATS',
         'libelle' => 'TET_ETAT',
         'old_id' => 'C_TYPEETAT',
     ];
@@ -214,7 +220,6 @@ class MigrationDb
         'old_id' => 'C_PHOTO',
     ];
 
-    // todo still relations
     public const OEUVRES = [
         'id' => 'C_MGPAM',
         'table' => 'OEUVRES',
@@ -226,6 +231,35 @@ class MigrationDb
         'nombre_unite' => 'OE_NB',
         'description_commentaire' => 'OE_REPRISE',
 //        'old_id' => 'C_MGPAM'
+    ];
+
+    public const LOG_OEUVRE = [
+        'id' => 'C_MGPAM',
+        'table' => 'OEUVRES',
+        'date' => 'OE_DATEENR',
+    ];
+
+    public const STATUT = [
+        'id' => 'C_MGPAM',
+        'table' => 'OEUVRES',
+        'commentaire' => 'OE_DEPOT',
+        'rel_deposant' => 'C_DEPOSANT',
+    ];
+
+    public const STATUT_PROPRIETE = [
+        'id' => 'C_MGPAM',
+        'table' => 'OEUVRES',
+        'date_entree' => 'OE_DATEDEPOT',
+        'commentaire' => 'OE_DEPOT',
+        'prop_un_pour_cent' => 'OE_UNPOURCENT',
+    ];
+
+    public const STATUT_DEPOT = [
+        'id' => 'C_MGPAM',
+        'table' => 'OEUVRES',
+        'commentaire' => 'OE_DEPOT',
+        'date_depot' => 'OE_DATEDEPOT',
+        'rel_deposant' => 'C_DEPOSANT',
     ];
 
     public const SITES_6A = [

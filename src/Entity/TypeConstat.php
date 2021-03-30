@@ -12,6 +12,11 @@ use Doctrine\ORM\Mapping as ORM;
  */
 class TypeConstat
 {
+    public const LIBELLE = [
+        'vue' => 'vue',
+        'nonVue' => 'non vue',
+        'identite' => 'identite',
+    ];
     /**
      * @ORM\Id
      * @ORM\GeneratedValue

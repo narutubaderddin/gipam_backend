@@ -12,6 +12,28 @@ use Doctrine\ORM\Mapping as ORM;
  */
 class SousTypeConstat
 {
+    public const TYPE_VUE = [
+        'oeuvreRestauree' => 'Oeuvre restaurée',
+        'bonEtat' => 'Bon état',
+        'stableAvecIntervention' => 'Etat stable avec intervention à programmer',
+        'interventionUrgente' => 'Intervention urgente de sauvegarde nécessaire',
+        'aChanger' => 'Encadrement ou socle à changer',
+        'reglageARealiser' => 'Petits travaux ou réglage à réaliser',
+        'detruite' => 'Oeuvre détruite',
+        'voirCommentaire' => 'Voir commentaire'
+    ];
+
+    public const TYPE_IDENTITE = [
+      'recolementSoa' => 'Récolement SOA',
+      'recolementDeposant' => 'Récolement par le déposant',
+      'controleCorrespondant' => 'Contrôle d’inventaire par le correspondant',
+    ];
+
+    public const LIBELLE = [
+        'vue' => self::TYPE_VUE,
+        'nonVue' => ['Non vue'],
+        'identite' => self::TYPE_IDENTITE,
+    ];
     /**
      * @ORM\Id
      * @ORM\GeneratedValue
