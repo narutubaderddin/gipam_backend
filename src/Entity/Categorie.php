@@ -12,6 +12,11 @@ use Doctrine\ORM\Mapping as ORM;
  */
 class Categorie
 {
+    public const LIBELLE = [
+        'bienRemarquable' => 'Bien Patrimonial remarquable',
+        'bienStandard' => 'Bien Patrimonial standard',
+        'bienUsuel' => 'Bien usuel',
+    ];
     /**
      * @ORM\Id
      * @ORM\GeneratedValue

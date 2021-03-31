@@ -184,9 +184,13 @@ class MigrationDb
     public const ACTIONS = [
         'id' => 'C_TYPEMVT',
         'table' => 'ACTIONS',
+        'rel_objet_mobilier' => 'C_MGPAM',
         'rel_constat' => 'C_TYPESTATUT',
+        'rel_sous_type_constat' => 'C_TYPEETAT',
         'rel_type_action' => 'C_TYPEACT',
         'libelle' => 'TMVT_MOUVEMENT',
+        'commentaire' => 'ACT_COMM',
+        'date' => 'ACT_DATE'
     ];
 
     public const TYPES_ACTIONS = [

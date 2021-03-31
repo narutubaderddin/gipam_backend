@@ -12,6 +12,13 @@ use Doctrine\ORM\Mapping as ORM;
  */
 class ModeEntree
 {
+    public const LIBELLE = [
+        'inscriptionInventaire' => 'Inscription à l’inventaire',
+        'don' => 'Don',
+        'acquisition' => 'Acquisition',
+        'transfertPropriété' => 'Transfert de propriété',
+        'artistique' => '1% artistique',
+    ];
     /**
      * @ORM\Id
      * @ORM\GeneratedValue

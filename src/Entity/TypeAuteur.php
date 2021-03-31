@@ -10,6 +10,16 @@ use Doctrine\ORM\Mapping as ORM;
  */
 class TypeAuteur
 {
+    public const LIBELLE = [
+        'patronyme' => 'Patronyme',
+        'pseudo' => 'pseudo',
+        'dapres' => 'd’après',
+        'attribuea' => 'attribué à',
+        'nonIdentifie' => 'non identifié',
+        'editeur' => 'éditeur',
+        'imprimeur' => 'imprimeur',
+        'fabricant' => 'fabricant',
+    ];
     /**
      * @ORM\Id
      * @ORM\GeneratedValue

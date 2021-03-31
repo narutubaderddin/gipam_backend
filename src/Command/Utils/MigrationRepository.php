@@ -93,6 +93,15 @@ class MigrationRepository
         return $stmt->fetchAll();
     }
 
+    public function getOneBy($connection, $tableName, array $criteria)
+    {
+        $result = $this->getBy($connection, $tableName, $criteria);
+        if (count($result)) {
+            return $result[0];
+        }
+        return null;
+    }
+
     public function addOldColumn(array $tables)
     {
         foreach ($tables as $table) {

@@ -5,6 +5,7 @@ namespace App\Command;
 use App\Command\Utils\MigrationDb;
 use App\Command\Utils\MigrationRepository;
 use App\Command\Utils\MigrationTrait;
+use App\Entity\Action;
 use App\Entity\Auteur;
 use App\Entity\Constat;
 use App\Entity\Deposant;
@@ -109,10 +110,7 @@ class MigrateObjectsCommand extends Command
         $startTime = time();
         $this->stopwatch->start('export-data');
 
-        // todo to be deleted
-        $command = $this->getApplication()->find('app:migrate');
-        $returnCode = $command->run($input, $output);
-
+        $this->createReportType();
         $this->createFurniture($output);
 
         $this->stopwatch->stop('export-data');
@@ -141,8 +139,6 @@ class MigrateObjectsCommand extends Command
 
     private function createFurniture(OutputInterface $output)
     {
-        $this->createReportType();
-        dd();
         $entity = 'oeuvre_art';
         $this->migrationRepository->dropNewTables(self::GROUP);
         $mappingTable = MigrationDb::getMappingTable($entity);
@@ -163,6 +159,7 @@ class MigrateObjectsCommand extends Command
             $this->setStatus($oldEntity, $newEntity);
             $this->addObjectLog($oldEntity, $newEntity);
             $this->addAttachments($oldEntity, $newEntity);
+            $this->addReports($oldEntity, $newEntity);
 
             $this->entityManager->persist($newEntity);
             $rowCount++;
@@ -232,28 +229,83 @@ class MigrateObjectsCommand extends Command
         return $newEntity;
     }
 
-    private function addConstat($oldFurniture, ObjetMobilier &$newFurniture)
+    private function addReports($oldFurniture, ObjetMobilier &$newFurniture)
     {
-
+        $actionMappingTable = MigrationDb::getMappingTable('action');
+        $oldRelation = $oldFurniture[$actionMappingTable['rel_objet_mobilier']];
+        $criteria = [$actionMappingTable['rel_objet_mobilier'] => $oldRelation];
+        $oldActions = $this->migrationRepository
+            ->getBy(MigrationRepository::$oldDBConnection, $actionMappingTable['table'], $criteria);
+        $reportTypeMappingTable = MigrationDb::getMappingTable('type_constat');
+        $i = 1;
+        foreach ($oldActions as $oldAction) {
+            $oldReportTypeId = $oldAction[$actionMappingTable['rel_constat']];
+            if ($oldReportTypeId) {
+                $criteria = [$reportTypeMappingTable['id'] => $oldReportTypeId];
+                $oldReportType = $this->migrationRepository
+                    ->getOneBy(MigrationRepository::$oldDBConnection, $reportTypeMappingTable['table'], $criteria);
+                $oldLabel = $oldReportType[$reportTypeMappingTable['libelle']];
+                $oldLabel = strtolower(MigrationDb::utf8Encode($oldLabel));
+                $report = null;
+                if ($oldLabel === 'vu') {
+                    $report = $this->createSeenReport($oldAction, $actionMappingTable);
+                    $this->entityManager->persist($report);
+                    $newFurniture->addConstat($report);
+                } elseif ($oldLabel === 'non vu') {
+//                    $report = $this->createAction($oldAction, $actionMappingTable);
+                }
+            }
+//            $i++;
+//            if ($i % 100 === 0) {
+//                $this->entityManager->flush();
+//            }
+        }
+//        $this->entityManager->flush();
     }
 
-    private function createReportType()
+    private function createSeenReport(array $oldAction, array $actionMappingTable)
     {
-        $tables = ['constat', 'sous_type_constat', 'type_constat'];
-        $this->migrationRepository->dropNewTables($tables);
-        foreach (TypeConstat::LIBELLE as $key => $label) {
-            $type = (new TypeConstat())->setLibelle($label);
-            $this->entityManager->persist($type);
-            $subLabels = SousTypeConstat::LIBELLE[$key];
-            foreach ($subLabels as $subLabel) {
-                $subType = (new SousTypeConstat())
-                    ->setLibelle($subLabel)
-                    ->setTypeConstat($type);
-                $this->entityManager->persist($subType);
+        $oldComment = $oldAction[$actionMappingTable['commentaire']];
+        $report = (new Constat())->setCommentaire(MigrationDb::utf8Encode($oldComment));
+        $subTypeMappingTable = MigrationDb::getMappingTable('sous_type_constat');
+        $oldSubTypeId = $oldAction[$actionMappingTable['rel_sous_type_constat']];
+        if ($oldSubTypeId) {
+            $criteria = [$subTypeMappingTable['id'] => $oldSubTypeId];
+            $oldSubType = $this->migrationRepository
+                ->getOneBy(MigrationRepository::$oldDBConnection, $subTypeMappingTable['table'], $criteria);
+            $oldLabel = $oldSubType[$subTypeMappingTable['libelle']];
+            $oldLabel = strtolower(MigrationDb::utf8Encode($oldLabel));
+            $label = '';
+            if (strpos($oldLabel, 'bon') !== false) {
+                $label = SousTypeConstat::TYPE_VUE['bonEtat'];
+            } elseif (strpos($oldLabel, 'commentaire') !== false) {
+                $label = SousTypeConstat::TYPE_VUE['voirCommentaire'];
             }
+            $subReportType = $this->entityManager->getRepository(SousTypeConstat::class)
+                ->findOneBy(['libelle' => $label]);
+            $report->setSousTypeConstat($subReportType);
+        } else {
+
         }
-        $this->entityManager->flush();
-        $this->entityManager->clear();
+        $date = $oldAction[$actionMappingTable['date']];
+        if ($date) {
+            $report->setDate(new DateTime($date));
+        }
+        return $report;
+    }
+
+    private function createAction(array $oldAction, array $actionMappingTable)
+    {
+        $reportSubType = $this->entityManager->getRepository(SousTypeConstat::class)
+            ->findOneBy(['libelle' => SousTypeConstat::TYPE_NON_VUE['nonVue']]);
+        $report = (new Constat())->setSousTypeConstat($reportSubType);
+        $oldComment = $oldAction[$actionMappingTable['commentaire']];
+        $newAction = (new Action())->setCommentaire(MigrationDb::utf8Encode($oldComment));
+        $date = $oldAction[$actionMappingTable['date']];
+        if ($date) {
+            $report->setDate(new DateTime($date));
+        }
+        $report->addAction($newAction);
     }
 
     private function addAuthor($oldFurniture, ObjetMobilier &$newFurniture)
@@ -321,43 +373,6 @@ class MigrateObjectsCommand extends Command
         }
     }
 
-    /**
-     * Some attachement are not related to an object so we migrate them in this function
-     *
-     * @throws \Exception
-     */
-    private function createRestAttachements()
-    {
-        $entityName = 'fichier_joint';
-        $this->migrationRepository->dropNewTables([$entityName]);
-        $this->migrationRepository->addOldColumn([$entityName]);
-        $mappingTable = MigrationDb::getMappingTable($entityName);
-        $criteria = [$mappingTable['rel_objet_mobilier'] => null];
-        $attachements = $this->migrationRepository
-            ->getBy(MigrationRepository::$oldDBConnection, $mappingTable['table'], $criteria);
-        dd(count($attachements), $criteria, $mappingTable['table']);
-        $i = 1;
-        foreach ($attachements as $attachement) {
-            $newAttachement = (new FichierJoint())
-                ->setCommentaire(MigrationDb::utf8Encode($attachement[$mappingTable['commentaire']]))
-                ->setLien(MigrationDb::utf8Encode($attachement[$mappingTable['lien']]))
-                ->setImagePrincipale($attachement[$mappingTable['image_principale']]);
-            $date = $attachement[$mappingTable['date']];
-            if ($date) {
-                $newAttachement->setDate(new  DateTime($date));
-            }
-            $this->entityManager->persist($newAttachement);
-            $i++;
-            if ($i % 100 === 0) {
-                $this->entityManager->flush();
-                $this->entityManager->clear();
-            }
-        }
-        unset($attachements);
-        unset($entityName);
-        gc_collect_cycles();
-    }
-
     private function addAttachments($oldFurniture, ObjetMobilier &$newFurniture)
     {
         $mappingTable = MigrationDb::getMappingTable('fichier_joint');
@@ -380,22 +395,54 @@ class MigrateObjectsCommand extends Command
         unset($oldAttachements);
     }
 
+    private function createReportType()
+    {
+        $tables = ['constat', 'sous_type_constat', 'type_constat'];
+        $this->migrationRepository->dropNewTables($tables);
+        foreach (TypeConstat::LIBELLE as $key => $label) {
+            $type = (new TypeConstat())->setLibelle($label);
+            $this->entityManager->persist($type);
+            $subLabels = SousTypeConstat::LIBELLE[$key];
+            foreach ($subLabels as $subLabel) {
+                $subType = (new SousTypeConstat())
+                    ->setLibelle($subLabel)
+                    ->setTypeConstat($type);
+                $this->entityManager->persist($subType);
+            }
+        }
+        $this->entityManager->flush();
+        $this->entityManager->clear();
+    }
+
     private function findDimensions($oldFurniture, ObjetMobilier &$newFurniture)
     {
         $oldEntities = $this->migrationRepository
-            ->getBy(MigrationRepository::$oldDBConnection, 'OEUVRES', ['C_MGPAM' => 571]);
+            ->getOneBy(MigrationRepository::$oldDBConnection, 'OEUVRES', ['C_MGPAM' => 1180]);
 
-        $oldDimensions = strtolower($oldEntities[0]['OE_DIM']);
-        $strings = explode('x', $oldDimensions);
+        $oldDimensions = MigrationDb::utf8Encode(strtolower($oldEntities['OE_DIM']));
 
-        foreach ($strings as $key => $string) {
-            $strings[$key] = str_replace('cm', '', $string);
-            $strings[$key] = trim($string);
+        $dimensions = explode('x', $oldDimensions);
+
+        foreach ($dimensions as $key => $dimension) {
+            $dimensions[$key] = trim($dimension);
         }
-        dd($oldDimensions, $strings);
+        $dimensions = preg_replace("/[a-z\s]+/", '', $dimensions);
+        if (preg_match("/[0-9\s]cm/", $oldDimensions)) {
+            foreach ($dimensions as $key => $dimension) {
+                $dimensions[$key] = $dimension . " cm";
+            }
+        }
+        if (preg_match("/[0-9\s]m/", $oldDimensions)) {
+            foreach ($dimensions as $key => $dimension) {
+                $dimensions[$key] = $dimension . " m";
+            }
+        }
+        if (strpos($oldDimensions, "ø") !== false) {
+            dd(true);
+        }
+        dd(utf8_encode($oldDimensions), $dimensions);
         if (!$oldDimensions) {
             return;
         }
-
     }
 }

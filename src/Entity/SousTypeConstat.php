@@ -24,14 +24,16 @@ class SousTypeConstat
     ];
 
     public const TYPE_IDENTITE = [
-      'recolementSoa' => 'Récolement SOA',
-      'recolementDeposant' => 'Récolement par le déposant',
-      'controleCorrespondant' => 'Contrôle d’inventaire par le correspondant',
+        'recolementSoa' => 'Récolement SOA',
+        'recolementDeposant' => 'Récolement par le déposant',
+        'controleCorrespondant' => 'Contrôle d’inventaire par le correspondant',
     ];
+
+    public const TYPE_NON_VUE = ['nonVue' => 'Non vue'];
 
     public const LIBELLE = [
         'vue' => self::TYPE_VUE,
-        'nonVue' => ['Non vue'],
+        'nonVue' => self::TYPE_NON_VUE,
         'identite' => self::TYPE_IDENTITE,
     ];
     /**
