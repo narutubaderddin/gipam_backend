@@ -12,6 +12,12 @@ use Doctrine\ORM\Mapping as ORM;
  */
 class TypeMouvement
 {
+    public const LIBELLE = [
+        'installation' => 'Installation',
+        'reserve' => 'Mise en réserve',
+        'temporaire' => 'Sortie temporaire',
+        'definitive' => 'Sortie définitive',
+    ];
     /**
      * @ORM\Id
      * @ORM\GeneratedValue
@@ -45,12 +51,12 @@ class TypeMouvement
         return $this->id;
     }
 
-    public function getLibelle(): ?\DateTimeInterface
+    public function getLibelle(): ?string
     {
         return $this->libelle;
     }
 
-    public function setLibelle(?\DateTimeInterface $libelle): self
+    public function setLibelle(string $libelle): self
     {
         $this->libelle = $libelle;
 

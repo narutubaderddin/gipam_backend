@@ -5,11 +5,6 @@ namespace App\Command;
 use App\Command\Utils\MigrationDb;
 use App\Command\Utils\MigrationRepository;
 use App\Command\Utils\MigrationTrait;
-use App\Entity\Auteur;
-use App\Entity\Epoque;
-use App\Entity\MatiereTechnique;
-use App\Entity\ObjetMobilier;
-use App\Entity\OeuvreArt;
 use App\Services\LoggerService;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Console\Command\Command;
@@ -20,6 +15,11 @@ use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 use Symfony\Component\Stopwatch\Stopwatch;
 
+/**
+ * Commnd used to migrate static entities by group or at once see --help for more details
+ * Class MigrateDataCommand
+ * @package App\Command
+ */
 class MigrateDataCommand extends Command
 {
     use MigrationTrait;
@@ -31,15 +31,16 @@ class MigrateDataCommand extends Command
     public const GROUPS = [
         1 => ['ministere', 'etablissement', 'service', 'correspondant',],
         2 => ['region', 'departement', 'commune', 'site', 'batiment',],
+        // the depositor types have changed
         3 => ['style', 'epoque', 'domaine', 'denomination', 'type_deposant', 'deposant'],
-        4 => ['type_mouvement', 'auteur', 'matiere_technique',],
+        4 => ['type_mouvement', 'auteur',],
     ];
 
     protected const SEPARATOR = '===================================================';
     protected const CANCELED = [
         '',
         self::SEPARATOR,
-        'Migrate Data From Access DB to MySQL Canceled! Bye!',
+        'Migrate Data From Access DB Canceled! Bye!',
     ];
     /**
      * @var SymfonyStyle
@@ -57,7 +58,8 @@ class MigrateDataCommand extends Command
         MigrationRepository $migrationRepository,
         Stopwatch $stopwatch,
         LoggerService $loggerService
-    ) {
+    )
+    {
         parent::__construct();
         $this->entityManager = $entityManager;
         $this->connection = $this->entityManager->getConnection();
@@ -69,14 +71,14 @@ class MigrateDataCommand extends Command
 
     protected function configure()
     {
-        $help = "This command allows you to load data from Access DB To MySQL DB.\n";
+        $help = "This command allows you to load data from Access DB.\n";
         $i = 1;
         foreach (self::GROUPS as $group) {
             $group = implode(', ', $group);
             $help = $help . "--group=" . $i . " : " . $group . "\n";
             $i++;
         }
-        $this->setDescription("Load data from Access DB to MySQL DB. (yes/no)")
+        $this->setDescription("Load data from Access DB. (yes/no)")
             ->setHelp($help)
             ->addArgument('continue', InputArgument::OPTIONAL, '', 'no')
             ->addOption(
@@ -99,7 +101,7 @@ class MigrateDataCommand extends Command
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         $output->writeln([
-            'Migrate Data From Access DB to MySQL',
+            'Migrate Data From Access DB',
             '====================================',
             '',
         ]);

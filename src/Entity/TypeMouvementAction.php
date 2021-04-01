@@ -12,6 +12,28 @@ use Doctrine\ORM\Mapping as ORM;
  */
 class TypeMouvementAction
 {
+    public const RESERVE = [
+        'oeuvreDisponible' => 'Oeuvre disponible',
+        'attenteRestitution' => 'En attente de restitution',
+        'attenteRestauration' => 'En attente de restauration',
+        'stockage' => 'En stockage',
+    ];
+    public const SORTIE_TEMPORAIRE = [
+        'pret' => 'Prêt',
+        'depotHorsMEF' => 'Dépôt hors périmètre MEF',
+        'restauration' => 'En restauration',
+    ];
+    public const SORTIE_DEFENITIVE = [
+        'retourDeposant' => 'Retour déposant',
+        'cession' => 'Cession',
+        'transfertDepot' => 'Transfert de dépôt',
+        'transfertPropriete' => 'Transfert de propriété',
+    ];
+    public const LIBELLE = [
+        'reserve' => self::RESERVE,
+        'temporaire' => self::SORTIE_TEMPORAIRE,
+        'definitive' => self::SORTIE_DEFENITIVE,
+    ];
     /**
      * @ORM\Id
      * @ORM\GeneratedValue

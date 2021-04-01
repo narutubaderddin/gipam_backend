@@ -30,12 +30,12 @@ class MatiereTechnique
     private $type;
 
     /**
-     * @ORM\ManyToMany(targetEntity=Denomination::class, mappedBy="materialsTechniques")
+     * @ORM\ManyToMany(targetEntity=Denomination::class, mappedBy="matiereTechniques")
      */
     private $denominations;
 
     /**
-     * @ORM\OneToMany(targetEntity=ObjetMobilier::class, mappedBy="materialTechnique")
+     * @ORM\OneToMany(targetEntity=ObjetMobilier::class, mappedBy="matiereTechnique")
      */
     private $objetMobiliers;
 
@@ -75,7 +75,7 @@ class MatiereTechnique
     }
 
     /**
-     * @return Collection|Denomination[]
+     * @return Collection
      */
     public function getDenominations(): Collection
     {
@@ -88,7 +88,6 @@ class MatiereTechnique
             $this->denominations[] = $denomination;
             $denomination->addMatiereTechnique($this);
         }
-
         return $this;
     }
 

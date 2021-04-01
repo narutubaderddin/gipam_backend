@@ -51,9 +51,6 @@ class MigrationDb
         'log_oeuvre' => self::LOG_OEUVRE,
     ];
 
-
-
-
     public const MATIERE = [
         'id' => 'C_MGPAM',
         'table' => 'OEUVRES',

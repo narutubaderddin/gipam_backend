@@ -12,6 +12,14 @@ use Doctrine\ORM\Mapping as ORM;
  */
 class TypeDeposant
 {
+    public const LIBELLE = [
+        'particuliers' => 'Particuliers',
+        'institutionsPrivees' => 'Institutions privées',
+        'serviceMuseesFrance' => 'Service des Musées de France',
+        'autresMusees' => 'Autres Musées',
+        'autresAdministrations' => 'Autres Administrations',
+        'etablissementMinistereCulture' => 'Etablissements du Ministère de la Culture',
+    ];
     /**
      * @ORM\Id
      * @ORM\GeneratedValue

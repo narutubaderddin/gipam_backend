@@ -8,6 +8,7 @@ use App\Command\Utils\MigrationTrait;
 use App\Entity\Action;
 use App\Entity\Auteur;
 use App\Entity\Constat;
+use App\Entity\Denomination;
 use App\Entity\Deposant;
 use App\Entity\Epoque;
 use App\Entity\FichierJoint;
@@ -19,10 +20,11 @@ use App\Entity\Statut;
 use App\Entity\StatutDepot;
 use App\Entity\StatutPropriete;
 use App\Entity\TypeConstat;
+use App\Entity\TypeMouvement;
+use App\Entity\TypeMouvementAction;
 use App\Services\LoggerService;
 use DateTime;
 use Doctrine\ORM\EntityManagerInterface;
-use PHPUnit\TextUI\XmlConfiguration\Migration;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
@@ -110,6 +112,8 @@ class MigrateObjectsCommand extends Command
         $startTime = time();
         $this->stopwatch->start('export-data');
 
+        $this->migrationRepository->dropNewTables(['matiere_technique']);
+        $this->createActionMouvementTypes();
         $this->createReportType();
         $this->createFurniture($output);
 
@@ -149,18 +153,17 @@ class MigrateObjectsCommand extends Command
         foreach ($oldEntities as $oldEntity) {
 
             // todo for testing
-//            $oldEntity = $this->test(1087);
+//            $oldEntity = $this->test(2);
             $newEntity = $this->createEntity($entity, $oldEntity, $mappingTable, $foundError);
 //            $this->findDimensions($oldEntity, $newEntity);
 //            $this->addConstat($oldEntity, $newEntity);
 
             $this->addAuthor($oldEntity, $newEntity);
-            $this->setMaterialTechnique($oldEntity, $newEntity);
+            $this->setMaterialTechnique($oldEntity, $newEntity, $mappingTable);
             $this->setStatus($oldEntity, $newEntity);
             $this->addObjectLog($oldEntity, $newEntity);
             $this->addAttachments($oldEntity, $newEntity);
-            $this->addReports($oldEntity, $newEntity);
-
+//            $this->addReports($oldEntity, $newEntity);
             $this->entityManager->persist($newEntity);
             $rowCount++;
             if ($rowCount % 100 === 0) {
@@ -320,16 +323,48 @@ class MigrateObjectsCommand extends Command
         }
     }
 
-    private function setMaterialTechnique($oldFurniture, ObjetMobilier &$newFurniture)
+    private function setMaterialTechnique($oldFurniture, ObjetMobilier &$newFurniture, $mappingTable)
     {
-        $materialTechnique = $oldFurniture[MigrationDb::MATIERE['libelle']];
-        $materialTechnique = MigrationDb::utf8Encode($materialTechnique);
-        $materialTechnique = $this->entityManager->getRepository(MatiereTechnique::class)
-            ->findOneBy(['libelle' => $materialTechnique]);
-        if ($materialTechnique) {
-            $newFurniture->setMatiereTechnique($materialTechnique);
+        $materialTechniqueLabel = $oldFurniture[MigrationDb::MATIERE['libelle']];
+        if (!$materialTechniqueLabel) {
+            return;
         }
+        $materialTechniqueLabel = MigrationDb::utf8Encode($materialTechniqueLabel);
+        $materialTechnique = $this->entityManager->getRepository(MatiereTechnique::class)
+            ->findOneBy(['libelle' => $materialTechniqueLabel]);
+
+        $oldDenominationId = $oldFurniture[$mappingTable['rel_denomination']];
+        $denomination = null;
+        if ($oldDenominationId) {
+            $criteria = ['old_id' => $oldDenominationId];
+            $denominationId = $this->migrationRepository
+                ->getOneBy(MigrationRepository::$newDBConnection, 'denomination', $criteria);
+            $denomination = $this->entityManager->getRepository(Denomination::class)
+                ->find($denominationId['id']);
+        }
+
+        if (!$materialTechnique) {
+            $materialTechnique = (new MatiereTechnique())->setLibelle($materialTechniqueLabel);
+        }
+
+        if ($denomination && !$materialTechnique->getDenominations()->contains($denomination)) {
+            $materialTechnique->addDenomination($denomination);
+        }
+        $this->entityManager->persist($materialTechnique);
+
+        $newFurniture->setMatiereTechnique($materialTechnique);
     }
+
+//    private function setMaterialTechnique($oldFurniture, ObjetMobilier &$newFurniture)
+//    {
+//        $materialTechnique = $oldFurniture[MigrationDb::MATIERE['libelle']];
+//        $materialTechnique = MigrationDb::utf8Encode($materialTechnique);
+//        $materialTechnique = $this->entityManager->getRepository(MatiereTechnique::class)
+//            ->findOneBy(['libelle' => $materialTechnique]);
+//        if ($materialTechnique) {
+//            $newFurniture->setMatiereTechnique($materialTechnique);
+//        }
+//    }
 
     private function setStatus($oldFurniture, ObjetMobilier &$newFurniture)
     {
@@ -395,6 +430,68 @@ class MigrateObjectsCommand extends Command
         unset($oldAttachements);
     }
 
+    private function getDimensionUnit(string $dimension)
+    {
+        if (preg_match("/[0-9\s]cm/", $dimension)) {
+            return ' cm';
+        }
+        if (preg_match("/[0-9\s]m/", $dimension)) {
+            return ' m';
+        }
+        return '';
+    }
+
+    private function findDimensions($oldFurniture, ObjetMobilier &$newFurniture)
+    {
+        $rectangularAttributes = ['longueur', 'largeur', 'hauteur'];
+        $roundAttributes = ['diametre', 'hauteur'];
+        $oldEntities = $this->migrationRepository
+            ->getOneBy(MigrationRepository::$oldDBConnection, 'OEUVRES', ['C_MGPAM' => 6]);
+
+        $oldDimensions = MigrationDb::utf8Encode(strtolower($oldEntities['OE_DIM']));
+
+        $dimensions = explode('x', $oldDimensions);
+        foreach ($dimensions as $key => $dimension) {
+            $dimensions[$key] = trim($dimension);
+        }
+        $dimensions = preg_replace("/[a-z\s]+/", '', $dimensions);
+
+        if (preg_match("/ø|DIA/", $oldDimensions)) {
+            return false;
+        }
+
+        if (strpos($oldDimensions, "p") !== false) {
+            return false;
+        }
+
+
+        dd(utf8_encode($oldDimensions), $dimensions);
+        if (!$oldDimensions) {
+            return;
+        }
+    }
+
+    private function createActionMouvementTypes()
+    {
+        $tables = ['type_action', 'type_mouvement', 'type_mouvement_action'];
+        $this->migrationRepository->dropNewTables($tables);
+        foreach (TypeMouvement::LIBELLE as $key => $label) {
+            $mouvementType = (new TypeMouvement())->setLibelle($label);
+            $this->entityManager->persist($mouvementType);
+            if (isset(TypeMouvementAction::LIBELLE[$key])) {
+                $actionMouvementTypes = TypeMouvementAction::LIBELLE[$key];
+                foreach ($actionMouvementTypes as $actionMouvementLabel) {
+                    $actionMouvementType = (new TypeMouvementAction())
+                        ->setLibelle($actionMouvementLabel)
+                        ->setTypeMouvement($mouvementType);
+                    $this->entityManager->persist($actionMouvementType);
+                }
+            }
+        }
+        $this->entityManager->flush();
+        $this->entityManager->clear();
+    }
+
     private function createReportType()
     {
         $tables = ['constat', 'sous_type_constat', 'type_constat'];
@@ -412,37 +509,5 @@ class MigrateObjectsCommand extends Command
         }
         $this->entityManager->flush();
         $this->entityManager->clear();
-    }
-
-    private function findDimensions($oldFurniture, ObjetMobilier &$newFurniture)
-    {
-        $oldEntities = $this->migrationRepository
-            ->getOneBy(MigrationRepository::$oldDBConnection, 'OEUVRES', ['C_MGPAM' => 1180]);
-
-        $oldDimensions = MigrationDb::utf8Encode(strtolower($oldEntities['OE_DIM']));
-
-        $dimensions = explode('x', $oldDimensions);
-
-        foreach ($dimensions as $key => $dimension) {
-            $dimensions[$key] = trim($dimension);
-        }
-        $dimensions = preg_replace("/[a-z\s]+/", '', $dimensions);
-        if (preg_match("/[0-9\s]cm/", $oldDimensions)) {
-            foreach ($dimensions as $key => $dimension) {
-                $dimensions[$key] = $dimension . " cm";
-            }
-        }
-        if (preg_match("/[0-9\s]m/", $oldDimensions)) {
-            foreach ($dimensions as $key => $dimension) {
-                $dimensions[$key] = $dimension . " m";
-            }
-        }
-        if (strpos($oldDimensions, "ø") !== false) {
-            dd(true);
-        }
-        dd(utf8_encode($oldDimensions), $dimensions);
-        if (!$oldDimensions) {
-            return;
-        }
     }
 }
