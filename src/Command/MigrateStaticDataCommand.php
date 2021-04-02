@@ -20,7 +20,7 @@ use Symfony\Component\Stopwatch\Stopwatch;
  * Class MigrateDataCommand
  * @package App\Command
  */
-class MigrateDataCommand extends Command
+class MigrateStaticDataCommand extends Command
 {
     use MigrationTrait;
 

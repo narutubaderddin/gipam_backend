@@ -63,8 +63,7 @@ class MigrateObjectsCommand extends Command
         MigrationRepository $migrationRepository,
         Stopwatch $stopwatch,
         LoggerService $loggerService
-    )
-    {
+    ) {
         parent::__construct();
         $this->entityManager = $entityManager;
         $this->connection = $this->entityManager->getConnection();
@@ -93,7 +92,7 @@ class MigrateObjectsCommand extends Command
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         $output->writeln([
-            'Migrate Data From Access DB to your DB',
+            'Migrate Furniture Data From Access DB',
             '====================================',
             '',
         ]);
@@ -153,17 +152,23 @@ class MigrateObjectsCommand extends Command
         foreach ($oldEntities as $oldEntity) {
 
             // todo for testing
-//            $oldEntity = $this->test(2);
+//            $oldEntity = $this->test(394);
+
             $newEntity = $this->createEntity($entity, $oldEntity, $mappingTable, $foundError);
-//            $this->findDimensions($oldEntity, $newEntity);
-//            $this->addConstat($oldEntity, $newEntity);
 
             $this->addAuthor($oldEntity, $newEntity);
             $this->setMaterialTechnique($oldEntity, $newEntity, $mappingTable);
             $this->setStatus($oldEntity, $newEntity);
-            $this->addObjectLog($oldEntity, $newEntity);
             $this->addAttachments($oldEntity, $newEntity);
+
+            // todo should fix the logic of migration
+//            $this->findDimensions($oldEntity, $newEntity);
+//            $this->addConstat($oldEntity, $newEntity);
 //            $this->addReports($oldEntity, $newEntity);
+
+            // todo object log isn't correct
+//            $this->addObjectLog($oldEntity, $newEntity);
+
             $this->entityManager->persist($newEntity);
             $rowCount++;
             if ($rowCount % 100 === 0) {
@@ -329,7 +334,9 @@ class MigrateObjectsCommand extends Command
         if (!$materialTechniqueLabel) {
             return;
         }
+
         $materialTechniqueLabel = MigrationDb::utf8Encode($materialTechniqueLabel);
+
         $materialTechnique = $this->entityManager->getRepository(MatiereTechnique::class)
             ->findOneBy(['libelle' => $materialTechniqueLabel]);
 
@@ -337,34 +344,26 @@ class MigrateObjectsCommand extends Command
         $denomination = null;
         if ($oldDenominationId) {
             $criteria = ['old_id' => $oldDenominationId];
-            $denominationId = $this->migrationRepository
+            $denomination = $this->migrationRepository
                 ->getOneBy(MigrationRepository::$newDBConnection, 'denomination', $criteria);
             $denomination = $this->entityManager->getRepository(Denomination::class)
-                ->find($denominationId['id']);
+                ->find($denomination['id']);
         }
 
         if (!$materialTechnique) {
             $materialTechnique = (new MatiereTechnique())->setLibelle($materialTechniqueLabel);
+            $this->entityManager->persist($materialTechnique);
+            $this->entityManager->flush();
         }
 
         if ($denomination && !$materialTechnique->getDenominations()->contains($denomination)) {
             $materialTechnique->addDenomination($denomination);
+            $this->entityManager->persist($materialTechnique);
+            $this->entityManager->flush();
         }
-        $this->entityManager->persist($materialTechnique);
 
         $newFurniture->setMatiereTechnique($materialTechnique);
     }
-
-//    private function setMaterialTechnique($oldFurniture, ObjetMobilier &$newFurniture)
-//    {
-//        $materialTechnique = $oldFurniture[MigrationDb::MATIERE['libelle']];
-//        $materialTechnique = MigrationDb::utf8Encode($materialTechnique);
-//        $materialTechnique = $this->entityManager->getRepository(MatiereTechnique::class)
-//            ->findOneBy(['libelle' => $materialTechnique]);
-//        if ($materialTechnique) {
-//            $newFurniture->setMatiereTechnique($materialTechnique);
-//        }
-//    }
 
     private function setStatus($oldFurniture, ObjetMobilier &$newFurniture)
     {
