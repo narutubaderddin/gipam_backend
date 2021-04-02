@@ -2,14 +2,11 @@
 
 namespace App\Entity;
 
+use DateTimeInterface;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
-use Doctrine\ORM\Mapping\JoinTable;
-use Doctrine\ORM\Mapping\ManyToOne;
-use Doctrine\ORM\Mapping\OneToMany;
 use Symfony\Component\Security\Core\User\UserInterface;
-use Doctrine\ORM\Mapping\ManyToMany;
 use JMS\Serializer\Annotation as Serializer;
 
 /**
@@ -56,6 +53,21 @@ class User implements userInterface
      * @Serializer\Groups({"user", "users"})
      */
     private $roles = [];
+
+    /**
+     * @ORM\Column(type="text", nullable=true)
+     */
+    private $comment;
+
+    /**
+     * @ORM\Column(type="datetime", nullable=true)
+     */
+    private $startDate;
+
+    /**
+     * @ORM\Column(type="datetime", nullable=true)
+     */
+    private $endDate;
 
     public function __construct()
     {
@@ -162,9 +174,8 @@ class User implements userInterface
      */
     public function removeRole($role)
     {
-        if(in_array($role, $this->roles)){
+        if (in_array($role, $this->roles)) {
             unset($this->roles[array_search($role, $this->roles)]);
-
         }
         array_splice($this->roles, 1, 1);
 
@@ -177,10 +188,46 @@ class User implements userInterface
      */
     public function addRole($role)
     {
-        if(!in_array($role, $this->roles)){
+        if (!in_array($role, $this->roles)) {
             array_unshift($this->roles, $role);
-
         }
         return $this;
     }
+
+    public function getComment(): ?string
+    {
+        return $this->comment;
+    }
+
+    public function setComment(?string $comment): self
+    {
+        $this->comment = $comment;
+
+        return $this;
+    }
+
+    public function getStartDate(): ?DateTimeInterface
+    {
+        return $this->startDate;
+    }
+
+    public function setStartDate(?DateTimeInterface $startDate): self
+    {
+        $this->startDate = $startDate;
+
+        return $this;
+    }
+
+    public function getEndDate(): ?DateTimeInterface
+    {
+        return $this->endDate;
+    }
+
+    public function setEndDate(?DateTimeInterface $endDate): self
+    {
+        $this->endDate = $endDate;
+
+        return $this;
+    }
+
 }

@@ -1,21 +1,37 @@
 # Read the documentation: https://symfony.com/doc/master/bundles/FOSRestBundle/index.html
 fos_rest:
-  body_converter:
-    enabled: true
-  view:
-    formats: { json: true, xml: false, rss: false }
-    view_response_listener: true
-  serializer:
-    serialize_null: true
-  param_fetcher_listener:  force
+  body_listener: true
+  param_fetcher_listener:  true
   #    allowed_methods_listener:  true
-  #    routing_loader: true
-  #    exception:
-  #        codes:
-  #            App\Exception\MyException: 403
-  #        messages:
-  #            App\Exception\MyException: Forbidden area.
+  routing_loader:
+    default_format:       json
+    include_format:       false
+    prefix_methods:       false
+  exception:
+    enabled: true
+    exception_listener: false
+    serializer_error_renderer: true
+    serialize_exceptions: false
+    map_exception_codes: true
+    messages:
+      'Symfony\Component\HttpKernel\Exception\HttpException': true
+#    exception_controller: 'fos_rest.exception.controller:showAction'
   format_listener:
     rules:
-      - { path: '^/', priorities: ['json'], fallback_format: 'json' }
+#      - { path: ^/mail, prefer_extension: true, fallback_format: json, priorities: [ html ] }
+      - { path: ^/api, prefer_extension: true, fallback_format: json, priorities: [ json ] }
+#      - { path: ^/, prefer_extension: true, fallback_format: html, priorities: [ html ] }
+#      - { path: ^/login, prefer_extension: true, fallback_format: json, priorities: [ json ] }
+
+  body_converter:
+    enabled: true   #pour activer la désérialisation automatique du contenu de la requête
+  view:
+    view_response_listener: #fasse appel à un listener en charge de récupérer l'objet retourné et qu'il effectue la sérialisation
+      enabled:              true
+      force:                false
+      service:              custom_view_response_listener
+    formats: { json: true, xml: false, rss: false } # nous indiquons ici les formats que nous souhaitons pouvoir gérer pour la sérialisation
+  serializer:
+    serialize_null: true #par défaut, lorsqu'un champ est  null  dans un objet, lors de la sérialisation, il n'est pas considéré. On ne veut pas se comportement
+#  disable_csrf_role: ROLE_USER
 
