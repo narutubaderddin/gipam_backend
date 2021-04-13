@@ -20,7 +20,7 @@ class Attachment
     private $id;
 
     /**
-     * @ORM\Column(name="date", type="datetime")
+     * @ORM\Column(name="date", type="datetime", nullable=true)
      */
     private $date;
 

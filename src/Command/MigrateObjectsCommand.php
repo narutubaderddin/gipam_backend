@@ -154,10 +154,19 @@ class MigrateObjectsCommand extends Command
     {
         $fieldMappings = $this->entityManager->getClassMetadata(ArtWork::class)->getTableName();
 
-        dd($fieldMappings);
         $entity = 'art_work';
         $this->migrationRepository->dropNewTables(self::GROUP);
-        $mappingTable = MigrationDb::getMappingTable('oeuvre_art');
+        $mappingTable = [
+            'id' => 'C_MGPAM',
+            'table' => 'OEUVRES',
+            'rel_denomination' => 'C_DENOMINATION',
+            'rel_field' => 'C_DOMAINE',
+            'rel_era' => 'C_EPOQUE',
+            'rel_style' => 'C_STYLE',
+            'title' => 'OE_TITRE',
+            'number_of_unit' => 'OE_NB',
+            'description' => 'OE_REPRISE',
+        ];
         $oldEntities = $this->migrationRepository
             ->getAll(MigrationRepository::$oldDBConnection, $mappingTable['table']);
         $foundError = false;
@@ -232,7 +241,9 @@ class MigrateObjectsCommand extends Command
                 $relatedEntityId = $oldEntity[$mappingTable[$attribute]];
                 $relatedEntity = null;
                 if ($relatedEntityId !== null) {
-                    $relatedEntityId = $this->getRelatedEntity($oldEntity, $relatedClass, $foundError);
+                    $relatedClassName = $this->getClass($relatedClass);
+                    $relatedTableName = $this->entityManager->getClassMetadata($relatedClassName)->getTableName();
+                    $relatedEntityId = $this->getRelatedEntity($oldEntity, $relatedTableName, $foundError);
                     if ($relatedEntityId) {
                         $relatedEntity = $this->entityManager->getRepository($this->getClass($relatedClass))
                             ->find($relatedEntityId);
