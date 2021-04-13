@@ -27,7 +27,7 @@ class MovementType
     private $id;
 
     /**
-     * @ORM\Column(name="libelle", type="string", length="150", nullable=true)
+     * @ORM\Column(name="libelle", type="string", length=150, nullable=true)
      */
     private $label;
 
