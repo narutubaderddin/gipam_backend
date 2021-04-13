@@ -2,26 +2,22 @@
 
 namespace App\Command;
 
+use App\Command\Utils\ExcelLogger;
 use App\Command\Utils\MigrationDb;
 use App\Command\Utils\MigrationRepository;
 use App\Command\Utils\MigrationTrait;
-use App\Entity\Action;
-use App\Entity\Auteur;
-use App\Entity\Constat;
+use App\Command\Utils\ObjectDimensionsTrait;
+use App\Command\Utils\ReportActionTrait;
+use App\Entity\ArtWork;
+use App\Entity\ArtWorkLog;
+use App\Entity\Attachment;
+use App\Entity\Author;
 use App\Entity\Denomination;
-use App\Entity\Deposant;
-use App\Entity\Epoque;
-use App\Entity\FichierJoint;
-use App\Entity\LogOeuvre;
-use App\Entity\MatiereTechnique;
-use App\Entity\ObjetMobilier;
-use App\Entity\SousTypeConstat;
-use App\Entity\Statut;
-use App\Entity\StatutDepot;
-use App\Entity\StatutPropriete;
-use App\Entity\TypeConstat;
-use App\Entity\TypeMouvement;
-use App\Entity\TypeMouvementAction;
+use App\Entity\Depositor;
+use App\Entity\DepositStatus;
+use App\Entity\Furniture;
+use App\Entity\MaterialTechnique;
+use App\Entity\PropertyStatus;
 use App\Services\LoggerService;
 use DateTime;
 use Doctrine\ORM\EntityManagerInterface;
@@ -35,12 +31,13 @@ use Symfony\Component\Stopwatch\Stopwatch;
 class MigrateObjectsCommand extends Command
 {
     use MigrationTrait;
+    use ObjectDimensionsTrait;
+    use ReportActionTrait;
 
     // the name of the command (the part after "bin/console")
-    protected static $defaultName = 'app:migrate:all';
+    protected static $defaultName = 'app:migrate:dynamic';
 
-    protected const GROUP = [/*'statut_depot', 'statut_propriete',*/
-        'statut', 'objet_mobilier', 'fichier_joint', 'log_oeuvre'];
+    protected const GROUP = ['statut', 'objet_mobilier', 'fichier_joint', 'log_oeuvre', 'matiere_technique', 'auteur'];
     protected const SEPARATOR = '===================================================';
     protected const CANCELED = [
         '',
@@ -57,20 +54,25 @@ class MigrateObjectsCommand extends Command
     private $stopwatch;
     private $connection;
     private $loggerService;
+    private $excelLogger;
 
     public function __construct(
         EntityManagerInterface $entityManager,
         MigrationRepository $migrationRepository,
         Stopwatch $stopwatch,
-        LoggerService $loggerService
-    ) {
+        LoggerService $loggerService,
+        ExcelLogger $excelLogger
+    )
+    {
         parent::__construct();
         $this->entityManager = $entityManager;
         $this->connection = $this->entityManager->getConnection();
         $this->migrationRepository = $migrationRepository;
         $this->stopwatch = $stopwatch;
         $this->loggerService = $loggerService;
+        $this->excelLogger = $excelLogger;
         $loggerService->init('db_migration');
+        $this->excelLogger->initFile('objectMigration');
     }
 
     protected function configure()
@@ -111,10 +113,12 @@ class MigrateObjectsCommand extends Command
         $startTime = time();
         $this->stopwatch->start('export-data');
 
-        $this->migrationRepository->dropNewTables(['matiere_technique']);
         $this->createActionMouvementTypes();
         $this->createReportType();
         $this->createFurniture($output);
+
+        // todo drop old columns after migrating Furniture
+//        $this->dropOldColumnsStaticData();
 
         $this->stopwatch->stop('export-data');
 
@@ -133,11 +137,17 @@ class MigrateObjectsCommand extends Command
         return 0;
     }
 
+    private function dropOldColumnsStaticData()
+    {
+        foreach (MigrateStaticDataCommand::GROUPS as $group) {
+            $this->migrationRepository->dropOldColumn($group);
+        }
+    }
+
     private function test($id)
     {
         $table = MigrationDb::OEUVRES['table'];
-        $ret = $this->migrationRepository->getBy(MigrationRepository::$oldDBConnection, $table, ['C_MGPAM' => $id]);
-        return $ret[0];
+        return $this->migrationRepository->getOneBy(MigrationRepository::$oldDBConnection, $table, ['C_MGPAM' => $id]);
     }
 
     private function createFurniture(OutputInterface $output)
@@ -149,8 +159,9 @@ class MigrateObjectsCommand extends Command
             ->getAll(MigrationRepository::$oldDBConnection, $mappingTable['table']);
         $foundError = false;
         $rowCount = 1;
+        $columns = array_keys($this->furnitureDimensions($oldEntities[0], new ArtWork()));
+        $this->excelLogger->write($columns, 1);
         foreach ($oldEntities as $oldEntity) {
-
             // todo for testing
 //            $oldEntity = $this->test(394);
 
@@ -160,9 +171,10 @@ class MigrateObjectsCommand extends Command
             $this->setMaterialTechnique($oldEntity, $newEntity, $mappingTable);
             $this->setStatus($oldEntity, $newEntity);
             $this->addAttachments($oldEntity, $newEntity);
+            $this->findDimensions($oldEntity, $newEntity);
 
+//
             // todo should fix the logic of migration
-//            $this->findDimensions($oldEntity, $newEntity);
 //            $this->addConstat($oldEntity, $newEntity);
 //            $this->addReports($oldEntity, $newEntity);
 
@@ -170,6 +182,10 @@ class MigrateObjectsCommand extends Command
 //            $this->addObjectLog($oldEntity, $newEntity);
 
             $this->entityManager->persist($newEntity);
+
+            // here we add the new entity ID after persisting
+            $dimensions = $this->furnitureDimensions($oldEntity, $newEntity);
+            $this->excelLogger->write($dimensions, $rowCount + 1);
             $rowCount++;
             if ($rowCount % 100 === 0) {
                 $this->entityManager->flush();
@@ -197,6 +213,7 @@ class MigrateObjectsCommand extends Command
         ]);
         $this->loggerService->addInfo($message);
         $this->loggerService->addInfo(self::SEPARATOR);
+        $this->excelLogger->save();
     }
 
     private function createEntity($entity, $oldEntity, $mappingTable, bool &$foundError)
@@ -237,98 +254,22 @@ class MigrateObjectsCommand extends Command
         return $newEntity;
     }
 
-    private function addReports($oldFurniture, ObjetMobilier &$newFurniture)
-    {
-        $actionMappingTable = MigrationDb::getMappingTable('action');
-        $oldRelation = $oldFurniture[$actionMappingTable['rel_objet_mobilier']];
-        $criteria = [$actionMappingTable['rel_objet_mobilier'] => $oldRelation];
-        $oldActions = $this->migrationRepository
-            ->getBy(MigrationRepository::$oldDBConnection, $actionMappingTable['table'], $criteria);
-        $reportTypeMappingTable = MigrationDb::getMappingTable('type_constat');
-        $i = 1;
-        foreach ($oldActions as $oldAction) {
-            $oldReportTypeId = $oldAction[$actionMappingTable['rel_constat']];
-            if ($oldReportTypeId) {
-                $criteria = [$reportTypeMappingTable['id'] => $oldReportTypeId];
-                $oldReportType = $this->migrationRepository
-                    ->getOneBy(MigrationRepository::$oldDBConnection, $reportTypeMappingTable['table'], $criteria);
-                $oldLabel = $oldReportType[$reportTypeMappingTable['libelle']];
-                $oldLabel = strtolower(MigrationDb::utf8Encode($oldLabel));
-                $report = null;
-                if ($oldLabel === 'vu') {
-                    $report = $this->createSeenReport($oldAction, $actionMappingTable);
-                    $this->entityManager->persist($report);
-                    $newFurniture->addConstat($report);
-                } elseif ($oldLabel === 'non vu') {
-//                    $report = $this->createAction($oldAction, $actionMappingTable);
-                }
-            }
-//            $i++;
-//            if ($i % 100 === 0) {
-//                $this->entityManager->flush();
-//            }
-        }
-//        $this->entityManager->flush();
-    }
-
-    private function createSeenReport(array $oldAction, array $actionMappingTable)
-    {
-        $oldComment = $oldAction[$actionMappingTable['commentaire']];
-        $report = (new Constat())->setCommentaire(MigrationDb::utf8Encode($oldComment));
-        $subTypeMappingTable = MigrationDb::getMappingTable('sous_type_constat');
-        $oldSubTypeId = $oldAction[$actionMappingTable['rel_sous_type_constat']];
-        if ($oldSubTypeId) {
-            $criteria = [$subTypeMappingTable['id'] => $oldSubTypeId];
-            $oldSubType = $this->migrationRepository
-                ->getOneBy(MigrationRepository::$oldDBConnection, $subTypeMappingTable['table'], $criteria);
-            $oldLabel = $oldSubType[$subTypeMappingTable['libelle']];
-            $oldLabel = strtolower(MigrationDb::utf8Encode($oldLabel));
-            $label = '';
-            if (strpos($oldLabel, 'bon') !== false) {
-                $label = SousTypeConstat::TYPE_VUE['bonEtat'];
-            } elseif (strpos($oldLabel, 'commentaire') !== false) {
-                $label = SousTypeConstat::TYPE_VUE['voirCommentaire'];
-            }
-            $subReportType = $this->entityManager->getRepository(SousTypeConstat::class)
-                ->findOneBy(['libelle' => $label]);
-            $report->setSousTypeConstat($subReportType);
-        } else {
-
-        }
-        $date = $oldAction[$actionMappingTable['date']];
-        if ($date) {
-            $report->setDate(new DateTime($date));
-        }
-        return $report;
-    }
-
-    private function createAction(array $oldAction, array $actionMappingTable)
-    {
-        $reportSubType = $this->entityManager->getRepository(SousTypeConstat::class)
-            ->findOneBy(['libelle' => SousTypeConstat::TYPE_NON_VUE['nonVue']]);
-        $report = (new Constat())->setSousTypeConstat($reportSubType);
-        $oldComment = $oldAction[$actionMappingTable['commentaire']];
-        $newAction = (new Action())->setCommentaire(MigrationDb::utf8Encode($oldComment));
-        $date = $oldAction[$actionMappingTable['date']];
-        if ($date) {
-            $report->setDate(new DateTime($date));
-        }
-        $report->addAction($newAction);
-    }
-
-    private function addAuthor($oldFurniture, ObjetMobilier &$newFurniture)
+    private function addAuthor($oldFurniture, Furniture &$newFurniture)
     {
         $mappingTable = MigrationDb::getMappingTable('auteur');
         $authorLastName = MigrationDb::utf8Encode($oldFurniture[$mappingTable['nom']]);
         $authorFirstName = MigrationDb::utf8Encode($oldFurniture[$mappingTable['prenom']]);
-        $author = $this->entityManager->getRepository(Auteur::class)
-            ->findOneBy(['nom' => $authorLastName, 'prenom' => $authorFirstName]);
-        if ($author) {
-            $newFurniture->addAuteur($author);
+        $author = $this->entityManager->getRepository(Author::class)
+            ->findOneBy(['lastName' => $authorLastName, 'firstName' => $authorFirstName]);
+        if (!$author) {
+            $author = (new Author())->setLastName($authorLastName)->setFirstName($authorFirstName);
+            $this->entityManager->persist($author);
+            $this->entityManager->flush();
         }
+        $newFurniture->addAuthor($author);
     }
 
-    private function setMaterialTechnique($oldFurniture, ObjetMobilier &$newFurniture, $mappingTable)
+    private function setMaterialTechnique($oldFurniture, Furniture &$newFurniture, $mappingTable)
     {
         $materialTechniqueLabel = $oldFurniture[MigrationDb::MATIERE['libelle']];
         if (!$materialTechniqueLabel) {
@@ -336,9 +277,8 @@ class MigrateObjectsCommand extends Command
         }
 
         $materialTechniqueLabel = MigrationDb::utf8Encode($materialTechniqueLabel);
-
-        $materialTechnique = $this->entityManager->getRepository(MatiereTechnique::class)
-            ->findOneBy(['libelle' => $materialTechniqueLabel]);
+        $materialTechnique = $this->entityManager->getRepository(MaterialTechnique::class)
+            ->findOneBy(['label' => $materialTechniqueLabel]);
 
         $oldDenominationId = $oldFurniture[$mappingTable['rel_denomination']];
         $denomination = null;
@@ -351,63 +291,68 @@ class MigrateObjectsCommand extends Command
         }
 
         if (!$materialTechnique) {
-            $materialTechnique = (new MatiereTechnique())->setLibelle($materialTechniqueLabel);
+            $materialTechnique = (new MaterialTechnique())->setLabel($materialTechniqueLabel);
             $this->entityManager->persist($materialTechnique);
             $this->entityManager->flush();
         }
-
-        if ($denomination && !$materialTechnique->getDenominations()->contains($denomination)) {
-            $materialTechnique->addDenomination($denomination);
-            $this->entityManager->persist($materialTechnique);
-            $this->entityManager->flush();
+        if ($denomination) {
+            if (!$materialTechnique->getDenominations()->contains($denomination)) {
+                $materialTechnique->addDenomination($denomination);
+                $this->entityManager->persist($materialTechnique);
+                $this->entityManager->flush();
+            } else {
+                $materialTechnique = $this->entityManager->getRepository(MaterialTechnique::class)
+                    ->findByLabelAndDenomination($materialTechniqueLabel, $denomination);
+            }
         }
 
-        $newFurniture->setMatiereTechnique($materialTechnique);
+        $newFurniture->setMaterialTechnique($materialTechnique);
     }
 
-    private function setStatus($oldFurniture, ObjetMobilier &$newFurniture)
+    private function setStatus($oldFurniture, Furniture &$newFurniture)
     {
         $foundError = false;
         $depositDate = $oldFurniture['OE_DATEDEPOT'];
         $oldDepositor = intval($oldFurniture['C_DEPOSANT']);
         $status = null;
         if (($oldDepositor === 6) || is_null($oldDepositor)) {
-            $status = new StatutPropriete();
+            $status = new PropertyStatus();
             if ($depositDate) {
-                $status->setDateEntree(new DateTime($depositDate));
+                $status->setEntryDate(new DateTime($depositDate));
             }
-            $status->setPropUnPourCent($oldFurniture['OE_UNPOURCENT']);
+            $status->setPropertyPercentage($oldFurniture['OE_UNPOURCENT']);
         } else {
-            $status = new StatutDepot();
+            $status = new DepositStatus();
             $relatedClass = 'deposant';
             $relatedEntity = null;
             $relatedEntityId = $this->getRelatedEntity($oldFurniture, $relatedClass, $foundError);
             if ($relatedEntityId) {
-                $relatedEntity = $this->entityManager->getRepository(Deposant::class)
+                $relatedEntity = $this->entityManager->getRepository(Depositor::class)
                     ->find($relatedEntityId);
-                $status->setDeposant($relatedEntity);
+                $status->setDepositor($relatedEntity);
             }
+            // todo to be changed after merging
             if ($depositDate) {
                 $status->setDateDepot(new DateTime($depositDate));
             }
         }
-        $status->setCommentaire(MigrationDb::utf8Encode($oldFurniture['OE_DEPOT']));
+        $status->setComment(MigrationDb::utf8Encode($oldFurniture['OE_DEPOT']));
         $this->entityManager->persist($status);
-        $newFurniture->setStatut($status);
+        $newFurniture->setStatus($status);
     }
 
-    private function addObjectLog($oldFurniture, ObjetMobilier &$newFurniture)
+    private function addObjectLog($oldFurniture, Furniture &$newFurniture)
     {
         $mappingTable = MigrationDb::getMappingTable('log_oeuvre');
         $date = $oldFurniture[$mappingTable['date']];
         if ($date) {
-            $objectLog = (new LogOeuvre())->setDate(new DateTime($date));
+            $objectLog = (new ArtWorkLog())->setDate(new DateTime($date));
             $this->entityManager->persist($objectLog);
-            $newFurniture->addLogOeuvre($objectLog);
+            $newFurniture->addArtWorkLog($objectLog);
         }
     }
 
-    private function addAttachments($oldFurniture, ObjetMobilier &$newFurniture)
+    private function addAttachments($oldFurniture, Furniture &$newFurniture)
     {
         $mappingTable = MigrationDb::getMappingTable('fichier_joint');
         $oldRelation = $oldFurniture[$mappingTable['rel_objet_mobilier']];
@@ -415,98 +360,17 @@ class MigrateObjectsCommand extends Command
         $oldAttachements = $this->migrationRepository
             ->getBy(MigrationRepository::$oldDBConnection, $mappingTable['table'], $criteria);
         foreach ($oldAttachements as $attachement) {
-            $newAttachement = (new FichierJoint())
-                ->setCommentaire(MigrationDb::utf8Encode($attachement[$mappingTable['commentaire']]))
-                ->setLien(MigrationDb::utf8Encode($attachement[$mappingTable['lien']]))
-                ->setImagePrincipale($attachement[$mappingTable['image_principale']]);
+            $newAttachement = (new Attachment())
+                ->setComment(MigrationDb::utf8Encode($attachement[$mappingTable['commentaire']]))
+                ->setLink(MigrationDb::utf8Encode($attachement[$mappingTable['lien']]))
+                ->setPrincipleImage($attachement[$mappingTable['image_principale']]);
             $date = $attachement[$mappingTable['date']];
             if ($date) {
                 $newAttachement->setDate(new  DateTime($date));
             }
             $this->entityManager->persist($newAttachement);
-            $newFurniture->addFichierJoints($newAttachement);
+            $newFurniture->addAttachment($newAttachement);
         }
         unset($oldAttachements);
-    }
-
-    private function getDimensionUnit(string $dimension)
-    {
-        if (preg_match("/[0-9\s]cm/", $dimension)) {
-            return ' cm';
-        }
-        if (preg_match("/[0-9\s]m/", $dimension)) {
-            return ' m';
-        }
-        return '';
-    }
-
-    private function findDimensions($oldFurniture, ObjetMobilier &$newFurniture)
-    {
-        $rectangularAttributes = ['longueur', 'largeur', 'hauteur'];
-        $roundAttributes = ['diametre', 'hauteur'];
-        $oldEntities = $this->migrationRepository
-            ->getOneBy(MigrationRepository::$oldDBConnection, 'OEUVRES', ['C_MGPAM' => 6]);
-
-        $oldDimensions = MigrationDb::utf8Encode(strtolower($oldEntities['OE_DIM']));
-
-        $dimensions = explode('x', $oldDimensions);
-        foreach ($dimensions as $key => $dimension) {
-            $dimensions[$key] = trim($dimension);
-        }
-        $dimensions = preg_replace("/[a-z\s]+/", '', $dimensions);
-
-        if (preg_match("/ø|DIA/", $oldDimensions)) {
-            return false;
-        }
-
-        if (strpos($oldDimensions, "p") !== false) {
-            return false;
-        }
-
-
-        dd(utf8_encode($oldDimensions), $dimensions);
-        if (!$oldDimensions) {
-            return;
-        }
-    }
-
-    private function createActionMouvementTypes()
-    {
-        $tables = ['type_action', 'type_mouvement', 'type_mouvement_action'];
-        $this->migrationRepository->dropNewTables($tables);
-        foreach (TypeMouvement::LIBELLE as $key => $label) {
-            $mouvementType = (new TypeMouvement())->setLibelle($label);
-            $this->entityManager->persist($mouvementType);
-            if (isset(TypeMouvementAction::LIBELLE[$key])) {
-                $actionMouvementTypes = TypeMouvementAction::LIBELLE[$key];
-                foreach ($actionMouvementTypes as $actionMouvementLabel) {
-                    $actionMouvementType = (new TypeMouvementAction())
-                        ->setLibelle($actionMouvementLabel)
-                        ->setTypeMouvement($mouvementType);
-                    $this->entityManager->persist($actionMouvementType);
-                }
-            }
-        }
-        $this->entityManager->flush();
-        $this->entityManager->clear();
-    }
-
-    private function createReportType()
-    {
-        $tables = ['constat', 'sous_type_constat', 'type_constat'];
-        $this->migrationRepository->dropNewTables($tables);
-        foreach (TypeConstat::LIBELLE as $key => $label) {
-            $type = (new TypeConstat())->setLibelle($label);
-            $this->entityManager->persist($type);
-            $subLabels = SousTypeConstat::LIBELLE[$key];
-            foreach ($subLabels as $subLabel) {
-                $subType = (new SousTypeConstat())
-                    ->setLibelle($subLabel)
-                    ->setTypeConstat($type);
-                $this->entityManager->persist($subType);
-            }
-        }
-        $this->entityManager->flush();
-        $this->entityManager->clear();
     }
 }

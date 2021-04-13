@@ -8,21 +8,10 @@ class MigrationDb
     public const UPPERCASE_NAME = true;
     public const USE_ACCESS_DB = true;
 
-    public const NEW_TABLE_NAME = [
-        'subdivision',
-        'localisation',
-        'localisationType',
-        'room',
-        'responsible',
-        'movementactiontype',
-        'alert',
-        'reporttype',
-        'artworklog',
-    ];
-
     public const TABLE_NAME = [
         'ministere' => self::MINISTERES,
         'etablissement' => self::ETAB_DIR,
+        'sous_direction' => self::SOUS_DIRECTION,
         'correspondant' => self::CORRESPONDANTS,
         'service' => self::SERVICES,
         'site' => self::SITES,
@@ -137,6 +126,15 @@ class MigrationDb
         'old_id' => 'C_ETABDIR',
     ];
 
+    public const SOUS_DIRECTION = [
+        'id' => 'C_ETABDIR',
+        'table' => 'ETAB_DIR',
+        'rel_etablissement' => 'C_ETABDIR',
+        'sigle' => 'ED_SIGLE',
+        'libelle' => 'ED_LIBELLE',
+        'old_id' => 'C_ETABDIR',
+    ];
+
     public const CORRESPONDANTS = [
         'id' => 'C_COR',
         'table' => 'CORRESPONDANTS',
@@ -153,6 +151,7 @@ class MigrationDb
     public const SERVICES = [
         'id' => 'C_SERVICE',
         'table' => 'SERVICES',
+        'rel_sous_direction' => 'C_ETABDIR',
         'sigle' => 'SERV_SIGLE',
         'libelle' => 'SERV_LIBELLE',
         'old_id' => 'C_SERVICE',

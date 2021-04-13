@@ -11,6 +11,7 @@ use Symfony\Component\HttpKernel\KernelInterface;
 class MigrationRepository
 {
 
+
     /**
      * @var Connection|PDO
      */
@@ -134,6 +135,38 @@ class MigrationRepository
                 self::$newDBConnection->executeQuery("TRUNCATE TABLE " . $table . " RESTART IDENTITY");
             }
             self::$newDBConnection->executeQuery("SELECT setval('" . $table . "_id_seq', 1, FALSE)");
+        }
+    }
+
+    public function update(string $tableName, array $identifierValue, array $columnsValues)
+    {
+        //UPDATE table_name
+        //SET column1=value1, column2=value2,...
+        //WHERE some_column=some_value
+        $this->prepareValues($columnsValues);
+        $keys = array_keys($columnsValues);
+        $newValues = '';
+        $i = 0;
+        while ($i < count($columnsValues) - 1) {
+            $newValues = $newValues . $keys[$i] . '=' . $columnsValues[$keys[$i]] . ', ';
+            $i++;
+        }
+        $newValues = $newValues . $keys[$i] . '=' . $columnsValues[$keys[$i]];
+
+        $this->prepareValues($identifierValue);
+        $keys = array_keys($identifierValue);
+        $identifier = $keys[0] . "=" . $identifierValue[$keys[0]];
+        $sql = sprintf("UPDATE %s SET %s WHERE %s", $tableName, $newValues, $identifier);
+        $stmt = self::$newDBConnection->prepare($sql);
+        $stmt->execute();
+    }
+
+    private function prepareValues(array &$columnsValues)
+    {
+        foreach ($columnsValues as $key => $columnsValue) {
+            if (is_string($columnsValue)) {
+                $columnsValues[$key] = "'" . $columnsValue . "'";
+            }
         }
     }
 }

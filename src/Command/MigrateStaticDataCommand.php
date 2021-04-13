@@ -25,15 +25,13 @@ class MigrateStaticDataCommand extends Command
     use MigrationTrait;
 
     // the name of the command (the part after "bin/console")
-    protected static $defaultName = 'app:migrate';
+    protected static $defaultName = 'app:migrate:static';
 
     // number of logic group
     public const GROUPS = [
-        1 => ['ministere', 'etablissement', 'service', 'correspondant',],
+        1 => ['ministere', 'etablissement', 'sous_direction', 'service', 'correspondant',],
         2 => ['region', 'departement', 'commune', 'site', 'batiment',],
-        // the depositor types have changed
         3 => ['style', 'epoque', 'domaine', 'denomination', 'type_deposant', 'deposant'],
-        4 => ['type_mouvement', 'auteur',],
     ];
 
     protected const SEPARATOR = '===================================================';
@@ -105,7 +103,6 @@ class MigrateStaticDataCommand extends Command
             '====================================',
             '',
         ]);
-
         $continue = $this->io->ask('This commande will delete all the saved data!' .
             'for the selected group' .
             ' Are you sure you wish to continue? (yes/no)', 'no');
@@ -158,6 +155,30 @@ class MigrateStaticDataCommand extends Command
         $this->loggerService->formatPeriod($endTime, $startTime, 'Migrating Data Done in : ');
         // return this if there was no problem running the command
         return 0;
+    }
+
+    private function matchDepositorTypes()
+    {
+        $tableName = 'type_deposant';
+        $depositorTypesMatching = [
+            1 => "Institution Culturelle Publique",
+            3 => "Particuliers",
+            4 => "Autres Administrations",
+            5 => "Institutions Privées",
+        ];
+
+        foreach ($depositorTypesMatching as $key => $value) {
+            $this->migrationRepository->update($tableName, ['old_id' => strval($key)], ['libelle' => $value]);
+        }
+        $newDepositorTypesMatching = [
+            "Service des Musées de France",
+            "Autres Musées",
+            "Etablissements du Ministère de la Culture",
+        ];
+        $sql = $this->migrationRepository->createInsertStatement($tableName, ['libelle']);
+        foreach ($newDepositorTypesMatching as $value) {
+            $this->migrationRepository->insertNewEntity($sql, [$value]);
+        }
     }
 
     private function group(int $groupNumber, OutputInterface $output)
@@ -223,9 +244,11 @@ class MigrateStaticDataCommand extends Command
         }
         $this->printWarning($foundWarning, $groupNumber, $output);
         $this->printError($foundError, $groupNumber, $output);
-
+        if ($groupNumber === 3) {
+            $this->matchDepositorTypes();
+        }
         // here we drop all the old_id columns that are used for mapping the relations
-//        $this->migrationRepository->dropOldColumn($group);
+        $this->migrationRepository->dropOldColumn($group);
     }
 
     private function createEntity($entity, $oldEntity, $mappingTable, bool &$foundError): array
