@@ -2,7 +2,8 @@
 
 namespace App\Form;
 
-use App\Entity\Domaine;
+use App\Entity\Field;
+use App\Form\Type\BooleanType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
@@ -13,8 +14,8 @@ class FieldType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $builder
-            ->add('label',TextType::class,
-            ['required'=>true])
+            ->add('label',TextType::class, ['required'=>true])
+            ->add('active', BooleanType::class, ['required'=>true])
         ;
     }
 
@@ -22,7 +23,7 @@ class FieldType extends AbstractType
     {
         $resolver->setDefaults([
             'csrf_protection' => false,
-            'data_class' => Domaine::class,
+            'data_class' => Field::class,
         ]);
     }
 }
