@@ -14,7 +14,7 @@ trait ReportActionTrait
 {
     private function createActionMouvementTypes()
     {
-        $tables = ['type_action', 'type_mouvement', 'type_mouvement_action'];
+        $tables = ['type_constat_action', 'type_mouvement', 'type_mouvement_action'];
         $this->migrationRepository->dropNewTables($tables);
         foreach (MovementType::LIBELLE as $key => $label) {
             $mouvementType = (new MovementType())->setLabel($label);

@@ -152,9 +152,12 @@ class MigrateObjectsCommand extends Command
 
     private function createFurniture(OutputInterface $output)
     {
-        $entity = 'oeuvre_art';
+        $fieldMappings = $this->entityManager->getClassMetadata(ArtWork::class)->getTableName();
+
+        dd($fieldMappings);
+        $entity = 'art_work';
         $this->migrationRepository->dropNewTables(self::GROUP);
-        $mappingTable = MigrationDb::getMappingTable($entity);
+        $mappingTable = MigrationDb::getMappingTable('oeuvre_art');
         $oldEntities = $this->migrationRepository
             ->getAll(MigrationRepository::$oldDBConnection, $mappingTable['table']);
         $foundError = false;
@@ -171,7 +174,7 @@ class MigrateObjectsCommand extends Command
             $this->setMaterialTechnique($oldEntity, $newEntity, $mappingTable);
             $this->setStatus($oldEntity, $newEntity);
             $this->addAttachments($oldEntity, $newEntity);
-            $this->findDimensions($oldEntity, $newEntity);
+//            $this->findDimensions($oldEntity, $newEntity);
 
 //
             // todo should fix the logic of migration
@@ -184,8 +187,8 @@ class MigrateObjectsCommand extends Command
             $this->entityManager->persist($newEntity);
 
             // here we add the new entity ID after persisting
-            $dimensions = $this->furnitureDimensions($oldEntity, $newEntity);
-            $this->excelLogger->write($dimensions, $rowCount + 1);
+//            $dimensions = $this->furnitureDimensions($oldEntity, $newEntity);
+//            $this->excelLogger->write($dimensions, $rowCount + 1);
             $rowCount++;
             if ($rowCount % 100 === 0) {
                 $this->entityManager->flush();
@@ -305,7 +308,6 @@ class MigrateObjectsCommand extends Command
                     ->findByLabelAndDenomination($materialTechniqueLabel, $denomination);
             }
         }
-
         $newFurniture->setMaterialTechnique($materialTechnique);
     }
 
@@ -320,7 +322,7 @@ class MigrateObjectsCommand extends Command
             if ($depositDate) {
                 $status->setEntryDate(new DateTime($depositDate));
             }
-            $status->setPropertyPercentage($oldFurniture['OE_UNPOURCENT']);
+            $status->setPropOnePercent($oldFurniture['OE_UNPOURCENT']);
         } else {
             $status = new DepositStatus();
             $relatedClass = 'deposant';
@@ -331,25 +333,13 @@ class MigrateObjectsCommand extends Command
                     ->find($relatedEntityId);
                 $status->setDepositor($relatedEntity);
             }
-            // todo to be changed after merging
             if ($depositDate) {
-                $status->setDateDepot(new DateTime($depositDate));
+                $status->setDepositDate(new DateTime($depositDate));
             }
         }
         $status->setComment(MigrationDb::utf8Encode($oldFurniture['OE_DEPOT']));
         $this->entityManager->persist($status);
         $newFurniture->setStatus($status);
-    }
-
-    private function addObjectLog($oldFurniture, Furniture &$newFurniture)
-    {
-        $mappingTable = MigrationDb::getMappingTable('log_oeuvre');
-        $date = $oldFurniture[$mappingTable['date']];
-        if ($date) {
-            $objectLog = (new ArtWorkLog())->setDate(new DateTime($date));
-            $this->entityManager->persist($objectLog);
-            $newFurniture->addArtWorkLog($objectLog);
-        }
     }
 
     private function addAttachments($oldFurniture, Furniture &$newFurniture)

@@ -114,7 +114,7 @@ class MigrateStaticDataCommand extends Command
         }
         $startTime = time();
         $group = intval($input->getOption('group'));
-        if (($group !== -1) || (array_key_exists($group, self::GROUPS))) {
+        if (array_key_exists($group, self::GROUPS)) {
             $msg = implode(', ', self::GROUPS[$group]);
             $continue = $this->io->ask('Loading : ' . $msg . ' (yes/no)', 'no');
             $input->setArgument('continue', $continue);
@@ -126,7 +126,7 @@ class MigrateStaticDataCommand extends Command
             $startTime = time();
             $this->stopwatch->start('export-data');
             $this->group(intval($group), $output);
-        } else {
+        } elseif($group === -1) {
             $continue = $this->io->ask('This commande will delete all the saved data!' .
                 ' Are you sure you wish to continue? (yes/no)', 'no');
             $input->setArgument('continue', $continue);
@@ -139,6 +139,9 @@ class MigrateStaticDataCommand extends Command
             foreach (self::GROUPS as $key => $GROUP) {
                 $this->group($key, $output);
             }
+        } else {
+            $output->writeln("Group number not found bye!");
+            return 0;
         }
         $this->stopwatch->stop('export-data');
 
@@ -150,11 +153,39 @@ class MigrateStaticDataCommand extends Command
             "Time: " . sprintf("%.2f", $duration) . " minutes, Memory: " . sprintf("%.2f", $memory) . " MB",
             '',
         ]);
-        $this->loggerService->logMemoryUsage('Migrating Data Done with : ');
         $endTime = time();
+
+        // here we ask if we want to drop old_id columns needed for mapping the entities
+        $continue = $this->io->ask(
+            'Do you wish to delete old_id columns ?' .
+            'If you will migrate the dynamic tables press Enter or write no otherwise type yes. (yes/no)',
+            'no'
+        );
+        $input->setArgument('continue', $continue);
+        $continue = strtolower($continue);
+        if ($continue === 'yes') {
+            // here we drop all the old_id columns that are used for mapping the relations
+            $this->dropOldColumns($group);
+        }
+
+        $this->loggerService->logMemoryUsage('Migrating Data Done with : ');
         $this->loggerService->formatPeriod($endTime, $startTime, 'Migrating Data Done in : ');
+
         // return this if there was no problem running the command
         return 0;
+    }
+
+    private function dropOldColumns(int $groupNumber)
+    {
+        if (array_key_exists($groupNumber, self::GROUPS)) {
+            $group = self::GROUPS[$groupNumber];
+            $this->migrationRepository->dropOldColumn($group);
+        }
+        if ($groupNumber === -1) {
+            foreach (self::GROUPS as $group) {
+                $this->migrationRepository->dropOldColumn($group);
+            }
+        }
     }
 
     private function matchDepositorTypes()
@@ -247,8 +278,6 @@ class MigrateStaticDataCommand extends Command
         if ($groupNumber === 3) {
             $this->matchDepositorTypes();
         }
-        // here we drop all the old_id columns that are used for mapping the relations
-        $this->migrationRepository->dropOldColumn($group);
     }
 
     private function createEntity($entity, $oldEntity, $mappingTable, bool &$foundError): array
