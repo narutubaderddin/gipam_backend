@@ -9,6 +9,7 @@ use Doctrine\ORM\Mapping as ORM;
 
 /**
  * @ORM\Entity(repositoryClass=CommuneRepository::class)
+ * @ORM\Table(name="commune")
  */
 class Commune
 {
@@ -20,23 +21,24 @@ class Commune
     private $id;
 
     /**
-     * @ORM\Column(type="string", length=255, nullable=true)
+     * @ORM\Column(name="nom", type="string", length=255, nullable=true)
      */
-    private $nom;
+    private $name;
 
     /**
      * @ORM\ManyToOne(targetEntity=Departement::class, inversedBy="communes")
+     * @ORM\JoinColumn(name="departement_id", referencedColumnName="id")
      */
     private $departement;
 
     /**
-     * @ORM\OneToMany(targetEntity=Batiment::class, mappedBy="commune")
+     * @ORM\OneToMany(targetEntity=Building::class, mappedBy="commune")
      */
-    private $batiments;
+    private $buildings;
 
     public function __construct()
     {
-        $this->batiments = new ArrayCollection();
+        $this->buildings = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -45,14 +47,14 @@ class Commune
     }
 
 
-    public function getNom(): ?string
+    public function getName(): ?string
     {
-        return $this->nom;
+        return $this->name;
     }
 
-    public function setNom(?string $nom): self
+    public function setName(?string $name): self
     {
-        $this->nom = $nom;
+        $this->name = $name;
 
         return $this;
     }
@@ -70,29 +72,29 @@ class Commune
     }
 
     /**
-     * @return Collection|Batiment[]
+     * @return Collection|Building[]
      */
-    public function getBatiments(): Collection
+    public function getBuildings(): Collection
     {
-        return $this->batiments;
+        return $this->buildings;
     }
 
-    public function addBatiment(Batiment $batiment): self
+    public function addBuilding(Building $building): self
     {
-        if (!$this->batiments->contains($batiment)) {
-            $this->batiments[] = $batiment;
-            $batiment->setCommune($this);
+        if (!$this->buildings->contains($building)) {
+            $this->buildings[] = $building;
+            $building->setCommune($this);
         }
 
         return $this;
     }
 
-    public function removeBatiment(Batiment $batiment): self
+    public function removeBuilding(Building $building): self
     {
-        if ($this->batiments->removeElement($batiment)) {
+        if ($this->buildings->removeElement($building)) {
             // set the owning side to null (unless already changed)
-            if ($batiment->getCommune() === $this) {
-                $batiment->setCommune(null);
+            if ($building->getCommune() === $this) {
+                $building->setCommune(null);
             }
         }
 

@@ -3,13 +3,13 @@
 namespace App\Entity;
 
 use App\Repository\RegionRepository;
-use DateTimeInterface;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
  * @ORM\Entity(repositoryClass=RegionRepository::class)
+ * @ORM\Table(name="region")
  */
 class Region
 {
@@ -21,19 +21,19 @@ class Region
     private $id;
 
     /**
-     * @ORM\Column(type="string", length=255, nullable=true)
+     * @ORM\Column(name="nom", type="string", length=255, nullable=true)
      */
-    private $nom;
+    private $name;
 
     /**
-     * @ORM\Column(type="datetime", nullable=true)
+     * @ORM\Column(name="date_debut", type="datetime", nullable=true)
      */
-    private $dateDebut;
+    private $startDate;
 
     /**
-     * @ORM\Column(type="datetime", nullable=true)
+     * @ORM\Column(name="date_disparition", type="datetime", nullable=true)
      */
-    private $dateDisparition;
+    private $disappearanceDate;
 
     /**
      * @ORM\OneToMany(targetEntity=Departement::class, mappedBy="region")
@@ -50,38 +50,38 @@ class Region
         return $this->id;
     }
 
-    public function getNom(): ?string
+    public function getName(): ?string
     {
-        return $this->nom;
+        return $this->name;
     }
 
-    public function setNom(?string $nom): self
+    public function setName(?string $name): self
     {
-        $this->nom = $nom;
+        $this->name = $name;
 
         return $this;
     }
 
-    public function getstartDate(): ?DateTimeInterface
+    public function getstartDate(): ?\DateTimeInterface
     {
-        return $this->dateDebut;
+        return $this->startDate;
     }
 
-    public function setDateDebut(?DateTimeInterface $dateDebut): self
+    public function setStartDate(?\DateTimeInterface $startDate): self
     {
-        $this->dateDebut = $dateDebut;
+        $this->startDate = $startDate;
 
         return $this;
     }
 
-    public function getDateDisparition(): ?DateTimeInterface
+    public function getDisappearanceDate(): ?\DateTimeInterface
     {
-        return $this->dateDisparition;
+        return $this->disappearanceDate;
     }
 
-    public function setDateDisparition(?DateTimeInterface $dateDisparition): self
+    public function setDisappearanceDate(?\DateTimeInterface $disappearanceDate): self
     {
-        $this->dateDisparition = $dateDisparition;
+        $this->disappearanceDate = $disappearanceDate;
 
         return $this;
     }

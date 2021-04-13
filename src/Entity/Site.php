@@ -10,6 +10,7 @@ use Doctrine\ORM\Mapping as ORM;
 
 /**
  * @ORM\Entity(repositoryClass=SiteRepository::class)
+ * @ORM\Table(name="site")
  */
 class Site
 {
@@ -21,30 +22,30 @@ class Site
     private $id;
 
     /**
-     * @ORM\Column(type="string", length=255, nullable=true)
+     * @ORM\Column(name="libelle", type="string", length=255, nullable=true)
      */
-    private $libelle;
+    private $label;
 
     /**
-     * @ORM\Column(type="datetime", nullable=true)
+     * @ORM\Column(name="date_debut", type="datetime", nullable=true)
      */
-    private $dateDebut;
+    private $startDate;
 
     /**
-     * @ORM\Column(type="datetime", nullable=true)
+     * @ORM\Column(name="date_disparition", type="datetime", nullable=true)
      */
-    private $dateDisparition;
+    private $disappearanceDate;
 
     /**
-     * @ORM\OneToMany(targetEntity=Batiment::class, mappedBy="site")
+     * @ORM\OneToMany(targetEntity=Building::class, mappedBy="site")
      */
-    private $batiments;
+    private $buildings;
 
 
 
     public function __construct()
     {
-        $this->batiments = new ArrayCollection();
+        $this->buildings = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -52,66 +53,66 @@ class Site
         return $this->id;
     }
 
-    public function getLibelle(): ?string
+    public function getLabel(): ?string
     {
-        return $this->libelle;
+        return $this->label;
     }
 
-    public function setLibelle(?string $libelle): self
+    public function setLabel(?string $label): self
     {
-        $this->libelle = $libelle;
+        $this->label = $label;
 
         return $this;
     }
 
-    public function getDateDebut(): ?DateTimeInterface
+    public function getStartDate(): ?DateTimeInterface
     {
-        return $this->dateDebut;
+        return $this->startDate;
     }
 
-    public function setDateDebut(?DateTimeInterface $dateDebut): self
+    public function setStartDate(?DateTimeInterface $startDate): self
     {
-        $this->dateDebut = $dateDebut;
+        $this->startDate = $startDate;
 
         return $this;
     }
 
-    public function getDateDisparition(): ?DateTimeInterface
+    public function getDisappearanceDate(): ?DateTimeInterface
     {
-        return $this->dateDisparition;
+        return $this->disappearanceDate;
     }
 
-    public function setDateDisparition(?DateTimeInterface $dateDisparition): self
+    public function setDisappearanceDate(?DateTimeInterface $disappearanceDate): self
     {
-        $this->dateDisparition = $dateDisparition;
+        $this->disappearanceDate = $disappearanceDate;
 
         return $this;
     }
 
     /**
-     * @return Collection|Batiment[]
+     * @return Collection|Building[]
      */
-    public function getBatiments(): Collection
+    public function getBuildings(): Collection
     {
-        return $this->batiments;
+        return $this->buildings;
     }
 
-    public function addBatiments(Batiment $batiment): self
+    public function addBuilding(Building $building): self
     {
-        if (!$this->batiments->contains($batiment)) {
-            $this->batiments[] = $batiment;
-            $batiment->setSite($this);
+        if (!$this->buildings->contains($building)) {
+            $this->buildings[] = $building;
+            $building->setSite($this);
         }
 
         return $this;
     }
 
-    public function removeBatiments(Batiment $batiment): self
+    public function removeBuilding(Building $building): self
     {
-        if ($this->batiments->removeElement($batiment)) {
+        if ($this->buildings->removeElement($building)) {
             // set the owning side to null (unless already changed)
-            if ($batiment->getSite() === $this) {
-                $batiment->setSite(null);
+            if ($building->getSite() === $this) {
+                $building->setSite(null);
             }
         }
 

@@ -21,58 +21,62 @@ class Action
     private $id;
 
     /**
-     * @ORM\Column(type="text", nullable=true)
+     * @ORM\Column(name="commentaire" ,type="text", nullable=true)
      */
-    private $commentaire;
+    private $comment;
 
     /**
-     * @ORM\Column(type="datetime")
+     * @ORM\Column(name="date_debut" ,type="datetime")
      */
-    private $dateDebut;
+    private $startDate;
 
     /**
-     * @ORM\Column(type="datetime")
+     * @ORM\Column(name="date_fin" ,type="datetime")
      */
-    private $dateFin;
+    private $endDate;
 
     /**
-     * @ORM\Column(type="integer")
+     * @ORM\Column(name="delai" ,type="integer")
      */
-    private $delai;
+    private $period;
 
     /**
-     * @ORM\Column(type="string", length=255, nullable=true)
+     * @ORM\Column(name="nature_action" ,type="string", length=255, nullable=true)
      */
-    private $natureAction;
+    private $actionNature;
 
     /**
-     * @ORM\ManyToOne(targetEntity=TypeAction::class, inversedBy="actions")
+     * @ORM\ManyToOne(targetEntity=ActionType::class, inversedBy="actions")
+     * @ORM\JoinColumn(name="type_id", referencedColumnName="id")
      */
     private $type;
 
     /**
-     * @ORM\ManyToOne(targetEntity=TypeMouvementAction::class, inversedBy="actions")
+     * @ORM\ManyToOne(targetEntity=Movement::class, inversedBy="actions")
+     * @ORM\JoinColumn(name="mouvement_id", referencedColumnName="id")
      */
-    private $typeMouvementAction;
+    private $movement;
 
     /**
-     * @ORM\ManyToOne(targetEntity=Constat::class, inversedBy="actions")
+     * @ORM\ManyToOne(targetEntity=MovementActionType::class, inversedBy="actions")
+     * @ORM\JoinColumn(name="type_mouvement_action_id", referencedColumnName="id")
      */
-    private $constat;
+    private $movementActionType;
 
     /**
-     * @ORM\OneToMany(targetEntity=Alerte::class, mappedBy="action")
+     * @ORM\ManyToOne(targetEntity=Report::class, inversedBy="actions")
+     * @ORM\JoinColumn(name="constat_id", referencedColumnName="id")
      */
-    private $alertes;
+    private $report;
 
     /**
-     * @ORM\ManyToOne(targetEntity=Mouvement::class, inversedBy="actions")
+     * @ORM\OneToMany(targetEntity=Alert::class, mappedBy="action")
      */
-    private $mouvement;
+    private $alerts;
 
     public function __construct()
     {
-        $this->alertes = new ArrayCollection();
+        $this->alerts = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -80,140 +84,143 @@ class Action
         return $this->id;
     }
 
-    public function getCommentaire(): ?string
+    public function getComment(): ?string
     {
-        return $this->commentaire;
+        return $this->comment;
     }
 
-    public function setCommentaire(?string $commentaire): self
+    public function setComment(?string $comment): self
     {
-        $this->commentaire = $commentaire;
+        $this->comment = $comment;
 
         return $this;
     }
 
-    public function getDateDebut(): ?DateTimeInterface
+    public function getStartDate(): ?DateTimeInterface
     {
-        return $this->dateDebut;
+        return $this->startDate;
     }
 
-    public function setDateDebut(DateTimeInterface $dateDebut): self
+    public function setStartDate(DateTimeInterface $startDate): self
     {
-        $this->dateDebut = $dateDebut;
+        $this->startDate = $startDate;
 
         return $this;
     }
 
-    public function getDateFin(): ?DateTimeInterface
+    public function getEndDate(): ?DateTimeInterface
     {
-        return $this->dateFin;
+        return $this->endDate;
     }
 
-    public function setDateFin(DateTimeInterface $dateFin): self
+    public function setEndDate(DateTimeInterface $endDate): self
     {
-        $this->dateFin = $dateFin;
+        $this->endDate = $endDate;
 
         return $this;
     }
 
-    public function getDelai(): ?int
+    public function getPeriod(): ?int
     {
-        return $this->delai;
+        return $this->period;
     }
 
-    public function setDelai(int $delai): self
+    public function setPeriod(int $period): self
     {
-        $this->delai = $delai;
+        $this->period = $period;
 
         return $this;
     }
 
-    public function getNatureAction(): ?string
+    public function getActionNature(): ?string
     {
-        return $this->natureAction;
+        return $this->actionNature;
     }
 
-    public function setNatureAction(?string $natureAction): self
+    public function setActionNature(?string $actionNature): self
     {
-        $this->natureAction = $natureAction;
+        $this->actionNature = $actionNature;
 
         return $this;
     }
 
-    public function getType(): ?TypeAction
+    public function getType(): ?ActionType
     {
         return $this->type;
     }
 
-    public function setType(?TypeAction $type): self
+    public function setType(?ActionType $type): self
     {
         $this->type = $type;
 
         return $this;
     }
 
-    public function getTypeMouvementAction(): ?TypeMouvementAction
+    /**
+     * @return Movement|null
+     */
+    public function getMovement(): ?Movement
     {
-        return $this->typeMouvementAction;
+        return $this->movement;
     }
 
-    public function setTypeMouvementAction(?TypeMouvementAction $typeMouvementAction): self
+    public function setMovement(?Movement $movement): self
     {
-        $this->typeMouvementAction = $typeMouvementAction;
+        $this->movement = $movement;
 
         return $this;
     }
 
-    public function getConstat(): ?Constat
+    public function getMovementActionType(): ?MovementActionType
     {
-        return $this->constat;
+        return $this->movementActionType;
     }
 
-    public function setConstat(?Constat $constat): self
+    public function setMovementActionType(?MovementActionType $movementActionType): self
     {
-        $this->constat = $constat;
+        $this->movementActionType = $movementActionType;
+
+        return $this;
+    }
+
+    public function getReport(): ?Report
+    {
+        return $this->report;
+    }
+
+    public function setReport(?Report $report): self
+    {
+        $this->report = $report;
 
         return $this;
     }
 
     /**
-     * @return Collection|Alerte[]
+     * @return Collection|Alert[]
      */
-    public function getAlertes(): Collection
+    public function getAlerts(): Collection
     {
-        return $this->alertes;
+        return $this->alerts;
     }
 
-    public function addAlerte(Alerte $alerte): self
+    public function addAlert(Alert $alert): self
     {
-        if (!$this->alertes->contains($alerte)) {
-            $this->alertes[] = $alerte;
-            $alerte->setAction($this);
+        if (!$this->alerts->contains($alert)) {
+            $this->alerts[] = $alert;
+            $alert->setAction($this);
         }
 
         return $this;
     }
 
-    public function removeAlerte(Alerte $alerte): self
+    public function removeAlert(Alert $alert): self
     {
-        if ($this->alertes->removeElement($alerte)) {
+        if ($this->alerts->removeElement($alert)) {
             // set the owning side to null (unless already changed)
-            if ($alerte->getAction() === $this) {
-                $alerte->setAction(null);
+            if ($alert->getAction() === $this) {
+                $alert->setAction(null);
             }
         }
-
-        return $this;
-    }
-
-    public function getMouvement(): ?Mouvement
-    {
-        return $this->mouvement;
-    }
-
-    public function setMouvement(?Mouvement $mouvement): self
-    {
-        $this->mouvement = $mouvement;
 
         return $this;
     }

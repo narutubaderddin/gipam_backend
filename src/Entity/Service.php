@@ -9,6 +9,7 @@ use Doctrine\ORM\Mapping as ORM;
 
 /**
  * @ORM\Entity(repositoryClass=ServiceRepository::class)
+ * @ORM\Table(name="service")
  */
 class Service
 {
@@ -20,102 +21,103 @@ class Service
     private $id;
 
     /**
-     * @ORM\Column(type="string", length=255, nullable=true)
+     * @ORM\Column(name="libelle", type="string", length=255, nullable=true)
      */
-    private $libelle;
+    private $label;
 
     /**
-     * @ORM\Column(type="string", length=255, nullable=true)
+     * @ORM\Column(name="sigle", type="string", length=255, nullable=true)
      */
-    private $sigle;
+    private $acronym;
 
     /**
-     * @ORM\Column(type="datetime", nullable=true)
+     * @ORM\Column(name="date_debut", type="datetime", nullable=true)
      */
-    private $dateDebut;
+    private $startDate;
 
     /**
-     * @ORM\Column(type="datetime", nullable=true)
+     * @ORM\Column(name="date_disparition", type="datetime", nullable=true)
      */
-    private $dateDisparition;
+    private $disappearanceDate;
 
     /**
-     * @ORM\OneToMany(targetEntity=Correspondant::class, mappedBy="service")
+     * @ORM\OneToMany(targetEntity=Correspondent::class, mappedBy="service")
      */
-    private $correspondants;
+    private $correspondents;
 
     /**
-     * @ORM\ManyToOne(targetEntity=SousDirection::class, inversedBy="services")
+     * @ORM\ManyToOne(targetEntity=SubDivision::class, inversedBy="services")
+     * @ORM\JoinColumn(name="sous_direction_id", referencedColumnName="id")
      */
-    private $sousDirection;
+    private $subDivision;
 
     public function __construct()
     {
-        $this->correspondants = new ArrayCollection();
+        $this->correspondents = new ArrayCollection();
     }
 
     /**
      * @return mixed
      */
-    public function getLibelle()
+    public function getLabel()
     {
-        return $this->libelle;
+        return $this->label;
     }
 
     /**
-     * @param mixed $libelle
+     * @param mixed $label
      */
-    public function setLibelle($libelle): void
+    public function setLabel($label): void
     {
-        $this->libelle = $libelle;
-    }
-
-    /**
-     * @return mixed
-     */
-    public function getSigle()
-    {
-        return $this->sigle;
-    }
-
-    /**
-     * @param mixed $sigle
-     */
-    public function setSigle($sigle): void
-    {
-        $this->sigle = $sigle;
+        $this->label = $label;
     }
 
     /**
      * @return mixed
      */
-    public function getDateDebut()
+    public function getAcronym()
     {
-        return $this->dateDebut;
+        return $this->acronym;
     }
 
     /**
-     * @param mixed $dateDebut
+     * @param mixed $acronym
      */
-    public function setDateDebut($dateDebut): void
+    public function setAcronym($acronym): void
     {
-        $this->dateDebut = $dateDebut;
+        $this->acronym = $acronym;
     }
 
     /**
      * @return mixed
      */
-    public function getDateDisparition()
+    public function getStartDate()
     {
-        return $this->dateDisparition;
+        return $this->startDate;
     }
 
     /**
-     * @param mixed $dateDisparition
+     * @param mixed $startDate
      */
-    public function setDateDisparition($dateDisparition): void
+    public function setStartDate($startDate): void
     {
-        $this->dateDisparition = $dateDisparition;
+        $this->startDate = $startDate;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getDisappearanceDate()
+    {
+        return $this->disappearanceDate;
+    }
+
+    /**
+     * @param mixed $disappearanceDate
+     */
+    public function setDisappearanceDate($disappearanceDate): void
+    {
+        $this->disappearanceDate = $disappearanceDate;
     }
 
     public function getId(): ?int
@@ -124,43 +126,43 @@ class Service
     }
 
     /**
-     * @return Collection|Correspondant[]
+     * @return Collection|Correspondent[]
      */
-    public function getCorrespondants(): Collection
+    public function getCorrespondents(): Collection
     {
-        return $this->correspondants;
+        return $this->correspondents;
     }
 
-    public function addCorrespondent(Correspondant $correspondant): self
+    public function addCorrespondent(Correspondent $correspondent): self
     {
-        if (!$this->correspondants->contains($correspondant)) {
-            $this->correspondants[] = $correspondant;
-            $correspondant->setService($this);
+        if (!$this->correspondents->contains($correspondent)) {
+            $this->correspondents[] = $correspondent;
+            $correspondent->setService($this);
         }
 
         return $this;
     }
 
-    public function removeCorrespondent(Correspondant $correspondant): self
+    public function removeCorrespondent(Correspondent $correspondent): self
     {
-        if ($this->correspondants->removeElement($correspondant)) {
+        if ($this->correspondents->removeElement($correspondent)) {
             // set the owning side to null (unless already changed)
-            if ($correspondant->getService() === $this) {
-                $correspondant->setService(null);
+            if ($correspondent->getService() === $this) {
+                $correspondent->setService(null);
             }
         }
 
         return $this;
     }
 
-    public function getSousDirection(): ?SousDirection
+    public function getSubDivision(): ?SubDivision
     {
-        return $this->sousDirection;
+        return $this->subDivision;
     }
 
-    public function setSousDirection(?SousDirection $sousDirection): self
+    public function setSubDivision(?SubDivision $subDivision): self
     {
-        $this->sousDirection = $sousDirection;
+        $this->subDivision = $subDivision;
 
         return $this;
     }

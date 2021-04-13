@@ -9,6 +9,7 @@ use Doctrine\ORM\Mapping as ORM;
 
 /**
  * @ORM\Entity(repositoryClass=DenominationRepository::class)
+ * @ORM\Table(name="denomination")
  */
 class Denomination
 {
@@ -20,29 +21,34 @@ class Denomination
     private $id;
 
     /**
-     * @ORM\Column(type="string", length=255, nullable=true)
+     * @ORM\Column(name="libelle", type="string", length=255, nullable=true)
      */
-    private $libelle;
+    private $label;
 
     /**
-     * @ORM\ManyToOne(targetEntity=Domaine::class, inversedBy="denominations")
+     * @ORM\ManyToOne(targetEntity=Field::class, inversedBy="denominations")
+     * @ORM\JoinColumn(name="domaine_id", referencedColumnName="id")
      */
-    private $domaine;
+    private $field;
 
     /**
-     * @ORM\ManyToMany(targetEntity=MatiereTechnique::class, inversedBy="denominations")
+     * @ORM\ManyToMany(targetEntity=MaterialTechnique::class, inversedBy="denominations")
+     * @ORM\JoinTable(name="denomination_matiere_technique",
+     *      joinColumns={@ORM\JoinColumn(name="denomination_id", referencedColumnName="id")},
+     *      inverseJoinColumns={@ORM\JoinColumn(name="matiere_technique_id", referencedColumnName="id")}
+     *      )
      */
-    private $matiereTechniques;
+    private $materialsTechniques;
 
     /**
-     * @ORM\OneToMany(targetEntity=ObjetMobilier::class, mappedBy="denomination")
+     * @ORM\OneToMany(targetEntity=Furniture::class, mappedBy="denomination")
      */
-    private $objetMobilier;
+    private $furniture;
 
     public function __construct()
     {
-        $this->matiereTechniques = new ArrayCollection();
-        $this->objetMobilier = new ArrayCollection();
+        $this->materialsTechniques = new ArrayCollection();
+        $this->furniture = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -50,78 +56,78 @@ class Denomination
         return $this->id;
     }
 
-    public function getLibelle(): ?string
+    public function getLabel(): ?string
     {
-        return $this->libelle;
+        return $this->label;
     }
 
-    public function setLibelle(?string $libelle): self
+    public function setLabel(?string $label): self
     {
-        $this->libelle = $libelle;
+        $this->label = $label;
 
         return $this;
     }
 
-    public function getdomaine(): ?domaine
+    public function getField(): ?Field
     {
-        return $this->domaine;
+        return $this->field;
     }
 
-    public function setdomaine(?domaine $domaine): self
+    public function setField(?Field $field): self
     {
-        $this->domaine = $domaine;
-
-        return $this;
-    }
-
-    /**
-     * @return Collection|MatiereTechnique[]
-     */
-    public function getMatiereTechniques(): Collection
-    {
-        return $this->matiereTechniques;
-    }
-
-    public function addMatiereTechnique(MatiereTechnique $matiereTechnique): self
-    {
-        if (!$this->matiereTechniques->contains($matiereTechnique)) {
-            $this->matiereTechniques[] = $matiereTechnique;
-        }
-
-        return $this;
-    }
-
-    public function removeMatiereTechnique(MatiereTechnique $matiereTechnique): self
-    {
-        $this->matiereTechniques->removeElement($matiereTechnique);
+        $this->field = $field;
 
         return $this;
     }
 
     /**
-     * @return Collection|ObjetMobilier[]
+     * @return Collection|MaterialTechnique[]
      */
-    public function getObjetMobilier(): Collection
+    public function getMaterialsTechniques(): Collection
     {
-        return $this->objetMobilier;
+        return $this->materialsTechniques;
     }
 
-    public function addObjetMobilier(ObjetMobilier $objetMobilier): self
+    public function addMaterialsTechnique(MaterialTechnique $materialsTechnique): self
     {
-        if (!$this->objetMobilier->contains($objetMobilier)) {
-            $this->objetMobilier[] = $objetMobilier;
-            $objetMobilier->setDenomination($this);
+        if (!$this->materialsTechniques->contains($materialsTechnique)) {
+            $this->materialsTechniques[] = $materialsTechnique;
         }
 
         return $this;
     }
 
-    public function removeObjetMobilier(ObjetMobilier $objetMobilier): self
+    public function removeMaterialsTechnique(MaterialTechnique $materialsTechnique): self
     {
-        if ($this->objetMobilier->removeElement($objetMobilier)) {
+        $this->materialsTechniques->removeElement($materialsTechnique);
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|Furniture[]
+     */
+    public function getFurniture(): Collection
+    {
+        return $this->furniture;
+    }
+
+    public function addFurniture(Furniture $furniture): self
+    {
+        if (!$this->furniture->contains($furniture)) {
+            $this->furniture[] = $furniture;
+            $furniture->setDenomination($this);
+        }
+
+        return $this;
+    }
+
+    public function removeFurniture(Furniture $furniture): self
+    {
+        if ($this->furniture->removeElement($furniture)) {
             // set the owning side to null (unless already changed)
-            if ($objetMobilier->getDenomination() === $this) {
-                $objetMobilier->setDenomination(null);
+            if ($furniture->getDenomination() === $this) {
+                $furniture->setDenomination(null);
             }
         }
 

@@ -9,6 +9,7 @@ use Doctrine\ORM\Mapping as ORM;
 
 /**
  * @ORM\Entity(repositoryClass=StyleRepository::class)
+ * @ORM\Table(name="style")
  */
 class Style
 {
@@ -20,18 +21,18 @@ class Style
     private $id;
 
     /**
-     * @ORM\Column(type="string", length=255, nullable=true)
+     * @ORM\Column(name="libelle", type="string", length=255, nullable=true)
      */
-    private $libelle;
+    private $label;
 
     /**
-     * @ORM\OneToMany(targetEntity=ObjetMobilier::class, mappedBy="style")
+     * @ORM\OneToMany(targetEntity=Furniture::class, mappedBy="style")
      */
-    private $objetMobiliers;
+    private $furniture;
 
     public function __construct()
     {
-        $this->objetMobiliers = new ArrayCollection();
+        $this->furniture = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -39,42 +40,42 @@ class Style
         return $this->id;
     }
 
-    public function getLibelle(): ?string
+    public function getLabel(): ?string
     {
-        return $this->libelle;
+        return $this->label;
     }
 
-    public function setLibelle(?string $libelle): self
+    public function setLabel(?string $label): self
     {
-        $this->libelle = $libelle;
+        $this->label = $label;
 
         return $this;
     }
 
     /**
-     * @return Collection|ObjetMobilier[]
+     * @return Collection|Furniture[]
      */
-    public function getObjetMobiliers(): Collection
+    public function getFurniture(): Collection
     {
-        return $this->objetMobiliers;
+        return $this->furniture;
     }
 
-    public function addObjetMobilier(ObjetMobilier $objetMobilier): self
+    public function addFurniture(Furniture $furniture): self
     {
-        if (!$this->objetMobiliers->contains($objetMobilier)) {
-            $this->objetMobiliers[] = $objetMobilier;
-            $objetMobilier->setStyle($this);
+        if (!$this->furniture->contains($furniture)) {
+            $this->furniture[] = $furniture;
+            $furniture->setStyle($this);
         }
 
         return $this;
     }
 
-    public function removeObjetMobilier(ObjetMobilier $objetMobilier): self
+    public function removeFurniture(Furniture $furniture): self
     {
-        if ($this->objetMobiliers->removeElement($objetMobilier)) {
+        if ($this->furniture->removeElement($furniture)) {
             // set the owning side to null (unless already changed)
-            if ($objetMobilier->getStyle() === $this) {
-                $objetMobilier->setStyle(null);
+            if ($furniture->getStyle() === $this) {
+                $furniture->setStyle(null);
             }
         }
 
