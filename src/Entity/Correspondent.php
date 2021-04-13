@@ -22,12 +22,12 @@ class Correspondent
     private $id;
 
     /**
-     * @ORM\Column(name="prenom", type="string", length=255)
+     * @ORM\Column(name="prenom", type="string", length=255, nullable=true)
      */
     private $firstName;
 
     /**
-     * @ORM\Column(name="nom", type="string", length=255)
+     * @ORM\Column(name="nom", type="string", length=255, nullable=true)
      */
     private $lastName;
 
