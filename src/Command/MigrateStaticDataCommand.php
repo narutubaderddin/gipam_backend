@@ -6,8 +6,11 @@ use App\Command\Utils\InitializationScriptService;
 use App\Command\Utils\MigrationDb;
 use App\Command\Utils\MigrationRepository;
 use App\Command\Utils\MigrationTrait;
+use App\Entity\Establishment;
 use App\Services\LoggerService;
+use DateTime;
 use Doctrine\ORM\EntityManagerInterface;
+use Exception;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
@@ -33,6 +36,7 @@ class MigrateStaticDataCommand extends Command
         1 => ['ministere', 'etablissement', 'sous_direction', 'service', 'correspondant',],
         2 => ['region', 'departement', 'commune', 'site', 'batiment',],
         3 => ['style', 'epoque', 'domaine', 'denomination', 'type_deposant', 'deposant'],
+        4 => ['etablissement'],
     ];
 
     protected const SEPARATOR = '===================================================';
@@ -57,7 +61,8 @@ class MigrateStaticDataCommand extends Command
         MigrationRepository $migrationRepository,
         Stopwatch $stopwatch,
         LoggerService $loggerService
-    ) {
+    )
+    {
         parent::__construct();
         $this->entityManager = $entityManager;
         $this->connection = $this->entityManager->getConnection();
@@ -126,7 +131,7 @@ class MigrateStaticDataCommand extends Command
             $startTime = time();
             $this->stopwatch->start('export-data');
             $this->group(intval($group), $output);
-        } elseif($group === -1) {
+        } elseif ($group === -1) {
             $continue = $this->io->ask('This commande will delete all the saved data!' .
                 ' Are you sure you wish to continue? (yes/no)', 'no');
             $input->setArgument('continue', $continue);
@@ -307,18 +312,52 @@ class MigrateStaticDataCommand extends Command
                 $i++;
                 continue;
             }
-            $newValue = $oldEntity[$mappingTable[$attribute]];
-            $newEntity[] = MigrationDb::utf8Encode($newValue);
+            // some attributes has a default boolean value configured in the mapping table
+            if (strpos($attribute, 'default_bool') !== false) {
+                $newEntity[] = $mappingTable[$attribute];
+                $i++;
+                continue;
+            }
+            // some attributes has a default date value configured in the mapping table
+            if (strpos($attribute, 'default_date') !== false) {
+                $value =  $oldEntity[$mappingTable[$attribute]] ?? true;
+                $newEntity[] = $this->getDefaultDateValue($attribute, $value);
+                $i++;
+                continue;
+            }
+            $newEntity[] = MigrationDb::utf8Encode($oldEntity[$mappingTable[$attribute]]);
             $i++;
         }
 
         return $newEntity;
     }
 
+    /**
+     * @param $attribute
+     * @param $value
+     * @return bool|DateTime|null
+     * @throws Exception
+     */
+    private function getDefaultDateValue($attribute, $value)
+    {
+        $defaultValue = null;
+        $config = explode('_', $attribute);
+        $start = ["debut"];
+        $end = ["disparition", "fin"];
+        $date = date("d/m/Y");
+        if (in_array(end($config), $start)) {
+            $defaultValue = $date;
+        }
+        if (in_array(end($config), $end) && !boolval($value)) {
+            $defaultValue = $date;
+        }
+        return $defaultValue;
+    }
+
     private function getSameInNewDb(array $oldEntity, $newDbTableName)
     {
         $mappingTable = MigrationDb::getMappingTable($newDbTableName);
-        $columns = $this->getColumns($mappingTable, false);
+        $columns = $this->getColumns($mappingTable, false, false);
         $oldColumns = [];
         foreach ($columns as $column) {
             if (isset($mappingTable[$column])) {
@@ -333,17 +372,34 @@ class MigrateStaticDataCommand extends Command
         return [];
     }
 
-    private function getColumns($mappingTable, $withRelations = true)
+    private function getColumns($mappingTable, $withRelations = true, $withDefault = true)
     {
         $keys = array_keys($mappingTable);
         $i = count($keys) - 1;
         $columns = [];
         while ((strpos($keys[$i], 'table') === false) && $i >= 0) {
-            if (strpos($keys[$i], 'rel_') === false) {
-                $columns[] = $keys[$i];
-            } elseif ($withRelations) {
-                $columns[] = $this->getRelatedTable($keys[$i]) . '_id';
+            if (strpos($keys[$i], 'default_') !== false) {
+                if ($withDefault) {
+                    $attribute = explode('_', $keys[$i]);
+                    $start = strlen($attribute[0]) + strlen($attribute[1]) + 2;
+                    $columns[] = substr($keys[$i], $start);
+                }
+                $i--;
+                continue;
             }
+//            if (strpos($keys[$i], 'rel_') === false) {
+//                $columns[] = $keys[$i];
+//            } elseif ($withRelations) {
+//                $columns[] = $this->getRelatedTable($keys[$i]) . '_id';
+//            }
+            if (strpos($keys[$i], 'rel_') !== false) {
+                if ($withRelations) {
+                    $columns[] = $this->getRelatedTable($keys[$i]) . '_id';
+                }
+                $i--;
+                continue;
+            }
+            $columns[] = $keys[$i];
             $i--;
         }
         return array_reverse($columns);

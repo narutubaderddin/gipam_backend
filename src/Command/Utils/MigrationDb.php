@@ -2,6 +2,14 @@
 
 namespace App\Command\Utils;
 
+/**
+ * mapping rules :
+ *  - TABLE_NAME : each key represents the table name of each entity in the new DB.
+ *                  each value is an array that contains the mapping data.
+ *  -
+ * Class MigrationDb
+ * @package App\Command\Utils
+ */
 class MigrationDb
 {
 
@@ -96,8 +104,8 @@ class MigrationDb
     public const DOMAINE = [
         'id' => 'C_DOMAINE',
         'table' => 'DOMAINE',
+        'default_bool_active' => 'true',
         'libelle' => 'DOM_DOMAINE',
-        'active' => 'REPRISE_6A',
         'old_id' => 'C_DOMAINE'
     ];
 
@@ -122,6 +130,8 @@ class MigrationDb
         'id' => 'C_ETABDIR',
         'table' => 'ETAB_DIR',
         'rel_ministere' => 'C_MIN',
+        'default_date_date_debut' => 'ED_ACTIF',
+        'default_date_date_disparition' => 'ED_ACTIF',
         'sigle' => 'ED_SIGLE',
         'libelle' => 'ED_LIBELLE',
         'old_id' => 'C_ETABDIR',
@@ -131,6 +141,8 @@ class MigrationDb
         'id' => 'C_ETABDIR',
         'table' => 'ETAB_DIR',
         'rel_etablissement' => 'C_ETABDIR',
+        'default_date_date_debut' => 'ED_ACTIF',
+        'default_date_date_fin' => 'ED_ACTIF',
         'sigle' => 'ED_SIGLE',
         'libelle' => 'ED_LIBELLE',
         'old_id' => 'C_ETABDIR',
@@ -141,6 +153,8 @@ class MigrationDb
         'table' => 'CORRESPONDANTS',
         'rel_service' => 'C_SERVICE',
         'rel_etablissement' => 'C_ETABDIR',
+        'default_date_date_debut' => 'COR_ACTIF',
+        'default_date_date_fin' => 'COR_ACTIF',
         'nom' => 'COR_NOM',
         'prenom' => 'COR_PRENOM',
         'telephone' => 'COR_TEL',
@@ -153,6 +167,8 @@ class MigrationDb
         'id' => 'C_SERVICE',
         'table' => 'SERVICES',
         'rel_sous_direction' => 'C_ETABDIR',
+        'default_date_date_debut' => 'SERV_ACTIF',
+        'default_date_date_disparition' => 'SERV_ACTIF',
         'sigle' => 'SERV_SIGLE',
         'libelle' => 'SERV_LIBELLE',
         'old_id' => 'C_SERVICE',
@@ -267,6 +283,8 @@ class MigrationDb
         'id' => 'C_SITE',
         'table' => 'SITES_6A',
         'rel_commune' => 'COM',
+        'default_date_date_debut' => 'SITE_ACTIF',
+        'default_date_date_disparition' => 'SITE_ACTIF',
         'nom' => 'SITE_NOM',
         'addresse' => 'SITE_ADRESSE',
         'distrib' => 'SITE_DISTRIB',
@@ -277,6 +295,8 @@ class MigrationDb
     public const SITES = [
         'id' => 'C_SITE',
         'table' => 'SITES',
+        'default_date_date_debut' => 'true',
+        'default_date_date_disparition' => 'true',
         'libelle' => 'SITE_NOM',
         'old_id' => 'C_SITE',
     ];
@@ -284,6 +304,8 @@ class MigrationDb
     public const COMMUNES = [
         'id' => 'COM',
         'table' => 'COMMUNES',
+        'default_date_date_debut' => 'true',
+        'default_date_date_disparition' => 'true',
         'rel_departement' => 'DEP',
         'nom' => 'NCCENR',
         'old_id_1' => 'COM',
@@ -293,6 +315,8 @@ class MigrationDb
     public const DEPARTEMENTS = [
         'id' => 'DEP',
         'table' => 'DEPARTEMENTS',
+        'default_date_date_debut' => 'true',
+        'default_date_date_disparition' => 'true',
         'rel_region' => 'REGION',
         'nom' => 'NCCENR',
         'old_id' => 'DEP',
@@ -301,6 +325,8 @@ class MigrationDb
     public const REGIONS = [
         'id' => 'REGION',
         'table' => 'REGIONS',
+        'default_date_date_debut' => 'true',
+        'default_date_date_disparition' => 'true',
         'nom' => 'NCCENR',
         'old_id' => 'REGION',
     ];

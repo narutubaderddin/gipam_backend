@@ -42,7 +42,7 @@ class Establishment
     private $disappearanceDate;
 
     /**
-     * @ORM\OneToMany(targetEntity=location::class, mappedBy="establishment")
+     * @ORM\OneToMany(targetEntity=Location::class, mappedBy="establishment")
      */
     private $locations;
 
