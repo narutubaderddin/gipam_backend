@@ -1,7 +1,5 @@
 <?php
 
-// todo: class could be abstract
-
 namespace App\Entity;
 
 use App\Repository\StatusRepository;
@@ -14,8 +12,8 @@ use Doctrine\ORM\Mapping as ORM;
  * @ORM\Entity(repositoryClass=StatusRepository::class)
  * @ORM\Table(name="statut")
  * @ORM\InheritanceType("JOINED")
- * @ORM\DiscriminatorColumn(name="discr", type="string")
- * @ORM\DiscriminatorMap({"propertyStatus"="PropertyStatus", "depositStatus"="DepositStatus"})
+ * @ORM\DiscriminatorColumn(name="table_associee", type="string")
+ * @ORM\DiscriminatorMap({"statut_propriete"="PropertyStatus", "statut_depot"="DepositStatus"})
  */
 abstract class Status
 {
