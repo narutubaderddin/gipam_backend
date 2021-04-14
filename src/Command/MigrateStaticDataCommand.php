@@ -320,6 +320,8 @@ class MigrateStaticDataCommand extends Command
             }
             // some attributes has a default date value configured in the mapping table
             if (strpos($attribute, 'default_date') !== false) {
+                // here when the date field is not found in the old data we make the new date value today
+                // the disappearance date in this case will be null
                 $value =  $oldEntity[$mappingTable[$attribute]] ?? true;
                 $newEntity[] = $this->getDefaultDateValue($attribute, $value);
                 $i++;

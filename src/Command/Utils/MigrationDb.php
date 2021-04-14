@@ -6,7 +6,24 @@ namespace App\Command\Utils;
  * mapping rules :
  *  - TABLE_NAME : each key represents the table name of each entity in the new DB.
  *                  each value is an array that contains the mapping data.
- *  -
+ *  - Mapping Array :
+ *      'id' => 'ID IN THE OLD DB',
+ *      'table' => 'TABLE NAME IN THE OLD DB',
+ *      'newColumnName' => 'oldColumnName',
+ *      'rel_newTableName' => 'oldColumnForeignKey',
+ * -> rel_newTableName :  here when we have a ManyToOne relation we specify the name of the related Table after 'rel_'
+ * -> oldColumnForeignKey is the column in the old DB that contains the foreign key of the old related table
+ *      'old_id' => 'ID IN THE OLD DB' : this field is used for mapping the relations between  tables
+ *      is some cases we found that an element in  a table is identified by more than one id for that we may have :
+ *      'old_id_1' => 'ID 1 COLUMN IN THE OLD DB'
+ *      'old_id_2' => 'ID 2 COLUMN IN THE OLD DB'
+ *      'default_date_new_column_name' => 'VALUE', : some tables has date columns in this case we have two scenario:
+ *          1- VALUE is the old column and it is a boolean field that determines if the entity is active or not
+ *          2- an arbitrary value that should not be an old column name
+ *              'default_date' is used to determine the type of value
+ *      'default_bool_new_column_name' => 'true' or 'false', : some time the new table has a column with bool type that
+ *          will default to true or false in the migration process
+ *              'default_bool' is used to determine the type of value
  * Class MigrationDb
  * @package App\Command\Utils
  */
