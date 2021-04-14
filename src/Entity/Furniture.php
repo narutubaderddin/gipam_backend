@@ -11,8 +11,8 @@ use Doctrine\ORM\Mapping as ORM;
  * @ORM\Entity(repositoryClass=FurnitureRepository::class)
  * @ORM\Table(name="objet_mobilier")
  * @ORM\InheritanceType("JOINED")
- * @ORM\DiscriminatorColumn(name="discr", type="string")
- * @ORM\DiscriminatorMap({"artWork"="ArtWork", "officeFurniture"="OfficeFurniture"})
+ * @ORM\DiscriminatorColumn(name="table_associee", type="string")
+ * @ORM\DiscriminatorMap({"oeuvre_art"="ArtWork", "mobilier_bureau"="OfficeFurniture"})
  */
 abstract class Furniture
 {
