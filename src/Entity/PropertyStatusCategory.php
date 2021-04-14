@@ -13,7 +13,7 @@ use Doctrine\ORM\Mapping as ORM;
  */
 class PropertyStatusCategory
 {
-    public const LIBELLE = [
+    public const LABEL = [
         'bienRemarquable' => 'Bien Patrimonial remarquable',
         'bienStandard' => 'Bien Patrimonial standard',
         'bienUsuel' => 'Bien usuel',

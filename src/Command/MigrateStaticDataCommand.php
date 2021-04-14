@@ -2,6 +2,7 @@
 
 namespace App\Command;
 
+use App\Command\Utils\InitializationScript;
 use App\Command\Utils\MigrationDb;
 use App\Command\Utils\MigrationRepository;
 use App\Command\Utils\MigrationTrait;
@@ -56,8 +57,7 @@ class MigrateStaticDataCommand extends Command
         MigrationRepository $migrationRepository,
         Stopwatch $stopwatch,
         LoggerService $loggerService
-    )
-    {
+    ) {
         parent::__construct();
         $this->entityManager = $entityManager;
         $this->connection = $this->entityManager->getConnection();

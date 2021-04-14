@@ -11,7 +11,7 @@ use Doctrine\ORM\Mapping as ORM;
  */
 class AuthorType
 {
-    public const LIBELLE = [
+    public const LABEL = [
         'patronyme' => 'Patronyme',
         'pseudo' => 'pseudo',
         'dapres' => 'd’après',

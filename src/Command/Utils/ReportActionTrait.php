@@ -12,46 +12,6 @@ use App\Entity\ReportType;
 
 trait ReportActionTrait
 {
-    private function createActionMouvementTypes()
-    {
-        $tables = ['type_constat_action', 'type_mouvement', 'type_mouvement_action'];
-        $this->migrationRepository->dropNewTables($tables);
-        foreach (MovementType::LIBELLE as $key => $label) {
-            $mouvementType = (new MovementType())->setLabel($label);
-            $this->entityManager->persist($mouvementType);
-            if (isset(MovementActionType::LIBELLE[$key])) {
-                $actionMouvementTypes = MovementActionType::LIBELLE[$key];
-                foreach ($actionMouvementTypes as $actionMouvementLabel) {
-                    $actionMouvementType = (new MovementActionType())
-                        ->setLabel($actionMouvementLabel)
-                        ->setMovementType($mouvementType);
-                    $this->entityManager->persist($actionMouvementType);
-                }
-            }
-        }
-        $this->entityManager->flush();
-        $this->entityManager->clear();
-    }
-
-    private function createReportType()
-    {
-        $tables = ['constat', 'sous_type_constat', 'type_constat'];
-        $this->migrationRepository->dropNewTables($tables);
-        foreach (ReportType::LIBELLE as $key => $label) {
-            $type = (new ReportType())->setLabel($label);
-            $this->entityManager->persist($type);
-            $subLabels = ReportSubType::LIBELLE[$key];
-            foreach ($subLabels as $subLabel) {
-                $subType = (new ReportSubType())
-                    ->setLabel($subLabel)
-                    ->setReportType($type);
-                $this->entityManager->persist($subType);
-            }
-        }
-        $this->entityManager->flush();
-        $this->entityManager->clear();
-    }
-
     private function addReports($oldFurniture, Furniture &$newFurniture)
     {
         $actionMappingTable = MigrationDb::getMappingTable('action');

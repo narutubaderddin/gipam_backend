@@ -13,7 +13,7 @@ use Doctrine\ORM\Mapping as ORM;
  */
 class EntryMode
 {
-    public const LIBELLE = [
+    public const LABEL = [
         'inscriptionInventaire' => 'Inscription à l’inventaire',
         'don' => 'Don',
         'acquisition' => 'Acquisition',
