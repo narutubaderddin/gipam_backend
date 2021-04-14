@@ -3,7 +3,7 @@
 namespace App\Command;
 
 use App\Command\Utils\ExcelLogger;
-use App\Command\Utils\InitializationScript;
+use App\Command\Utils\InitializationScriptService;
 use App\Command\Utils\MigrationDb;
 use App\Command\Utils\MigrationRepository;
 use App\Command\Utils\MigrationTrait;
@@ -56,7 +56,7 @@ class MigrateObjectsCommand extends Command
     private $connection;
     private $loggerService;
     private $excelLogger;
-    private $initializationScript;
+    private $initializationScriptService;
 
     public function __construct(
         EntityManagerInterface $entityManager,
@@ -64,7 +64,7 @@ class MigrateObjectsCommand extends Command
         Stopwatch $stopwatch,
         LoggerService $loggerService,
         ExcelLogger $excelLogger,
-        InitializationScript $initializationScript
+        InitializationScriptService $initializationScriptService
     )
     {
         parent::__construct();
@@ -76,7 +76,7 @@ class MigrateObjectsCommand extends Command
         $this->excelLogger = $excelLogger;
         $loggerService->init('db_migration');
         $this->excelLogger->initFile('objectMigration');
-        $this->initializationScript = $initializationScript;
+        $this->initializationScriptService = $initializationScriptService;
     }
 
     protected function configure()
@@ -117,7 +117,7 @@ class MigrateObjectsCommand extends Command
         $startTime = time();
         $this->stopwatch->start('export-data');
 
-        $this->initializationScript->initializeTypes();
+        $this->initializationScriptService->initializeTypes();
         $this->createFurniture($output);
 
         // todo drop old columns after migrating Furniture

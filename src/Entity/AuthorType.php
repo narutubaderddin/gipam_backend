@@ -3,6 +3,8 @@
 namespace App\Entity;
 
 use App\Repository\AuthorTypeRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
@@ -34,10 +36,14 @@ class AuthorType
     private $label;
 
     /**
-     * @ORM\ManyToOne(targetEntity=Author::class, inversedBy="types")
-     * @ORM\JoinColumn(name="auteur_id", referencedColumnName="id")
+     * @ORM\OneToMany(targetEntity=Author::class, mappedBy="type")
      */
-    private $author;
+    private $authors;
+
+    public function __construct()
+    {
+        $this->authors = new ArrayCollection();
+    }
 
     public function getId(): ?int
     {
@@ -56,14 +62,32 @@ class AuthorType
         return $this;
     }
 
-    public function getAuthor(): ?Author
+    /**
+     * @return Collection|Author[]
+     */
+    public function getAuthors(): Collection
     {
-        return $this->author;
+        return $this->authors;
     }
 
-    public function setAuthor(?Author $author): self
+    public function addAuthor(Author $author): self
     {
-        $this->author = $author;
+        if (!$this->authors->contains($author)) {
+            $this->authors[] = $author;
+            $author->setType($this);
+        }
+
+        return $this;
+    }
+
+    public function removeAuthor(Author $author): self
+    {
+        if ($this->authors->removeElement($author)) {
+            // set the owning side to null (unless already changed)
+            if ($author->getType() === $this) {
+                $author->setType(null);
+            }
+        }
 
         return $this;
     }

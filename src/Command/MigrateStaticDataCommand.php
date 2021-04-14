@@ -2,7 +2,7 @@
 
 namespace App\Command;
 
-use App\Command\Utils\InitializationScript;
+use App\Command\Utils\InitializationScriptService;
 use App\Command\Utils\MigrationDb;
 use App\Command\Utils\MigrationRepository;
 use App\Command\Utils\MigrationTrait;

@@ -97,7 +97,7 @@ class MigrationDb
         'id' => 'C_DOMAINE',
         'table' => 'DOMAINE',
         'libelle' => 'DOM_DOMAINE',
-        'active' => 'REPRISE_6A',
+        'bool_default_active' => 'true',
         'old_id' => 'C_DOMAINE'
     ];
 

@@ -8,7 +8,7 @@ use App\Entity\ReportSubType;
 use App\Entity\ReportType;
 use Doctrine\ORM\EntityManagerInterface;
 
-class InitializationScript
+class InitializationScriptService
 {
     use MigrationTrait;
 

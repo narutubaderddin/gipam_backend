@@ -31,18 +31,17 @@ class Author
     private $lastName;
 
     /**
-     * @ORM\OneToMany(targetEntity=AuthorType::class, mappedBy="author")
-     */
-    private $types;
-
-    /**
      * @ORM\ManyToMany(targetEntity=Furniture::class, mappedBy="authors")
      */
     private $furniture;
 
+    /**
+     * @ORM\ManyToOne(targetEntity=AuthorType::class, inversedBy="authors")
+     */
+    private $type;
+
     public function __construct()
     {
-        $this->types = new ArrayCollection();
         $this->furniture = new ArrayCollection();
     }
 
@@ -76,36 +75,6 @@ class Author
     }
 
     /**
-     * @return Collection|AuthorType[]
-     */
-    public function getTypes(): Collection
-    {
-        return $this->types;
-    }
-
-    public function addType(AuthorType $type): self
-    {
-        if (!$this->types->contains($type)) {
-            $this->types[] = $type;
-            $type->setAuthor($this);
-        }
-
-        return $this;
-    }
-
-    public function removeType(AuthorType $type): self
-    {
-        if ($this->types->removeElement($type)) {
-            // set the owning side to null (unless already changed)
-            if ($type->getAuthor() === $this) {
-                $type->setAuthor(null);
-            }
-        }
-
-        return $this;
-    }
-
-    /**
      * @return Collection|Furniture[]
      */
     public function getFurniture(): Collection
@@ -128,6 +97,18 @@ class Author
         if ($this->furniture->removeElement($furniture)) {
             $furniture->removeAuthor($this);
         }
+
+        return $this;
+    }
+
+    public function getType(): ?AuthorType
+    {
+        return $this->type;
+    }
+
+    public function setType(?AuthorType $type): self
+    {
+        $this->type = $type;
 
         return $this;
     }
