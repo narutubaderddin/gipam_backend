@@ -45,6 +45,11 @@ class Denomination
      */
     private $furniture;
 
+    /**
+     * @ORM\Column(name="actif", type="boolean", nullable=false)
+     */
+    private $active = true;
+
     public function __construct()
     {
         $this->materialsTechniques = new ArrayCollection();
@@ -54,6 +59,18 @@ class Denomination
     public function getId(): ?int
     {
         return $this->id;
+    }
+
+    public function isActive(): bool
+    {
+        return $this->active;
+    }
+
+    public function setActive(bool $active): self
+    {
+        $this->active = $active;
+
+        return $this;
     }
 
     public function getLabel(): ?string
