@@ -117,7 +117,8 @@ class MigrateObjectsCommand extends Command
         $startTime = time();
         $this->stopwatch->start('export-data');
 
-        $this->initializationScriptService->initializeTypes();
+        // todo initilization script
+//        $this->initializationScriptService->initializeTypes();
         $this->createFurniture($output);
 
         // todo drop old columns after migrating Furniture
@@ -156,7 +157,7 @@ class MigrateObjectsCommand extends Command
     private function createFurniture(OutputInterface $output)
     {
         $entity = 'art_work';
-        $this->migrationRepository->dropNewTables(self::GROUP);
+//        $this->migrationRepository->dropNewTables(self::GROUP);
         $mappingTable = [
             'id' => 'C_MGPAM',
             'table' => 'OEUVRES',
@@ -176,7 +177,7 @@ class MigrateObjectsCommand extends Command
         $this->excelLogger->write($columns, 1);
         foreach ($oldEntities as $oldEntity) {
             // todo for testing
-//            $oldEntity = $this->test(394);
+//            $oldEntity = $this->test(12);
 
             $newEntity = $this->createEntity($entity, $oldEntity, $mappingTable, $foundError);
 
@@ -184,7 +185,7 @@ class MigrateObjectsCommand extends Command
             $this->setMaterialTechnique($oldEntity, $newEntity, $mappingTable);
             $this->setStatus($oldEntity, $newEntity);
             $this->addAttachments($oldEntity, $newEntity);
-//            $this->findDimensions($oldEntity, $newEntity);
+            $this->findDimensions($oldEntity, $newEntity);
 
 //
             // todo should fix the logic of migration
@@ -197,8 +198,8 @@ class MigrateObjectsCommand extends Command
             $this->entityManager->persist($newEntity);
 
             // here we add the new entity ID after persisting
-//            $dimensions = $this->furnitureDimensions($oldEntity, $newEntity);
-//            $this->excelLogger->write($dimensions, $rowCount + 1);
+            $dimensions = $this->furnitureDimensions($oldEntity, $newEntity);
+            $this->excelLogger->write($dimensions, $rowCount + 1);
             $rowCount++;
             if ($rowCount % 100 === 0) {
                 $this->entityManager->flush();
