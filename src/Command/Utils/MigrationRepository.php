@@ -106,7 +106,7 @@ class MigrationRepository
     public function addOldColumn(array $tables)
     {
         foreach ($tables as $table) {
-            // todo : here we add the temporary column
+            // here we add the temporary column
             $columns = MigrationDb::getOldIdColumns($table);
             foreach ($columns as $column) {
                 self::$newDBConnection
@@ -118,7 +118,7 @@ class MigrationRepository
     public function dropOldColumn(array $tables)
     {
         foreach ($tables as $table) {
-            // todo : here we drop the temporary column
+            // here we drop the temporary column
             $columns = MigrationDb::getOldIdColumns($table);
             foreach ($columns as $column) {
                 self::$newDBConnection->executeQuery("ALTER TABLE " . $table . " DROP COLUMN IF EXISTS " . $column);

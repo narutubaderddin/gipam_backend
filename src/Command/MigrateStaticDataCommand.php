@@ -2,11 +2,9 @@
 
 namespace App\Command;
 
-use App\Command\Utils\InitializationScriptService;
 use App\Command\Utils\MigrationDb;
 use App\Command\Utils\MigrationRepository;
 use App\Command\Utils\MigrationTrait;
-use App\Entity\Establishment;
 use App\Services\LoggerService;
 use DateTime;
 use Doctrine\ORM\EntityManagerInterface;
@@ -61,15 +59,14 @@ class MigrateStaticDataCommand extends Command
         MigrationRepository $migrationRepository,
         Stopwatch $stopwatch,
         LoggerService $loggerService
-    )
-    {
-        parent::__construct();
+    ) {
         $this->entityManager = $entityManager;
         $this->connection = $this->entityManager->getConnection();
         $this->migrationRepository = $migrationRepository;
         $this->stopwatch = $stopwatch;
         $this->loggerService = $loggerService;
         $loggerService->init('db_migration');
+        parent::__construct();
     }
 
     protected function configure()
@@ -103,6 +100,11 @@ class MigrateStaticDataCommand extends Command
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
+        $group = intval($input->getOption('group'));
+        if ($group !== -1 && !array_key_exists($group, self::GROUPS)) {
+            $output->writeln("<error>Group number not found bye!</error>");
+            return 0;
+        }
         $output->writeln([
             'Migrate Data From Access DB',
             '====================================',
@@ -113,39 +115,36 @@ class MigrateStaticDataCommand extends Command
             ' Are you sure you wish to continue? (yes/no)', 'no');
         $input->setArgument('continue', $continue);
         $continue = strtolower($continue);
-        if ($continue !== 'yes') {
-            $output->writeln(self::CANCELED);
-            return 0;
-        }
+        $canceled = true;
         $startTime = time();
-        $group = intval($input->getOption('group'));
-        if (array_key_exists($group, self::GROUPS)) {
+        if (array_key_exists($group, self::GROUPS) && $continue === 'yes') {
             $msg = implode(', ', self::GROUPS[$group]);
             $continue = $this->io->ask('Loading : ' . $msg . ' (yes/no)', 'no');
             $input->setArgument('continue', $continue);
             $continue = strtolower($continue);
-            if ($continue !== 'yes') {
-                $output->writeln(self::CANCELED);
-                return 0;
+            if ($continue === 'yes') {
+                $canceled = false;
+                $startTime = time();
+                $this->stopwatch->start('export-data');
+                $this->group(intval($group), $output);
             }
-            $startTime = time();
-            $this->stopwatch->start('export-data');
-            $this->group(intval($group), $output);
-        } elseif ($group === -1) {
+        }
+        if ($group === -1 && $continue === 'yes') {
             $continue = $this->io->ask('This commande will delete all the saved data!' .
                 ' Are you sure you wish to continue? (yes/no)', 'no');
             $input->setArgument('continue', $continue);
             $continue = strtolower($continue);
-            if ($continue !== 'yes') {
-                $output->writeln(self::CANCELED);
-                return 0;
+            if ($continue === 'yes') {
+                $canceled = false;
+                $startTime = time();
+                $this->stopwatch->start('export-data');
+                foreach (self::GROUPS as $key => $GROUP) {
+                    $this->group($key, $output);
+                }
             }
-            $this->stopwatch->start('export-data');
-            foreach (self::GROUPS as $key => $GROUP) {
-                $this->group($key, $output);
-            }
-        } else {
-            $output->writeln("Group number not found bye!");
+        }
+        if ($canceled) {
+            $output->writeln(self::CANCELED);
             return 0;
         }
         $this->stopwatch->stop('export-data');
@@ -159,6 +158,8 @@ class MigrateStaticDataCommand extends Command
             '',
         ]);
         $endTime = time();
+        $this->loggerService->logMemoryUsage('Migrating Data Done with : ');
+        $this->loggerService->formatPeriod($endTime, $startTime, 'Migrating Data Done in : ');
 
         // here we ask if we want to drop old_id columns needed for mapping the entities
         $continue = $this->io->ask(
@@ -171,10 +172,8 @@ class MigrateStaticDataCommand extends Command
         if ($continue === 'yes') {
             // here we drop all the old_id columns that are used for mapping the relations
             $this->dropOldColumns($group);
+            $output->writeln("old_id columns dropped successfully!");
         }
-
-        $this->loggerService->logMemoryUsage('Migrating Data Done with : ');
-        $this->loggerService->formatPeriod($endTime, $startTime, 'Migrating Data Done in : ');
 
         // return this if there was no problem running the command
         return 0;
@@ -322,7 +321,7 @@ class MigrateStaticDataCommand extends Command
             if (strpos($attribute, 'default_date') !== false) {
                 // here when the date field is not found in the old data we make the new date value today
                 // the disappearance date in this case will be null
-                $value =  $oldEntity[$mappingTable[$attribute]] ?? true;
+                $value = $oldEntity[$mappingTable[$attribute]] ?? true;
                 $newEntity[] = $this->getDefaultDateValue($attribute, $value);
                 $i++;
                 continue;
@@ -389,11 +388,6 @@ class MigrateStaticDataCommand extends Command
                 $i--;
                 continue;
             }
-//            if (strpos($keys[$i], 'rel_') === false) {
-//                $columns[] = $keys[$i];
-//            } elseif ($withRelations) {
-//                $columns[] = $this->getRelatedTable($keys[$i]) . '_id';
-//            }
             if (strpos($keys[$i], 'rel_') !== false) {
                 if ($withRelations) {
                     $columns[] = $this->getRelatedTable($keys[$i]) . '_id';
