@@ -34,7 +34,6 @@ class MigrateStaticDataCommand extends Command
         1 => ['ministere', 'etablissement', 'sous_direction', 'service', 'correspondant',],
         2 => ['region', 'departement', 'commune', 'site', 'batiment',],
         3 => ['style', 'epoque', 'domaine', 'denomination', 'type_deposant', 'deposant'],
-        4 => ['etablissement'],
     ];
 
     protected const SEPARATOR = '===================================================';
@@ -210,9 +209,9 @@ class MigrateStaticDataCommand extends Command
             "Autres Musées",
             "Etablissements du Ministère de la Culture",
         ];
-        $sql = $this->migrationRepository->createInsertStatement($tableName, ['libelle']);
+        $sql = $this->migrationRepository->createInsertStatement($tableName, ['libelle', 'actif']);
         foreach ($newDepositorTypesMatching as $value) {
-            $this->migrationRepository->insertNewEntity($sql, [$value]);
+            $this->migrationRepository->insertNewEntity($sql, [$value, 'true']);
         }
     }
 

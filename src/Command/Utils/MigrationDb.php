@@ -68,12 +68,14 @@ class MigrationDb
     public const MATIERE = [
         'id' => 'C_MGPAM',
         'table' => 'OEUVRES',
+        'default_bool_actif' => 'true',
         'libelle' => 'OE_MATIERES',
     ];
 
     public const AUTEUR = [
         'id' => 'C_MGPAM',
         'table' => 'OEUVRES',
+        'default_bool_actif' => 'true',
         'nom' => 'OE_NOMAUTEUR',
         'prenom' => 'OE_PRENOMAUTEUR',
     ];
@@ -83,6 +85,8 @@ class MigrationDb
     public const DEPOSANT = [
         'id' => 'C_DEPOSANT',
         'table' => 'DEPOSANT',
+        'default_date_date_debut' => 'true',
+        'default_date_date_fin' => 'true',
         'rel_type_deposant' => 'C_TYPE_DEPOSANTS',
         'nom' => 'DEP_DEPOSANT',
         'sigle' => 'DEP_SIGLE',
@@ -99,6 +103,7 @@ class MigrationDb
     public const TYPES_DEPOSANTS = [
         'id' => 'C_TYPE_DEPOSANTS',
         'table' => 'TYPES_DEPOSANTS',
+        'default_bool_actif' => 'true',
         'libelle' => 'TDEP_DEPOSANTS',
         'old_id' => 'C_TYPE_DEPOSANTS'
     ];
@@ -106,6 +111,7 @@ class MigrationDb
     public const STYLES = [
         'id' => 'C_STYLE',
         'table' => 'STYLES',
+        'default_bool_actif' => 'true',
         'libelle' => 'STY_STYLE',
         'old_id' => 'C_STYLE'
     ];
@@ -113,6 +119,7 @@ class MigrationDb
     public const DENOMINATIONS = [
         'id' => 'C_DENOMINATION',
         'table' => 'DENOMINATIONS',
+        'default_bool_actif' => 'true',
         'rel_domaine' => 'C_DOMAINE',
         'libelle' => 'DEN_DENOMINATION',
         'old_id' => 'C_DENOMINATION'
@@ -121,7 +128,7 @@ class MigrationDb
     public const DOMAINE = [
         'id' => 'C_DOMAINE',
         'table' => 'DOMAINE',
-        'default_bool_active' => 'true',
+        'default_bool_actif' => 'true',
         'libelle' => 'DOM_DOMAINE',
         'old_id' => 'C_DOMAINE'
     ];
@@ -129,6 +136,7 @@ class MigrationDb
     public const EPOQUES = [
         'id' => 'C_EPOQUE',
         'table' => 'EPOQUES',
+        'default_bool_actif' => 'true',
         'libelle' => 'EPO_EPOQUE',
         'old_id' => 'C_EPOQUE'
     ];
