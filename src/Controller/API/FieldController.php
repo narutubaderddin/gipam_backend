@@ -6,6 +6,7 @@ namespace App\Controller\API;
 
 use App\Entity\Field;
 use App\Form\FieldType;
+use App\Model\ApiResponse;
 use App\Repository\FieldRepository;
 use App\Services\ApiManager;
 use FOS\RestBundle\Controller\AbstractFOSRestController;
@@ -44,10 +45,11 @@ class FieldController extends AbstractFOSRestController
      *     response=200,
      *     description="Returns Field by id",
      *     @SWG\Schema(
-     *         ref=@Model(type=Field::class)
+     *         ref=@Model(type=Field::class, groups={"id"})
      *     )
      * )
      * @SWG\Tag(name="fields")
+     * @Rest\View(serializerGroups={"id"})
      *
      * @param Field $field
      *
@@ -55,8 +57,7 @@ class FieldController extends AbstractFOSRestController
      */
     public function showField(Field $field)
     {
-        $view = $this->view($field, Response::HTTP_OK);
-        return $this->handleView($view);
+        return $this->view($field, Response::HTTP_OK);
     }
 
     /**
@@ -66,28 +67,48 @@ class FieldController extends AbstractFOSRestController
      *     response=200,
      *     description="Returns the list of an Field",
      *     @SWG\Schema(
-     *         type="array",
-     *         @SWG\Items(ref=@Model(type=Field::class))
+     *         @SWG\Items(ref=@Model(type=ApiResponse::class))
      *     )
      * )
      * @SWG\Parameter(
-     *     name="offset",
+     *     name="page",
      *     in="query",
-     *     type="string",
-     *     description="The field used to offset list"
+     *     type="integer",
+     *     description="The field used to page number"
      * )
      * @SWG\Parameter(
      *     name="limit",
      *     in="query",
+     *     type="integer",
+     *     description="The field used to page size"
+     * )
+     * @SWG\Parameter(
+     *     name="sort_by",
+     *     in="query",
      *     type="string",
-     *     description="The field used to limit list"
+     *     description="The field used to sort by"
+     * )
+     * @SWG\Parameter(
+     *     name="sort",
+     *     in="query",
+     *     type="string",
+     *     description="The field used to sort type"
+     * )
+     * @SWG\Parameter(
+     *     name="label",
+     *     in="query",
+     *     type="string",
+     *     description="The field used to filter by label"
      * )
      * @SWG\Tag(name="fields")
      *
-     * @Rest\QueryParam(name="offset", requirements="\d+", default="0", description="offset")
-     * @Rest\QueryParam(name="limit", requirements="\d+", default="20", description="limit.")
+     * @Rest\QueryParam(name="page", requirements="\d+", default="1", description="page number.")
+     * @Rest\QueryParam(name="limit", requirements="\d+", default="20", description="page size.")
      * @Rest\QueryParam(name="sort_by", nullable=true, default="id", description="order by")
      * @Rest\QueryParam(name="sort", requirements="(asc|desc)", nullable=true, default="asc", description="tri order asc|desc")
+     * @Rest\QueryParam(name="label",map=true, nullable=false, description="filter by label. example: label[op]=value")
+     *
+     * @Rest\View()
      *
      * @param ParamFetcherInterface $paramFetcher
      *
@@ -96,8 +117,7 @@ class FieldController extends AbstractFOSRestController
     public function listFields(ParamFetcherInterface $paramFetcher)
     {
         $records = $this->apiManager->findRecordsByEntityName(Field::class, $paramFetcher);
-        $view = $this->view($records, Response::HTTP_OK);
-        return $this->handleView($view);
+        return $this->view($records, Response::HTTP_OK);
     }
 
     /**
@@ -107,7 +127,7 @@ class FieldController extends AbstractFOSRestController
      *     response=201,
      *     description="Returns created Field",
      *     @SWG\Schema(
-     *         ref=@Model(type=Field::class)
+     *         ref=@Model(type=Field::class, groups={"id"})
      *     )
      * )
      * @SWG\Response(
@@ -121,6 +141,8 @@ class FieldController extends AbstractFOSRestController
      *     @Model(type=Field::class, groups={"field"})
      * )
      * @SWG\Tag(name="fields")
+     *
+     * @Rest\View(serializerGroups={"id"})
      *
      * @param Request $request
      * @param FieldRepository $repository
@@ -136,11 +158,9 @@ class FieldController extends AbstractFOSRestController
         $form->submit($request->request->all());
         if ($form->isValid()) {
             $field = $this->apiManager->save($form->getData());
-            $view = $this->view($field, Response::HTTP_CREATED);
-            return $this->handleView($view);
+            return $this->view($field, Response::HTTP_CREATED);
         } else {
-            $view = $this->view($form, Response::HTTP_BAD_REQUEST);
-            return $this->handleView($view);
+            return $this->view($form, Response::HTTP_BAD_REQUEST);
         }
     }
 
@@ -164,6 +184,8 @@ class FieldController extends AbstractFOSRestController
      * )
      * @SWG\Tag(name="fields")
      *
+     * @Rest\View()
+     *
      * @param Request $request
      * @param Field $field
      * @param FieldRepository $repository
@@ -180,11 +202,9 @@ class FieldController extends AbstractFOSRestController
 
         if ($form->isValid()) {
             $this->apiManager->save($field);
-            $view = $this->view(null, Response::HTTP_NO_CONTENT);
-            return $this->handleView($view);
+            return $this->view(null, Response::HTTP_NO_CONTENT);
         } else {
-            $view = $this->view($form, Response::HTTP_BAD_REQUEST);
-            return $this->handleView($view);
+            return $this->view($form, Response::HTTP_BAD_REQUEST);
         }
     }
 
@@ -198,6 +218,8 @@ class FieldController extends AbstractFOSRestController
      * )
      * @SWG\Tag(name="fields")
      *
+     * @Rest\View()
+     *
      * @param Field $field
      *
      * @return Response
@@ -205,7 +227,6 @@ class FieldController extends AbstractFOSRestController
     public function removeField(Field $field)
     {
         $this->apiManager->delete($field);
-        $view = $this->view(null, Response::HTTP_NO_CONTENT);
-        return $this->handleView($view);
+        return $this->view(null, Response::HTTP_NO_CONTENT);
     }
 }

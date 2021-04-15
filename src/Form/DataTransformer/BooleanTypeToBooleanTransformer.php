@@ -31,10 +31,6 @@ final class BooleanTypeToBooleanTransformer implements DataTransformerInterface
 
     public function reverseTransform($value)
     {
-        if (null === $value) {
-            return false; // `false` and empty values are converted to `null` during form submission.
-        }
-
         if (in_array($value, $this->trueValues, true)) {
             return true;
         } elseif (in_array($value, $this->falseValues, true)) {

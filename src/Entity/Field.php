@@ -18,18 +18,19 @@ class Field
      * @ORM\Id
      * @ORM\GeneratedValue
      * @ORM\Column(type="integer")
+     * @JMS\Groups("id")
      */
     private $id;
 
     /**
      * @ORM\Column(name="libelle", type="string", length=255, nullable=true)
-     * @JMS\Groups("field")
+     * @JMS\Groups("id", "field")
      */
     private $label;
 
     /**
      * @ORM\Column(name="active", type="boolean", nullable=false)
-     * @JMS\Groups("field")
+     * @JMS\Groups("id", "field")
      */
     private $active = true;
 
