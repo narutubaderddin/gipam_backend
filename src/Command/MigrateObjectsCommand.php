@@ -274,6 +274,10 @@ class MigrateObjectsCommand extends Command
         $mappingTable = MigrationDb::getMappingTable('auteur');
         $authorLastName = MigrationDb::utf8Encode($oldFurniture[$mappingTable['nom']]);
         $authorFirstName = MigrationDb::utf8Encode($oldFurniture[$mappingTable['prenom']]);
+        // sometimes the author lastname and firstname are null so we don't create an author
+        if (!$authorLastName && !$authorFirstName) {
+            return;
+        }
         $author = $this->entityManager->getRepository(Author::class)
             ->findOneBy(['lastName' => $authorLastName, 'firstName' => $authorFirstName]);
         if (!$author) {
