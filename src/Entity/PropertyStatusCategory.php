@@ -13,7 +13,7 @@ use Doctrine\ORM\Mapping as ORM;
  */
 class PropertyStatusCategory
 {
-    public const LIBELLE = [
+    public const LABEL = [
         'bienRemarquable' => 'Bien Patrimonial remarquable',
         'bienStandard' => 'Bien Patrimonial standard',
         'bienUsuel' => 'Bien usuel',
@@ -35,14 +35,30 @@ class PropertyStatusCategory
      */
     private $propertyStatuses;
 
+    /**
+     * @ORM\Column(name="actif", type="boolean", nullable=false)
+     */
+    private $active = true;
+
     public function __construct()
     {
         $this->propertyStatuses = new ArrayCollection();
     }
-
     public function getId(): ?int
     {
         return $this->id;
+    }
+
+    public function isActive(): bool
+    {
+        return $this->active;
+    }
+
+    public function setActive(bool $active): self
+    {
+        $this->active = $active;
+
+        return $this;
     }
 
     public function getLabel(): ?string

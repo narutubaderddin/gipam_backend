@@ -13,6 +13,15 @@ use Doctrine\ORM\Mapping as ORM;
  */
 class LocationType
 {
+    public const LABEL = [
+     'bureau' => 'Bureau',
+     'salleReunion' => 'Salle de réunion',
+     'antichambre' => 'Antichambre – salle d’attente',
+     'palier' => 'Palier',
+     'couloir' => 'Couloir',
+     'hall' => 'Hall',
+     'exterieur' => 'Extérieur',
+    ];
     /**
      * @ORM\Id
      * @ORM\GeneratedValue

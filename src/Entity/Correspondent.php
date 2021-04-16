@@ -22,12 +22,12 @@ class Correspondent
     private $id;
 
     /**
-     * @ORM\Column(name="prenom", type="string", length=255)
+     * @ORM\Column(name="prenom", type="string", length=255, nullable=true)
      */
     private $firstName;
 
     /**
-     * @ORM\Column(name="nom", type="string", length=255)
+     * @ORM\Column(name="nom", type="string", length=255, nullable=true)
      */
     private $lastName;
 
@@ -64,13 +64,13 @@ class Correspondent
 
     /**
      * @ORM\ManyToOne(targetEntity=SubDivision::class, inversedBy="correspondents")
-     * @ORM\JoinColumn(name="sous_direction", referencedColumnName="id")
+     * @ORM\JoinColumn(name="sous_direction_id", referencedColumnName="id")
      */
     private $subDivision;
 
     /**
      * @ORM\ManyToOne(targetEntity=Service::class, inversedBy="correspondents")
-     * @ORM\JoinColumn(name="service", referencedColumnName="id")
+     * @ORM\JoinColumn(name="service_id", referencedColumnName="id")
      */
     private $service;
 

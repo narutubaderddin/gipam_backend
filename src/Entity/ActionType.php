@@ -13,6 +13,11 @@ use Doctrine\ORM\Mapping as ORM;
  */
 class ActionType
 {
+    public const LABEL = [
+      'enRecherche' => 'En recherche',
+      'depotPlainte' => 'Dépôt de plainte',
+      'abandonRecherche' => 'Abandon des recherches',
+    ];
     /**
      * @ORM\Id
      * @ORM\GeneratedValue

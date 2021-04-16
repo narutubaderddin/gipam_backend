@@ -6,7 +6,9 @@ use App\Command\Utils\MigrationDb;
 use App\Command\Utils\MigrationRepository;
 use App\Command\Utils\MigrationTrait;
 use App\Services\LoggerService;
+use DateTime;
 use Doctrine\ORM\EntityManagerInterface;
+use Exception;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
@@ -25,15 +27,13 @@ class MigrateStaticDataCommand extends Command
     use MigrationTrait;
 
     // the name of the command (the part after "bin/console")
-    protected static $defaultName = 'app:migrate';
+    protected static $defaultName = 'app:migrate:static';
 
     // number of logic group
     public const GROUPS = [
-        1 => ['ministere', 'etablissement', 'service', 'correspondant',],
+        1 => ['ministere', 'etablissement', 'sous_direction', 'service', 'correspondant',],
         2 => ['region', 'departement', 'commune', 'site', 'batiment',],
-        // the depositor types have changed
         3 => ['style', 'epoque', 'domaine', 'denomination', 'type_deposant', 'deposant'],
-        4 => ['type_mouvement', 'auteur',],
     ];
 
     protected const SEPARATOR = '===================================================';
@@ -58,15 +58,14 @@ class MigrateStaticDataCommand extends Command
         MigrationRepository $migrationRepository,
         Stopwatch $stopwatch,
         LoggerService $loggerService
-    )
-    {
-        parent::__construct();
+    ) {
         $this->entityManager = $entityManager;
         $this->connection = $this->entityManager->getConnection();
         $this->migrationRepository = $migrationRepository;
         $this->stopwatch = $stopwatch;
         $this->loggerService = $loggerService;
         $loggerService->init('db_migration');
+        parent::__construct();
     }
 
     protected function configure()
@@ -100,48 +99,52 @@ class MigrateStaticDataCommand extends Command
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
+        $group = intval($input->getOption('group'));
+        if ($group !== -1 && !array_key_exists($group, self::GROUPS)) {
+            $output->writeln("<error>Group number not found bye!</error>");
+            return 0;
+        }
         $output->writeln([
             'Migrate Data From Access DB',
             '====================================',
             '',
         ]);
-
         $continue = $this->io->ask('This commande will delete all the saved data!' .
             'for the selected group' .
             ' Are you sure you wish to continue? (yes/no)', 'no');
         $input->setArgument('continue', $continue);
         $continue = strtolower($continue);
-        if ($continue !== 'yes') {
-            $output->writeln(self::CANCELED);
-            return 0;
-        }
+        $canceled = true;
         $startTime = time();
-        $group = intval($input->getOption('group'));
-        if (($group !== -1) || (array_key_exists($group, self::GROUPS))) {
+        if (array_key_exists($group, self::GROUPS) && $continue === 'yes') {
             $msg = implode(', ', self::GROUPS[$group]);
             $continue = $this->io->ask('Loading : ' . $msg . ' (yes/no)', 'no');
             $input->setArgument('continue', $continue);
             $continue = strtolower($continue);
-            if ($continue !== 'yes') {
-                $output->writeln(self::CANCELED);
-                return 0;
+            if ($continue === 'yes') {
+                $canceled = false;
+                $startTime = time();
+                $this->stopwatch->start('export-data');
+                $this->group(intval($group), $output);
             }
-            $startTime = time();
-            $this->stopwatch->start('export-data');
-            $this->group(intval($group), $output);
-        } else {
+        }
+        if ($group === -1 && $continue === 'yes') {
             $continue = $this->io->ask('This commande will delete all the saved data!' .
                 ' Are you sure you wish to continue? (yes/no)', 'no');
             $input->setArgument('continue', $continue);
             $continue = strtolower($continue);
-            if ($continue !== 'yes') {
-                $output->writeln(self::CANCELED);
-                return 0;
+            if ($continue === 'yes') {
+                $canceled = false;
+                $startTime = time();
+                $this->stopwatch->start('export-data');
+                foreach (self::GROUPS as $key => $GROUP) {
+                    $this->group($key, $output);
+                }
             }
-            $this->stopwatch->start('export-data');
-            foreach (self::GROUPS as $key => $GROUP) {
-                $this->group($key, $output);
-            }
+        }
+        if ($canceled) {
+            $output->writeln(self::CANCELED);
+            return 0;
         }
         $this->stopwatch->stop('export-data');
 
@@ -153,11 +156,63 @@ class MigrateStaticDataCommand extends Command
             "Time: " . sprintf("%.2f", $duration) . " minutes, Memory: " . sprintf("%.2f", $memory) . " MB",
             '',
         ]);
-        $this->loggerService->logMemoryUsage('Migrating Data Done with : ');
         $endTime = time();
+        $this->loggerService->logMemoryUsage('Migrating Data Done with : ');
         $this->loggerService->formatPeriod($endTime, $startTime, 'Migrating Data Done in : ');
+
+        // here we ask if we want to drop old_id columns needed for mapping the entities
+        $continue = $this->io->ask(
+            'Do you wish to delete old_id columns ?' .
+            'If you will migrate the dynamic tables press Enter or write no otherwise type yes. (yes/no)',
+            'no'
+        );
+        $input->setArgument('continue', $continue);
+        $continue = strtolower($continue);
+        if ($continue === 'yes') {
+            // here we drop all the old_id columns that are used for mapping the relations
+            $this->dropOldColumns($group);
+            $output->writeln("old_id columns dropped successfully!");
+        }
+
         // return this if there was no problem running the command
         return 0;
+    }
+
+    private function dropOldColumns(int $groupNumber)
+    {
+        if (array_key_exists($groupNumber, self::GROUPS)) {
+            $group = self::GROUPS[$groupNumber];
+            $this->migrationRepository->dropOldColumn($group);
+        }
+        if ($groupNumber === -1) {
+            foreach (self::GROUPS as $group) {
+                $this->migrationRepository->dropOldColumn($group);
+            }
+        }
+    }
+
+    private function matchDepositorTypes()
+    {
+        $tableName = 'type_deposant';
+        $depositorTypesMatching = [
+            1 => "Institution Culturelle Publique",
+            3 => "Particuliers",
+            4 => "Autres Administrations",
+            5 => "Institutions Privées",
+        ];
+
+        foreach ($depositorTypesMatching as $key => $value) {
+            $this->migrationRepository->update($tableName, ['old_id' => strval($key)], ['libelle' => $value]);
+        }
+        $newDepositorTypesMatching = [
+            "Service des Musées de France",
+            "Autres Musées",
+            "Etablissements du Ministère de la Culture",
+        ];
+        $sql = $this->migrationRepository->createInsertStatement($tableName, ['libelle', 'actif']);
+        foreach ($newDepositorTypesMatching as $value) {
+            $this->migrationRepository->insertNewEntity($sql, [$value, 'true']);
+        }
     }
 
     private function group(int $groupNumber, OutputInterface $output)
@@ -223,9 +278,9 @@ class MigrateStaticDataCommand extends Command
         }
         $this->printWarning($foundWarning, $groupNumber, $output);
         $this->printError($foundError, $groupNumber, $output);
-
-        // here we drop all the old_id columns that are used for mapping the relations
-//        $this->migrationRepository->dropOldColumn($group);
+        if ($groupNumber === 3) {
+            $this->matchDepositorTypes();
+        }
     }
 
     private function createEntity($entity, $oldEntity, $mappingTable, bool &$foundError): array
@@ -255,18 +310,54 @@ class MigrateStaticDataCommand extends Command
                 $i++;
                 continue;
             }
-            $newValue = $oldEntity[$mappingTable[$attribute]];
-            $newEntity[] = MigrationDb::utf8Encode($newValue);
+            // some attributes has a default boolean value configured in the mapping table
+            if (strpos($attribute, 'default_bool') !== false) {
+                $newEntity[] = $mappingTable[$attribute];
+                $i++;
+                continue;
+            }
+            // some attributes has a default date value configured in the mapping table
+            if (strpos($attribute, 'default_date') !== false) {
+                // here when the date field is not found in the old data we make the new date value today
+                // the disappearance date in this case will be null
+                $value = $oldEntity[$mappingTable[$attribute]] ?? true;
+                $newEntity[] = $this->getDefaultDateValue($attribute, $value);
+                $i++;
+                continue;
+            }
+            $newEntity[] = MigrationDb::utf8Encode($oldEntity[$mappingTable[$attribute]]);
             $i++;
         }
 
         return $newEntity;
     }
 
+    /**
+     * @param $attribute
+     * @param $value
+     * @return bool|DateTime|null
+     * @throws Exception
+     */
+    private function getDefaultDateValue($attribute, $value)
+    {
+        $defaultValue = null;
+        $config = explode('_', $attribute);
+        $start = ["debut"];
+        $end = ["disparition", "fin"];
+        $date = date("d/m/Y");
+        if (in_array(end($config), $start)) {
+            $defaultValue = $date;
+        }
+        if (in_array(end($config), $end) && !boolval($value)) {
+            $defaultValue = $date;
+        }
+        return $defaultValue;
+    }
+
     private function getSameInNewDb(array $oldEntity, $newDbTableName)
     {
         $mappingTable = MigrationDb::getMappingTable($newDbTableName);
-        $columns = $this->getColumns($mappingTable, false);
+        $columns = $this->getColumns($mappingTable, false, false);
         $oldColumns = [];
         foreach ($columns as $column) {
             if (isset($mappingTable[$column])) {
@@ -281,17 +372,29 @@ class MigrateStaticDataCommand extends Command
         return [];
     }
 
-    private function getColumns($mappingTable, $withRelations = true)
+    private function getColumns($mappingTable, $withRelations = true, $withDefault = true)
     {
         $keys = array_keys($mappingTable);
         $i = count($keys) - 1;
         $columns = [];
         while ((strpos($keys[$i], 'table') === false) && $i >= 0) {
-            if (strpos($keys[$i], 'rel_') === false) {
-                $columns[] = $keys[$i];
-            } elseif ($withRelations) {
-                $columns[] = $this->getRelatedTable($keys[$i]) . '_id';
+            if (strpos($keys[$i], 'default_') !== false) {
+                if ($withDefault) {
+                    $attribute = explode('_', $keys[$i]);
+                    $start = strlen($attribute[0]) + strlen($attribute[1]) + 2;
+                    $columns[] = substr($keys[$i], $start);
+                }
+                $i--;
+                continue;
             }
+            if (strpos($keys[$i], 'rel_') !== false) {
+                if ($withRelations) {
+                    $columns[] = $this->getRelatedTable($keys[$i]) . '_id';
+                }
+                $i--;
+                continue;
+            }
+            $columns[] = $keys[$i];
             $i--;
         }
         return array_reverse($columns);

@@ -25,16 +25,22 @@ trait MigrationTrait
         return substr($relatedTableKey, strlen('rel_'));
     }
 
-    private function getRelatedEntity(array $oldEntity, string $relatedClass, bool &$foundError)
+    /**
+     * @param array $oldEntity
+     * @param string $relatedTable , the related table name in the DB
+     * @param bool $foundError
+     * @return integer|null
+     */
+    private function getRelatedEntity(array $oldEntity, string $relatedTable, bool &$foundError)
     {
-        $relatedTableNameMappingTable = MigrationDb::getMappingTable($relatedClass);
-        $oldIdColumns = MigrationDb::getOldIdColumns($relatedClass);
+        $relatedTableNameMappingTable = MigrationDb::getMappingTable($relatedTable);
+        $oldIdColumns = MigrationDb::getOldIdColumns($relatedTable);
         $criteria = [];
         foreach ($oldIdColumns as $oldIdColumn) {
             $criteria[$oldIdColumn] = $oldEntity[$relatedTableNameMappingTable[$oldIdColumn]];
         }
         $relatedEntity = $this->migrationRepository
-            ->getBy(MigrationRepository::$newDBConnection, $relatedClass, $criteria);
+            ->getBy(MigrationRepository::$newDBConnection, $relatedTable, $criteria);
         if (!empty($relatedEntity)) {
             if (count($relatedEntity) > 1) {
                 $foundError = true;

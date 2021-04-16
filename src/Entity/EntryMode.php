@@ -13,7 +13,7 @@ use Doctrine\ORM\Mapping as ORM;
  */
 class EntryMode
 {
-    public const LIBELLE = [
+    public const LABEL = [
         'inscriptionInventaire' => 'Inscription à l’inventaire',
         'don' => 'Don',
         'acquisition' => 'Acquisition',
@@ -37,6 +37,10 @@ class EntryMode
      */
     private $propertyStatuses;
 
+    /**
+     * @ORM\Column(name="actif", type="boolean", nullable=false)
+     */
+    private $active = true;
     public function __construct()
     {
         $this->propertyStatuses = new ArrayCollection();
@@ -45,6 +49,18 @@ class EntryMode
     public function getId(): ?int
     {
         return $this->id;
+    }
+
+    public function isActive(): bool
+    {
+        return $this->active;
+    }
+
+    public function setActive(bool $active): self
+    {
+        $this->active = $active;
+
+        return $this;
     }
 
     public function getLabel(): ?string

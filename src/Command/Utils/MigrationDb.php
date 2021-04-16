@@ -2,27 +2,41 @@
 
 namespace App\Command\Utils;
 
+/**
+ * mapping rules :
+ *  - TABLE_NAME : each key represents the table name of each entity in the new DB.
+ *                  each value is an array that contains the mapping data.
+ *  - Mapping Array :
+ *      'id' => 'ID IN THE OLD DB',
+ *      'table' => 'TABLE NAME IN THE OLD DB',
+ *      'newColumnName' => 'oldColumnName',
+ *      'rel_newTableName' => 'oldColumnForeignKey',
+ * -> rel_newTableName :  here when we have a ManyToOne relation we specify the name of the related Table after 'rel_'
+ * -> oldColumnForeignKey is the column in the old DB that contains the foreign key of the old related table
+ *      'old_id' => 'ID IN THE OLD DB' : this field is used for mapping the relations between  tables
+ *      is some cases we found that an element in  a table is identified by more than one id for that we may have :
+ *      'old_id_1' => 'ID 1 COLUMN IN THE OLD DB'
+ *      'old_id_2' => 'ID 2 COLUMN IN THE OLD DB'
+ *      'default_date_new_column_name' => 'VALUE', : some tables has date columns in this case we have two scenario:
+ *          1- VALUE is the old column and it is a boolean field that determines if the entity is active or not
+ *          2- an arbitrary value that should not be an old column name
+ *              'default_date' is used to determine the type of value
+ *      'default_bool_new_column_name' => 'true' or 'false', : some time the new table has a column with bool type that
+ *          will default to true or false in the migration process
+ *              'default_bool' is used to determine the type of value
+ * Class MigrationDb
+ * @package App\Command\Utils
+ */
 class MigrationDb
 {
 
     public const UPPERCASE_NAME = true;
     public const USE_ACCESS_DB = true;
 
-    public const NEW_TABLE_NAME = [
-        'subdivision',
-        'localisation',
-        'localisationType',
-        'room',
-        'responsible',
-        'movementactiontype',
-        'alert',
-        'reporttype',
-        'artworklog',
-    ];
-
     public const TABLE_NAME = [
         'ministere' => self::MINISTERES,
         'etablissement' => self::ETAB_DIR,
+        'sous_direction' => self::SOUS_DIRECTION,
         'correspondant' => self::CORRESPONDANTS,
         'service' => self::SERVICES,
         'site' => self::SITES,
@@ -54,12 +68,14 @@ class MigrationDb
     public const MATIERE = [
         'id' => 'C_MGPAM',
         'table' => 'OEUVRES',
+        'default_bool_actif' => 'true',
         'libelle' => 'OE_MATIERES',
     ];
 
     public const AUTEUR = [
         'id' => 'C_MGPAM',
         'table' => 'OEUVRES',
+        'default_bool_actif' => 'true',
         'nom' => 'OE_NOMAUTEUR',
         'prenom' => 'OE_PRENOMAUTEUR',
     ];
@@ -69,6 +85,8 @@ class MigrationDb
     public const DEPOSANT = [
         'id' => 'C_DEPOSANT',
         'table' => 'DEPOSANT',
+        'default_date_date_debut' => 'true',
+        'default_date_date_fin' => 'true',
         'rel_type_deposant' => 'C_TYPE_DEPOSANTS',
         'nom' => 'DEP_DEPOSANT',
         'sigle' => 'DEP_SIGLE',
@@ -85,6 +103,7 @@ class MigrationDb
     public const TYPES_DEPOSANTS = [
         'id' => 'C_TYPE_DEPOSANTS',
         'table' => 'TYPES_DEPOSANTS',
+        'default_bool_actif' => 'true',
         'libelle' => 'TDEP_DEPOSANTS',
         'old_id' => 'C_TYPE_DEPOSANTS'
     ];
@@ -92,6 +111,7 @@ class MigrationDb
     public const STYLES = [
         'id' => 'C_STYLE',
         'table' => 'STYLES',
+        'default_bool_actif' => 'true',
         'libelle' => 'STY_STYLE',
         'old_id' => 'C_STYLE'
     ];
@@ -99,6 +119,7 @@ class MigrationDb
     public const DENOMINATIONS = [
         'id' => 'C_DENOMINATION',
         'table' => 'DENOMINATIONS',
+        'default_bool_actif' => 'true',
         'rel_domaine' => 'C_DOMAINE',
         'libelle' => 'DEN_DENOMINATION',
         'old_id' => 'C_DENOMINATION'
@@ -107,6 +128,7 @@ class MigrationDb
     public const DOMAINE = [
         'id' => 'C_DOMAINE',
         'table' => 'DOMAINE',
+        'default_bool_actif' => 'true',
         'libelle' => 'DOM_DOMAINE',
         'old_id' => 'C_DOMAINE'
     ];
@@ -114,6 +136,7 @@ class MigrationDb
     public const EPOQUES = [
         'id' => 'C_EPOQUE',
         'table' => 'EPOQUES',
+        'default_bool_actif' => 'true',
         'libelle' => 'EPO_EPOQUE',
         'old_id' => 'C_EPOQUE'
     ];
@@ -132,6 +155,19 @@ class MigrationDb
         'id' => 'C_ETABDIR',
         'table' => 'ETAB_DIR',
         'rel_ministere' => 'C_MIN',
+        'default_date_date_debut' => 'ED_ACTIF',
+        'default_date_date_disparition' => 'ED_ACTIF',
+        'sigle' => 'ED_SIGLE',
+        'libelle' => 'ED_LIBELLE',
+        'old_id' => 'C_ETABDIR',
+    ];
+
+    public const SOUS_DIRECTION = [
+        'id' => 'C_ETABDIR',
+        'table' => 'ETAB_DIR',
+        'rel_etablissement' => 'C_ETABDIR',
+        'default_date_date_debut' => 'ED_ACTIF',
+        'default_date_date_fin' => 'ED_ACTIF',
         'sigle' => 'ED_SIGLE',
         'libelle' => 'ED_LIBELLE',
         'old_id' => 'C_ETABDIR',
@@ -142,6 +178,8 @@ class MigrationDb
         'table' => 'CORRESPONDANTS',
         'rel_service' => 'C_SERVICE',
         'rel_etablissement' => 'C_ETABDIR',
+        'default_date_date_debut' => 'COR_ACTIF',
+        'default_date_date_fin' => 'COR_ACTIF',
         'nom' => 'COR_NOM',
         'prenom' => 'COR_PRENOM',
         'telephone' => 'COR_TEL',
@@ -153,6 +191,9 @@ class MigrationDb
     public const SERVICES = [
         'id' => 'C_SERVICE',
         'table' => 'SERVICES',
+        'rel_sous_direction' => 'C_ETABDIR',
+        'default_date_date_debut' => 'SERV_ACTIF',
+        'default_date_date_disparition' => 'SERV_ACTIF',
         'sigle' => 'SERV_SIGLE',
         'libelle' => 'SERV_LIBELLE',
         'old_id' => 'C_SERVICE',
@@ -267,6 +308,8 @@ class MigrationDb
         'id' => 'C_SITE',
         'table' => 'SITES_6A',
         'rel_commune' => 'COM',
+        'default_date_date_debut' => 'SITE_ACTIF',
+        'default_date_date_disparition' => 'SITE_ACTIF',
         'nom' => 'SITE_NOM',
         'addresse' => 'SITE_ADRESSE',
         'distrib' => 'SITE_DISTRIB',
@@ -277,6 +320,8 @@ class MigrationDb
     public const SITES = [
         'id' => 'C_SITE',
         'table' => 'SITES',
+        'default_date_date_debut' => 'true',
+        'default_date_date_disparition' => 'true',
         'libelle' => 'SITE_NOM',
         'old_id' => 'C_SITE',
     ];
@@ -284,6 +329,8 @@ class MigrationDb
     public const COMMUNES = [
         'id' => 'COM',
         'table' => 'COMMUNES',
+        'default_date_date_debut' => 'true',
+        'default_date_date_disparition' => 'true',
         'rel_departement' => 'DEP',
         'nom' => 'NCCENR',
         'old_id_1' => 'COM',
@@ -293,6 +340,8 @@ class MigrationDb
     public const DEPARTEMENTS = [
         'id' => 'DEP',
         'table' => 'DEPARTEMENTS',
+        'default_date_date_debut' => 'true',
+        'default_date_date_disparition' => 'true',
         'rel_region' => 'REGION',
         'nom' => 'NCCENR',
         'old_id' => 'DEP',
@@ -301,6 +350,8 @@ class MigrationDb
     public const REGIONS = [
         'id' => 'REGION',
         'table' => 'REGIONS',
+        'default_date_date_debut' => 'true',
+        'default_date_date_disparition' => 'true',
         'nom' => 'NCCENR',
         'old_id' => 'REGION',
     ];

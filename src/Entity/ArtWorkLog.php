@@ -8,7 +8,7 @@ use Doctrine\ORM\Mapping as ORM;
 
 /**
  * @ORM\Entity(repositoryClass=ArtWorkLogRepository::class)
- * @ORM\Table(name="log_ouvre")
+ * @ORM\Table(name="log_oeuvre")
  */
 class ArtWorkLog
 {

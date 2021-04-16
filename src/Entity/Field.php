@@ -28,7 +28,7 @@ class Field
     private $label;
 
     /**
-     * @ORM\Column(name="active", type="boolean", nullable=false)
+     * @ORM\Column(name="actif", type="boolean", nullable=false)
      * @JMS\Groups("field")
      */
     private $active = true;

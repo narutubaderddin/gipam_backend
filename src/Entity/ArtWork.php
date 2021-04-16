@@ -8,7 +8,7 @@ use Doctrine\ORM\Mapping as ORM;
 
 /**
  * @ORM\Entity(repositoryClass=ArtWorkRepository::class)
- * @ORM\Table(name="ouvre_art")
+ * @ORM\Table(name="oeuvre_art")
  */
 class ArtWork extends Furniture
 {

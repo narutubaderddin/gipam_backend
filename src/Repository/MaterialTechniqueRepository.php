@@ -2,6 +2,7 @@
 
 namespace App\Repository;
 
+use App\Entity\Denomination;
 use App\Entity\MaterialTechnique;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
@@ -19,32 +20,14 @@ class MaterialTechniqueRepository extends ServiceEntityRepository
         parent::__construct($registry, MaterialTechnique::class);
     }
 
-    // /**
-    //  * @return MaterialTechnique[] Returns an array of MaterialTechnique objects
-    //  */
-    /*
-    public function findByExampleField($value)
+    public function findByLabelAndDenomination(string $label, Denomination $denomination)
     {
-        return $this->createQueryBuilder('m')
-            ->andWhere('m.exampleField = :val')
-            ->setParameter('val', $value)
-            ->orderBy('m.id', 'ASC')
-            ->setMaxResults(10)
+        $query = $this->createQueryBuilder('mt')
+            ->leftJoin('mt.denominations', 'denominations')
+            ->where('mt.label = :label')
+            ->andWhere('denominations.id = :denominationId')
+            ->setParameters(['label' => $label, 'denominationId' => $denomination->getId()])
             ->getQuery()
-            ->getResult()
-        ;
+            ->getOneOrNullResult();
     }
-    */
-
-    /*
-    public function findOneBySomeField($value): ?MaterialTechnique
-    {
-        return $this->createQueryBuilder('m')
-            ->andWhere('m.exampleField = :val')
-            ->setParameter('val', $value)
-            ->getQuery()
-            ->getOneOrNullResult()
-        ;
-    }
-    */
 }

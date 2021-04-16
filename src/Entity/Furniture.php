@@ -11,8 +11,8 @@ use Doctrine\ORM\Mapping as ORM;
  * @ORM\Entity(repositoryClass=FurnitureRepository::class)
  * @ORM\Table(name="objet_mobilier")
  * @ORM\InheritanceType("JOINED")
- * @ORM\DiscriminatorColumn(name="discr", type="string")
- * @ORM\DiscriminatorMap({"artWork"="ArtWork", "officeFurniture"="OfficeFurniture"})
+ * @ORM\DiscriminatorColumn(name="table_associee", type="string")
+ * @ORM\DiscriminatorMap({"oeuvre_art"="ArtWork", "mobilier_bureau"="OfficeFurniture"})
  */
 abstract class Furniture
 {
@@ -29,32 +29,32 @@ abstract class Furniture
     protected $title;
 
     /**
-     * @ORM\Column(name="longueur", type="float", nullable=true)
+     * @ORM\Column(name="longueur", type="string", length=100, nullable=true)
      */
     protected $length;
 
     /**
-     * @ORM\Column(name="largeur", type="float", nullable=true)
+     * @ORM\Column(name="largeur", type="string", length=100, nullable=true)
      */
     protected $width;
 
     /**
-     * @ORM\Column(name="hauteur", type="float", nullable=true)
+     * @ORM\Column(name="hauteur", type="string", length=100, nullable=true)
      */
     protected $height;
 
     /**
-     * @ORM\Column(name="profondeur", type="float", nullable=true)
+     * @ORM\Column(name="profondeur", type="string", length=100, nullable=true)
      */
     protected $depth;
 
     /**
-     * @ORM\Column(name="diametre", type="float", nullable=true)
+     * @ORM\Column(name="diametre", type="string", length=100, nullable=true)
      */
     protected $diameter;
 
     /**
-     * @ORM\Column(name="poids", type="float", nullable=true)
+     * @ORM\Column(name="poids", type="string", length=100, nullable=true)
      */
     protected $weight;
 
@@ -159,72 +159,72 @@ abstract class Furniture
         return $this;
     }
 
-    public function getLength(): ?float
+    public function getLength(): ?string
     {
         return $this->length;
     }
 
-    public function setLength(?float $length): self
+    public function setLength(?string $length): self
     {
         $this->length = $length;
 
         return $this;
     }
 
-    public function getWidth(): ?float
+    public function getWidth(): ?string
     {
         return $this->width;
     }
 
-    public function setWidth(?float $width): self
+    public function setWidth(?string $width): self
     {
         $this->width = $width;
 
         return $this;
     }
 
-    public function getHeight(): ?float
+    public function getHeight(): ?string
     {
         return $this->height;
     }
 
-    public function setHeight(?float $height): self
+    public function setHeight(?string $height): self
     {
         $this->height = $height;
 
         return $this;
     }
 
-    public function getDepth(): ?float
+    public function getDepth(): ?string
     {
         return $this->depth;
     }
 
-    public function setDepth(?float $depth): self
+    public function setDepth(?string $depth): self
     {
         $this->depth = $depth;
 
         return $this;
     }
 
-    public function getDiameter(): ?float
+    public function getDiameter(): ?string
     {
         return $this->diameter;
     }
 
-    public function setDiameter(?float $diameter): self
+    public function setDiameter(?string $diameter): self
     {
         $this->diameter = $diameter;
 
         return $this;
     }
 
-    public function getWeight(): ?float
+    public function getWeight(): ?string
     {
         return $this->weight;
     }
 
-    public function setWeight(?float $weight): self
+    public function setWeight(?string $weight): self
     {
         $this->weight = $weight;
 

@@ -27,7 +27,7 @@ class MovementType
     private $id;
 
     /**
-     * @ORM\Column(name="libelle", type="datetime", nullable=true)
+     * @ORM\Column(name="libelle", type="string", length=150, nullable=true)
      */
     private $label;
 
@@ -52,12 +52,12 @@ class MovementType
         return $this->id;
     }
 
-    public function getLabel(): ?\DateTimeInterface
+    public function getLabel(): ?string
     {
         return $this->label;
     }
 
-    public function setLabel(?\DateTimeInterface $label): self
+    public function setLabel(string $label): self
     {
         $this->label = $label;
 
