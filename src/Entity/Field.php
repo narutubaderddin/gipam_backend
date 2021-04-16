@@ -15,31 +15,38 @@ use JMS\Serializer\Annotation as JMS;
 class Field
 {
     /**
+     * @JMS\Groups("id", "field")
+     *
      * @ORM\Id
      * @ORM\GeneratedValue
      * @ORM\Column(type="integer")
-     * @JMS\Groups("id")
      */
     private $id;
 
     /**
+     * @JMS\Groups("field")
+     *
      * @ORM\Column(name="libelle", type="string", length=255, nullable=true)
-     * @JMS\Groups("id", "field")
      */
     private $label;
 
     /**
+     * @JMS\Groups("field")
+     *
      * @ORM\Column(name="actif", type="boolean", nullable=false)
-     * @JMS\Groups("id", "field")
      */
     private $active = true;
 
     /**
+     * @JMS\Exclude()
+     *
      * @ORM\OneToMany(targetEntity=Denomination::class, mappedBy="field")
      */
     private $denominations;
 
     /**
+     * @JMS\Exclude()
+     *
      * @ORM\OneToMany(targetEntity=Furniture::class, mappedBy="field")
      */
     private $furniture;

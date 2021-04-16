@@ -44,11 +44,11 @@ class FieldController extends AbstractFOSRestController
      *     response=200,
      *     description="Returns Field by id",
      *     @SWG\Schema(
-     *         ref=@Model(type=Field::class, groups={"id"})
+     *         ref=@Model(type=Field::class, groups={"field"})
      *     )
      * )
      * @SWG\Tag(name="fields")
-     * @Rest\View(serializerGroups={"id"})
+     * @Rest\View(serializerGroups={"field"})
      *
      * @param Field $field
      *
@@ -127,7 +127,7 @@ class FieldController extends AbstractFOSRestController
      *     response=201,
      *     description="Returns created Field",
      *     @SWG\Schema(
-     *         ref=@Model(type=Field::class, groups={"id"})
+     *         ref=@Model(type=Field::class, groups={"field"})
      *     )
      * )
      * @SWG\Response(
@@ -142,7 +142,7 @@ class FieldController extends AbstractFOSRestController
      * )
      * @SWG\Tag(name="fields")
      *
-     * @Rest\View(serializerGroups={"id"})
+     * @Rest\View(serializerGroups={"field"})
      *
      * @param Request $request
      *

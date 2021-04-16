@@ -44,11 +44,11 @@ class DenominationController extends AbstractFOSRestController
      *     response=200,
      *     description="Returns Denomination by id",
      *     @SWG\Schema(
-     *         ref=@Model(type=Denomination::class, groups={"id"})
+     *         ref=@Model(type=Denomination::class, groups={"denomination", "id"})
      *     )
      * )
      * @SWG\Tag(name="denominations")
-     * @Rest\View(serializerGroups={"id"})
+     * @Rest\View(serializerGroups={"denomination", "id"})
      *
      * @param Denomination $denomination
      *
@@ -128,7 +128,7 @@ class DenominationController extends AbstractFOSRestController
      *     response=201,
      *     description="Returns created Denomination",
      *     @SWG\Schema(
-     *         ref=@Model(type=Denomination::class, groups={"id"})
+     *         ref=@Model(type=Denomination::class, groups={"denomination", "id"})
      *     )
      * )
      * @SWG\Response(
@@ -143,7 +143,7 @@ class DenominationController extends AbstractFOSRestController
      * )
      * @SWG\Tag(name="denominations")
      *
-     * @Rest\View(serializerGroups={"id"})
+     * @Rest\View(serializerGroups={"denomination", "id"})
      *
      * @param Request $request
      *
