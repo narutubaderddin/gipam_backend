@@ -2,7 +2,9 @@
 
 namespace App\Services;
 
+use App\Model\ApiResponse;
 use Doctrine\ORM\EntityManagerInterface;
+use FOS\RestBundle\Controller\Annotations\QueryParam;
 use FOS\RestBundle\Request\ParamFetcherInterface;
 
 /**
@@ -11,6 +13,7 @@ use FOS\RestBundle\Request\ParamFetcherInterface;
  */
 class ApiManager
 {
+    const DEFAULT_PARAMS = ['page', 'limit', 'sort_by', 'sort'];
     /**
      * @var EntityManagerInterface
      */
@@ -58,44 +61,60 @@ class ApiManager
     /**
      * @param string $fqcn
      * @param ParamFetcherInterface $paramFetcher
-     * @return array
-     * @throws \Doctrine\ORM\NoResultException
-     * @throws \Doctrine\ORM\NonUniqueResultException
+     * @return ApiResponse
      */
-    public function findRecordsByEntityName(string $fqcn, ParamFetcherInterface $paramFetcher): array
+    public function findRecordsByEntityName(string $fqcn, ParamFetcherInterface $paramFetcher): ApiResponse
     {
-        $offset = $paramFetcher->get('offset');
-        $limit = $paramFetcher->get('limit');
+        $page = $paramFetcher->get('page', true)?? 1;
+        $limit = $paramFetcher->get('limit', true)?? 20;
         $sortBy = $paramFetcher->get('sort_by')?? 'id';
         $sort = $paramFetcher->get('sort')?? 'asc';
-        $columns = $this->em->getClassMetadata($fqcn)->getFieldNames();
-        $data = [];
+        $criteria = $this->getCriteriaFromParamFetcher($paramFetcher);
+        $offset = $this->getOffsetFromPageNumber($page, $limit);
+        $repo = $this->em->getRepository($fqcn);
 
-        $queryBuilder = $this->em->createQueryBuilder();
-        $data['total_results'] =(int) $queryBuilder->select('COUNT(DISTINCT p.id)')
-            ->from($fqcn, 'p')
-            ->getQuery()
-            ->getSingleScalarResult();
+        return new ApiResponse(
+            $page,
+            $limit,
+            $repo->countByCriteria($criteria),
+            $repo->count([]),
+            $repo->findByCriteria($criteria, $offset, $limit, $sortBy, $sort)
+        );
+    }
 
-        $qb = $this->em->createQueryBuilder();
-        $qb->select('p')
-            ->from($fqcn, 'p');
-
-        if ($offset != "") {
-            $qb->setFirstResult($offset);
+    /**
+     * @param int $page
+     * @param int $limit
+     * @return int
+     */
+    private function getOffsetFromPageNumber(int $page, int $limit) : int
+    {
+        if(1 < $page){
+            return $limit * ($page-1);
         }
+        return 0;
+    }
 
-        if ($limit != "") {
-            $qb->setMaxResults($limit);
-        }
+    /**
+     * @param ParamFetcherInterface $paramFetcher
+     * @return array
+     */
+    private function getCriteriaFromParamFetcher(ParamFetcherInterface $paramFetcher): array
+    {
+        $criteria = [];
+        $annotations = $paramFetcher->getParams();
+        $values = $paramFetcher->all();
 
-        if (in_array($sortBy, $columns)) {
-            if (in_array($sort, ['asc', 'desc'])) {
-                $qb->orderBy("p.$sortBy", $sort);
+        foreach ($values as $name => $value) {
+            if (null !== $value
+                && isset($annotations[$name])
+                && $annotations[$name] instanceof QueryParam
+                && !\in_array($name, self::DEFAULT_PARAMS)
+            ) {
+                $criteria[$name] = $paramFetcher->get($name);
             }
         }
-        $data['results'] = $qb->getQuery()->getResult();
 
-        return $data;
+        return $criteria;
     }
 }
