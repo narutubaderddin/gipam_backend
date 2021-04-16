@@ -4,8 +4,8 @@
 namespace App\Controller\API;
 
 
-use App\Entity\Field;
-use App\Form\FieldType;
+use App\Entity\Denomination;
+use App\Form\DenominationType;
 use App\Model\ApiResponse;
 use App\Services\ApiManager;
 use FOS\RestBundle\Controller\AbstractFOSRestController;
@@ -18,11 +18,11 @@ use Symfony\Component\HttpFoundation\Response;
 use Swagger\Annotations as SWG;
 
 /**
- * Class FieldController
+ * Class DenominationController
  * @package App\Controller\API
- * @Route("/fields")
+ * @Route("/denominations")
  */
-class FieldController extends AbstractFOSRestController
+class DenominationController extends AbstractFOSRestController
 {
 
     /**
@@ -42,21 +42,21 @@ class FieldController extends AbstractFOSRestController
      *
      * @SWG\Response(
      *     response=200,
-     *     description="Returns Field by id",
+     *     description="Returns Denomination by id",
      *     @SWG\Schema(
-     *         ref=@Model(type=Field::class, groups={"field"})
+     *         ref=@Model(type=Denomination::class, groups={"denomination", "id"})
      *     )
      * )
-     * @SWG\Tag(name="fields")
-     * @Rest\View(serializerGroups={"field"})
+     * @SWG\Tag(name="denominations")
+     * @Rest\View(serializerGroups={"denomination", "id"})
      *
-     * @param Field $field
+     * @param Denomination $denomination
      *
      * @return Response
      */
-    public function showField(Field $field)
+    public function showDenomination(Denomination $denomination)
     {
-        return $this->view($field, Response::HTTP_OK);
+        return $this->view($denomination, Response::HTTP_OK);
     }
 
     /**
@@ -64,7 +64,7 @@ class FieldController extends AbstractFOSRestController
      *
      * @SWG\Response(
      *     response=200,
-     *     description="Returns the list of an Field",
+     *     description="Returns the list of an Denomination",
      *     @SWG\Schema(
      *         @SWG\Items(ref=@Model(type=ApiResponse::class))
      *     )
@@ -99,7 +99,7 @@ class FieldController extends AbstractFOSRestController
      *     type="string",
      *     description="The field used to filter by label"
      * )
-     * @SWG\Tag(name="fields")
+     * @SWG\Tag(name="denominations")
      *
      * @Rest\QueryParam(name="page", requirements="\d+", default="1", description="page number.")
      * @Rest\QueryParam(name="limit", requirements="\d+", default="20", description="page size.")
@@ -107,6 +107,7 @@ class FieldController extends AbstractFOSRestController
      * @Rest\QueryParam(name="sort", requirements="(asc|desc)", nullable=true, default="asc", description="tri order asc|desc")
      * @Rest\QueryParam(name="label",map=true, nullable=false, description="filter by label. example: label[eq]=value")
      * @Rest\QueryParam(name="active", nullable=false, description="filter by active. example: active[eq]=1")
+     * @Rest\QueryParam(name="field", nullable=false, description="filter by field. example: field[eq]=1")
      *
      * @Rest\View()
      *
@@ -114,9 +115,9 @@ class FieldController extends AbstractFOSRestController
      *
      * @return Response
      */
-    public function listFields(ParamFetcherInterface $paramFetcher)
+    public function listDenominations(ParamFetcherInterface $paramFetcher)
     {
-        $records = $this->apiManager->findRecordsByEntityName(Field::class, $paramFetcher);
+        $records = $this->apiManager->findRecordsByEntityName(Denomination::class, $paramFetcher);
         return $this->view($records, Response::HTTP_OK);
     }
 
@@ -125,9 +126,9 @@ class FieldController extends AbstractFOSRestController
      *
      * @SWG\Response(
      *     response=201,
-     *     description="Returns created Field",
+     *     description="Returns created Denomination",
      *     @SWG\Schema(
-     *         ref=@Model(type=Field::class, groups={"field"})
+     *         ref=@Model(type=Denomination::class, groups={"denomination", "id"})
      *     )
      * )
      * @SWG\Response(
@@ -137,12 +138,12 @@ class FieldController extends AbstractFOSRestController
      * @SWG\Parameter(
      *     name="form",
      *     in="body",
-     *     description="Add Field",
-     *     @Model(type=Field::class, groups={"field"})
+     *     description="Add Denomination",
+     *     @Model(type=Denomination::class, groups={"denomination"})
      * )
-     * @SWG\Tag(name="fields")
+     * @SWG\Tag(name="denominations")
      *
-     * @Rest\View(serializerGroups={"field"})
+     * @Rest\View(serializerGroups={"denomination", "id"})
      *
      * @param Request $request
      *
@@ -151,9 +152,9 @@ class FieldController extends AbstractFOSRestController
      * @throws \Doctrine\ORM\ORMException
      * @throws \Doctrine\ORM\OptimisticLockException
      */
-    public function postField(Request $request)
+    public function postDenomination(Request $request)
     {
-        $form = $this->createForm(FieldType::class);
+        $form = $this->createForm(DenominationType::class);
         $form->submit($request->request->all());
         if ($form->isValid()) {
             $field = $this->apiManager->save($form->getData());
@@ -168,7 +169,7 @@ class FieldController extends AbstractFOSRestController
      *
      * @SWG\Response(
      *     response=204,
-     *     description="Field is updated"
+     *     description="Denomination is updated"
      *     )
      * )
      * @SWG\Response(
@@ -178,28 +179,28 @@ class FieldController extends AbstractFOSRestController
      * @SWG\Parameter(
      *     name="form",
      *     in="body",
-     *     description="Update a Field",
-     *     @Model(type=Field::class, groups={"field"})
+     *     description="Update a Denomination",
+     *     @Model(type=Denomination::class, groups={"denomination"})
      * )
-     * @SWG\Tag(name="fields")
+     * @SWG\Tag(name="denominations")
      *
      * @Rest\View()
      *
      * @param Request $request
-     * @param Field $field
+     * @param Denomination $denomination
      *
      * @return Response
      *
      * @throws \Doctrine\ORM\ORMException
      * @throws \Doctrine\ORM\OptimisticLockException
      */
-    public function updateField(Request $request, Field $field)
+    public function updateDenomination(Request $request, Denomination $denomination)
     {
-        $form = $this->createForm(FieldType::class, $field);
+        $form = $this->createForm(DenominationType::class, $denomination);
         $form->submit($request->request->all(), false);
 
         if ($form->isValid()) {
-            $this->apiManager->save($field);
+            $this->apiManager->save($denomination);
             return $this->view(null, Response::HTTP_NO_CONTENT);
         } else {
             return $this->view($form, Response::HTTP_BAD_REQUEST);
@@ -211,20 +212,20 @@ class FieldController extends AbstractFOSRestController
      *
      * @SWG\Response(
      *     response=204,
-     *     description="Field is removed"
+     *     description="Denomination is removed"
      *     )
      * )
-     * @SWG\Tag(name="fields")
+     * @SWG\Tag(name="denominations")
      *
      * @Rest\View()
      *
-     * @param Field $field
+     * @param Denomination $denomination
      *
      * @return Response
      */
-    public function removeField(Field $field)
+    public function removeDenomination(Denomination $denomination)
     {
-        $this->apiManager->delete($field);
+        $this->apiManager->delete($denomination);
         return $this->view(null, Response::HTTP_NO_CONTENT);
     }
 }

@@ -6,6 +6,7 @@ use App\Repository\DenominationRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use JMS\Serializer\Annotation as JMS;
 
 /**
  * @ORM\Entity(repositoryClass=DenominationRepository::class)
@@ -14,6 +15,8 @@ use Doctrine\ORM\Mapping as ORM;
 class Denomination
 {
     /**
+     * @JMS\Groups("id", "denomination")
+     *
      * @ORM\Id
      * @ORM\GeneratedValue
      * @ORM\Column(type="integer")
@@ -21,17 +24,23 @@ class Denomination
     private $id;
 
     /**
+     * @JMS\Groups("denomination")
+     *
      * @ORM\Column(name="libelle", type="string", length=255, nullable=true)
      */
     private $label;
 
     /**
+     * @JMS\Groups("denomination", "id")
+     *
      * @ORM\ManyToOne(targetEntity=Field::class, inversedBy="denominations")
      * @ORM\JoinColumn(name="domaine_id", referencedColumnName="id")
      */
     private $field;
 
     /**
+     * @JMS\Exclude()
+     *
      * @ORM\ManyToMany(targetEntity=MaterialTechnique::class, inversedBy="denominations")
      * @ORM\JoinTable(name="denomination_matiere_technique",
      *      joinColumns={@ORM\JoinColumn(name="denomination_id", referencedColumnName="id")},
@@ -41,11 +50,15 @@ class Denomination
     private $materialsTechniques;
 
     /**
+     * @JMS\Exclude()
+     *
      * @ORM\OneToMany(targetEntity=Furniture::class, mappedBy="denomination")
      */
     private $furniture;
 
     /**
+     * @JMS\Groups("denomination")
+     *
      * @ORM\Column(name="actif", type="boolean", nullable=false)
      */
     private $active = true;
