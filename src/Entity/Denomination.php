@@ -150,4 +150,12 @@ class Denomination
 
         return $this;
     }
+
+    public function getMaterialTechniqueByLabel(string $label): ?MaterialTechnique
+    {
+        return $this->getMaterialsTechniques()
+            ->filter(function (MaterialTechnique $value) use ($label) {
+                return $value->getLabel() === $label;
+            })->first();
+    }
 }

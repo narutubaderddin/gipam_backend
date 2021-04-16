@@ -157,7 +157,7 @@ class MigrateObjectsCommand extends Command
     private function createFurniture(OutputInterface $output)
     {
         $entity = 'art_work';
-//        $this->migrationRepository->dropNewTables(self::GROUP);
+        $this->migrationRepository->dropNewTables(self::GROUP);
         $mappingTable = [
             'id' => 'C_MGPAM',
             'table' => 'OEUVRES',
@@ -177,7 +177,7 @@ class MigrateObjectsCommand extends Command
         $this->excelLogger->write($columns, 1);
         foreach ($oldEntities as $oldEntity) {
             // todo for testing
-//            $oldEntity = $this->test(12);
+//            $oldEntity = $this->test(3727);
 
             $newEntity = $this->createEntity($entity, $oldEntity, $mappingTable, $foundError);
 
@@ -198,9 +198,8 @@ class MigrateObjectsCommand extends Command
             $this->entityManager->persist($newEntity);
 
             // here we add the new entity ID after persisting
-            $dimensions = $this->furnitureDimensions($oldEntity, $newEntity);
-            $this->excelLogger->write($dimensions, $rowCount + 1);
             $rowCount++;
+            $this->logFurnitureDimensions($oldEntity, $newEntity, $rowCount);
             if ($rowCount % 100 === 0) {
                 $this->entityManager->flush();
                 $this->entityManager->clear();
@@ -321,8 +320,7 @@ class MigrateObjectsCommand extends Command
                 $this->entityManager->persist($materialTechnique);
                 $this->entityManager->flush();
             } else {
-                $materialTechnique = $this->entityManager->getRepository(MaterialTechnique::class)
-                    ->findByLabelAndDenomination($materialTechniqueLabel, $denomination);
+                $materialTechnique = $denomination->getMaterialTechniqueByLabel($materialTechniqueLabel);
             }
         }
         $newFurniture->setMaterialTechnique($materialTechnique);

@@ -20,14 +20,15 @@ class MaterialTechniqueRepository extends ServiceEntityRepository
         parent::__construct($registry, MaterialTechnique::class);
     }
 
-    public function findByLabelAndDenomination(string $label, Denomination $denomination)
+    public function findOneByLabelAndDenomination(string $label, Denomination $denomination)
     {
         $query = $this->createQueryBuilder('mt')
             ->leftJoin('mt.denominations', 'denominations')
             ->where('mt.label = :label')
             ->andWhere('denominations.id = :denominationId')
             ->setParameters(['label' => $label, 'denominationId' => $denomination->getId()])
-            ->getQuery()
-            ->getOneOrNullResult();
+            ->getQuery();
+
+        return $query->getOneOrNullResult();
     }
 }

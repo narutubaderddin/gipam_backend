@@ -73,13 +73,17 @@ trait ObjectDimensionsTrait
         $newDimensions = array_merge($newDimensions, $this->getCircularDimensions($oldDimensions, $dimensions) ?? []);
         $newDimensions = array_merge($newDimensions, $this->getLinearDimensions($oldDimensions, $dimensions) ?? []);
         $unit = $this->getDimensionUnit($oldDimensions);
-        if (!empty($newDimensions)) {
-            $this->setDimensions($newDimensions, $unit, $newFurniture);
-        }
         if (empty($newDimensions)) {
             return null;
         }
+        $this->setDimensions($newDimensions, $unit, $newFurniture);
         return $newDimensions;
+    }
+
+    private function logFurnitureDimensions($oldEntity, $newEntity, int $excelRow)
+    {
+        $dimensions = $this->furnitureDimensions($oldEntity, $newEntity);
+        $this->excelLogger->write($dimensions, $excelRow);
     }
 
     private function furnitureDimensions($oldFurniture, Furniture $newFurniture)
@@ -102,10 +106,10 @@ trait ObjectDimensionsTrait
         $digits = "([0-9]*[.,])?[0-9]+";
         $patterns = [
             'height' => "/^((hauteur|h|H)\s*.?\s*:?\s*)",
-            'diameter' => "/^(Ø|ø|DIA)\s*.?\s*:?" . $digits . "\s*(cm|m|CM|M)?\s*$/i"
+            'diameter' => "/^(Ø|ø|DIA)|(d\s*=)\s*.?\s*:?" . $digits . "\s*(cm|m|CM|M)?\s*$/i"
         ];
 //        $digits = "\d{1,}";
-        if (!preg_match("/(Ø|ø|DIA)\s*:?\s*" . $digits . "/i", $oldDimensions)) {
+        if (!preg_match("/(Ø|ø|DIA)|(d\s*=)\s*:?\s*" . $digits . "/i", $oldDimensions)) {
             return null;
         }
         $outputDimensions = [];
@@ -126,7 +130,7 @@ trait ObjectDimensionsTrait
         if ($i === 1 && isset($inputDimensions[1])) {
             $outputDimensions['diameter'] = $inputDimensions[1];
         }
-        // here sometimes the dimension string is h20 dia20
+        // here sometimes the dimension string is h20 dia20 for example
         // so we split the string to an array and we recall the function
         if (count($inputDimensions) === 1 && empty($outputDimensions)) {
             $dimensions = $this->splitDimensionsString($inputDimensions[0]);
@@ -135,7 +139,6 @@ trait ObjectDimensionsTrait
         if (empty($outputDimensions)) {
             return null;
         }
-
         foreach ($outputDimensions as $key => $dimension) {
             $outputDimensions[$key] = trim($dimension);
             $outputDimensions[$key] = preg_replace("/[^\d{1,}]/", '', $dimension);
