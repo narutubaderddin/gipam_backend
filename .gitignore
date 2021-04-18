@@ -48,6 +48,7 @@ yarn-error.log
 ###< symfony/web-server-bundle ###
 
 /src/Migrations/*
+/migrations/*
 ###> symfony/phpunit-bridge ###
 .phpunit
 .phpunit.result.cache

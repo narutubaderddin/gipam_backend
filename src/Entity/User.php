@@ -11,6 +11,7 @@ use JMS\Serializer\Annotation as Serializer;
 
 /**
  * @ORM\Entity(repositoryClass="App\Repository\UserRepository")
+ * @ORM\Table(name="utilisateur")
  */
 class User implements userInterface
 {

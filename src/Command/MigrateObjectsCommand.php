@@ -118,7 +118,7 @@ class MigrateObjectsCommand extends Command
         $this->stopwatch->start('export-data');
 
         // todo initilization script
-//        $this->initializationScriptService->initializeTypes();
+        $this->initializationScriptService->initializeTypes();
         $this->createFurniture($output);
 
         // todo drop old columns after migrating Furniture

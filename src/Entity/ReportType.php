@@ -6,6 +6,8 @@ use App\Repository\ReportTypeRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use JMS\Serializer\Annotation as JMS;
+use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * @ORM\Entity(repositoryClass=ReportTypeRepository::class)
@@ -19,6 +21,9 @@ class ReportType
         'identite' => 'identite',
     ];
     /**
+     *
+     * @JMS\Groups("id")
+     *
      * @ORM\Id
      * @ORM\GeneratedValue
      * @ORM\Column(type="integer")
@@ -26,11 +31,15 @@ class ReportType
     private $id;
 
     /**
+     *
+     * @JMS\Groups("report_type", "report_type")
+     * @Assert\NotBlank(message="label should not be blank")
      * @ORM\Column(name="libelle", type="string", length=255)
      */
     private $label;
 
     /**
+     *
      * @ORM\OneToMany(targetEntity=ReportSubType::class, mappedBy="reportType")
      */
     private $reportSubTypes;
