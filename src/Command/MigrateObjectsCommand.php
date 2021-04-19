@@ -177,7 +177,7 @@ class MigrateObjectsCommand extends Command
         $this->excelLogger->write($columns, 1);
         foreach ($oldEntities as $oldEntity) {
             // todo for testing
-//            $oldEntity = $this->test(3727);
+//            $oldEntity = $this->test(3906);
 
             $newEntity = $this->createEntity($entity, $oldEntity, $mappingTable, $foundError);
 
@@ -185,7 +185,8 @@ class MigrateObjectsCommand extends Command
             $this->setMaterialTechnique($oldEntity, $newEntity, $mappingTable);
             $this->setStatus($oldEntity, $newEntity);
             $this->addAttachments($oldEntity, $newEntity);
-            $this->findDimensions($oldEntity, $newEntity);
+            $dimensionError = false;
+            $this->findDimensions($oldEntity, $newEntity, $dimensionError);
 
 //
             // todo should fix the logic of migration
@@ -199,7 +200,7 @@ class MigrateObjectsCommand extends Command
 
             // here we add the new entity ID after persisting
             $rowCount++;
-            $this->logFurnitureDimensions($oldEntity, $newEntity, $rowCount);
+            $this->logFurnitureDimensions($oldEntity, $newEntity, $rowCount, $dimensionError);
             if ($rowCount % 100 === 0) {
                 $this->entityManager->flush();
                 $this->entityManager->clear();
@@ -372,6 +373,8 @@ class MigrateObjectsCommand extends Command
             $date = $attachement[$mappingTable['date']];
             if ($date) {
                 $newAttachement->setDate(new  DateTime($date));
+            } else {
+                $newAttachement->setDate(new  DateTime());
             }
             $this->entityManager->persist($newAttachement);
             $newFurniture->addAttachment($newAttachement);

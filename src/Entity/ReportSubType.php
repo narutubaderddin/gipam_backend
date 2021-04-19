@@ -6,6 +6,7 @@ use App\Repository\ReportSubTypeRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use JMS\Serializer\Annotation as JMS;
 
 /**
  * @ORM\Entity(repositoryClass=ReportSubTypeRepository::class)
@@ -38,6 +39,8 @@ class ReportSubType
         'identite' => self::TYPE_IDENTITE,
     ];
     /**
+     * @JMS\Groups("id")
+     *
      * @ORM\Id
      * @ORM\GeneratedValue
      * @ORM\Column(type="integer")
@@ -45,17 +48,25 @@ class ReportSubType
     private $id;
 
     /**
+     * @JMS\Groups("report_sub_type")
+     *
      * @ORM\Column(name="libelle", type="string", length=255, nullable=true)
      */
     private $label;
 
     /**
+     *
+     * @JMS\Groups("report_sub_type")
+     *
      * @ORM\ManyToOne(targetEntity=ReportType::class, inversedBy="reportSubTypes")
      * @ORM\JoinColumn(name="type_constat_id", referencedColumnName="id")
      */
     private $reportType;
 
     /**
+     *
+     * @JMS\Exclude()
+     *
      * @ORM\OneToMany(targetEntity=Report::class, mappedBy="reportSubType")
      */
     private $reports;

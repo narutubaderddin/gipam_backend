@@ -2,7 +2,9 @@
 
 namespace App\Controller\API;
 
+use App\Entity\ReportSubType;
 use App\Entity\ReportType;
+use App\Form\ReportSubTypeType;
 use App\Form\ReportTypeType;
 use App\Model\ApiResponse;
 use App\Model\FormError;
@@ -12,6 +14,7 @@ use FOS\RestBundle\Controller\Annotations as Rest;
 use FOS\RestBundle\Controller\Annotations\Route;
 use FOS\RestBundle\Request\ParamFetcherInterface;
 use FOS\RestBundle\View\View;
+use JMS\Serializer\SerializationContext;
 use Nelmio\ApiDocBundle\Annotation\Model;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -21,9 +24,9 @@ use Symfony\Component\Validator\Validator\ValidatorInterface;
 /**
  * Class ReportTypeController
  * @package App\Controller\API
- * @Route("/reportTypes")
+ * @Route("/reportSubTypes")
  */
-class ReportTypeController extends AbstractFOSRestController
+class ReportSubTypeController extends AbstractFOSRestController
 {
     /**
      * @var ApiManager
@@ -49,21 +52,21 @@ class ReportTypeController extends AbstractFOSRestController
      *
      * @SWG\Response(
      *     response=200,
-     *     description="Returns ReportType by id",
+     *     description="Returns ReportSubtype by id",
      *     @SWG\Schema(
-     *         ref=@Model(type=ReportType::class, groups={"report_type", "id"})
+     *         ref=@Model(type=ReportSubType::class, groups={"report_sub_type", "id"})
      *     )
      * )
-     * @SWG\Tag(name="reportTypes")
-     * @Rest\View(serializerGroups={"report_type", "id"})
+     * @SWG\Tag(name="reportSubTypes")
+     * @Rest\View(serializerGroups={"report_sub_type", "id"})
      *
-     * @param ReportType $reportType
+     * @param ReportSubType $reportSubType
      *
      * @return View
      */
-    public function showReportType(ReportType $reportType)
+    public function showReportSubType(ReportSubType $reportSubType)
     {
-        return $this->view($reportType, Response::HTTP_OK);
+        return $this->view($reportSubType, Response::HTTP_OK);
     }
 
     /**
@@ -71,7 +74,7 @@ class ReportTypeController extends AbstractFOSRestController
      *
      * @SWG\Response(
      *     response=200,
-     *     description="Returns the list of Report Types",
+     *     description="Returns the list of Report Subtypes",
      *     @SWG\Schema(
      *         @SWG\Items(ref=@Model(type=ApiResponse::class))
      *     )
@@ -106,7 +109,7 @@ class ReportTypeController extends AbstractFOSRestController
      *     type="string",
      *     description="The field used to filter by label"
      * )
-     * @SWG\Tag(name="reportTypes")
+     * @SWG\Tag(name="reportSubTypes")
      *
      * @Rest\QueryParam(name="page", requirements="\d+", default="1", description="page number.")
      * @Rest\QueryParam(name="limit", requirements="\d+", default="20", description="page size.")
@@ -125,9 +128,9 @@ class ReportTypeController extends AbstractFOSRestController
      *
      * @return View
      */
-    public function listReportTypes(ParamFetcherInterface $paramFetcher)
+    public function listReportSubTypes(ParamFetcherInterface $paramFetcher)
     {
-        $records = $this->apiManager->findRecordsByEntityName(ReportType::class, $paramFetcher);
+        $records = $this->apiManager->findRecordsByEntityName(ReportSubType::class, $paramFetcher);
         return $this->view($records, Response::HTTP_OK);
     }
 
@@ -136,9 +139,9 @@ class ReportTypeController extends AbstractFOSRestController
      *
      * @SWG\Response(
      *     response=201,
-     *     description="Returns created ReportType",
+     *     description="Returns created Report Subtype",
      *     @SWG\Schema(
-     *         ref=@Model(type=ReportType::class, groups={"report_type", "id"})
+     *         ref=@Model(type=ReportSubType::class, groups={"report_sub_type"})
      *     )
      * )
      * @SWG\Response(
@@ -148,19 +151,19 @@ class ReportTypeController extends AbstractFOSRestController
      * @SWG\Parameter(
      *     name="form",
      *     in="body",
-     *     description="Add ReportType",
-     *     @Model(type=ReportType::class, groups={"report_type"})
+     *     description="Add Report Subtype",
+     *     @Model(type=ReportSubType::class, groups={"report_sub_type"})
      * )
-     * @SWG\Tag(name="reportTypes")
+     * @SWG\Tag(name="reportSubTypes")
      *
-     * @Rest\View(serializerGroups={"report_type", "id", "errors"})
+     * @Rest\View(serializerGroups={"report_sub_type", "id", "errors"})
      *
      * @param Request $request
      * @return View
      */
-    public function postReportType(Request $request)
+    public function postReportSubType(Request $request)
     {
-        $form = $this->createForm(ReportTypeType::class);
+        $form = $this->createForm(ReportSubTypeType::class);
         $form->submit($request->request->all());
         if ($form->isValid()) {
             $reportType = $this->apiManager->save($form->getData());
@@ -174,7 +177,7 @@ class ReportTypeController extends AbstractFOSRestController
      *
      * @SWG\Response(
      *     response=204,
-     *     description="Report Type is updated"
+     *     description="Report Subtype is updated"
      *     )
      * )
      * @SWG\Response(
@@ -183,28 +186,28 @@ class ReportTypeController extends AbstractFOSRestController
      * )
      * @SWG\Response(
      *     response=404,
-     *     description="Report Type not found"
+     *     description="Report Subtype not found"
      * )
      * @SWG\Parameter(
      *     name="form",
      *     in="body",
      *     description="Update a ReportType",
-     *     @Model(type=ReportType::class, groups={"report_type"})
+     *     @Model(type=ReportSubType::class, groups={"report_sub_type"})
      * )
-     * @SWG\Tag(name="reportTypes")
+     * @SWG\Tag(name="reportSubTypes")
      *
      * @Rest\View(serializerGroups={"errors"})
      *
      * @param Request $request
-     * @param ReportType $reportType
+     * @param ReportSubType $reportSubType
      * @return View
      */
-    public function updateReportType(Request $request, ReportType $reportType)
+    public function updateReportSubType(Request $request, ReportSubType $reportSubType)
     {
-        $form = $this->createForm(ReportTypeType::class, $reportType);
+        $form = $this->createForm(ReportSubTypeType::class, $reportSubType);
         $form->submit($request->request->all(), false);
         if ($form->isValid()) {
-            $this->apiManager->save($reportType);
+            $this->apiManager->save($reportSubType);
             return $this->view(null, Response::HTTP_NO_CONTENT);
         }
         return $this->view(new FormError($form), Response::HTTP_BAD_REQUEST);
@@ -215,7 +218,7 @@ class ReportTypeController extends AbstractFOSRestController
      *
      * @SWG\Response(
      *     response=204,
-     *     description="Report Type is removed"
+     *     description="Report Subtype is removed"
      *     )
      * )
      * @SWG\Response(
@@ -223,20 +226,19 @@ class ReportTypeController extends AbstractFOSRestController
      *     description="Deleting errors"
      *     )
      * )
-     * @SWG\Tag(name="reportTypes")
+     * @SWG\Tag(name="reportSubTypes")
      *
      * @Rest\View()
      *
-     * @param ReportType $reportType
-     *
+     * @param ReportSubType $reportSubType
      * @return View
      */
-    public function removeReportType(ReportType $reportType)
+    public function removeReportSubType(ReportSubType $reportSubType)
     {
-        if ($reportType->getReportSubTypes()->isEmpty()) {
-            $this->apiManager->delete($reportType);
+        if ($reportSubType->getReports()->isEmpty()) {
+            $this->apiManager->delete($reportSubType);
             return $this->view(null, Response::HTTP_NO_CONTENT);
         }
-        return $this->view("Report Type has related Reports Subtypes", Response::HTTP_BAD_REQUEST);
+        return $this->view("Report SubType has related Reports", Response::HTTP_BAD_REQUEST);
     }
 }

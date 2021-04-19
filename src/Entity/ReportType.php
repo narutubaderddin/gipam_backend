@@ -31,14 +31,17 @@ class ReportType
     private $id;
 
     /**
-     *
-     * @JMS\Groups("report_type", "report_type")
      * @Assert\NotBlank(message="label should not be blank")
+     *
+     * @JMS\Groups("report_type")
+     *
      * @ORM\Column(name="libelle", type="string", length=255)
      */
     private $label;
 
     /**
+     *
+     * @JMS\Exclude()
      *
      * @ORM\OneToMany(targetEntity=ReportSubType::class, mappedBy="reportType")
      */
