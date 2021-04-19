@@ -6,6 +6,7 @@ use App\Repository\MovementTypeRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use JMS\Serializer\Annotation as JMS;
 
 /**
  * @ORM\Entity(repositoryClass=MovementTypeRepository::class)
@@ -20,6 +21,8 @@ class MovementType
         'definitive' => 'Sortie définitive',
     ];
     /**
+     * @JMS\Groups("id")
+     *
      * @ORM\Id
      * @ORM\GeneratedValue
      * @ORM\Column(type="integer")
@@ -32,11 +35,15 @@ class MovementType
     private $label;
 
     /**
+     * @JMS\Exclude()
+     *
      * @ORM\OneToMany(targetEntity=Movement::class, mappedBy="type")
      */
     private $movements;
 
     /**
+     * @JMS\Exclude()
+     *
      * @ORM\OneToMany(targetEntity=MovementActionType::class, mappedBy="movementType")
      */
     private $movementActionTypes;
