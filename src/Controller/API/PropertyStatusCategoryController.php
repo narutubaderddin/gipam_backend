@@ -4,8 +4,8 @@
 namespace App\Controller\API;
 
 
-use App\Entity\Style;
-use App\Form\StyleType;
+use App\Entity\PropertyStatusCategory;
+use App\Form\PropertyStatusCategoryType;
 use App\Model\ApiResponse;
 use App\Services\ApiManager;
 use FOS\RestBundle\Controller\AbstractFOSRestController;
@@ -18,11 +18,11 @@ use Symfony\Component\HttpFoundation\Response;
 use Swagger\Annotations as SWG;
 
 /**
- * Class StyleController
+ * Class PropertyStatusCategoryController
  * @package App\Controller\API
- * @Route("/styles")
+ * @Route("/propertyStatusCategories")
  */
-class StyleController extends AbstractFOSRestController
+class PropertyStatusCategoryController extends AbstractFOSRestController
 {
 
     /**
@@ -42,21 +42,21 @@ class StyleController extends AbstractFOSRestController
      *
      * @SWG\Response(
      *     response=200,
-     *     description="Returns Style by id",
+     *     description="Returns PropertyStatusCategory by id",
      *     @SWG\Schema(
-     *         ref=@Model(type=Style::class, groups={"style"})
+     *         ref=@Model(type=PropertyStatusCategory::class, groups={"category"})
      *     )
      * )
-     * @SWG\Tag(name="styles")
-     * @Rest\View(serializerGroups={"style"})
+     * @SWG\Tag(name="propertyStatusCategories")
+     * @Rest\View(serializerGroups={"category"})
      *
-     * @param Style $style
+     * @param PropertyStatusCategory $category
      *
      * @return Response
      */
-    public function showStyle(Style $style)
+    public function showPropertyStatusCategory(PropertyStatusCategory $category)
     {
-        return $this->view($style, Response::HTTP_OK);
+        return $this->view($category, Response::HTTP_OK);
     }
 
     /**
@@ -64,7 +64,7 @@ class StyleController extends AbstractFOSRestController
      *
      * @SWG\Response(
      *     response=200,
-     *     description="Returns the list of an Style",
+     *     description="Returns the list of an PropertyStatusCategory",
      *     @SWG\Schema(
      *         @SWG\Items(ref=@Model(type=ApiResponse::class))
      *     )
@@ -91,7 +91,7 @@ class StyleController extends AbstractFOSRestController
      *     name="sort",
      *     in="query",
      *     type="string",
-     *     description="The fiemld used to sort type"
+     *     description="The field used to sort type"
      * )
      * @SWG\Parameter(
      *     name="label",
@@ -99,7 +99,7 @@ class StyleController extends AbstractFOSRestController
      *     type="string",
      *     description="The field used to filter by label"
      * )
-     * @SWG\Tag(name="styles")
+     * @SWG\Tag(name="propertyStatusCategories")
      *
      * @Rest\QueryParam(name="page", requirements="\d+", default="1", description="page number.")
      * @Rest\QueryParam(name="limit", requirements="\d+", default="20", description="page size.")
@@ -114,9 +114,9 @@ class StyleController extends AbstractFOSRestController
      *
      * @return Response
      */
-    public function listStyles(ParamFetcherInterface $paramFetcher)
+    public function listPropertyStatusCategorys(ParamFetcherInterface $paramFetcher)
     {
-        $records = $this->apiManager->findRecordsByEntityName(Style::class, $paramFetcher);
+        $records = $this->apiManager->findRecordsByEntityName(PropertyStatusCategory::class, $paramFetcher);
         return $this->view($records, Response::HTTP_OK);
     }
 
@@ -125,9 +125,9 @@ class StyleController extends AbstractFOSRestController
      *
      * @SWG\Response(
      *     response=201,
-     *     description="Returns created Style",
+     *     description="Returns created PropertyStatusCategory",
      *     @SWG\Schema(
-     *         ref=@Model(type=Style::class, groups={"style"})
+     *         ref=@Model(type=PropertyStatusCategory::class, groups={"category"})
      *     )
      * )
      * @SWG\Response(
@@ -137,12 +137,12 @@ class StyleController extends AbstractFOSRestController
      * @SWG\Parameter(
      *     name="form",
      *     in="body",
-     *     description="Add Style",
-     *     @Model(type=Style::class, groups={"style"})
+     *     description="Add PropertyStatusCategory",
+     *     @Model(type=PropertyStatusCategory::class, groups={"category"})
      * )
-     * @SWG\Tag(name="styles")
+     * @SWG\Tag(name="propertyStatusCategories")
      *
-     * @Rest\View(serializerGroups={"style"})
+     * @Rest\View(serializerGroups={"category"})
      *
      * @param Request $request
      *
@@ -151,13 +151,13 @@ class StyleController extends AbstractFOSRestController
      * @throws \Doctrine\ORM\ORMException
      * @throws \Doctrine\ORM\OptimisticLockException
      */
-    public function postStyle(Request $request)
+    public function postPropertyStatusCategory(Request $request)
     {
-        $form = $this->createForm(StyleType::class);
+        $form = $this->createForm(PropertyStatusCategoryType::class);
         $form->submit($request->request->all());
         if ($form->isValid()) {
-            $style = $this->apiManager->save($form->getData());
-            return $this->view($style, Response::HTTP_CREATED);
+            $category = $this->apiManager->save($form->getData());
+            return $this->view($category, Response::HTTP_CREATED);
         } else {
             return $this->view($form, Response::HTTP_BAD_REQUEST);
         }
@@ -168,7 +168,7 @@ class StyleController extends AbstractFOSRestController
      *
      * @SWG\Response(
      *     response=204,
-     *     description="Style is updated"
+     *     description="PropertyStatusCategory is updated"
      *     )
      * )
      * @SWG\Response(
@@ -178,28 +178,28 @@ class StyleController extends AbstractFOSRestController
      * @SWG\Parameter(
      *     name="form",
      *     in="body",
-     *     description="Update a Style",
-     *     @Model(type=Style::class, groups={"style"})
+     *     description="Update a PropertyStatusCategory",
+     *     @Model(type=PropertyStatusCategory::class, groups={"category"})
      * )
-     * @SWG\Tag(name="styles")
+     * @SWG\Tag(name="propertyStatusCategories")
      *
      * @Rest\View()
      *
      * @param Request $request
-     * @param Style $style
+     * @param PropertyStatusCategory $category
      *
      * @return Response
      *
      * @throws \Doctrine\ORM\ORMException
      * @throws \Doctrine\ORM\OptimisticLockException
      */
-    public function updateStyle(Request $request, Style $style)
+    public function updatePropertyStatusCategory(Request $request, PropertyStatusCategory $category)
     {
-        $form = $this->createForm(StyleType::class, $style);
+        $form = $this->createForm(PropertyStatusCategoryType::class, $category);
         $form->submit($request->request->all(), false);
 
         if ($form->isValid()) {
-            $this->apiManager->save($style);
+            $this->apiManager->save($category);
             return $this->view(null, Response::HTTP_NO_CONTENT);
         } else {
             return $this->view($form, Response::HTTP_BAD_REQUEST);
@@ -211,20 +211,20 @@ class StyleController extends AbstractFOSRestController
      *
      * @SWG\Response(
      *     response=204,
-     *     description="Style is removed"
+     *     description="PropertyStatusCategory is removed"
      *     )
      * )
-     * @SWG\Tag(name="styles")
+     * @SWG\Tag(name="propertyStatusCategories")
      *
      * @Rest\View()
      *
-     * @param Style $style
+     * @param PropertyStatusCategory $category
      *
      * @return Response
      */
-    public function removeStyle(Style $style)
+    public function removePropertyStatusCategory(PropertyStatusCategory $category)
     {
-        $this->apiManager->delete($style);
+        $this->apiManager->delete($category);
         return $this->view(null, Response::HTTP_NO_CONTENT);
     }
 }

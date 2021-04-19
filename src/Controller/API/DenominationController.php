@@ -157,8 +157,8 @@ class DenominationController extends AbstractFOSRestController
         $form = $this->createForm(DenominationType::class);
         $form->submit($request->request->all());
         if ($form->isValid()) {
-            $field = $this->apiManager->save($form->getData());
-            return $this->view($field, Response::HTTP_CREATED);
+            $denomination = $this->apiManager->save($form->getData());
+            return $this->view($denomination, Response::HTTP_CREATED);
         } else {
             return $this->view($form, Response::HTTP_BAD_REQUEST);
         }
