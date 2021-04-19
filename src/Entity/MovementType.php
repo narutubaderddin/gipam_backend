@@ -7,6 +7,7 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use JMS\Serializer\Annotation as JMS;
+use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * @ORM\Entity(repositoryClass=MovementTypeRepository::class)
@@ -30,6 +31,10 @@ class MovementType
     private $id;
 
     /**
+     * @JMS\Groups("movement_type")
+     *
+     * @Assert\NotBlank()
+     *
      * @ORM\Column(name="libelle", type="string", length=150, nullable=true)
      */
     private $label;

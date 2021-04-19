@@ -52,7 +52,7 @@ class ReportSubTypeController extends AbstractFOSRestController
      *
      * @SWG\Response(
      *     response=200,
-     *     description="Returns ReportSubtype by id",
+     *     description="Returns Report Subtype by id",
      *     @SWG\Schema(
      *         ref=@Model(type=ReportSubType::class, groups={"report_sub_type", "id"})
      *     )
@@ -120,7 +120,7 @@ class ReportSubTypeController extends AbstractFOSRestController
      *      description="sorting order asc|desc"
      * )
      * @Rest\QueryParam(name="label",map=true, nullable=false, description="filter by label. example: label[eq]=value")
-     * @Rest\QueryParam(name="reportType", nullable=false, description="filter by report type. example: reportType[eq]=1")
+     * @Rest\QueryParam(name="reportType", nullable=false, description="filter by report type id. example: reportType[eq]=1")
      *
      * @Rest\View()
      *
@@ -191,7 +191,7 @@ class ReportSubTypeController extends AbstractFOSRestController
      * @SWG\Parameter(
      *     name="form",
      *     in="body",
-     *     description="Update a ReportType",
+     *     description="Update a Report SubType",
      *     @Model(type=ReportSubType::class, groups={"report_sub_type"})
      * )
      * @SWG\Tag(name="reportSubTypes")
