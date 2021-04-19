@@ -6,6 +6,8 @@ use App\Repository\ActionTypeRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use JMS\Serializer\Annotation as JMS;
+use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * @ORM\Entity(repositoryClass=ActionTypeRepository::class)
@@ -19,6 +21,8 @@ class ActionType
       'abandonRecherche' => 'Abandon des recherches',
     ];
     /**
+     * @JMS\Groups("id")
+     *
      * @ORM\Id
      * @ORM\GeneratedValue
      * @ORM\Column(type="integer")
@@ -26,11 +30,17 @@ class ActionType
     private $id;
 
     /**
+     * @JMS\Groups("action_type")
+     *
+     * @Assert\NotBlank
+     *
      * @ORM\Column(name="libelle", type="string", length=255)
      */
     private $label;
 
     /**
+     * @JMS\Exclude()
+     *
      * @ORM\OneToMany(targetEntity=Action::class, mappedBy="type")
      */
     private $actions;
@@ -50,7 +60,7 @@ class ActionType
         return $this->label;
     }
 
-    public function setLabel(string $label): self
+    public function setLabel(?string $label): self
     {
         $this->label = $label;
 
