@@ -4,8 +4,8 @@
 namespace App\Controller\API;
 
 
-use App\Entity\Denomination;
-use App\Form\DenominationType;
+use App\Entity\MaterialTechnique;
+use App\Form\MaterialTechniqueType;
 use App\Model\ApiResponse;
 use App\Services\ApiManager;
 use FOS\RestBundle\Controller\AbstractFOSRestController;
@@ -18,11 +18,11 @@ use Symfony\Component\HttpFoundation\Response;
 use Swagger\Annotations as SWG;
 
 /**
- * Class DenominationController
+ * Class MaterialTechniqueController
  * @package App\Controller\API
- * @Route("/denominations")
+ * @Route("/materialTechniques")
  */
-class DenominationController extends AbstractFOSRestController
+class MaterialTechniqueController extends AbstractFOSRestController
 {
 
     /**
@@ -42,21 +42,21 @@ class DenominationController extends AbstractFOSRestController
      *
      * @SWG\Response(
      *     response=200,
-     *     description="Returns Denomination by id",
+     *     description="Returns MaterialTechnique by id",
      *     @SWG\Schema(
-     *         ref=@Model(type=Denomination::class, groups={"denomination", "field_id"})
+     *         ref=@Model(type=MaterialTechnique::class, groups={"material_technique", "denomination_id"})
      *     )
      * )
-     * @SWG\Tag(name="denominations")
-     * @Rest\View(serializerGroups={"denomination", "field_id"})
+     * @SWG\Tag(name="materialTechniques")
+     * @Rest\View(serializerGroups={"material_technique", "denomination_id"})
      *
-     * @param Denomination $denomination
+     * @param MaterialTechnique $materialTechnique
      *
      * @return Response
      */
-    public function showDenomination(Denomination $denomination)
+    public function showMaterialTechnique(MaterialTechnique $materialTechnique)
     {
-        return $this->view($denomination, Response::HTTP_OK);
+        return $this->view($materialTechnique, Response::HTTP_OK);
     }
 
     /**
@@ -64,7 +64,7 @@ class DenominationController extends AbstractFOSRestController
      *
      * @SWG\Response(
      *     response=200,
-     *     description="Returns the list of an Denomination",
+     *     description="Returns the list of an MaterialTechnique",
      *     @SWG\Schema(
      *         @SWG\Items(ref=@Model(type=ApiResponse::class))
      *     )
@@ -91,7 +91,7 @@ class DenominationController extends AbstractFOSRestController
      *     name="sort",
      *     in="query",
      *     type="string",
-     *     description="The field used to sort type"
+     *     description="The fiemld used to sort type"
      * )
      * @SWG\Parameter(
      *     name="label",
@@ -99,15 +99,15 @@ class DenominationController extends AbstractFOSRestController
      *     type="string",
      *     description="The field used to filter by label"
      * )
-     * @SWG\Tag(name="denominations")
+     * @SWG\Tag(name="materialTechniques")
      *
      * @Rest\QueryParam(name="page", requirements="\d+", default="1", description="page number.")
      * @Rest\QueryParam(name="limit", requirements="\d+", default="20", description="page size.")
      * @Rest\QueryParam(name="sort_by", nullable=true, default="id", description="order by")
      * @Rest\QueryParam(name="sort", requirements="(asc|desc)", nullable=true, default="asc", description="tri order asc|desc")
      * @Rest\QueryParam(name="label",map=true, nullable=false, description="filter by label. example: label[eq]=value")
+     * @Rest\QueryParam(name="type",map=true, nullable=false, description="filter by type. example: type[eq]=value")
      * @Rest\QueryParam(name="active", nullable=false, description="filter by active. example: active[eq]=1")
-     * @Rest\QueryParam(name="field", nullable=false, description="filter by field. example: field[eq]=1")
      *
      * @Rest\View()
      *
@@ -115,9 +115,9 @@ class DenominationController extends AbstractFOSRestController
      *
      * @return Response
      */
-    public function listDenominations(ParamFetcherInterface $paramFetcher)
+    public function listMaterialTechniques(ParamFetcherInterface $paramFetcher)
     {
-        $records = $this->apiManager->findRecordsByEntityName(Denomination::class, $paramFetcher);
+        $records = $this->apiManager->findRecordsByEntityName(MaterialTechnique::class, $paramFetcher);
         return $this->view($records, Response::HTTP_OK);
     }
 
@@ -126,9 +126,9 @@ class DenominationController extends AbstractFOSRestController
      *
      * @SWG\Response(
      *     response=201,
-     *     description="Returns created Denomination",
+     *     description="Returns created MaterialTechnique",
      *     @SWG\Schema(
-     *         ref=@Model(type=Denomination::class, groups={"denomination", "field_id"})
+     *         ref=@Model(type=MaterialTechnique::class, groups={"material_technique", "denomination_id"})
      *     )
      * )
      * @SWG\Response(
@@ -138,12 +138,12 @@ class DenominationController extends AbstractFOSRestController
      * @SWG\Parameter(
      *     name="form",
      *     in="body",
-     *     description="Add Denomination",
-     *     @Model(type=Denomination::class, groups={"denomination"})
+     *     description="Add MaterialTechnique",
+     *     @Model(type=MaterialTechnique::class, groups={"material_technique"})
      * )
-     * @SWG\Tag(name="denominations")
+     * @SWG\Tag(name="materialTechniques")
      *
-     * @Rest\View(serializerGroups={"denomination", "field_id"})
+     * @Rest\View(serializerGroups={"material_technique", "denomination_id"})
      *
      * @param Request $request
      *
@@ -152,13 +152,13 @@ class DenominationController extends AbstractFOSRestController
      * @throws \Doctrine\ORM\ORMException
      * @throws \Doctrine\ORM\OptimisticLockException
      */
-    public function postDenomination(Request $request)
+    public function postMaterialTechnique(Request $request)
     {
-        $form = $this->createForm(DenominationType::class);
+        $form = $this->createForm(MaterialTechniqueType::class);
         $form->submit($request->request->all());
         if ($form->isValid()) {
-            $denomination = $this->apiManager->save($form->getData());
-            return $this->view($denomination, Response::HTTP_CREATED);
+            $materialTechnique = $this->apiManager->save($form->getData());
+            return $this->view($materialTechnique, Response::HTTP_CREATED);
         } else {
             return $this->view($form, Response::HTTP_BAD_REQUEST);
         }
@@ -169,7 +169,7 @@ class DenominationController extends AbstractFOSRestController
      *
      * @SWG\Response(
      *     response=204,
-     *     description="Denomination is updated"
+     *     description="MaterialTechnique is updated"
      *     )
      * )
      * @SWG\Response(
@@ -179,28 +179,28 @@ class DenominationController extends AbstractFOSRestController
      * @SWG\Parameter(
      *     name="form",
      *     in="body",
-     *     description="Update a Denomination",
-     *     @Model(type=Denomination::class, groups={"denomination"})
+     *     description="Update a MaterialTechnique",
+     *     @Model(type=MaterialTechnique::class, groups={"material_technique"})
      * )
-     * @SWG\Tag(name="denominations")
+     * @SWG\Tag(name="materialTechniques")
      *
      * @Rest\View()
      *
      * @param Request $request
-     * @param Denomination $denomination
+     * @param MaterialTechnique $materialTechnique
      *
      * @return Response
      *
      * @throws \Doctrine\ORM\ORMException
      * @throws \Doctrine\ORM\OptimisticLockException
      */
-    public function updateDenomination(Request $request, Denomination $denomination)
+    public function updateMaterialTechnique(Request $request, MaterialTechnique $materialTechnique)
     {
-        $form = $this->createForm(DenominationType::class, $denomination);
+        $form = $this->createForm(MaterialTechniqueType::class, $materialTechnique);
         $form->submit($request->request->all(), false);
 
         if ($form->isValid()) {
-            $this->apiManager->save($denomination);
+            $this->apiManager->save($materialTechnique);
             return $this->view(null, Response::HTTP_NO_CONTENT);
         } else {
             return $this->view($form, Response::HTTP_BAD_REQUEST);
@@ -212,20 +212,20 @@ class DenominationController extends AbstractFOSRestController
      *
      * @SWG\Response(
      *     response=204,
-     *     description="Denomination is removed"
+     *     description="MaterialTechnique is removed"
      *     )
      * )
-     * @SWG\Tag(name="denominations")
+     * @SWG\Tag(name="materialTechniques")
      *
      * @Rest\View()
      *
-     * @param Denomination $denomination
+     * @param MaterialTechnique $materialTechnique
      *
      * @return Response
      */
-    public function removeDenomination(Denomination $denomination)
+    public function removeMaterialTechnique(MaterialTechnique $materialTechnique)
     {
-        $this->apiManager->delete($denomination);
+        $this->apiManager->delete($materialTechnique);
         return $this->view(null, Response::HTTP_NO_CONTENT);
     }
 }

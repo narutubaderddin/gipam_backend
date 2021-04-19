@@ -15,7 +15,7 @@ use JMS\Serializer\Annotation as JMS;
 class Field
 {
     /**
-     * @JMS\Groups("id", "field")
+     * @JMS\Groups("id", "field", "field_id")
      *
      * @ORM\Id
      * @ORM\GeneratedValue
