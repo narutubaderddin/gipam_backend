@@ -2,7 +2,7 @@
 
 namespace App\Entity;
 
-use App\Repository\ActionTypeRepository;
+use App\Repository\ActionReportTypeRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
@@ -10,10 +10,10 @@ use JMS\Serializer\Annotation as JMS;
 use Symfony\Component\Validator\Constraints as Assert;
 
 /**
- * @ORM\Entity(repositoryClass=ActionTypeRepository::class)
+ * @ORM\Entity(repositoryClass=ActionReportTypeRepository::class)
  * @ORM\Table(name="type_constat_action")
  */
-class ActionType
+class ActionReportType
 {
     public const LABEL = [
       'enRecherche' => 'En recherche',

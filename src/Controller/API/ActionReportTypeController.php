@@ -2,8 +2,8 @@
 
 namespace App\Controller\API;
 
-use App\Entity\ActionType;
-use App\Form\ActionTypeType;
+use App\Entity\ActionReportType;
+use App\Form\ActionReportTypeType;
 use App\Model\ApiResponse;
 use App\Model\FormError;
 use App\Services\ApiManager;
@@ -19,11 +19,11 @@ use Swagger\Annotations as SWG;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 /**
- * Class ActionTypeController
+ * Class ActionReportTypeController
  * @package App\Controller\API
- * @Route("/actionTypes")
+ * @Route("/actionReportTypes")
  */
-class ActionTypeController extends AbstractFOSRestController
+class ActionReportTypeController extends AbstractFOSRestController
 {
     /**
      * @var ApiManager
@@ -49,21 +49,21 @@ class ActionTypeController extends AbstractFOSRestController
      *
      * @SWG\Response(
      *     response=200,
-     *     description="Returns ActionType by id",
+     *     description="Returns ActionReportType by id",
      *     @SWG\Schema(
-     *         ref=@Model(type=ActionType::class, groups={"action_type", "id"})
+     *         ref=@Model(type=ActionReportType::class, groups={"action_type", "id"})
      *     )
      * )
-     * @SWG\Tag(name="actionTypes")
+     * @SWG\Tag(name="actionReportTypes")
      * @Rest\View(serializerGroups={"action_type", "id"})
      *
-     * @param ActionType $actionType
+     * @param ActionReportType $actionReportType
      *
      * @return View
      */
-    public function showActionType(ActionType $actionType)
+    public function showActionReportType(ActionReportType $actionReportType)
     {
-        return $this->view($actionType, Response::HTTP_OK);
+        return $this->view($actionReportType, Response::HTTP_OK);
     }
 
     /**
@@ -71,7 +71,7 @@ class ActionTypeController extends AbstractFOSRestController
      *
      * @SWG\Response(
      *     response=200,
-     *     description="Returns the list of Action Types",
+     *     description="Returns the list of Action Report Types",
      *     @SWG\Schema(
      *         @SWG\Items(ref=@Model(type=ApiResponse::class))
      *     )
@@ -106,7 +106,7 @@ class ActionTypeController extends AbstractFOSRestController
      *     type="string",
      *     description="The field used to filter by label"
      * )
-     * @SWG\Tag(name="actionTypes")
+     * @SWG\Tag(name="actionReportTypes")
      *
      * @Rest\QueryParam(name="page", requirements="\d+", default="1", description="page number.")
      * @Rest\QueryParam(name="limit", requirements="\d+", default="20", description="page size.")
@@ -124,9 +124,9 @@ class ActionTypeController extends AbstractFOSRestController
      *
      * @return View
      */
-    public function listActionTypes(ParamFetcherInterface $paramFetcher)
+    public function listActionReportTypes(ParamFetcherInterface $paramFetcher)
     {
-        $records = $this->apiManager->findRecordsByEntityName(ActionType::class, $paramFetcher);
+        $records = $this->apiManager->findRecordsByEntityName(ActionReportType::class, $paramFetcher);
         return $this->view($records, Response::HTTP_OK);
     }
 
@@ -137,7 +137,7 @@ class ActionTypeController extends AbstractFOSRestController
      *     response=201,
      *     description="Returns created Action Type",
      *     @SWG\Schema(
-     *         ref=@Model(type=ActionType::class, groups={"action_type", "id"})
+     *         ref=@Model(type=ActionReportType::class, groups={"action_type", "id"})
      *     )
      * )
      * @SWG\Response(
@@ -147,23 +147,23 @@ class ActionTypeController extends AbstractFOSRestController
      * @SWG\Parameter(
      *     name="form",
      *     in="body",
-     *     description="Add ActionType",
-     *     @Model(type=ActionType::class, groups={"action_type"})
+     *     description="Add ActionReportType",
+     *     @Model(type=ActionReportType::class, groups={"action_type"})
      * )
-     * @SWG\Tag(name="actionTypes")
+     * @SWG\Tag(name="actionReportTypes")
      *
      * @Rest\View(serializerGroups={"action_type", "id", "errors"})
      *
      * @param Request $request
      * @return View
      */
-    public function postActionType(Request $request)
+    public function postActionReportType(Request $request)
     {
-        $form = $this->createForm(ActionTypeType::class);
+        $form = $this->createForm(ActionReportTypeType::class);
         $form->submit($request->request->all());
         if ($form->isValid()) {
-            $actionType = $this->apiManager->save($form->getData());
-            return $this->view($actionType, Response::HTTP_CREATED);
+            $actionReportType = $this->apiManager->save($form->getData());
+            return $this->view($actionReportType, Response::HTTP_CREATED);
         }
         return $this->view(new FormError($form), Response::HTTP_BAD_REQUEST);
     }
@@ -173,7 +173,7 @@ class ActionTypeController extends AbstractFOSRestController
      *
      * @SWG\Response(
      *     response=204,
-     *     description="Action Type is updated"
+     *     description="Action Report Type is updated"
      *     )
      * )
      * @SWG\Response(
@@ -187,23 +187,23 @@ class ActionTypeController extends AbstractFOSRestController
      * @SWG\Parameter(
      *     name="form",
      *     in="body",
-     *     description="Update an Action Type",
-     *     @Model(type=ActionType::class, groups={"action_type"})
+     *     description="Update an Action Report Type",
+     *     @Model(type=ActionReportType::class, groups={"action_type"})
      * )
-     * @SWG\Tag(name="actionTypes")
+     * @SWG\Tag(name="actionReportTypes")
      *
      * @Rest\View(serializerGroups={"errors"})
      *
      * @param Request $request
-     * @param ActionType $actionType
+     * @param ActionReportType $actionReportType
      * @return View
      */
-    public function updateActionType(Request $request, ActionType $actionType)
+    public function updateActionReportType(Request $request, ActionReportType $actionReportType)
     {
-        $form = $this->createForm(ActionTypeType::class, $actionType);
+        $form = $this->createForm(ActionReportTypeType::class, $actionReportType);
         $form->submit($request->request->all(), false);
         if ($form->isValid()) {
-            $this->apiManager->save($actionType);
+            $this->apiManager->save($actionReportType);
             return $this->view(null, Response::HTTP_NO_CONTENT);
         }
         return $this->view(new FormError($form), Response::HTTP_BAD_REQUEST);
@@ -214,7 +214,7 @@ class ActionTypeController extends AbstractFOSRestController
      *
      * @SWG\Response(
      *     response=204,
-     *     description="Action Type is removed"
+     *     description="Action Report Type is removed"
      *     )
      * )
      * @SWG\Response(
@@ -222,20 +222,20 @@ class ActionTypeController extends AbstractFOSRestController
      *     description="Deleting errors"
      *     )
      * )
-     * @SWG\Tag(name="actionTypes")
+     * @SWG\Tag(name="actionReportTypes")
      *
      * @Rest\View()
      *
-     * @param ActionType $actionType
+     * @param ActionReportType $actionReportType
      *
      * @return View
      */
-    public function removeActionType(ActionType $actionType)
+    public function removeActionReportType(ActionReportType $actionReportType)
     {
-        if ($actionType->getActions()->isEmpty()) {
-            $this->apiManager->delete($actionType);
+        if ($actionReportType->getActions()->isEmpty()) {
+            $this->apiManager->delete($actionReportType);
             return $this->view(null, Response::HTTP_NO_CONTENT);
         }
-        return $this->view("Action Type has related Actions", Response::HTTP_BAD_REQUEST);
+        return $this->view("Action Report Type has related Actions", Response::HTTP_BAD_REQUEST);
     }
 }

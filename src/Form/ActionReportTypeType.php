@@ -2,13 +2,13 @@
 
 namespace App\Form;
 
-use App\Entity\ActionType;
+use App\Entity\ActionReportType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
-class ActionTypeType extends AbstractType
+class ActionReportTypeType extends AbstractType
 {
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
@@ -19,7 +19,7 @@ class ActionTypeType extends AbstractType
     {
         $resolver->setDefaults([
             'csrf_protection' => false,
-            'data_class' => ActionType::class,
+            'data_class' => ActionReportType::class,
         ]);
     }
 }
