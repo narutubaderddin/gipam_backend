@@ -6,6 +6,8 @@ use App\Repository\RegionRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use JMS\Serializer\Annotation as JMS;
+use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * @ORM\Entity(repositoryClass=RegionRepository::class)
@@ -14,6 +16,8 @@ use Doctrine\ORM\Mapping as ORM;
 class Region
 {
     /**
+     * @JMS\Groups("id")
+     *
      * @ORM\Id
      * @ORM\GeneratedValue
      * @ORM\Column(type="integer")
@@ -21,21 +25,34 @@ class Region
     private $id;
 
     /**
+     * @JMS\Groups("region")
+     *
+     * @Assert\NotBlank
+     *
      * @ORM\Column(name="nom", type="string", length=255, nullable=true)
      */
     private $name;
 
     /**
+     * @JMS\Groups("region")
+     *
+     * @Assert\NotBlank
+     * @Assert\Type("\DateTimeInterface")
+     *
      * @ORM\Column(name="date_debut", type="datetime", nullable=true)
      */
     private $startDate;
 
     /**
+     * @JMS\Groups("region")
+     * @Assert\Type("\DateTimeInterface")  *
      * @ORM\Column(name="date_disparition", type="datetime", nullable=true)
      */
-    private $disappearanceDate;
+    private $disappearanceDate = null;
 
     /**
+     * @JMS\Exclude()
+     *
      * @ORM\OneToMany(targetEntity=Departement::class, mappedBy="region")
      */
     private $departements;

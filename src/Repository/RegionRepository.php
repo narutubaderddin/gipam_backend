@@ -14,6 +14,8 @@ use Doctrine\Persistence\ManagerRegistry;
  */
 class RegionRepository extends ServiceEntityRepository
 {
+    use RepositoryTrait;
+
     public function __construct(ManagerRegistry $registry)
     {
         parent::__construct($registry, Region::class);
