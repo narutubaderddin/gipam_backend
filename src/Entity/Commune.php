@@ -36,10 +36,10 @@ class Commune
     /**
      * @JMS\Groups("commune")
      *
-     * @ORM\ManyToOne(targetEntity=Departement::class, inversedBy="communes")
+     * @ORM\ManyToOne(targetEntity=Department::class, inversedBy="communes")
      * @ORM\JoinColumn(name="departement_id", referencedColumnName="id")
      */
-    private $departement;
+    private $department;
 
     /**
      * @JMS\Exclude
@@ -91,14 +91,14 @@ class Commune
         return $this;
     }
 
-    public function getDepartement(): ?Departement
+    public function getDepartment(): ?Department
     {
-        return $this->departement;
+        return $this->department;
     }
 
-    public function setDepartement(?Departement $departement): self
+    public function setDepartment(?Department $department): self
     {
-        $this->departement = $departement;
+        $this->department = $department;
 
         return $this;
     }

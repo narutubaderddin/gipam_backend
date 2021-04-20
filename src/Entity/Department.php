@@ -2,7 +2,7 @@
 
 namespace App\Entity;
 
-use App\Repository\DepartementRepository;
+use App\Repository\DepartmentRepository;
 use DateTimeInterface;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -11,10 +11,10 @@ use JMS\Serializer\Annotation as JMS;
 use Symfony\Component\Validator\Constraints as Assert;
 
 /**
- * @ORM\Entity(repositoryClass=DepartementRepository::class)
+ * @ORM\Entity(repositoryClass=DepartmentRepository::class)
  * @ORM\Table(name="departement")
  */
-class Departement
+class Department
 {
     /**
      * @JMS\Groups("id")
@@ -26,22 +26,38 @@ class Departement
     private $id;
 
     /**
+     * @JMS\Groups("department")
+     *
+     * @Assert\NotBlank
+     *
      * @ORM\Column(name="nom", type="string", length=255, nullable=true)
      */
     private $name;
 
     /**
+     * @JMS\Groups("department")
+     *
+     * @Assert\NotBlank
+     * @Assert\Type("\DateTimeInterface")
+     *
      * @ORM\Column(name="date_debut", type="datetime", nullable=true)
      */
     private $startDate;
 
     /**
+     * @JMS\Groups("department")
+     *
+     * @Assert\NotBlank
+     * @Assert\Type("\DateTimeInterface")
+     *
      * @ORM\Column(name="date_disparition", type="datetime", nullable=true)
      */
     private $disappearanceDate;
 
     /**
-     * @ORM\ManyToOne(targetEntity=Region::class, inversedBy="departements")
+     * @JMS\Groups("department")
+     *
+     * @ORM\ManyToOne(targetEntity=Region::class, inversedBy="departments")
      * @ORM\JoinColumn(name="region_id", referencedColumnName="id")
      */
     private $region;
@@ -49,7 +65,7 @@ class Departement
     /**
      * @JMS\Exclude
      *
-     * @ORM\OneToMany(targetEntity=Commune::class, mappedBy="departement")
+     * @ORM\OneToMany(targetEntity=Commune::class, mappedBy="department")
      */
     private $communes;
 
@@ -123,7 +139,7 @@ class Departement
     {
         if (!$this->communes->contains($commune)) {
             $this->communes[] = $commune;
-            $commune->setDepartement($this);
+            $commune->setDepartment($this);
         }
 
         return $this;
@@ -133,8 +149,8 @@ class Departement
     {
         if ($this->communes->removeElement($commune)) {
             // set the owning side to null (unless already changed)
-            if ($commune->getDepartement() === $this) {
-                $commune->setDepartement(null);
+            if ($commune->getDepartment() === $this) {
+                $commune->setDepartment(null);
             }
         }
 

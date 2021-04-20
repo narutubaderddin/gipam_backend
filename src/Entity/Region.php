@@ -53,13 +53,13 @@ class Region
     /**
      * @JMS\Exclude()
      *
-     * @ORM\OneToMany(targetEntity=Departement::class, mappedBy="region")
+     * @ORM\OneToMany(targetEntity=Department::class, mappedBy="region")
      */
-    private $departements;
+    private $departments;
 
     public function __construct()
     {
-        $this->departements = new ArrayCollection();
+        $this->departments = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -104,29 +104,29 @@ class Region
     }
 
     /**
-     * @return Collection|Departement[]
+     * @return Collection|Department[]
      */
-    public function getDepartements(): Collection
+    public function getDepartments(): Collection
     {
-        return $this->departements;
+        return $this->departments;
     }
 
-    public function addDepartement(Departement $departement): self
+    public function addDepartment(Department $department): self
     {
-        if (!$this->departements->contains($departement)) {
-            $this->departements[] = $departement;
-            $departement->setRegion($this);
+        if (!$this->departments->contains($department)) {
+            $this->departments[] = $department;
+            $department->setRegion($this);
         }
 
         return $this;
     }
 
-    public function removeDepartement(Departement $departement): self
+    public function removeDepartment(Department $department): self
     {
-        if ($this->departements->removeElement($departement)) {
+        if ($this->departments->removeElement($department)) {
             // set the owning side to null (unless already changed)
-            if ($departement->getRegion() === $this) {
-                $departement->setRegion(null);
+            if ($department->getRegion() === $this) {
+                $department->setRegion(null);
             }
         }
 
