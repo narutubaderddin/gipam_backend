@@ -101,8 +101,8 @@ class MinistryController extends AbstractFOSRestController
      * @Rest\QueryParam(name="sort", requirements="(asc|desc)", nullable=true, default="asc", description="tri order asc|desc")
      * @Rest\QueryParam(name="name", map=true, nullable=false, description="filter by name. example: name[eq]=value")
      * @Rest\QueryParam(name="acronym", map=true, nullable=false, description="filter by acronym. example: acronym[eq]=value")
-     * @Rest\QueryParam(name="startDate", map=true, nullable=false, description="filter by acronym. example: startDate[lt]=value")
-     * @Rest\QueryParam(name="disappearanceDate", map=true, nullable=false, description="filter by acronym. example: disappearanceDate[lt]=value")
+     * @Rest\QueryParam(name="startDate", map=true, nullable=false, description="filter by startDate. example: startDate[lt]=value")
+     * @Rest\QueryParam(name="disappearanceDate", map=true, nullable=false, description="filter by disappearanceDate. example: disappearanceDate[lt]=value")
      *
      * @Rest\View()
      *

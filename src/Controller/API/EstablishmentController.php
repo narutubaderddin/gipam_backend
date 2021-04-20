@@ -2,9 +2,9 @@
 
 namespace App\Controller\API;
 
-use App\Entity\Site;
+use App\Entity\Establishment;
 use App\Exception\FormValidationException;
-use App\Form\SiteType;
+use App\Form\EstablishmentType;
 use App\Model\ApiResponse;
 use App\Services\ApiManager;
 use FOS\RestBundle\Controller\AbstractFOSRestController;
@@ -17,11 +17,11 @@ use Symfony\Component\HttpFoundation\Response;
 use Swagger\Annotations as SWG;
 
 /**
- * Class SiteController
+ * Class EstablishmentController
  * @package App\Controller\API
- * @Route("/sites")
+ * @Route("/establishments")
  */
-class SiteController extends AbstractFOSRestController
+class EstablishmentController extends AbstractFOSRestController
 {
 
     /**
@@ -41,21 +41,21 @@ class SiteController extends AbstractFOSRestController
      *
      * @SWG\Response(
      *     response=200,
-     *     description="Returns Site by id",
+     *     description="Returns Establishment by id",
      *     @SWG\Schema(
-     *         ref=@Model(type=Site::class, groups={"site"})
+     *         ref=@Model(type=Establishment::class, groups={"establishment", "ministry_id", "establishment_type_id"})
      *     )
      * )
-     * @SWG\Tag(name="sites")
-     * @Rest\View(serializerGroups={"site"})
+     * @SWG\Tag(name="establishments")
+     * @Rest\View(serializerGroups={"establishment", "ministry_id", "establishment_type_id"})
      *
-     * @param Site $site
+     * @param Establishment $establishment
      *
      * @return Response
      */
-    public function showSite(Site $site)
+    public function showEstablishment(Establishment $establishment)
     {
-        return $this->view($site, Response::HTTP_OK);
+        return $this->view($establishment, Response::HTTP_OK);
     }
 
     /**
@@ -63,7 +63,7 @@ class SiteController extends AbstractFOSRestController
      *
      * @SWG\Response(
      *     response=200,
-     *     description="Returns the list of an Site",
+     *     description="Returns the list of an Establishment",
      *     @SWG\Schema(
      *         @SWG\Items(ref=@Model(type=ApiResponse::class))
      *     )
@@ -93,15 +93,18 @@ class SiteController extends AbstractFOSRestController
      *     description="The field used to sort type"
      * )
      *
-     * @SWG\Tag(name="sites")
+     * @SWG\Tag(name="establishments")
      *
      * @Rest\QueryParam(name="page", requirements="\d+", default="1", description="page number.")
      * @Rest\QueryParam(name="limit", requirements="\d+", default="20", description="page size.")
      * @Rest\QueryParam(name="sort_by", nullable=true, default="id", description="order by")
      * @Rest\QueryParam(name="sort", requirements="(asc|desc)", nullable=true, default="asc", description="tri order asc|desc")
-     * @Rest\QueryParam(name="label", map=true, nullable=false, description="filter by name. example: label[eq]=value")
+     * @Rest\QueryParam(name="label", map=true, nullable=false, description="filter by label. example: label[eq]=value")
+     * @Rest\QueryParam(name="acronym", map=true, nullable=false, description="filter by acronym. example: acronym[eq]=value")
      * @Rest\QueryParam(name="startDate", map=true, nullable=false, description="filter by startDate. example: startDate[lt]=value")
      * @Rest\QueryParam(name="disappearanceDate", map=true, nullable=false, description="filter by disappearanceDate. example: disappearanceDate[lt]=value")
+     * @Rest\QueryParam(name="ministry", map=true, nullable=false, description="filter by ministry. example: ministry[eq]=value")
+     * @Rest\QueryParam(name="type", map=true, nullable=false, description="filter by type. example: type[eq]=value")
      *
      * @Rest\View()
      *
@@ -109,9 +112,9 @@ class SiteController extends AbstractFOSRestController
      *
      * @return Response
      */
-    public function listSites(ParamFetcherInterface $paramFetcher)
+    public function listEstablishments(ParamFetcherInterface $paramFetcher)
     {
-        $records = $this->apiManager->findRecordsByEntityName(Site::class, $paramFetcher);
+        $records = $this->apiManager->findRecordsByEntityName(Establishment::class, $paramFetcher);
         return $this->view($records, Response::HTTP_OK);
     }
 
@@ -120,9 +123,9 @@ class SiteController extends AbstractFOSRestController
      *
      * @SWG\Response(
      *     response=201,
-     *     description="Returns created Site",
+     *     description="Returns created Establishment",
      *     @SWG\Schema(
-     *         ref=@Model(type=Site::class, groups={"site"})
+     *         ref=@Model(type=Establishment::class, groups={"establishment", "ministry_id", "establishment_type_id"})
      *     )
      * )
      * @SWG\Response(
@@ -132,12 +135,12 @@ class SiteController extends AbstractFOSRestController
      * @SWG\Parameter(
      *     name="form",
      *     in="body",
-     *     description="Add Site",
-     *     @Model(type=Site::class, groups={"site"})
+     *     description="Add Establishment",
+     *     @Model(type=Establishment::class, groups={"establishment"})
      * )
-     * @SWG\Tag(name="sites")
+     * @SWG\Tag(name="establishments")
      *
-     * @Rest\View(serializerGroups={"site"})
+     * @Rest\View(serializerGroups={"establishment", "ministry_id", "establishment_type_id"})
      *
      * @param Request $request
      *
@@ -146,13 +149,13 @@ class SiteController extends AbstractFOSRestController
      * @throws \Doctrine\ORM\ORMException
      * @throws \Doctrine\ORM\OptimisticLockException
      */
-    public function postSite(Request $request)
+    public function postEstablishment(Request $request)
     {
-        $form = $this->createForm(SiteType::class);
+        $form = $this->createForm(EstablishmentType::class);
         $form->submit($request->request->all());
         if ($form->isValid()) {
-            $site = $this->apiManager->save($form->getData());
-            return $this->view($site, Response::HTTP_CREATED);
+            $establishment = $this->apiManager->save($form->getData());
+            return $this->view($establishment, Response::HTTP_CREATED);
         } else {
             throw new FormValidationException($form);
         }
@@ -163,7 +166,7 @@ class SiteController extends AbstractFOSRestController
      *
      * @SWG\Response(
      *     response=204,
-     *     description="Site is updated"
+     *     description="Establishment is updated"
      *     )
      * )
      * @SWG\Response(
@@ -173,28 +176,28 @@ class SiteController extends AbstractFOSRestController
      * @SWG\Parameter(
      *     name="form",
      *     in="body",
-     *     description="Update a Site",
-     *     @Model(type=Site::class, groups={"site"})
+     *     description="Update a Establishment",
+     *     @Model(type=Establishment::class, groups={"establishment"})
      * )
-     * @SWG\Tag(name="sites")
+     * @SWG\Tag(name="establishments")
      *
      * @Rest\View()
      *
      * @param Request $request
-     * @param Site $site
+     * @param Establishment $establishment
      *
      * @return Response
      *
      * @throws \Doctrine\ORM\ORMException
      * @throws \Doctrine\ORM\OptimisticLockException
      */
-    public function updateSite(Request $request, Site $site)
+    public function updateEstablishment(Request $request, Establishment $establishment)
     {
-        $form = $this->createForm(SiteType::class, $site);
+        $form = $this->createForm(EstablishmentType::class, $establishment);
         $form->submit($request->request->all(), false);
 
         if ($form->isValid()) {
-            $this->apiManager->save($site);
+            $this->apiManager->save($establishment);
             return $this->view(null, Response::HTTP_NO_CONTENT);
         } else {
             throw new FormValidationException($form);
@@ -206,20 +209,20 @@ class SiteController extends AbstractFOSRestController
      *
      * @SWG\Response(
      *     response=204,
-     *     description="Site is removed"
+     *     description="Establishment is removed"
      *     )
      * )
-     * @SWG\Tag(name="sites")
+     * @SWG\Tag(name="establishments")
      *
      * @Rest\View()
      *
-     * @param Site $site
+     * @param Establishment $establishment
      *
      * @return Response
      */
-    public function removeMinistry(Site $site)
+    public function removeMinistry(Establishment $establishment)
     {
-        $this->apiManager->delete($site);
+        $this->apiManager->delete($establishment);
         return $this->view(null, Response::HTTP_NO_CONTENT);
     }
 }

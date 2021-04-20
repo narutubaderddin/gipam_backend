@@ -16,7 +16,7 @@ use JMS\Serializer\Annotation as JMS;
 class Ministry
 {
     /**
-     * @JMS\Groups("id", "ministry")
+     * @JMS\Groups("id", "ministry", "ministry_id")
      *
      * @ORM\Id
      * @ORM\GeneratedValue
