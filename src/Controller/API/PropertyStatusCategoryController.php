@@ -108,7 +108,7 @@ class PropertyStatusCategoryController extends AbstractFOSRestController
      *
      * @return Response
      */
-    public function listPropertyStatusCategorys(ParamFetcherInterface $paramFetcher)
+    public function listPropertyStatusCategories(ParamFetcherInterface $paramFetcher)
     {
         $records = $this->apiManager->findRecordsByEntityName(PropertyStatusCategory::class, $paramFetcher);
         return $this->view($records, Response::HTTP_OK);

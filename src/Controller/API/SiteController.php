@@ -217,7 +217,7 @@ class SiteController extends AbstractFOSRestController
      *
      * @return Response
      */
-    public function removeMinistry(Site $site)
+    public function removeSite(Site $site)
     {
         $this->apiManager->delete($site);
         return $this->view(null, Response::HTTP_NO_CONTENT);

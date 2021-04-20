@@ -2,9 +2,9 @@
 
 namespace App\Controller\API;
 
-use App\Entity\Establishment;
+use App\Entity\Service;
 use App\Exception\FormValidationException;
-use App\Form\EstablishmentType;
+use App\Form\ServiceType;
 use App\Model\ApiResponse;
 use App\Services\ApiManager;
 use FOS\RestBundle\Controller\AbstractFOSRestController;
@@ -17,11 +17,11 @@ use Symfony\Component\HttpFoundation\Response;
 use Swagger\Annotations as SWG;
 
 /**
- * Class EstablishmentController
+ * Class ServiceController
  * @package App\Controller\API
- * @Route("/establishments")
+ * @Route("/services")
  */
-class EstablishmentController extends AbstractFOSRestController
+class ServiceController extends AbstractFOSRestController
 {
 
     /**
@@ -41,21 +41,21 @@ class EstablishmentController extends AbstractFOSRestController
      *
      * @SWG\Response(
      *     response=200,
-     *     description="Returns Establishment by id",
+     *     description="Returns Service by id",
      *     @SWG\Schema(
-     *         ref=@Model(type=Establishment::class, groups={"establishment", "ministry_id", "establishment_type_id"})
+     *         ref=@Model(type=Service::class, groups={"service", "sub_division_id"})
      *     )
      * )
-     * @SWG\Tag(name="establishments")
-     * @Rest\View(serializerGroups={"establishment", "ministry_id", "establishment_type_id"})
+     * @SWG\Tag(name="services")
+     * @Rest\View(serializerGroups={"service", "sub_division_id"})
      *
-     * @param Establishment $establishment
+     * @param Service $service
      *
      * @return Response
      */
-    public function showEstablishment(Establishment $establishment)
+    public function showService(Service $service)
     {
-        return $this->view($establishment, Response::HTTP_OK);
+        return $this->view($service, Response::HTTP_OK);
     }
 
     /**
@@ -63,7 +63,7 @@ class EstablishmentController extends AbstractFOSRestController
      *
      * @SWG\Response(
      *     response=200,
-     *     description="Returns the list of an Establishment",
+     *     description="Returns the list of an Service",
      *     @SWG\Schema(
      *         @SWG\Items(ref=@Model(type=ApiResponse::class))
      *     )
@@ -93,7 +93,7 @@ class EstablishmentController extends AbstractFOSRestController
      *     description="The field used to sort type"
      * )
      *
-     * @SWG\Tag(name="establishments")
+     * @SWG\Tag(name="services")
      *
      * @Rest\QueryParam(name="page", requirements="\d+", default="1", description="page number.")
      * @Rest\QueryParam(name="limit", requirements="\d+", default="20", description="page size.")
@@ -103,8 +103,7 @@ class EstablishmentController extends AbstractFOSRestController
      * @Rest\QueryParam(name="acronym", map=true, nullable=false, description="filter by acronym. example: acronym[eq]=value")
      * @Rest\QueryParam(name="startDate", map=true, nullable=false, description="filter by startDate. example: startDate[lt]=value")
      * @Rest\QueryParam(name="disappearanceDate", map=true, nullable=false, description="filter by disappearanceDate. example: disappearanceDate[lt]=value")
-     * @Rest\QueryParam(name="ministry", map=true, nullable=false, description="filter by ministry. example: ministry[eq]=value")
-     * @Rest\QueryParam(name="type", map=true, nullable=false, description="filter by type. example: type[eq]=value")
+     * @Rest\QueryParam(name="subDivision", map=true, nullable=false, description="filter by subDivision. example: subDivision[eq]=value")
      *
      * @Rest\View()
      *
@@ -112,9 +111,9 @@ class EstablishmentController extends AbstractFOSRestController
      *
      * @return Response
      */
-    public function listEstablishments(ParamFetcherInterface $paramFetcher)
+    public function listServices(ParamFetcherInterface $paramFetcher)
     {
-        $records = $this->apiManager->findRecordsByEntityName(Establishment::class, $paramFetcher);
+        $records = $this->apiManager->findRecordsByEntityName(Service::class, $paramFetcher);
         return $this->view($records, Response::HTTP_OK);
     }
 
@@ -123,9 +122,9 @@ class EstablishmentController extends AbstractFOSRestController
      *
      * @SWG\Response(
      *     response=201,
-     *     description="Returns created Establishment",
+     *     description="Returns created Service",
      *     @SWG\Schema(
-     *         ref=@Model(type=Establishment::class, groups={"establishment", "ministry_id", "establishment_type_id"})
+     *         ref=@Model(type=Service::class, groups={"service", "sub_division_id"})
      *     )
      * )
      * @SWG\Response(
@@ -135,12 +134,12 @@ class EstablishmentController extends AbstractFOSRestController
      * @SWG\Parameter(
      *     name="form",
      *     in="body",
-     *     description="Add Establishment",
-     *     @Model(type=Establishment::class, groups={"establishment"})
+     *     description="Add Service",
+     *     @Model(type=Service::class, groups={"service"})
      * )
-     * @SWG\Tag(name="establishments")
+     * @SWG\Tag(name="services")
      *
-     * @Rest\View(serializerGroups={"establishment", "ministry_id", "establishment_type_id"})
+     * @Rest\View(serializerGroups={"service", "sub_division_id"})
      *
      * @param Request $request
      *
@@ -149,13 +148,13 @@ class EstablishmentController extends AbstractFOSRestController
      * @throws \Doctrine\ORM\ORMException
      * @throws \Doctrine\ORM\OptimisticLockException
      */
-    public function postEstablishment(Request $request)
+    public function postService(Request $request)
     {
-        $form = $this->createForm(EstablishmentType::class);
+        $form = $this->createForm(ServiceType::class);
         $form->submit($request->request->all());
         if ($form->isValid()) {
-            $establishment = $this->apiManager->save($form->getData());
-            return $this->view($establishment, Response::HTTP_CREATED);
+            $service = $this->apiManager->save($form->getData());
+            return $this->view($service, Response::HTTP_CREATED);
         } else {
             throw new FormValidationException($form);
         }
@@ -166,7 +165,7 @@ class EstablishmentController extends AbstractFOSRestController
      *
      * @SWG\Response(
      *     response=204,
-     *     description="Establishment is updated"
+     *     description="Service is updated"
      *     )
      * )
      * @SWG\Response(
@@ -176,28 +175,28 @@ class EstablishmentController extends AbstractFOSRestController
      * @SWG\Parameter(
      *     name="form",
      *     in="body",
-     *     description="Update a Establishment",
-     *     @Model(type=Establishment::class, groups={"establishment"})
+     *     description="Update a Service",
+     *     @Model(type=Service::class, groups={"service"})
      * )
-     * @SWG\Tag(name="establishments")
+     * @SWG\Tag(name="services")
      *
      * @Rest\View()
      *
      * @param Request $request
-     * @param Establishment $establishment
+     * @param Service $service
      *
      * @return Response
      *
      * @throws \Doctrine\ORM\ORMException
      * @throws \Doctrine\ORM\OptimisticLockException
      */
-    public function updateEstablishment(Request $request, Establishment $establishment)
+    public function updateService(Request $request, Service $service)
     {
-        $form = $this->createForm(EstablishmentType::class, $establishment);
+        $form = $this->createForm(ServiceType::class, $service);
         $form->submit($request->request->all(), false);
 
         if ($form->isValid()) {
-            $this->apiManager->save($establishment);
+            $this->apiManager->save($service);
             return $this->view(null, Response::HTTP_NO_CONTENT);
         } else {
             throw new FormValidationException($form);
@@ -209,20 +208,20 @@ class EstablishmentController extends AbstractFOSRestController
      *
      * @SWG\Response(
      *     response=204,
-     *     description="Establishment is removed"
+     *     description="Service is removed"
      *     )
      * )
-     * @SWG\Tag(name="establishments")
+     * @SWG\Tag(name="services")
      *
      * @Rest\View()
      *
-     * @param Establishment $establishment
+     * @param Service $service
      *
      * @return Response
      */
-    public function removeEstablishment(Establishment $establishment)
+    public function removeService(Service $service)
     {
-        $this->apiManager->delete($establishment);
+        $this->apiManager->delete($service);
         return $this->view(null, Response::HTTP_NO_CONTENT);
     }
 }

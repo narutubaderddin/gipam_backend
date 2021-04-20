@@ -219,7 +219,7 @@ class SubDivisionController extends AbstractFOSRestController
      *
      * @return Response
      */
-    public function removeMinistry(SubDivision $subDivision)
+    public function removeSubDivision(SubDivision $subDivision)
     {
         $this->apiManager->delete($subDivision);
         return $this->view(null, Response::HTTP_NO_CONTENT);
