@@ -6,6 +6,7 @@ use App\Repository\EraRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use JMS\Serializer\Annotation as JMS;
 
 /**
  * @ORM\Entity(repositoryClass=EraRepository::class)
@@ -14,6 +15,8 @@ use Doctrine\ORM\Mapping as ORM;
 class Era
 {
     /**
+     * @JMS\Groups("id", "era")
+     *
      * @ORM\Id
      * @ORM\GeneratedValue
      * @ORM\Column(type="integer")
@@ -21,16 +24,22 @@ class Era
     private $id;
 
     /**
+     * @JMS\Groups("era")
+     *
      * @ORM\Column(name="libelle", type="string", length=255, nullable=true)
      */
     private $label;
 
     /**
+     * @JMS\Exclude()
+     *
      * @ORM\OneToMany(targetEntity=Furniture::class, mappedBy="era")
      */
     private $furniture;
 
     /**
+     * @JMS\Groups("era")
+     *
      * @ORM\Column(name="actif", type="boolean", nullable=false)
      */
     private $active = true;

@@ -4,9 +4,9 @@
 namespace App\Controller\API;
 
 
-use App\Entity\Field;
+use App\Entity\PropertyStatusCategory;
 use App\Exception\FormValidationException;
-use App\Form\FieldType;
+use App\Form\PropertyStatusCategoryType;
 use App\Model\ApiResponse;
 use App\Services\ApiManager;
 use FOS\RestBundle\Controller\AbstractFOSRestController;
@@ -19,11 +19,11 @@ use Symfony\Component\HttpFoundation\Response;
 use Swagger\Annotations as SWG;
 
 /**
- * Class FieldController
+ * Class PropertyStatusCategoryController
  * @package App\Controller\API
- * @Route("/fields")
+ * @Route("/propertyStatusCategories")
  */
-class FieldController extends AbstractFOSRestController
+class PropertyStatusCategoryController extends AbstractFOSRestController
 {
 
     /**
@@ -43,21 +43,21 @@ class FieldController extends AbstractFOSRestController
      *
      * @SWG\Response(
      *     response=200,
-     *     description="Returns Field by id",
+     *     description="Returns PropertyStatusCategory by id",
      *     @SWG\Schema(
-     *         ref=@Model(type=Field::class, groups={"field"})
+     *         ref=@Model(type=PropertyStatusCategory::class, groups={"category"})
      *     )
      * )
-     * @SWG\Tag(name="fields")
-     * @Rest\View(serializerGroups={"field"})
+     * @SWG\Tag(name="propertyStatusCategories")
+     * @Rest\View(serializerGroups={"category"})
      *
-     * @param Field $field
+     * @param PropertyStatusCategory $category
      *
      * @return Response
      */
-    public function showField(Field $field)
+    public function showPropertyStatusCategory(PropertyStatusCategory $category)
     {
-        return $this->view($field, Response::HTTP_OK);
+        return $this->view($category, Response::HTTP_OK);
     }
 
     /**
@@ -65,7 +65,7 @@ class FieldController extends AbstractFOSRestController
      *
      * @SWG\Response(
      *     response=200,
-     *     description="Returns the list of an Field",
+     *     description="Returns the list of an PropertyStatusCategory",
      *     @SWG\Schema(
      *         @SWG\Items(ref=@Model(type=ApiResponse::class))
      *     )
@@ -100,7 +100,7 @@ class FieldController extends AbstractFOSRestController
      *     type="string",
      *     description="The field used to filter by label"
      * )
-     * @SWG\Tag(name="fields")
+     * @SWG\Tag(name="propertyStatusCategories")
      *
      * @Rest\QueryParam(name="page", requirements="\d+", default="1", description="page number.")
      * @Rest\QueryParam(name="limit", requirements="\d+", default="20", description="page size.")
@@ -115,9 +115,9 @@ class FieldController extends AbstractFOSRestController
      *
      * @return Response
      */
-    public function listFields(ParamFetcherInterface $paramFetcher)
+    public function listPropertyStatusCategorys(ParamFetcherInterface $paramFetcher)
     {
-        $records = $this->apiManager->findRecordsByEntityName(Field::class, $paramFetcher);
+        $records = $this->apiManager->findRecordsByEntityName(PropertyStatusCategory::class, $paramFetcher);
         return $this->view($records, Response::HTTP_OK);
     }
 
@@ -126,9 +126,9 @@ class FieldController extends AbstractFOSRestController
      *
      * @SWG\Response(
      *     response=201,
-     *     description="Returns created Field",
+     *     description="Returns created PropertyStatusCategory",
      *     @SWG\Schema(
-     *         ref=@Model(type=Field::class, groups={"field"})
+     *         ref=@Model(type=PropertyStatusCategory::class, groups={"category"})
      *     )
      * )
      * @SWG\Response(
@@ -138,12 +138,12 @@ class FieldController extends AbstractFOSRestController
      * @SWG\Parameter(
      *     name="form",
      *     in="body",
-     *     description="Add Field",
-     *     @Model(type=Field::class, groups={"field"})
+     *     description="Add PropertyStatusCategory",
+     *     @Model(type=PropertyStatusCategory::class, groups={"category"})
      * )
-     * @SWG\Tag(name="fields")
+     * @SWG\Tag(name="propertyStatusCategories")
      *
-     * @Rest\View(serializerGroups={"field"})
+     * @Rest\View(serializerGroups={"category"})
      *
      * @param Request $request
      *
@@ -152,13 +152,13 @@ class FieldController extends AbstractFOSRestController
      * @throws \Doctrine\ORM\ORMException
      * @throws \Doctrine\ORM\OptimisticLockException
      */
-    public function postField(Request $request)
+    public function postPropertyStatusCategory(Request $request)
     {
-        $form = $this->createForm(FieldType::class);
+        $form = $this->createForm(PropertyStatusCategoryType::class);
         $form->submit($request->request->all());
         if ($form->isValid()) {
-            $field = $this->apiManager->save($form->getData());
-            return $this->view($field, Response::HTTP_CREATED);
+            $category = $this->apiManager->save($form->getData());
+            return $this->view($category, Response::HTTP_CREATED);
         } else {
             throw new FormValidationException($form);
         }
@@ -169,7 +169,7 @@ class FieldController extends AbstractFOSRestController
      *
      * @SWG\Response(
      *     response=204,
-     *     description="Field is updated"
+     *     description="PropertyStatusCategory is updated"
      *     )
      * )
      * @SWG\Response(
@@ -179,28 +179,28 @@ class FieldController extends AbstractFOSRestController
      * @SWG\Parameter(
      *     name="form",
      *     in="body",
-     *     description="Update a Field",
-     *     @Model(type=Field::class, groups={"field"})
+     *     description="Update a PropertyStatusCategory",
+     *     @Model(type=PropertyStatusCategory::class, groups={"category"})
      * )
-     * @SWG\Tag(name="fields")
+     * @SWG\Tag(name="propertyStatusCategories")
      *
      * @Rest\View()
      *
      * @param Request $request
-     * @param Field $field
+     * @param PropertyStatusCategory $category
      *
      * @return Response
      *
      * @throws \Doctrine\ORM\ORMException
      * @throws \Doctrine\ORM\OptimisticLockException
      */
-    public function updateField(Request $request, Field $field)
+    public function updatePropertyStatusCategory(Request $request, PropertyStatusCategory $category)
     {
-        $form = $this->createForm(FieldType::class, $field);
+        $form = $this->createForm(PropertyStatusCategoryType::class, $category);
         $form->submit($request->request->all(), false);
 
         if ($form->isValid()) {
-            $this->apiManager->save($field);
+            $this->apiManager->save($category);
             return $this->view(null, Response::HTTP_NO_CONTENT);
         } else {
             throw new FormValidationException($form);
@@ -212,20 +212,20 @@ class FieldController extends AbstractFOSRestController
      *
      * @SWG\Response(
      *     response=204,
-     *     description="Field is removed"
+     *     description="PropertyStatusCategory is removed"
      *     )
      * )
-     * @SWG\Tag(name="fields")
+     * @SWG\Tag(name="propertyStatusCategories")
      *
      * @Rest\View()
      *
-     * @param Field $field
+     * @param PropertyStatusCategory $category
      *
      * @return Response
      */
-    public function removeField(Field $field)
+    public function removePropertyStatusCategory(PropertyStatusCategory $category)
     {
-        $this->apiManager->delete($field);
+        $this->apiManager->delete($category);
         return $this->view(null, Response::HTTP_NO_CONTENT);
     }
 }

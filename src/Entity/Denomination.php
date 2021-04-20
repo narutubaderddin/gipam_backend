@@ -15,7 +15,7 @@ use JMS\Serializer\Annotation as JMS;
 class Denomination
 {
     /**
-     * @JMS\Groups("id", "denomination")
+     * @JMS\Groups("id", "denomination", "denomination_id")
      *
      * @ORM\Id
      * @ORM\GeneratedValue
@@ -122,6 +122,7 @@ class Denomination
     {
         if (!$this->materialsTechniques->contains($materialsTechnique)) {
             $this->materialsTechniques[] = $materialsTechnique;
+            $materialsTechnique->addDenomination($this);
         }
 
         return $this;
@@ -129,7 +130,10 @@ class Denomination
 
     public function removeMaterialsTechnique(MaterialTechnique $materialsTechnique): self
     {
-        $this->materialsTechniques->removeElement($materialsTechnique);
+        if ($this->materialsTechniques->contains($materialsTechnique)) {
+            $this->materialsTechniques->removeElement($materialsTechnique);
+            $materialsTechnique->removeDenomination($this);
+        }
 
         return $this;
     }
