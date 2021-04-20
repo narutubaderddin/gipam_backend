@@ -4,9 +4,9 @@
 namespace App\Controller\API;
 
 
-use App\Entity\Field;
+use App\Entity\DepositType;
 use App\Exception\FormValidationException;
-use App\Form\FieldType;
+use App\Form\DepositTypeType;
 use App\Model\ApiResponse;
 use App\Services\ApiManager;
 use FOS\RestBundle\Controller\AbstractFOSRestController;
@@ -19,11 +19,11 @@ use Symfony\Component\HttpFoundation\Response;
 use Swagger\Annotations as SWG;
 
 /**
- * Class FieldController
+ * Class DepositTypeController
  * @package App\Controller\API
- * @Route("/fields")
+ * @Route("/depositTypes")
  */
-class FieldController extends AbstractFOSRestController
+class DepositTypeController extends AbstractFOSRestController
 {
 
     /**
@@ -43,21 +43,21 @@ class FieldController extends AbstractFOSRestController
      *
      * @SWG\Response(
      *     response=200,
-     *     description="Returns Field by id",
+     *     description="Returns DepositType by id",
      *     @SWG\Schema(
-     *         ref=@Model(type=Field::class, groups={"field"})
+     *         ref=@Model(type=DepositType::class, groups={"deposit_type"})
      *     )
      * )
-     * @SWG\Tag(name="fields")
-     * @Rest\View(serializerGroups={"field"})
+     * @SWG\Tag(name="depositTypes")
+     * @Rest\View(serializerGroups={"deposit_type"})
      *
-     * @param Field $field
+     * @param DepositType $depositType
      *
      * @return Response
      */
-    public function showField(Field $field)
+    public function showDepositType(DepositType $depositType)
     {
-        return $this->view($field, Response::HTTP_OK);
+        return $this->view($depositType, Response::HTTP_OK);
     }
 
     /**
@@ -65,7 +65,7 @@ class FieldController extends AbstractFOSRestController
      *
      * @SWG\Response(
      *     response=200,
-     *     description="Returns the list of an Field",
+     *     description="Returns the list of an DepositType",
      *     @SWG\Schema(
      *         @SWG\Items(ref=@Model(type=ApiResponse::class))
      *     )
@@ -92,7 +92,7 @@ class FieldController extends AbstractFOSRestController
      *     name="sort",
      *     in="query",
      *     type="string",
-     *     description="The field used to sort type"
+     *     description="The fiemld used to sort type"
      * )
      * @SWG\Parameter(
      *     name="label",
@@ -100,7 +100,7 @@ class FieldController extends AbstractFOSRestController
      *     type="string",
      *     description="The field used to filter by label"
      * )
-     * @SWG\Tag(name="fields")
+     * @SWG\Tag(name="depositTypes")
      *
      * @Rest\QueryParam(name="page", requirements="\d+", default="1", description="page number.")
      * @Rest\QueryParam(name="limit", requirements="\d+", default="20", description="page size.")
@@ -115,9 +115,9 @@ class FieldController extends AbstractFOSRestController
      *
      * @return Response
      */
-    public function listFields(ParamFetcherInterface $paramFetcher)
+    public function listDepositTypes(ParamFetcherInterface $paramFetcher)
     {
-        $records = $this->apiManager->findRecordsByEntityName(Field::class, $paramFetcher);
+        $records = $this->apiManager->findRecordsByEntityName(DepositType::class, $paramFetcher);
         return $this->view($records, Response::HTTP_OK);
     }
 
@@ -126,9 +126,9 @@ class FieldController extends AbstractFOSRestController
      *
      * @SWG\Response(
      *     response=201,
-     *     description="Returns created Field",
+     *     description="Returns created DepositType",
      *     @SWG\Schema(
-     *         ref=@Model(type=Field::class, groups={"field"})
+     *         ref=@Model(type=DepositType::class, groups={"deposit_type"})
      *     )
      * )
      * @SWG\Response(
@@ -138,12 +138,12 @@ class FieldController extends AbstractFOSRestController
      * @SWG\Parameter(
      *     name="form",
      *     in="body",
-     *     description="Add Field",
-     *     @Model(type=Field::class, groups={"field"})
+     *     description="Add DepositType",
+     *     @Model(type=DepositType::class, groups={"deposit_type"})
      * )
-     * @SWG\Tag(name="fields")
+     * @SWG\Tag(name="depositTypes")
      *
-     * @Rest\View(serializerGroups={"field"})
+     * @Rest\View(serializerGroups={"deposit_type"})
      *
      * @param Request $request
      *
@@ -152,13 +152,13 @@ class FieldController extends AbstractFOSRestController
      * @throws \Doctrine\ORM\ORMException
      * @throws \Doctrine\ORM\OptimisticLockException
      */
-    public function postField(Request $request)
+    public function postDepositType(Request $request)
     {
-        $form = $this->createForm(FieldType::class);
+        $form = $this->createForm(DepositTypeType::class);
         $form->submit($request->request->all());
         if ($form->isValid()) {
-            $field = $this->apiManager->save($form->getData());
-            return $this->view($field, Response::HTTP_CREATED);
+            $depositType = $this->apiManager->save($form->getData());
+            return $this->view($depositType, Response::HTTP_CREATED);
         } else {
             throw new FormValidationException($form);
         }
@@ -169,7 +169,7 @@ class FieldController extends AbstractFOSRestController
      *
      * @SWG\Response(
      *     response=204,
-     *     description="Field is updated"
+     *     description="DepositType is updated"
      *     )
      * )
      * @SWG\Response(
@@ -179,28 +179,28 @@ class FieldController extends AbstractFOSRestController
      * @SWG\Parameter(
      *     name="form",
      *     in="body",
-     *     description="Update a Field",
-     *     @Model(type=Field::class, groups={"field"})
+     *     description="Update a DepositType",
+     *     @Model(type=DepositType::class, groups={"deposit_type"})
      * )
-     * @SWG\Tag(name="fields")
+     * @SWG\Tag(name="depositTypes")
      *
      * @Rest\View()
      *
      * @param Request $request
-     * @param Field $field
+     * @param DepositType $depositType
      *
      * @return Response
      *
      * @throws \Doctrine\ORM\ORMException
      * @throws \Doctrine\ORM\OptimisticLockException
      */
-    public function updateField(Request $request, Field $field)
+    public function updateDepositType(Request $request, DepositType $depositType)
     {
-        $form = $this->createForm(FieldType::class, $field);
+        $form = $this->createForm(DepositTypeType::class, $depositType);
         $form->submit($request->request->all(), false);
 
         if ($form->isValid()) {
-            $this->apiManager->save($field);
+            $this->apiManager->save($depositType);
             return $this->view(null, Response::HTTP_NO_CONTENT);
         } else {
             throw new FormValidationException($form);
@@ -212,20 +212,20 @@ class FieldController extends AbstractFOSRestController
      *
      * @SWG\Response(
      *     response=204,
-     *     description="Field is removed"
+     *     description="DepositType is removed"
      *     )
      * )
-     * @SWG\Tag(name="fields")
+     * @SWG\Tag(name="depositTypes")
      *
      * @Rest\View()
      *
-     * @param Field $field
+     * @param DepositType $depositType
      *
      * @return Response
      */
-    public function removeField(Field $field)
+    public function removeDepositType(DepositType $depositType)
     {
-        $this->apiManager->delete($field);
+        $this->apiManager->delete($depositType);
         return $this->view(null, Response::HTTP_NO_CONTENT);
     }
 }

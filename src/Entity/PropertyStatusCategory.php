@@ -6,6 +6,7 @@ use App\Repository\PropertyStatusCategoryRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use JMS\Serializer\Annotation as JMS;
 
 /**
  * @ORM\Entity(repositoryClass=PropertyStatusCategoryRepository::class)
@@ -19,6 +20,8 @@ class PropertyStatusCategory
         'bienUsuel' => 'Bien usuel',
     ];
     /**
+     * @JMS\Groups("id", "category")
+     *
      * @ORM\Id
      * @ORM\GeneratedValue
      * @ORM\Column(type="integer")
@@ -26,16 +29,22 @@ class PropertyStatusCategory
     private $id;
 
     /**
+     * @JMS\Groups("category")
+     *
      * @ORM\Column(name="libelle", type="string", length=255, nullable=true)
      */
     private $label;
 
     /**
+     * @JMS\Exclude()
+     *
      * @ORM\OneToMany(targetEntity=PropertyStatus::class, mappedBy="category")
      */
     private $propertyStatuses;
 
     /**
+     * @JMS\Groups("category")
+     *
      * @ORM\Column(name="actif", type="boolean", nullable=false)
      */
     private $active = true;

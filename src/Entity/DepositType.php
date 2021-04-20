@@ -6,6 +6,7 @@ use App\Repository\DepositTypeRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use JMS\Serializer\Annotation as JMS;
 
 /**
  * @ORM\Entity(repositoryClass=DepositTypeRepository::class)
@@ -22,6 +23,8 @@ class DepositType
         'etablissementMinistereCulture' => 'Etablissements du Ministère de la Culture',
     ];
     /**
+     * @JMS\Groups("id", "deposit_type")
+     *
      * @ORM\Id
      * @ORM\GeneratedValue
      * @ORM\Column(type="integer")
@@ -29,16 +32,22 @@ class DepositType
     private $id;
 
     /**
+     * @JMS\Groups("deposit_type")
+     *
      * @ORM\Column(name="libelle", type="string", length=255, nullable=true)
      */
     private $label;
 
     /**
+     * @JMS\Exclude()
+     *
      * @ORM\OneToMany(targetEntity=Depositor::class, mappedBy="depositType")
      */
     private $depositors;
 
     /**
+     * @JMS\Groups("deposit_type")
+     *
      * @ORM\Column(name="actif", type="boolean", nullable=false)
      */
     private $active = true;

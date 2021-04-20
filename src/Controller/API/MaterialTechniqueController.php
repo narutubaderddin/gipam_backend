@@ -4,9 +4,9 @@
 namespace App\Controller\API;
 
 
-use App\Entity\Field;
+use App\Entity\MaterialTechnique;
 use App\Exception\FormValidationException;
-use App\Form\FieldType;
+use App\Form\MaterialTechniqueType;
 use App\Model\ApiResponse;
 use App\Services\ApiManager;
 use FOS\RestBundle\Controller\AbstractFOSRestController;
@@ -19,11 +19,11 @@ use Symfony\Component\HttpFoundation\Response;
 use Swagger\Annotations as SWG;
 
 /**
- * Class FieldController
+ * Class MaterialTechniqueController
  * @package App\Controller\API
- * @Route("/fields")
+ * @Route("/materialTechniques")
  */
-class FieldController extends AbstractFOSRestController
+class MaterialTechniqueController extends AbstractFOSRestController
 {
 
     /**
@@ -43,21 +43,21 @@ class FieldController extends AbstractFOSRestController
      *
      * @SWG\Response(
      *     response=200,
-     *     description="Returns Field by id",
+     *     description="Returns MaterialTechnique by id",
      *     @SWG\Schema(
-     *         ref=@Model(type=Field::class, groups={"field"})
+     *         ref=@Model(type=MaterialTechnique::class, groups={"material_technique", "denomination_id"})
      *     )
      * )
-     * @SWG\Tag(name="fields")
-     * @Rest\View(serializerGroups={"field"})
+     * @SWG\Tag(name="materialTechniques")
+     * @Rest\View(serializerGroups={"material_technique", "denomination_id"})
      *
-     * @param Field $field
+     * @param MaterialTechnique $materialTechnique
      *
      * @return Response
      */
-    public function showField(Field $field)
+    public function showMaterialTechnique(MaterialTechnique $materialTechnique)
     {
-        return $this->view($field, Response::HTTP_OK);
+        return $this->view($materialTechnique, Response::HTTP_OK);
     }
 
     /**
@@ -65,7 +65,7 @@ class FieldController extends AbstractFOSRestController
      *
      * @SWG\Response(
      *     response=200,
-     *     description="Returns the list of an Field",
+     *     description="Returns the list of an MaterialTechnique",
      *     @SWG\Schema(
      *         @SWG\Items(ref=@Model(type=ApiResponse::class))
      *     )
@@ -92,7 +92,7 @@ class FieldController extends AbstractFOSRestController
      *     name="sort",
      *     in="query",
      *     type="string",
-     *     description="The field used to sort type"
+     *     description="The fiemld used to sort type"
      * )
      * @SWG\Parameter(
      *     name="label",
@@ -100,13 +100,14 @@ class FieldController extends AbstractFOSRestController
      *     type="string",
      *     description="The field used to filter by label"
      * )
-     * @SWG\Tag(name="fields")
+     * @SWG\Tag(name="materialTechniques")
      *
      * @Rest\QueryParam(name="page", requirements="\d+", default="1", description="page number.")
      * @Rest\QueryParam(name="limit", requirements="\d+", default="20", description="page size.")
      * @Rest\QueryParam(name="sort_by", nullable=true, default="id", description="order by")
      * @Rest\QueryParam(name="sort", requirements="(asc|desc)", nullable=true, default="asc", description="tri order asc|desc")
      * @Rest\QueryParam(name="label",map=true, nullable=false, description="filter by label. example: label[eq]=value")
+     * @Rest\QueryParam(name="type",map=true, nullable=false, description="filter by type. example: type[eq]=value")
      * @Rest\QueryParam(name="active", nullable=false, description="filter by active. example: active[eq]=1")
      *
      * @Rest\View()
@@ -115,9 +116,9 @@ class FieldController extends AbstractFOSRestController
      *
      * @return Response
      */
-    public function listFields(ParamFetcherInterface $paramFetcher)
+    public function listMaterialTechniques(ParamFetcherInterface $paramFetcher)
     {
-        $records = $this->apiManager->findRecordsByEntityName(Field::class, $paramFetcher);
+        $records = $this->apiManager->findRecordsByEntityName(MaterialTechnique::class, $paramFetcher);
         return $this->view($records, Response::HTTP_OK);
     }
 
@@ -126,9 +127,9 @@ class FieldController extends AbstractFOSRestController
      *
      * @SWG\Response(
      *     response=201,
-     *     description="Returns created Field",
+     *     description="Returns created MaterialTechnique",
      *     @SWG\Schema(
-     *         ref=@Model(type=Field::class, groups={"field"})
+     *         ref=@Model(type=MaterialTechnique::class, groups={"material_technique", "denomination_id"})
      *     )
      * )
      * @SWG\Response(
@@ -138,12 +139,12 @@ class FieldController extends AbstractFOSRestController
      * @SWG\Parameter(
      *     name="form",
      *     in="body",
-     *     description="Add Field",
-     *     @Model(type=Field::class, groups={"field"})
+     *     description="Add MaterialTechnique",
+     *     @Model(type=MaterialTechnique::class, groups={"material_technique"})
      * )
-     * @SWG\Tag(name="fields")
+     * @SWG\Tag(name="materialTechniques")
      *
-     * @Rest\View(serializerGroups={"field"})
+     * @Rest\View(serializerGroups={"material_technique", "denomination_id"})
      *
      * @param Request $request
      *
@@ -152,13 +153,13 @@ class FieldController extends AbstractFOSRestController
      * @throws \Doctrine\ORM\ORMException
      * @throws \Doctrine\ORM\OptimisticLockException
      */
-    public function postField(Request $request)
+    public function postMaterialTechnique(Request $request)
     {
-        $form = $this->createForm(FieldType::class);
+        $form = $this->createForm(MaterialTechniqueType::class);
         $form->submit($request->request->all());
         if ($form->isValid()) {
-            $field = $this->apiManager->save($form->getData());
-            return $this->view($field, Response::HTTP_CREATED);
+            $materialTechnique = $this->apiManager->save($form->getData());
+            return $this->view($materialTechnique, Response::HTTP_CREATED);
         } else {
             throw new FormValidationException($form);
         }
@@ -169,7 +170,7 @@ class FieldController extends AbstractFOSRestController
      *
      * @SWG\Response(
      *     response=204,
-     *     description="Field is updated"
+     *     description="MaterialTechnique is updated"
      *     )
      * )
      * @SWG\Response(
@@ -179,28 +180,28 @@ class FieldController extends AbstractFOSRestController
      * @SWG\Parameter(
      *     name="form",
      *     in="body",
-     *     description="Update a Field",
-     *     @Model(type=Field::class, groups={"field"})
+     *     description="Update a MaterialTechnique",
+     *     @Model(type=MaterialTechnique::class, groups={"material_technique"})
      * )
-     * @SWG\Tag(name="fields")
+     * @SWG\Tag(name="materialTechniques")
      *
      * @Rest\View()
      *
      * @param Request $request
-     * @param Field $field
+     * @param MaterialTechnique $materialTechnique
      *
      * @return Response
      *
      * @throws \Doctrine\ORM\ORMException
      * @throws \Doctrine\ORM\OptimisticLockException
      */
-    public function updateField(Request $request, Field $field)
+    public function updateMaterialTechnique(Request $request, MaterialTechnique $materialTechnique)
     {
-        $form = $this->createForm(FieldType::class, $field);
+        $form = $this->createForm(MaterialTechniqueType::class, $materialTechnique);
         $form->submit($request->request->all(), false);
 
         if ($form->isValid()) {
-            $this->apiManager->save($field);
+            $this->apiManager->save($materialTechnique);
             return $this->view(null, Response::HTTP_NO_CONTENT);
         } else {
             throw new FormValidationException($form);
@@ -212,20 +213,20 @@ class FieldController extends AbstractFOSRestController
      *
      * @SWG\Response(
      *     response=204,
-     *     description="Field is removed"
+     *     description="MaterialTechnique is removed"
      *     )
      * )
-     * @SWG\Tag(name="fields")
+     * @SWG\Tag(name="materialTechniques")
      *
      * @Rest\View()
      *
-     * @param Field $field
+     * @param MaterialTechnique $materialTechnique
      *
      * @return Response
      */
-    public function removeField(Field $field)
+    public function removeMaterialTechnique(MaterialTechnique $materialTechnique)
     {
-        $this->apiManager->delete($field);
+        $this->apiManager->delete($materialTechnique);
         return $this->view(null, Response::HTTP_NO_CONTENT);
     }
 }

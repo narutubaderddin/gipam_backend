@@ -4,9 +4,9 @@
 namespace App\Controller\API;
 
 
-use App\Entity\Field;
+use App\Entity\Era;
 use App\Exception\FormValidationException;
-use App\Form\FieldType;
+use App\Form\EraType;
 use App\Model\ApiResponse;
 use App\Services\ApiManager;
 use FOS\RestBundle\Controller\AbstractFOSRestController;
@@ -19,11 +19,11 @@ use Symfony\Component\HttpFoundation\Response;
 use Swagger\Annotations as SWG;
 
 /**
- * Class FieldController
+ * Class EraController
  * @package App\Controller\API
- * @Route("/fields")
+ * @Route("/eras")
  */
-class FieldController extends AbstractFOSRestController
+class EraController extends AbstractFOSRestController
 {
 
     /**
@@ -43,21 +43,21 @@ class FieldController extends AbstractFOSRestController
      *
      * @SWG\Response(
      *     response=200,
-     *     description="Returns Field by id",
+     *     description="Returns Era by id",
      *     @SWG\Schema(
-     *         ref=@Model(type=Field::class, groups={"field"})
+     *         ref=@Model(type=Era::class, groups={"era"})
      *     )
      * )
-     * @SWG\Tag(name="fields")
-     * @Rest\View(serializerGroups={"field"})
+     * @SWG\Tag(name="eras")
+     * @Rest\View(serializerGroups={"era"})
      *
-     * @param Field $field
+     * @param Era $era
      *
      * @return Response
      */
-    public function showField(Field $field)
+    public function showEra(Era $era)
     {
-        return $this->view($field, Response::HTTP_OK);
+        return $this->view($era, Response::HTTP_OK);
     }
 
     /**
@@ -65,7 +65,7 @@ class FieldController extends AbstractFOSRestController
      *
      * @SWG\Response(
      *     response=200,
-     *     description="Returns the list of an Field",
+     *     description="Returns the list of an Era",
      *     @SWG\Schema(
      *         @SWG\Items(ref=@Model(type=ApiResponse::class))
      *     )
@@ -92,7 +92,7 @@ class FieldController extends AbstractFOSRestController
      *     name="sort",
      *     in="query",
      *     type="string",
-     *     description="The field used to sort type"
+     *     description="The fiemld used to sort type"
      * )
      * @SWG\Parameter(
      *     name="label",
@@ -100,7 +100,7 @@ class FieldController extends AbstractFOSRestController
      *     type="string",
      *     description="The field used to filter by label"
      * )
-     * @SWG\Tag(name="fields")
+     * @SWG\Tag(name="eras")
      *
      * @Rest\QueryParam(name="page", requirements="\d+", default="1", description="page number.")
      * @Rest\QueryParam(name="limit", requirements="\d+", default="20", description="page size.")
@@ -115,9 +115,9 @@ class FieldController extends AbstractFOSRestController
      *
      * @return Response
      */
-    public function listFields(ParamFetcherInterface $paramFetcher)
+    public function listEras(ParamFetcherInterface $paramFetcher)
     {
-        $records = $this->apiManager->findRecordsByEntityName(Field::class, $paramFetcher);
+        $records = $this->apiManager->findRecordsByEntityName(Era::class, $paramFetcher);
         return $this->view($records, Response::HTTP_OK);
     }
 
@@ -126,9 +126,9 @@ class FieldController extends AbstractFOSRestController
      *
      * @SWG\Response(
      *     response=201,
-     *     description="Returns created Field",
+     *     description="Returns created Era",
      *     @SWG\Schema(
-     *         ref=@Model(type=Field::class, groups={"field"})
+     *         ref=@Model(type=Era::class, groups={"era"})
      *     )
      * )
      * @SWG\Response(
@@ -138,12 +138,12 @@ class FieldController extends AbstractFOSRestController
      * @SWG\Parameter(
      *     name="form",
      *     in="body",
-     *     description="Add Field",
-     *     @Model(type=Field::class, groups={"field"})
+     *     description="Add Era",
+     *     @Model(type=Era::class, groups={"era"})
      * )
-     * @SWG\Tag(name="fields")
+     * @SWG\Tag(name="eras")
      *
-     * @Rest\View(serializerGroups={"field"})
+     * @Rest\View(serializerGroups={"era"})
      *
      * @param Request $request
      *
@@ -152,13 +152,13 @@ class FieldController extends AbstractFOSRestController
      * @throws \Doctrine\ORM\ORMException
      * @throws \Doctrine\ORM\OptimisticLockException
      */
-    public function postField(Request $request)
+    public function postEra(Request $request)
     {
-        $form = $this->createForm(FieldType::class);
+        $form = $this->createForm(EraType::class);
         $form->submit($request->request->all());
         if ($form->isValid()) {
-            $field = $this->apiManager->save($form->getData());
-            return $this->view($field, Response::HTTP_CREATED);
+            $era = $this->apiManager->save($form->getData());
+            return $this->view($era, Response::HTTP_CREATED);
         } else {
             throw new FormValidationException($form);
         }
@@ -169,7 +169,7 @@ class FieldController extends AbstractFOSRestController
      *
      * @SWG\Response(
      *     response=204,
-     *     description="Field is updated"
+     *     description="Era is updated"
      *     )
      * )
      * @SWG\Response(
@@ -179,28 +179,28 @@ class FieldController extends AbstractFOSRestController
      * @SWG\Parameter(
      *     name="form",
      *     in="body",
-     *     description="Update a Field",
-     *     @Model(type=Field::class, groups={"field"})
+     *     description="Update a Era",
+     *     @Model(type=Era::class, groups={"era"})
      * )
-     * @SWG\Tag(name="fields")
+     * @SWG\Tag(name="eras")
      *
      * @Rest\View()
      *
      * @param Request $request
-     * @param Field $field
+     * @param Era $era
      *
      * @return Response
      *
      * @throws \Doctrine\ORM\ORMException
      * @throws \Doctrine\ORM\OptimisticLockException
      */
-    public function updateField(Request $request, Field $field)
+    public function updateEra(Request $request, Era $era)
     {
-        $form = $this->createForm(FieldType::class, $field);
+        $form = $this->createForm(EraType::class, $era);
         $form->submit($request->request->all(), false);
 
         if ($form->isValid()) {
-            $this->apiManager->save($field);
+            $this->apiManager->save($era);
             return $this->view(null, Response::HTTP_NO_CONTENT);
         } else {
             throw new FormValidationException($form);
@@ -212,20 +212,20 @@ class FieldController extends AbstractFOSRestController
      *
      * @SWG\Response(
      *     response=204,
-     *     description="Field is removed"
+     *     description="Era is removed"
      *     )
      * )
-     * @SWG\Tag(name="fields")
+     * @SWG\Tag(name="eras")
      *
      * @Rest\View()
      *
-     * @param Field $field
+     * @param Era $era
      *
      * @return Response
      */
-    public function removeField(Field $field)
+    public function removeEra(Era $era)
     {
-        $this->apiManager->delete($field);
+        $this->apiManager->delete($era);
         return $this->view(null, Response::HTTP_NO_CONTENT);
     }
 }

@@ -6,6 +6,7 @@ use App\Repository\MaterialTechniqueRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use JMS\Serializer\Annotation as JMS;
 
 /**
  * @ORM\Entity(repositoryClass=MaterialTechniqueRepository::class)
@@ -14,6 +15,8 @@ use Doctrine\ORM\Mapping as ORM;
 class MaterialTechnique
 {
     /**
+     * @JMS\Groups("id", "material_technique")
+     *
      * @ORM\Id
      * @ORM\GeneratedValue
      * @ORM\Column(type="integer")
@@ -21,26 +24,36 @@ class MaterialTechnique
     private $id;
 
     /**
+     * @JMS\Groups("material_technique")
+     *
      * @ORM\Column(name="libelle", type="string", length=255, nullable=true)
      */
     private $label;
 
     /**
+     * @JMS\Groups("material_technique")
+     *
      * @ORM\Column(name="type", type="string", length=255, nullable=true)
      */
     private $type;
 
     /**
+     * @JMS\Groups("material_technique", "id")
+     *
      * @ORM\ManyToMany(targetEntity=Denomination::class, mappedBy="materialsTechniques")
      */
     private $denominations;
 
     /**
+     * @JMS\Exclude()
+     *
      * @ORM\OneToMany(targetEntity=Furniture::class, mappedBy="materialTechnique")
      */
     private $furniture;
 
     /**
+     * @JMS\Groups("material_technique")
+     *
      * @ORM\Column(name="actif", type="boolean", nullable=false)
      */
     private $active = true;
@@ -112,7 +125,8 @@ class MaterialTechnique
 
     public function removeDenomination(Denomination $denomination): self
     {
-        if ($this->denominations->removeElement($denomination)) {
+        if ($this->denominations->contains($denomination)) {
+            $this->denominations->removeElement($denomination);
             $denomination->removeMaterialsTechnique($this);
         }
 
