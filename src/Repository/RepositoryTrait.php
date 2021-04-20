@@ -122,16 +122,16 @@ trait RepositoryTrait
             case 'eq':
                 $queryBuilder->andWhere("$alias.$field = :$parameter")->setParameter($parameter, $value);
                 break;
-            case 'gt':
+            case 'lt':
                 $queryBuilder->andWhere("$alias.$field < :$parameter")->setParameter($parameter, $value);
                 break;
-            case 'lt':
+            case 'gt':
                 $queryBuilder->andWhere("$alias.$field > :$parameter")->setParameter($parameter, $value);
                 break;
-            case 'gte':
+            case 'lte':
                 $queryBuilder->andWhere("$alias.$field <= :$parameter")->setParameter($parameter, $value);
                 break;
-            case 'lte':
+            case 'gte':
                 $queryBuilder->andWhere("$alias.$field >= :$parameter")->setParameter($parameter, $value);
                 break;
             case 'neq':

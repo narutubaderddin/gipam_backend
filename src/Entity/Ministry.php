@@ -7,6 +7,7 @@ use DateTimeInterface;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use JMS\Serializer\Annotation as JMS;
 
 /**
  * @ORM\Entity(repositoryClass=MinistryRepository::class)
@@ -15,6 +16,8 @@ use Doctrine\ORM\Mapping as ORM;
 class Ministry
 {
     /**
+     * @JMS\Groups("id", "ministry")
+     *
      * @ORM\Id
      * @ORM\GeneratedValue
      * @ORM\Column(type="integer")
@@ -22,26 +25,36 @@ class Ministry
     private $id;
 
     /**
+     * @JMS\Groups("ministry")
+     *
      * @ORM\Column(name="nom", type="string", length=255, nullable=true)
      */
     private $name;
 
     /**
+     * @JMS\Groups("ministry")
+     *
      * @ORM\Column(name="sigle", type="string", length=255, nullable=true)
      */
     private $acronym;
 
     /**
+     * @JMS\Groups("ministry")
+     *
      * @ORM\Column(name="date_debut", type="datetime", nullable=true)
      */
     private $startDate;
 
     /**
+     * @JMS\Groups("ministry")
+     *
      * @ORM\Column(name="date_disparition", type="datetime", nullable=true)
      */
     private $disappearanceDate;
 
     /**
+     * @JMS\Exclude()
+     *
      * @ORM\OneToMany(targetEntity=Establishment::class, mappedBy="ministry")
      */
     private $establishments;

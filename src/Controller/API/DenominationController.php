@@ -94,12 +94,7 @@ class DenominationController extends AbstractFOSRestController
      *     type="string",
      *     description="The field used to sort type"
      * )
-     * @SWG\Parameter(
-     *     name="label",
-     *     in="query",
-     *     type="string",
-     *     description="The field used to filter by label"
-     * )
+     *
      * @SWG\Tag(name="denominations")
      *
      * @Rest\QueryParam(name="page", requirements="\d+", default="1", description="page number.")
@@ -107,8 +102,8 @@ class DenominationController extends AbstractFOSRestController
      * @Rest\QueryParam(name="sort_by", nullable=true, default="id", description="order by")
      * @Rest\QueryParam(name="sort", requirements="(asc|desc)", nullable=true, default="asc", description="tri order asc|desc")
      * @Rest\QueryParam(name="label",map=true, nullable=false, description="filter by label. example: label[eq]=value")
-     * @Rest\QueryParam(name="active", nullable=false, description="filter by active. example: active[eq]=1")
-     * @Rest\QueryParam(name="field", nullable=false, description="filter by field. example: field[eq]=1")
+     * @Rest\QueryParam(name="active", map=true, nullable=false, description="filter by active. example: active[eq]=1")
+     * @Rest\QueryParam(name="field", map=true, nullable=false, description="filter by field. example: field[eq]=1")
      *
      * @Rest\View()
      *
