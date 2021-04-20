@@ -3,9 +3,9 @@
 namespace App\Controller\API;
 
 use App\Entity\ActionReportType;
+use App\Exception\FormValidationException;
 use App\Form\ActionReportTypeType;
 use App\Model\ApiResponse;
-use App\Model\FormError;
 use App\Services\ApiManager;
 use FOS\RestBundle\Controller\AbstractFOSRestController;
 use FOS\RestBundle\Controller\Annotations as Rest;
@@ -152,7 +152,7 @@ class ActionReportTypeController extends AbstractFOSRestController
      * )
      * @SWG\Tag(name="actionReportTypes")
      *
-     * @Rest\View(serializerGroups={"action_type", "id", "errors"})
+     * @Rest\View(serializerGroups={"action_type", "id"})
      *
      * @param Request $request
      * @return View
@@ -165,7 +165,7 @@ class ActionReportTypeController extends AbstractFOSRestController
             $actionReportType = $this->apiManager->save($form->getData());
             return $this->view($actionReportType, Response::HTTP_CREATED);
         }
-        return $this->view(new FormError($form), Response::HTTP_BAD_REQUEST);
+        throw new FormValidationException($form);
     }
 
     /**
@@ -192,7 +192,7 @@ class ActionReportTypeController extends AbstractFOSRestController
      * )
      * @SWG\Tag(name="actionReportTypes")
      *
-     * @Rest\View(serializerGroups={"errors"})
+     * @Rest\View()
      *
      * @param Request $request
      * @param ActionReportType $actionReportType
@@ -206,7 +206,7 @@ class ActionReportTypeController extends AbstractFOSRestController
             $this->apiManager->save($actionReportType);
             return $this->view(null, Response::HTTP_NO_CONTENT);
         }
-        return $this->view(new FormError($form), Response::HTTP_BAD_REQUEST);
+        throw new FormValidationException($form);
     }
 
     /**
@@ -232,10 +232,7 @@ class ActionReportTypeController extends AbstractFOSRestController
      */
     public function removeActionReportType(ActionReportType $actionReportType)
     {
-        if ($actionReportType->getActions()->isEmpty()) {
-            $this->apiManager->delete($actionReportType);
-            return $this->view(null, Response::HTTP_NO_CONTENT);
-        }
-        return $this->view("Action Report Type has related Actions", Response::HTTP_BAD_REQUEST);
+        $this->apiManager->delete($actionReportType);
+        return $this->view(null, Response::HTTP_NO_CONTENT);
     }
 }

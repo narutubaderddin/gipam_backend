@@ -3,9 +3,9 @@
 namespace App\Controller\API;
 
 use App\Entity\MovementActionType;
+use App\Exception\FormValidationException;
 use App\Form\MovementActionTypeType;
 use App\Model\ApiResponse;
-use App\Model\FormError;
 use App\Services\ApiManager;
 use FOS\RestBundle\Controller\AbstractFOSRestController;
 use FOS\RestBundle\Controller\Annotations as Rest;
@@ -167,7 +167,7 @@ class MovementActionTypeController extends AbstractFOSRestController
             $movementActionType = $this->apiManager->save($form->getData());
             return $this->view($movementActionType, Response::HTTP_CREATED);
         }
-        return $this->view(new FormError($form), Response::HTTP_BAD_REQUEST);
+        throw new FormValidationException($form);
     }
 
     /**
@@ -194,7 +194,7 @@ class MovementActionTypeController extends AbstractFOSRestController
      * )
      * @SWG\Tag(name="movementActionTypes")
      *
-     * @Rest\View(serializerGroups={"errors"})
+     * @Rest\View()
      *
      * @param Request $request
      * @param MovementActionType $movementActionType
@@ -208,7 +208,7 @@ class MovementActionTypeController extends AbstractFOSRestController
             $this->apiManager->save($movementActionType);
             return $this->view(null, Response::HTTP_NO_CONTENT);
         }
-        return $this->view(new FormError($form), Response::HTTP_BAD_REQUEST);
+        throw new FormValidationException($form);
     }
 
     /**
@@ -234,10 +234,7 @@ class MovementActionTypeController extends AbstractFOSRestController
      */
     public function removeMovementActionType(MovementActionType $movementActionType)
     {
-        if ($movementActionType->getActions()->isEmpty()) {
-            $this->apiManager->delete($movementActionType);
-            return $this->view(null, Response::HTTP_NO_CONTENT);
-        }
-        return $this->view("Movement Action Type has related Actions", Response::HTTP_BAD_REQUEST);
+        $this->apiManager->delete($movementActionType);
+        return $this->view(null, Response::HTTP_NO_CONTENT);
     }
 }

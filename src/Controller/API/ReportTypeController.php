@@ -3,9 +3,9 @@
 namespace App\Controller\API;
 
 use App\Entity\ReportType;
+use App\Exception\FormValidationException;
 use App\Form\ReportTypeType;
 use App\Model\ApiResponse;
-use App\Model\FormError;
 use App\Services\ApiManager;
 use FOS\RestBundle\Controller\AbstractFOSRestController;
 use FOS\RestBundle\Controller\Annotations as Rest;
@@ -152,7 +152,7 @@ class ReportTypeController extends AbstractFOSRestController
      * )
      * @SWG\Tag(name="reportTypes")
      *
-     * @Rest\View(serializerGroups={"report_type", "id", "errors"})
+     * @Rest\View(serializerGroups={"report_type", "id"})
      *
      * @param Request $request
      * @return View
@@ -165,7 +165,7 @@ class ReportTypeController extends AbstractFOSRestController
             $reportType = $this->apiManager->save($form->getData());
             return $this->view($reportType, Response::HTTP_CREATED);
         }
-        return $this->view(new FormError($form), Response::HTTP_BAD_REQUEST);
+        throw new FormValidationException($form);
     }
 
     /**
@@ -192,7 +192,7 @@ class ReportTypeController extends AbstractFOSRestController
      * )
      * @SWG\Tag(name="reportTypes")
      *
-     * @Rest\View(serializerGroups={"errors"})
+     * @Rest\View()
      *
      * @param Request $request
      * @param ReportType $reportType
@@ -206,7 +206,7 @@ class ReportTypeController extends AbstractFOSRestController
             $this->apiManager->save($reportType);
             return $this->view(null, Response::HTTP_NO_CONTENT);
         }
-        return $this->view(new FormError($form), Response::HTTP_BAD_REQUEST);
+        throw new FormValidationException($form);
     }
 
     /**
@@ -232,10 +232,7 @@ class ReportTypeController extends AbstractFOSRestController
      */
     public function removeReportType(ReportType $reportType)
     {
-        if ($reportType->getReportSubTypes()->isEmpty()) {
-            $this->apiManager->delete($reportType);
-            return $this->view(null, Response::HTTP_NO_CONTENT);
-        }
-        return $this->view("Report Type has related Reports Subtypes", Response::HTTP_BAD_REQUEST);
+        $this->apiManager->delete($reportType);
+        return $this->view(null, Response::HTTP_NO_CONTENT);
     }
 }

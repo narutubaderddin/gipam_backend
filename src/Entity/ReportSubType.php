@@ -7,6 +7,7 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use JMS\Serializer\Annotation as JMS;
+use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * @ORM\Entity(repositoryClass=ReportSubTypeRepository::class)
@@ -50,6 +51,8 @@ class ReportSubType
     /**
      * @JMS\Groups("report_sub_type")
      *
+     * @Assert\NotBlank()
+     *
      * @ORM\Column(name="libelle", type="string", length=255, nullable=true)
      */
     private $label;
@@ -57,6 +60,8 @@ class ReportSubType
     /**
      *
      * @JMS\Groups("report_sub_type")
+     *
+     * @Assert\NotBlank()
      *
      * @ORM\ManyToOne(targetEntity=ReportType::class, inversedBy="reportSubTypes")
      * @ORM\JoinColumn(name="type_constat_id", referencedColumnName="id")

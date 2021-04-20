@@ -3,9 +3,9 @@
 namespace App\Controller\API;
 
 use App\Entity\MovementType;
+use App\Exception\FormValidationException;
 use App\Form\MovementTypeType;
 use App\Model\ApiResponse;
-use App\Model\FormError;
 use App\Services\ApiManager;
 use FOS\RestBundle\Controller\AbstractFOSRestController;
 use FOS\RestBundle\Controller\Annotations as Rest;
@@ -165,7 +165,7 @@ class MovementTypeController extends AbstractFOSRestController
             $movementType = $this->apiManager->save($form->getData());
             return $this->view($movementType, Response::HTTP_CREATED);
         }
-        return $this->view(new FormError($form), Response::HTTP_BAD_REQUEST);
+        throw new FormValidationException($form);
     }
 
     /**
@@ -206,7 +206,7 @@ class MovementTypeController extends AbstractFOSRestController
             $this->apiManager->save($movementType);
             return $this->view(null, Response::HTTP_NO_CONTENT);
         }
-        return $this->view(new FormError($form), Response::HTTP_BAD_REQUEST);
+        throw new FormValidationException($form);
     }
 
     /**
@@ -232,17 +232,7 @@ class MovementTypeController extends AbstractFOSRestController
      */
     public function removeMovementType(MovementType $movementType)
     {
-        $error = '';
-        if (!$movementType->getMovements()->isEmpty()) {
-            $error = "Movement Type has related Movements.";
-        }
-        if (!$movementType->getMovementActionTypes()->isEmpty()) {
-            $error .= "Movement Type has related Movement Action Types.";
-        }
-        if ($error === '') {
-            $this->apiManager->delete($movementType);
-            return $this->view(null, Response::HTTP_NO_CONTENT);
-        }
-        return $this->view($error, Response::HTTP_BAD_REQUEST);
+        $this->apiManager->delete($movementType);
+        return $this->view(null, Response::HTTP_NO_CONTENT);
     }
 }

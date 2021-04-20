@@ -3,18 +3,15 @@
 namespace App\Controller\API;
 
 use App\Entity\ReportSubType;
-use App\Entity\ReportType;
+use App\Exception\FormValidationException;
 use App\Form\ReportSubTypeType;
-use App\Form\ReportTypeType;
 use App\Model\ApiResponse;
-use App\Model\FormError;
 use App\Services\ApiManager;
 use FOS\RestBundle\Controller\AbstractFOSRestController;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use FOS\RestBundle\Controller\Annotations\Route;
 use FOS\RestBundle\Request\ParamFetcherInterface;
 use FOS\RestBundle\View\View;
-use JMS\Serializer\SerializationContext;
 use Nelmio\ApiDocBundle\Annotation\Model;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -156,7 +153,7 @@ class ReportSubTypeController extends AbstractFOSRestController
      * )
      * @SWG\Tag(name="reportSubTypes")
      *
-     * @Rest\View(serializerGroups={"report_sub_type", "id", "errors"})
+     * @Rest\View(serializerGroups={"report_sub_type", "id"})
      *
      * @param Request $request
      * @return View
@@ -169,7 +166,7 @@ class ReportSubTypeController extends AbstractFOSRestController
             $reportType = $this->apiManager->save($form->getData());
             return $this->view($reportType, Response::HTTP_CREATED);
         }
-        return $this->view(new FormError($form), Response::HTTP_BAD_REQUEST);
+        throw new FormValidationException($form);
     }
 
     /**
@@ -196,7 +193,7 @@ class ReportSubTypeController extends AbstractFOSRestController
      * )
      * @SWG\Tag(name="reportSubTypes")
      *
-     * @Rest\View(serializerGroups={"errors"})
+     * @Rest\View()
      *
      * @param Request $request
      * @param ReportSubType $reportSubType
@@ -210,7 +207,7 @@ class ReportSubTypeController extends AbstractFOSRestController
             $this->apiManager->save($reportSubType);
             return $this->view(null, Response::HTTP_NO_CONTENT);
         }
-        return $this->view(new FormError($form), Response::HTTP_BAD_REQUEST);
+        throw new FormValidationException($form);
     }
 
     /**
@@ -235,10 +232,7 @@ class ReportSubTypeController extends AbstractFOSRestController
      */
     public function removeReportSubType(ReportSubType $reportSubType)
     {
-        if ($reportSubType->getReports()->isEmpty()) {
-            $this->apiManager->delete($reportSubType);
-            return $this->view(null, Response::HTTP_NO_CONTENT);
-        }
-        return $this->view("Report SubType has related Reports", Response::HTTP_BAD_REQUEST);
+        $this->apiManager->delete($reportSubType);
+        return $this->view(null, Response::HTTP_NO_CONTENT);
     }
 }

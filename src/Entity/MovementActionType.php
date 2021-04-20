@@ -58,6 +58,8 @@ class MovementActionType
     /**
      * @JMS\Groups("movement_action_type")
      *
+     * @Assert\NotBlank()
+     *
      * @ORM\ManyToOne(targetEntity=MovementType::class, inversedBy="movementActionTypes")
      * @ORM\JoinColumn(name="type_mouvement_id", referencedColumnName="id")
      */
