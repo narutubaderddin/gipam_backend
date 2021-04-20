@@ -7,6 +7,8 @@ use DateTimeInterface;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use JMS\Serializer\Annotation as JMS;
+use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * @ORM\Entity(repositoryClass=DepartementRepository::class)
@@ -15,6 +17,8 @@ use Doctrine\ORM\Mapping as ORM;
 class Departement
 {
     /**
+     * @JMS\Groups("id")
+     *
      * @ORM\Id
      * @ORM\GeneratedValue
      * @ORM\Column(type="integer")
@@ -43,6 +47,8 @@ class Departement
     private $region;
 
     /**
+     * @JMS\Exclude
+     *
      * @ORM\OneToMany(targetEntity=Commune::class, mappedBy="departement")
      */
     private $communes;
