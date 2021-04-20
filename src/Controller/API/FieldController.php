@@ -5,6 +5,7 @@ namespace App\Controller\API;
 
 
 use App\Entity\Field;
+use App\Exception\FormValidationException;
 use App\Form\FieldType;
 use App\Model\ApiResponse;
 use App\Services\ApiManager;
@@ -159,7 +160,7 @@ class FieldController extends AbstractFOSRestController
             $field = $this->apiManager->save($form->getData());
             return $this->view($field, Response::HTTP_CREATED);
         } else {
-            return $this->view($form, Response::HTTP_BAD_REQUEST);
+            throw new FormValidationException($form);
         }
     }
 
@@ -202,7 +203,7 @@ class FieldController extends AbstractFOSRestController
             $this->apiManager->save($field);
             return $this->view(null, Response::HTTP_NO_CONTENT);
         } else {
-            return $this->view($form, Response::HTTP_BAD_REQUEST);
+            throw new FormValidationException($form);
         }
     }
 

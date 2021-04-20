@@ -5,6 +5,7 @@ namespace App\Controller\API;
 
 
 use App\Entity\Denomination;
+use App\Exception\FormValidationException;
 use App\Form\DenominationType;
 use App\Model\ApiResponse;
 use App\Services\ApiManager;
@@ -160,7 +161,7 @@ class DenominationController extends AbstractFOSRestController
             $denomination = $this->apiManager->save($form->getData());
             return $this->view($denomination, Response::HTTP_CREATED);
         } else {
-            return $this->view($form, Response::HTTP_BAD_REQUEST);
+            throw new FormValidationException($form);
         }
     }
 
@@ -203,7 +204,7 @@ class DenominationController extends AbstractFOSRestController
             $this->apiManager->save($denomination);
             return $this->view(null, Response::HTTP_NO_CONTENT);
         } else {
-            return $this->view($form, Response::HTTP_BAD_REQUEST);
+            throw new FormValidationException($form);
         }
     }
 
