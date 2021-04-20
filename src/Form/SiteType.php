@@ -2,20 +2,19 @@
 
 namespace App\Form;
 
-use App\Entity\Ministry;
+use App\Entity\Site;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\DateTimeType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
-class MinistryType extends AbstractType
+class SiteType extends AbstractType
 {
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $builder
-            ->add('name',TextType::class, ['required'=>true])
-            ->add('acronym', TextType::class)
+            ->add('label',TextType::class, ['required'=>true])
             ->add('startDate', DateTimeType::class, ['widget' => 'single_text', 'required'=>true])
             ->add('disappearanceDate', DateTimeType::class, ['widget' => 'single_text'])
         ;
@@ -25,7 +24,7 @@ class MinistryType extends AbstractType
     {
         $resolver->setDefaults([
             'csrf_protection' => false,
-            'data_class' => Ministry::class,
+            'data_class' => Site::class,
         ]);
     }
 }

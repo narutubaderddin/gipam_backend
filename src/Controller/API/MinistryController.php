@@ -1,8 +1,6 @@
 <?php
 
-
 namespace App\Controller\API;
-
 
 use App\Entity\Ministry;
 use App\Exception\FormValidationException;

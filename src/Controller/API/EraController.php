@@ -1,8 +1,6 @@
 <?php
 
-
 namespace App\Controller\API;
-
 
 use App\Entity\Era;
 use App\Exception\FormValidationException;

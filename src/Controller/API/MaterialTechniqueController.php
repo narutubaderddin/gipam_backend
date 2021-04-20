@@ -1,8 +1,6 @@
 <?php
 
-
 namespace App\Controller\API;
-
 
 use App\Entity\MaterialTechnique;
 use App\Exception\FormValidationException;

@@ -2,9 +2,9 @@
 
 namespace App\Controller\API;
 
-use App\Entity\PropertyStatusCategory;
+use App\Entity\Site;
 use App\Exception\FormValidationException;
-use App\Form\PropertyStatusCategoryType;
+use App\Form\SiteType;
 use App\Model\ApiResponse;
 use App\Services\ApiManager;
 use FOS\RestBundle\Controller\AbstractFOSRestController;
@@ -17,11 +17,11 @@ use Symfony\Component\HttpFoundation\Response;
 use Swagger\Annotations as SWG;
 
 /**
- * Class PropertyStatusCategoryController
+ * Class SiteController
  * @package App\Controller\API
- * @Route("/propertyStatusCategories")
+ * @Route("/sites")
  */
-class PropertyStatusCategoryController extends AbstractFOSRestController
+class SiteController extends AbstractFOSRestController
 {
 
     /**
@@ -41,21 +41,21 @@ class PropertyStatusCategoryController extends AbstractFOSRestController
      *
      * @SWG\Response(
      *     response=200,
-     *     description="Returns PropertyStatusCategory by id",
+     *     description="Returns Site by id",
      *     @SWG\Schema(
-     *         ref=@Model(type=PropertyStatusCategory::class, groups={"category"})
+     *         ref=@Model(type=Site::class, groups={"site"})
      *     )
      * )
-     * @SWG\Tag(name="propertyStatusCategories")
-     * @Rest\View(serializerGroups={"category"})
+     * @SWG\Tag(name="sites")
+     * @Rest\View(serializerGroups={"site"})
      *
-     * @param PropertyStatusCategory $category
+     * @param Site $site
      *
      * @return Response
      */
-    public function showPropertyStatusCategory(PropertyStatusCategory $category)
+    public function showSite(Site $site)
     {
-        return $this->view($category, Response::HTTP_OK);
+        return $this->view($site, Response::HTTP_OK);
     }
 
     /**
@@ -63,7 +63,7 @@ class PropertyStatusCategoryController extends AbstractFOSRestController
      *
      * @SWG\Response(
      *     response=200,
-     *     description="Returns the list of an PropertyStatusCategory",
+     *     description="Returns the list of an Site",
      *     @SWG\Schema(
      *         @SWG\Items(ref=@Model(type=ApiResponse::class))
      *     )
@@ -93,14 +93,15 @@ class PropertyStatusCategoryController extends AbstractFOSRestController
      *     description="The field used to sort type"
      * )
      *
-     * @SWG\Tag(name="propertyStatusCategories")
+     * @SWG\Tag(name="sites")
      *
      * @Rest\QueryParam(name="page", requirements="\d+", default="1", description="page number.")
      * @Rest\QueryParam(name="limit", requirements="\d+", default="20", description="page size.")
      * @Rest\QueryParam(name="sort_by", nullable=true, default="id", description="order by")
      * @Rest\QueryParam(name="sort", requirements="(asc|desc)", nullable=true, default="asc", description="tri order asc|desc")
-     * @Rest\QueryParam(name="label", map=true, nullable=false, description="filter by label. example: label[eq]=value")
-     * @Rest\QueryParam(name="active", map=true, nullable=false, description="filter by active. example: active[eq]=1")
+     * @Rest\QueryParam(name="label", map=true, nullable=false, description="filter by name. example: label[eq]=value")
+     * @Rest\QueryParam(name="startDate", map=true, nullable=false, description="filter by acronym. example: startDate[lt]=value")
+     * @Rest\QueryParam(name="disappearanceDate", map=true, nullable=false, description="filter by acronym. example: disappearanceDate[lt]=value")
      *
      * @Rest\View()
      *
@@ -108,9 +109,9 @@ class PropertyStatusCategoryController extends AbstractFOSRestController
      *
      * @return Response
      */
-    public function listPropertyStatusCategorys(ParamFetcherInterface $paramFetcher)
+    public function listSites(ParamFetcherInterface $paramFetcher)
     {
-        $records = $this->apiManager->findRecordsByEntityName(PropertyStatusCategory::class, $paramFetcher);
+        $records = $this->apiManager->findRecordsByEntityName(Site::class, $paramFetcher);
         return $this->view($records, Response::HTTP_OK);
     }
 
@@ -119,9 +120,9 @@ class PropertyStatusCategoryController extends AbstractFOSRestController
      *
      * @SWG\Response(
      *     response=201,
-     *     description="Returns created PropertyStatusCategory",
+     *     description="Returns created Site",
      *     @SWG\Schema(
-     *         ref=@Model(type=PropertyStatusCategory::class, groups={"category"})
+     *         ref=@Model(type=Site::class, groups={"site"})
      *     )
      * )
      * @SWG\Response(
@@ -131,12 +132,12 @@ class PropertyStatusCategoryController extends AbstractFOSRestController
      * @SWG\Parameter(
      *     name="form",
      *     in="body",
-     *     description="Add PropertyStatusCategory",
-     *     @Model(type=PropertyStatusCategory::class, groups={"category"})
+     *     description="Add Site",
+     *     @Model(type=Site::class, groups={"site"})
      * )
-     * @SWG\Tag(name="propertyStatusCategories")
+     * @SWG\Tag(name="sites")
      *
-     * @Rest\View(serializerGroups={"category"})
+     * @Rest\View(serializerGroups={"site"})
      *
      * @param Request $request
      *
@@ -145,13 +146,13 @@ class PropertyStatusCategoryController extends AbstractFOSRestController
      * @throws \Doctrine\ORM\ORMException
      * @throws \Doctrine\ORM\OptimisticLockException
      */
-    public function postPropertyStatusCategory(Request $request)
+    public function postSite(Request $request)
     {
-        $form = $this->createForm(PropertyStatusCategoryType::class);
+        $form = $this->createForm(SiteType::class);
         $form->submit($request->request->all());
         if ($form->isValid()) {
-            $category = $this->apiManager->save($form->getData());
-            return $this->view($category, Response::HTTP_CREATED);
+            $site = $this->apiManager->save($form->getData());
+            return $this->view($site, Response::HTTP_CREATED);
         } else {
             throw new FormValidationException($form);
         }
@@ -162,7 +163,7 @@ class PropertyStatusCategoryController extends AbstractFOSRestController
      *
      * @SWG\Response(
      *     response=204,
-     *     description="PropertyStatusCategory is updated"
+     *     description="Site is updated"
      *     )
      * )
      * @SWG\Response(
@@ -172,28 +173,28 @@ class PropertyStatusCategoryController extends AbstractFOSRestController
      * @SWG\Parameter(
      *     name="form",
      *     in="body",
-     *     description="Update a PropertyStatusCategory",
-     *     @Model(type=PropertyStatusCategory::class, groups={"category"})
+     *     description="Update a Site",
+     *     @Model(type=Site::class, groups={"site"})
      * )
-     * @SWG\Tag(name="propertyStatusCategories")
+     * @SWG\Tag(name="sites")
      *
      * @Rest\View()
      *
      * @param Request $request
-     * @param PropertyStatusCategory $category
+     * @param Site $site
      *
      * @return Response
      *
      * @throws \Doctrine\ORM\ORMException
      * @throws \Doctrine\ORM\OptimisticLockException
      */
-    public function updatePropertyStatusCategory(Request $request, PropertyStatusCategory $category)
+    public function updateSite(Request $request, Site $site)
     {
-        $form = $this->createForm(PropertyStatusCategoryType::class, $category);
+        $form = $this->createForm(SiteType::class, $site);
         $form->submit($request->request->all(), false);
 
         if ($form->isValid()) {
-            $this->apiManager->save($category);
+            $this->apiManager->save($site);
             return $this->view(null, Response::HTTP_NO_CONTENT);
         } else {
             throw new FormValidationException($form);
@@ -205,20 +206,20 @@ class PropertyStatusCategoryController extends AbstractFOSRestController
      *
      * @SWG\Response(
      *     response=204,
-     *     description="PropertyStatusCategory is removed"
+     *     description="Site is removed"
      *     )
      * )
-     * @SWG\Tag(name="propertyStatusCategories")
+     * @SWG\Tag(name="sites")
      *
      * @Rest\View()
      *
-     * @param PropertyStatusCategory $category
+     * @param Site $site
      *
      * @return Response
      */
-    public function removePropertyStatusCategory(PropertyStatusCategory $category)
+    public function removeMinistry(Site $site)
     {
-        $this->apiManager->delete($category);
+        $this->apiManager->delete($site);
         return $this->view(null, Response::HTTP_NO_CONTENT);
     }
 }
