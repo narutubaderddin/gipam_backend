@@ -70,7 +70,7 @@ class InitializationScriptService
 
     private function createSimpleTypes()
     {
-        $entities = ['AuthorType', 'PropertyStatusCategory', 'LocationType', 'EntryMode', 'ActionType'];
+        $entities = ['AuthorType', 'PropertyStatusCategory', 'LocationType', 'EntryMode', 'ActionReportType'];
         foreach ($entities as $entity) {
             $className = $this->getClass($entity);
             $tableName = $this->entityManager->getClassMetadata($className)->getTableName();
