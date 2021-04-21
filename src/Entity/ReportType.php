@@ -47,9 +47,32 @@ class ReportType
      */
     private $reportSubTypes;
 
+    /**
+     * @JMS\Groups("report_type")
+     *
+     * @ORM\Column(name="actif", type="boolean", nullable=false)
+     */
+    private $active = true;
+
     public function __construct()
     {
         $this->reportSubTypes = new ArrayCollection();
+    }
+
+    /**
+     * @return bool
+     */
+    public function isActive(): bool
+    {
+        return $this->active;
+    }
+
+    /**
+     * @param bool $active
+     */
+    public function setActive(bool $active): void
+    {
+        $this->active = $active;
     }
 
     public function getId(): ?int

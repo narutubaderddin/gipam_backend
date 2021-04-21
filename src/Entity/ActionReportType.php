@@ -45,6 +45,13 @@ class ActionReportType
      */
     private $actions;
 
+    /**
+     * @JMS\Groups("action_type")
+     *
+     * @ORM\Column(name="actif", type="boolean", nullable=false)
+     */
+    private $active = true;
+
     public function __construct()
     {
         $this->actions = new ArrayCollection();
@@ -95,5 +102,21 @@ class ActionReportType
         }
 
         return $this;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isActive(): bool
+    {
+        return $this->active;
+    }
+
+    /**
+     * @param bool $active
+     */
+    public function setActive(bool $active): void
+    {
+        $this->active = $active;
     }
 }

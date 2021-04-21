@@ -3,6 +3,7 @@
 namespace App\Form;
 
 use App\Entity\ActionReportType;
+use App\Form\Type\BooleanType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
@@ -12,7 +13,8 @@ class ActionReportTypeType extends AbstractType
 {
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
-        $builder->add('label', TextType::class, ['required' => true]);
+        $builder->add('label', TextType::class, ['required' => true])
+            ->add('active', BooleanType::class, ['required' => true]);
     }
 
     public function configureOptions(OptionsResolver $resolver)

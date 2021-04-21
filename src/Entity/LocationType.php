@@ -53,7 +53,7 @@ class LocationType
     /**
      * @JMS\Groups("location_type")
      *
-     * @ORM\Column(name="actif", type="boolean", nullable=true)
+     * @ORM\Column(name="actif", type="boolean", nullable=false)
      */
     private $active = true;
 
