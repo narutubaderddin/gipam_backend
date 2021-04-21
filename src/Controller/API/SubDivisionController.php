@@ -2,9 +2,9 @@
 
 namespace App\Controller\API;
 
-use App\Entity\Style;
+use App\Entity\SubDivision;
 use App\Exception\FormValidationException;
-use App\Form\StyleType;
+use App\Form\SubDivisionType;
 use App\Model\ApiResponse;
 use App\Services\ApiManager;
 use FOS\RestBundle\Controller\AbstractFOSRestController;
@@ -17,11 +17,11 @@ use Symfony\Component\HttpFoundation\Response;
 use Swagger\Annotations as SWG;
 
 /**
- * Class StyleController
+ * Class SubDivisionController
  * @package App\Controller\API
- * @Route("/styles")
+ * @Route("/subDivisions")
  */
-class StyleController extends AbstractFOSRestController
+class SubDivisionController extends AbstractFOSRestController
 {
 
     /**
@@ -41,21 +41,21 @@ class StyleController extends AbstractFOSRestController
      *
      * @SWG\Response(
      *     response=200,
-     *     description="Returns Style by id",
+     *     description="Returns SubDivision by id",
      *     @SWG\Schema(
-     *         ref=@Model(type=Style::class, groups={"style"})
+     *         ref=@Model(type=SubDivision::class, groups={"sub_division", "establishment_id"})
      *     )
      * )
-     * @SWG\Tag(name="styles")
-     * @Rest\View(serializerGroups={"style"})
+     * @SWG\Tag(name="subDivisions")
+     * @Rest\View(serializerGroups={"sub_division", "establishment_id"})
      *
-     * @param Style $style
+     * @param SubDivision $subDivision
      *
      * @return Response
      */
-    public function showStyle(Style $style)
+    public function showSubDivision(SubDivision $subDivision)
     {
-        return $this->view($style, Response::HTTP_OK);
+        return $this->view($subDivision, Response::HTTP_OK);
     }
 
     /**
@@ -63,7 +63,7 @@ class StyleController extends AbstractFOSRestController
      *
      * @SWG\Response(
      *     response=200,
-     *     description="Returns the list of an Style",
+     *     description="Returns the list of an SubDivision",
      *     @SWG\Schema(
      *         @SWG\Items(ref=@Model(type=ApiResponse::class))
      *     )
@@ -90,17 +90,20 @@ class StyleController extends AbstractFOSRestController
      *     name="sort",
      *     in="query",
      *     type="string",
-     *     description="The fiemld used to sort type"
+     *     description="The field used to sort type"
      * )
      *
-     * @SWG\Tag(name="styles")
+     * @SWG\Tag(name="subDivisions")
      *
      * @Rest\QueryParam(name="page", requirements="\d+", default="1", description="page number.")
      * @Rest\QueryParam(name="limit", requirements="\d+", default="20", description="page size.")
      * @Rest\QueryParam(name="sort_by", nullable=true, default="id", description="order by")
      * @Rest\QueryParam(name="sort", requirements="(asc|desc)", nullable=true, default="asc", description="tri order asc|desc")
-     * @Rest\QueryParam(name="label",map=true, nullable=false, description="filter by label. example: label[eq]=value")
-     * @Rest\QueryParam(name="active", map=true, nullable=false, description="filter by active. example: active[eq]=1")
+     * @Rest\QueryParam(name="label", map=true, nullable=false, description="filter by label. example: label[eq]=value")
+     * @Rest\QueryParam(name="acronym", map=true, nullable=false, description="filter by acronym. example: acronym[eq]=value")
+     * @Rest\QueryParam(name="startDate", map=true, nullable=false, description="filter by startDate. example: startDate[lt]=value")
+     * @Rest\QueryParam(name="endDate", map=true, nullable=false, description="filter by endDate. example: endDate[lt]=value")
+     * @Rest\QueryParam(name="establishment", map=true, nullable=false, description="filter by establishment. example: establishment[eq]=value")
      *
      * @Rest\View()
      *
@@ -108,9 +111,9 @@ class StyleController extends AbstractFOSRestController
      *
      * @return Response
      */
-    public function listStyles(ParamFetcherInterface $paramFetcher)
+    public function listSubDivisions(ParamFetcherInterface $paramFetcher)
     {
-        $records = $this->apiManager->findRecordsByEntityName(Style::class, $paramFetcher);
+        $records = $this->apiManager->findRecordsByEntityName(SubDivision::class, $paramFetcher);
         return $this->view($records, Response::HTTP_OK);
     }
 
@@ -119,9 +122,9 @@ class StyleController extends AbstractFOSRestController
      *
      * @SWG\Response(
      *     response=201,
-     *     description="Returns created Style",
+     *     description="Returns created SubDivision",
      *     @SWG\Schema(
-     *         ref=@Model(type=Style::class, groups={"style"})
+     *         ref=@Model(type=SubDivision::class, groups={"sub_division", "establishment_id"})
      *     )
      * )
      * @SWG\Response(
@@ -131,12 +134,12 @@ class StyleController extends AbstractFOSRestController
      * @SWG\Parameter(
      *     name="form",
      *     in="body",
-     *     description="Add Style",
-     *     @Model(type=Style::class, groups={"style"})
+     *     description="Add SubDivision",
+     *     @Model(type=SubDivision::class, groups={"sub_division"})
      * )
-     * @SWG\Tag(name="styles")
+     * @SWG\Tag(name="subDivisions")
      *
-     * @Rest\View(serializerGroups={"style"})
+     * @Rest\View(serializerGroups={"sub_division", "establishment_id"})
      *
      * @param Request $request
      *
@@ -145,13 +148,13 @@ class StyleController extends AbstractFOSRestController
      * @throws \Doctrine\ORM\ORMException
      * @throws \Doctrine\ORM\OptimisticLockException
      */
-    public function postStyle(Request $request)
+    public function postSubDivision(Request $request)
     {
-        $form = $this->createForm(StyleType::class);
+        $form = $this->createForm(SubDivisionType::class);
         $form->submit($request->request->all());
         if ($form->isValid()) {
-            $style = $this->apiManager->save($form->getData());
-            return $this->view($style, Response::HTTP_CREATED);
+            $subDivision = $this->apiManager->save($form->getData());
+            return $this->view($subDivision, Response::HTTP_CREATED);
         } else {
             throw new FormValidationException($form);
         }
@@ -162,7 +165,7 @@ class StyleController extends AbstractFOSRestController
      *
      * @SWG\Response(
      *     response=204,
-     *     description="Style is updated"
+     *     description="SubDivision is updated"
      *     )
      * )
      * @SWG\Response(
@@ -172,28 +175,28 @@ class StyleController extends AbstractFOSRestController
      * @SWG\Parameter(
      *     name="form",
      *     in="body",
-     *     description="Update a Style",
-     *     @Model(type=Style::class, groups={"style"})
+     *     description="Update a SubDivision",
+     *     @Model(type=SubDivision::class, groups={"sub_division"})
      * )
-     * @SWG\Tag(name="styles")
+     * @SWG\Tag(name="subDivisions")
      *
      * @Rest\View()
      *
      * @param Request $request
-     * @param Style $style
+     * @param SubDivision $subDivision
      *
      * @return Response
      *
      * @throws \Doctrine\ORM\ORMException
      * @throws \Doctrine\ORM\OptimisticLockException
      */
-    public function updateStyle(Request $request, Style $style)
+    public function updateSubDivision(Request $request, SubDivision $subDivision)
     {
-        $form = $this->createForm(StyleType::class, $style);
+        $form = $this->createForm(SubDivisionType::class, $subDivision);
         $form->submit($request->request->all(), false);
 
         if ($form->isValid()) {
-            $this->apiManager->save($style);
+            $this->apiManager->save($subDivision);
             return $this->view(null, Response::HTTP_NO_CONTENT);
         } else {
             throw new FormValidationException($form);
@@ -205,20 +208,20 @@ class StyleController extends AbstractFOSRestController
      *
      * @SWG\Response(
      *     response=204,
-     *     description="Style is removed"
+     *     description="SubDivision is removed"
      *     )
      * )
-     * @SWG\Tag(name="styles")
+     * @SWG\Tag(name="subDivisions")
      *
      * @Rest\View()
      *
-     * @param Style $style
+     * @param SubDivision $subDivision
      *
      * @return Response
      */
-    public function removeStyle(Style $style)
+    public function removeSubDivision(SubDivision $subDivision)
     {
-        $this->apiManager->delete($style);
+        $this->apiManager->delete($subDivision);
         return $this->view(null, Response::HTTP_NO_CONTENT);
     }
 }

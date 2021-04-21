@@ -7,6 +7,7 @@ use DateTimeInterface;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use JMS\Serializer\Annotation as JMS;
 
 /**
  * @ORM\Entity(repositoryClass=SubDivisionRepository::class)
@@ -15,6 +16,8 @@ use Doctrine\ORM\Mapping as ORM;
 class SubDivision
 {
     /**
+     * @JMS\Groups("id", "sub_division", "sub_division_id")
+     *
      * @ORM\Id
      * @ORM\GeneratedValue
      * @ORM\Column(type="integer")
@@ -22,41 +25,57 @@ class SubDivision
     private $id;
 
     /**
+     * @JMS\Groups("sub_division")
+     *
      * @ORM\Column(name="libelle", type="string", length=255, nullable=true)
      */
     private $label;
 
     /**
+     * @JMS\Groups("sub_division")
+     *
      * @ORM\Column(name="sigle", type="string", length=255, nullable=true)
      */
     private $acronym;
 
     /**
+     * @JMS\Groups("sub_division")
+     *
      * @ORM\Column(name="date_debut", type="datetime", nullable=true)
      */
     private $startDate;
 
     /**
+     * @JMS\Groups("sub_division")
+     *
      * @ORM\Column(name="date_fin", type="datetime", nullable=true)
      */
     private $endDate;
 
     /**
+     * @JMS\Exclude()
+     *
      * @ORM\OneToMany(targetEntity=location::class, mappedBy="subDivision")
      */
     private $locations;
 
     /**
+     * @JMS\Exclude()
+     *
      * @ORM\OneToMany(targetEntity=Correspondent::class, mappedBy="subDivision")
      */
     private $correspondents;
 
     /**
+     * @JMS\Exclude()
+     *
      * @ORM\OneToMany(targetEntity=Service::class, mappedBy="subDivision")
      */
     private $services;
 
     /**
+     * @JMS\Groups("sub_division", "establishment_id")
+     *
      * @ORM\ManyToOne(targetEntity=Establishment::class, inversedBy="subDivisions")
      * @ORM\JoinColumn(name="etablissement_id", referencedColumnName="id")
      */

@@ -8,6 +8,7 @@ use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Event\ExceptionEvent;
+use Symfony\Component\HttpKernel\Exception\HttpException;
 use Symfony\Component\HttpKernel\KernelEvents;
 
 class ExceptionSubscriber implements EventSubscriberInterface
@@ -28,6 +29,11 @@ class ExceptionSubscriber implements EventSubscriberInterface
         }
         if ($exception instanceof FormValidationException){
             $this->event->setResponse($exception->getJsonResponse());
+
+            return;
+        }
+        if ($exception instanceof HttpException){
+            $this->setResponse($exception->getMessage(), $exception->getStatusCode());
 
             return;
         }

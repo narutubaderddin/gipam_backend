@@ -6,6 +6,7 @@ use App\Repository\EstablishmentTypeRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use JMS\Serializer\Annotation as JMS;
 
 /**
  * @ORM\Entity(repositoryClass=EstablishmentTypeRepository::class)
@@ -14,6 +15,8 @@ use Doctrine\ORM\Mapping as ORM;
 class EstablishmentType
 {
     /**
+     * @JMS\Groups("id", "establishment_type", "establishment_type_id")
+     *
      * @ORM\Id
      * @ORM\GeneratedValue
      * @ORM\Column(type="integer")

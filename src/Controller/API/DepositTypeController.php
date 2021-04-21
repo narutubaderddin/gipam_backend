@@ -1,8 +1,6 @@
 <?php
 
-
 namespace App\Controller\API;
-
 
 use App\Entity\DepositType;
 use App\Exception\FormValidationException;
@@ -92,22 +90,17 @@ class DepositTypeController extends AbstractFOSRestController
      *     name="sort",
      *     in="query",
      *     type="string",
-     *     description="The fiemld used to sort type"
+     *     description="The field used to sort type"
      * )
-     * @SWG\Parameter(
-     *     name="label",
-     *     in="query",
-     *     type="string",
-     *     description="The field used to filter by label"
-     * )
+     *
      * @SWG\Tag(name="depositTypes")
      *
      * @Rest\QueryParam(name="page", requirements="\d+", default="1", description="page number.")
      * @Rest\QueryParam(name="limit", requirements="\d+", default="20", description="page size.")
      * @Rest\QueryParam(name="sort_by", nullable=true, default="id", description="order by")
      * @Rest\QueryParam(name="sort", requirements="(asc|desc)", nullable=true, default="asc", description="tri order asc|desc")
-     * @Rest\QueryParam(name="label",map=true, nullable=false, description="filter by label. example: label[eq]=value")
-     * @Rest\QueryParam(name="active", nullable=false, description="filter by active. example: active[eq]=1")
+     * @Rest\QueryParam(name="label", map=true, nullable=false, description="filter by label. example: label[eq]=value")
+     * @Rest\QueryParam(name="active", map=true, nullable=false, description="filter by active. example: active[eq]=1")
      *
      * @Rest\View()
      *
