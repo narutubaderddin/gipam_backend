@@ -27,7 +27,6 @@ trait ObjectDimensionsTrait
             'depth' => "/^(p|P|Prof|prof)\s*.?\s*:?\s*",
         ];
         $digits = "([0-9]*[.,])?[0-9]+";
-//        $digits = "\d{1,}";
         $linearDimensionPattern = "/(^(((\s*" . $digits . "\s*)(cm|m|CM|M)?\s*[xX]){2}(\s*" . $digits . "))\s*(cm|m|CM|M)?\s*$)" .
             "|" . "(^((\s*" . $digits . "\s*)(cm|m|CM|M)?\s*[xX](\s*" . $digits . "))\s*(cm|m|CM|M)?\s*$)/";
         $outputDimensions = [];
@@ -140,7 +139,6 @@ trait ObjectDimensionsTrait
             'height' => "/^((hauteur|h|H)\s*.?\s*:?\s*)",
             'diameter' => "/^(Ø|ø|DIA)|(d\s*=?)\s*.?\s*:?" . $digits . "\s*(cm|m|CM|M)?\s*$/i"
         ];
-//        $digits = "\d{1,}";
         if (!preg_match("/(Ø|ø|DIA)|(d\s*=)\s*:?\s*" . $digits . "/i", $oldDimensions)) {
             return null;
         }
@@ -196,7 +194,6 @@ trait ObjectDimensionsTrait
 
     /**
      * @param array $dimensions array with keys that are the attributes of furniture object to be set
-     * @param string $unit
      * @param Furniture $furniture
      */
     private function setDimensions(array $dimensions, Furniture $furniture)

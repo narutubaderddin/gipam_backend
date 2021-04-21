@@ -4,11 +4,8 @@ namespace App\Command\Utils;
 
 use App\Entity\Action;
 use App\Entity\Furniture;
-use App\Entity\MovementActionType;
-use App\Entity\MovementType;
 use App\Entity\Report;
 use App\Entity\ReportSubType;
-use App\Entity\ReportType;
 
 trait ReportActionTrait
 {
@@ -20,7 +17,7 @@ trait ReportActionTrait
         $oldActions = $this->migrationRepository
             ->getBy(MigrationRepository::$oldDBConnection, $actionMappingTable['table'], $criteria);
         $reportTypeMappingTable = MigrationDb::getMappingTable('type_constat');
-        $i = 1;
+
         foreach ($oldActions as $oldAction) {
             $oldReportTypeId = $oldAction[$actionMappingTable['rel_constat']];
             if ($oldReportTypeId) {
@@ -34,16 +31,19 @@ trait ReportActionTrait
                     $report = $this->createSeenReport($oldAction, $actionMappingTable);
                     $this->entityManager->persist($report);
                     $newFurniture->addReport($report);
-                } elseif ($oldLabel === 'non vu') {
-//                    $report = $this->createAction($oldAction, $actionMappingTable);
                 }
+                // this after validation
+//                elseif ($oldLabel === 'non vu') {
+//                  $report = $this->createAction($oldAction, $actionMappingTable);
+//                }
             }
+            // this after validation
 //            $i++;
 //            if ($i % 100 === 0) {
 //                $this->entityManager->flush();
 //            }
         }
-//        $this->entityManager->flush();
+//       this after validation  $this->entityManager->flush();
     }
 
     private function createSeenReport(array $oldAction, array $actionMappingTable)
@@ -67,8 +67,6 @@ trait ReportActionTrait
             $subReportType = $this->entityManager->getRepository(ReportSubType::class)
                 ->findOneBy(['label' => $label]);
             $report->setReportSubType($subReportType);
-        } else {
-
         }
         $date = $oldAction[$actionMappingTable['date']];
         if ($date) {

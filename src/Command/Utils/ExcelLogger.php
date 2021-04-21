@@ -1,8 +1,6 @@
 <?php
 
-
 namespace App\Command\Utils;
-
 
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Style\Border;
@@ -66,8 +64,6 @@ class ExcelLogger
             $column++;
         }
         $cellCoordinates = 'A' . $row . ':' . $cellCoordinates;
-//        $this->sheet->getStyle($cellCoordinates)
-//            ->getFill()->setFillType(Fill::FILL_SOLID)->getStartColor()->setARGB($cellColor);
         $this->sheet->getStyle($cellCoordinates)->applyFromArray($styleArray);
     }
 

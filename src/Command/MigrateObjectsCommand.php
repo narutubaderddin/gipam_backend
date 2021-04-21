@@ -140,19 +140,19 @@ class MigrateObjectsCommand extends Command
         // return this if there was no problem running the command
         return 0;
     }
-
-    private function dropOldColumnsStaticData()
-    {
-        foreach (MigrateStaticDataCommand::GROUPS as $group) {
-            $this->migrationRepository->dropOldColumn($group);
-        }
-    }
+    // todo  after magration complete to drop old_id column
+//    private function dropOldColumnsStaticData()
+//    {
+//        foreach (MigrateStaticDataCommand::GROUPS as $group) {
+//            $this->migrationRepository->dropOldColumn($group);
+//        }
+//    }
     // todo delete
-    private function test($id)
-    {
-        $table = MigrationDb::OEUVRES['table'];
-        return $this->migrationRepository->getOneBy(MigrationRepository::$oldDBConnection, $table, ['C_MGPAM' => $id]);
-    }
+//    private function test($id)
+//    {
+//        $table = MigrationDb::OEUVRES['table'];
+//        return $this->migrationRepository->getOneBy(MigrationRepository::$oldDBConnection, $table, ['C_MGPAM' => $id]);
+//    }
 
     private function createFurniture(OutputInterface $output)
     {

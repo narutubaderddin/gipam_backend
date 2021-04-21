@@ -21,7 +21,7 @@ use Symfony\Component\Validator\Validator\ValidatorInterface;
 /**
  * Class BuildingController
  * @package App\Controller\API
- * @Route("/building")
+ * @Route("/buildings")
  */
 class BuildingController extends AbstractFOSRestController
 {
@@ -53,7 +53,7 @@ class BuildingController extends AbstractFOSRestController
      *         ref=@Model(type=Building::class, groups={"building", "id"})
      *     )
      * )
-     * @SWG\Tag(name="building")
+     * @SWG\Tag(name="buildings")
      * @Rest\View(serializerGroups={"building", "id"})
      *
      * @param Building $building
@@ -105,7 +105,7 @@ class BuildingController extends AbstractFOSRestController
      *     type="string",
      *     description="The field used to filter by name"
      * )
-     * @SWG\Tag(name="building")
+     * @SWG\Tag(name="buildings")
      *
      * @Rest\QueryParam(name="page", requirements="\d+", default="1", description="page number.")
      * @Rest\QueryParam(name="limit", requirements="\d+", default="20", description="page size.")
@@ -135,7 +135,7 @@ class BuildingController extends AbstractFOSRestController
      *
      * @return View
      */
-    public function listbuilding(ParamFetcherInterface $paramFetcher)
+    public function listBuilding(ParamFetcherInterface $paramFetcher)
     {
         $records = $this->apiManager->findRecordsByEntityName(Building::class, $paramFetcher);
         return $this->view($records, Response::HTTP_OK);
@@ -161,7 +161,7 @@ class BuildingController extends AbstractFOSRestController
      *     description="Add Building",
      *     @Model(type=Building::class, groups={"building"})
      * )
-     * @SWG\Tag(name="building")
+     * @SWG\Tag(name="buildings")
      *
      * @Rest\View(serializerGroups={"building", "id"})
      *
@@ -201,7 +201,7 @@ class BuildingController extends AbstractFOSRestController
      *     description="Update a Building",
      *     @Model(type=Building::class, groups={"building"})
      * )
-     * @SWG\Tag(name="building")
+     * @SWG\Tag(name="buildings")
      *
      * @Rest\View()
      *
@@ -233,7 +233,7 @@ class BuildingController extends AbstractFOSRestController
      *     description="Deleting errors"
      *     )
      * )
-     * @SWG\Tag(name="building")
+     * @SWG\Tag(name="buildings")
      *
      * @Rest\View()
      *
