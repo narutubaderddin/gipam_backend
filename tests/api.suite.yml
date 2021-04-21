@@ -12,6 +12,9 @@ modules:
               depends: Symfony
               cleanup: true
               populate: false
+        - DataFactory:
+            depends: Doctrine2
+        - \App\Tests\Helper\Factory
         - Asserts
         - \App\Tests\Helper\Api
         - Db:
