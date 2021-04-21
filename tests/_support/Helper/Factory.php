@@ -6,6 +6,9 @@ namespace App\Tests\Helper;
 // all public methods declared in helper class will be available in $I
 
 use Codeception\Module;
+use Codeception\TestInterface;
+use Doctrine\ORM\EntityManager;
+use Exception;
 
 class Factory extends Module
 {
@@ -19,10 +22,15 @@ class Factory extends Module
      */
     protected $entityName = '';
 
+    /**
+     * @var EntityManager
+     */
+    public $em;
+
     public function _beforeSuite($settings = [])
     {
-        /** @var @var DataFactory $factory */
         $this->dataFactory = $this->getModule('DataFactory');
+        $this->em = $this->getModule('Doctrine2')->_getEntityManager();
     }
 
     public function define(string $entityName, array $attribute)
@@ -33,21 +41,43 @@ class Factory extends Module
         }
     }
 
+    /**
+     * @param array $attribute
+     * @return object
+     */
     public function have(array $attribute = [])
     {
         if (empty($attribute)) {
-            $this->dataFactory->have($this->entityName);
-            return;
+            return $this->dataFactory->have($this->entityName);
         }
-        $this->dataFactory->have($this->entityName, $attribute);
+        return $this->dataFactory->have($this->entityName, $attribute);
     }
 
+    /**
+     * @param int $count
+     * @param array $attribute
+     * @return object[]
+     */
     public function haveMultiple(int $count, array $attribute = [])
     {
         if (empty($attribute)) {
-            $this->dataFactory->haveMultiple($this->entityName, $count);
-            return;
+            return $this->dataFactory->haveMultiple($this->entityName, $count);
         }
-        $this->dataFactory->haveMultiple($this->entityName, $count, $attribute);
+        return $this->dataFactory->haveMultiple($this->entityName, $count, $attribute);
+    }
+
+    public function findEntity(string $entityName, array $attribute)
+    {
+        if ($this->entityName !== $entityName) {
+            $this->dataFactory->_define($entityName, $attribute);
+            return $this->dataFactory->have($entityName, $attribute);
+        }
+        throw new Exception("Entity Name should not be " . $this->entityName);
+    }
+
+    public function _after(TestInterface $test)
+    {
+        $this->em->clear();
+        parent::_after($test);
     }
 }

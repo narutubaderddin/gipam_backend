@@ -2,7 +2,6 @@
 
 namespace App\Tests\api\Controller\API;
 
-use App\Entity\Location;
 use App\Entity\LocationType;
 use App\Tests\ApiTester;
 use App\Tests\Helper\Factory;
@@ -35,10 +34,10 @@ class LocationTypeControllerCest
 
     public function getLocationTypeById()
     {
-        $this->factory->haveMultiple( 2);
+        $this->factory->have();
         $this->apiTester->wantTo('get Location Types By id');
         $this->apiTester->haveHttpHeader('Content-Type', 'application/json');
-        $this->apiTester->sendGet(self::URL . "2");
+        $this->apiTester->sendGet(self::URL . "1");
         $this->apiTester->seeResponseCodeIs(200);
         $this->apiTester->seeResponseIsJson();
         $this->apiTester->seeResponseMatchesJsonType([
@@ -48,13 +47,24 @@ class LocationTypeControllerCest
         ]);
     }
 
+    public function getLocationTypeByIdNotFound()
+    {
+        $this->apiTester->wantTo('get Location Types By id Not Found');
+        $this->apiTester->haveHttpHeader('Content-Type', 'application/json');
+        $this->apiTester->sendGet(self::URL . "1");
+        $this->apiTester->seeResponseCodeIs(HttpCode::NOT_FOUND);
+    }
+
     public function getLocationTypesList()
     {
+        $this->factory->haveMultiple(2);
         $this->apiTester->wantTo('get Location Types List');
         $this->apiTester->haveHttpHeader('Content-Type', 'application/json');
         $this->apiTester->sendGet(self::URL);
         $this->apiTester->seeResponseCodeIs(200);
         $this->apiTester->seeResponseIsJson();
+        list($totalQuantity) = $this->apiTester->grabDataFromResponseByJsonPath('$.totalQuantity');
+        $this->apiTester->assertEquals(2, $totalQuantity);
     }
 
     public function createLocationTypeSuccessTest()
@@ -81,11 +91,39 @@ class LocationTypeControllerCest
         ]);
         $this->apiTester->seeResponseCodeIs(HttpCode::BAD_REQUEST);
         $this->apiTester->seeResponseIsJson();
+    }
 
+    public function updateLocationTypeSuccessTest()
+    {
+        /** @var LocationType $type */
+        $type = $this->factory->have();
+        $this->apiTester->connectApi();
+        $this->apiTester->wantTo('create Location Type ,expected Code to be ' . HttpCode::CREATED);
+        $this->apiTester->haveHttpHeader('Content-Type', 'application/json');
+        $this->apiTester->sendPut(self::URL . "1", [
+            "label" => "updated Label",
+            "active" => 0,
+        ]);
+        $this->apiTester->seeResponseCodeIs(HttpCode::NO_CONTENT);
+        $updatedType = $this->factory->em->getRepository(LocationType::class)->find(1);
+        $this->apiTester->assertEquals("updated Label", $updatedType->getLabel());
+        $this->apiTester->assertEquals(false, $updatedType->isActive());
+    }
+
+    public function deleteLocationType()
+    {
+        $this->factory->have();
+        $this->apiTester->wantTo('get Location Types By id');
+        $this->apiTester->haveHttpHeader('Content-Type', 'application/json');
+        $this->apiTester->sendDelete(self::URL . "1");
+        $this->apiTester->seeResponseCodeIs(HttpCode::NO_CONTENT);
+        $type = $this->factory->em->getRepository(LocationType::class)->find(1);
+        $this->apiTester->assertEquals(null, $type);
     }
 
     public function _after()
     {
         unset($this->apiTester);
+        unset($this->factory);
     }
 }
