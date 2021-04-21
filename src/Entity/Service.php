@@ -6,6 +6,7 @@ use App\Repository\ServiceRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use JMS\Serializer\Annotation as JMS;
 
 /**
  * @ORM\Entity(repositoryClass=ServiceRepository::class)
@@ -14,6 +15,8 @@ use Doctrine\ORM\Mapping as ORM;
 class Service
 {
     /**
+     * @JMS\Groups("id", "service", "service_id")
+     *
      * @ORM\Id
      * @ORM\GeneratedValue
      * @ORM\Column(type="integer")
@@ -21,21 +24,29 @@ class Service
     private $id;
 
     /**
+     * @JMS\Groups("service")
+     *
      * @ORM\Column(name="libelle", type="string", length=255, nullable=true)
      */
     private $label;
 
     /**
+     * @JMS\Groups("service")
+     *
      * @ORM\Column(name="sigle", type="string", length=255, nullable=true)
      */
     private $acronym;
 
     /**
+     * @JMS\Groups("service")
+     *
      * @ORM\Column(name="date_debut", type="datetime", nullable=true)
      */
     private $startDate;
 
     /**
+     * @JMS\Groups("service")
+     *
      * @ORM\Column(name="date_disparition", type="datetime", nullable=true)
      */
     private $disappearanceDate;
@@ -46,6 +57,8 @@ class Service
     private $correspondents;
 
     /**
+     * @JMS\Groups("service", "sub_division_id")
+     *
      * @ORM\ManyToOne(targetEntity=SubDivision::class, inversedBy="services")
      * @ORM\JoinColumn(name="sous_direction_id", referencedColumnName="id")
      */

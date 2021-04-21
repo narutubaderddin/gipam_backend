@@ -7,6 +7,7 @@ use DateTimeInterface;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use JMS\Serializer\Annotation as JMS;
 
 /**
  * @ORM\Entity(repositoryClass=SiteRepository::class)
@@ -15,6 +16,8 @@ use Doctrine\ORM\Mapping as ORM;
 class Site
 {
     /**
+     * @JMS\Groups("id", "site")
+     *
      * @ORM\Id
      * @ORM\GeneratedValue
      * @ORM\Column(type="integer")
@@ -22,16 +25,22 @@ class Site
     private $id;
 
     /**
+     * @JMS\Groups("site")
+     *
      * @ORM\Column(name="libelle", type="string", length=255, nullable=true)
      */
     private $label;
 
     /**
+     * @JMS\Groups("site")
+     *
      * @ORM\Column(name="date_debut", type="datetime", nullable=true)
      */
     private $startDate;
 
     /**
+     * @JMS\Groups("site")
+     *
      * @ORM\Column(name="date_disparition", type="datetime", nullable=true)
      */
     private $disappearanceDate;

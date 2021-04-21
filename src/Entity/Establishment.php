@@ -7,6 +7,7 @@ use DateTimeInterface;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use JMS\Serializer\Annotation as JMS;
 
 /**
  * @ORM\Entity(repositoryClass=EstablishmentRepository::class)
@@ -15,6 +16,8 @@ use Doctrine\ORM\Mapping as ORM;
 class Establishment
 {
     /**
+     * @JMS\Groups("id", "establishment", "establishment_id")
+     *
      * @ORM\Id
      * @ORM\GeneratedValue
      * @ORM\Column(type="integer")
@@ -22,47 +25,65 @@ class Establishment
     private $id;
 
     /**
+     * @JMS\Groups("establishment")
+     *
      * @ORM\Column(name="libelle", type="string", length=255, nullable=true)
      */
     private $label;
 
     /**
+     * @JMS\Groups("establishment")
+     *
      * @ORM\Column(name="sigle", type="string", length=255, nullable=true)
      */
     private $acronym;
 
     /**
+     * @JMS\Groups("establishment")
+     *
      * @ORM\Column(name="date_debut", type="datetime", nullable=true)
      */
     private $startDate;
 
     /**
+     * @JMS\Groups("establishment")
+     *
      * @ORM\Column(name="date_disparition", type="datetime", nullable=true)
      */
     private $disappearanceDate;
 
     /**
+     * @JMS\Exclude()
+     *
      * @ORM\OneToMany(targetEntity=Location::class, mappedBy="establishment")
      */
     private $locations;
 
     /**
+     * @JMS\Groups("establishment", "ministry_id")
+     *
      * @ORM\ManyToOne(targetEntity=Ministry::class, inversedBy="establishments")
      * @ORM\JoinColumn(name="ministere_id", referencedColumnName="id")
      */
     private $ministry;
 
     /**
+     * @JMS\Exclude()
+     *
      * @ORM\OneToMany(targetEntity=Correspondent::class, mappedBy="establishment")
      */
     private $correspondents;
 
     /**
+     * @JMS\Exclude()
+     *
      * @ORM\OneToMany(targetEntity=SubDivision::class, mappedBy="establishment")
      */
     private $subDivisions;
 
     /**
+     * @JMS\Groups("establishment", "establishment_type_id")
+     *
      * @ORM\ManyToOne(targetEntity=EstablishmentType::class, inversedBy="establishments")
      * @ORM\JoinColumn(name="type_id", referencedColumnName="id")
      */
