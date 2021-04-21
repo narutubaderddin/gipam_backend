@@ -14,24 +14,13 @@ modules:
               populate: false
         - Asserts
         - \App\Tests\Helper\Api
-#        - Db:
-#              dsn: 'mysql://root:@127.0.0.1:3308/gipam?serverVersion=5.7'
-#              user: 'root'
-#              password: ''
-#              dump: 'tests/_data/dump.sql'
-#              populate: true
-#              cleanup: true
-#              reconnect: true
-#              waitlock: 10
-#              ssl_key: '/path/to/client-key.pem'
-#              ssl_cert: '/path/to/client-cert.pem'
-#              ssl_ca: '/path/to/ca-cert.pem'
-#              ssl_verify_server_cert: false
-#              ssl_cipher: 'AES256-SHA'
-#              initial_queries:
-#                - 'CREATE DATABASE IF NOT EXISTS temp_db;'
-#                - 'USE temp_db;'
-#                - 'SET NAMES utf8;'
+        - Db:
+            dsn: 'sqlite:var/data/gipam_test.db'
+            user: ''
+            password: ''
+            populate: true # load dump before all tests
+            cleanup: true # load dump for each test
+            dump: 'tests/_data/dump.sql'
 
 params:
     username: "admin@talan.com"

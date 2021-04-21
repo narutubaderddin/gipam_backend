@@ -118,7 +118,7 @@ class MigrateObjectsCommand extends Command
         $this->stopwatch->start('export-data');
 
         // todo initilization script
-//        $this->initializationScriptService->initializeTypes();
+        $this->initializationScriptService->initializeTypes();
         $this->createFurniture($output);
 
         // todo drop old columns after migrating Furniture
@@ -140,24 +140,24 @@ class MigrateObjectsCommand extends Command
         // return this if there was no problem running the command
         return 0;
     }
-
-    private function dropOldColumnsStaticData()
-    {
-        foreach (MigrateStaticDataCommand::GROUPS as $group) {
-            $this->migrationRepository->dropOldColumn($group);
-        }
-    }
+    // todo  after magration complete to drop old_id column
+//    private function dropOldColumnsStaticData()
+//    {
+//        foreach (MigrateStaticDataCommand::GROUPS as $group) {
+//            $this->migrationRepository->dropOldColumn($group);
+//        }
+//    }
     // todo delete
-    private function test($id)
-    {
-        $table = MigrationDb::OEUVRES['table'];
-        return $this->migrationRepository->getOneBy(MigrationRepository::$oldDBConnection, $table, ['C_MGPAM' => $id]);
-    }
+//    private function test($id)
+//    {
+//        $table = MigrationDb::OEUVRES['table'];
+//        return $this->migrationRepository->getOneBy(MigrationRepository::$oldDBConnection, $table, ['C_MGPAM' => $id]);
+//    }
 
     private function createFurniture(OutputInterface $output)
     {
         $entity = 'art_work';
-//        $this->migrationRepository->dropNewTables(self::GROUP);
+        $this->migrationRepository->dropNewTables(self::GROUP);
         $mappingTable = [
             'id' => 'C_MGPAM',
             'table' => 'OEUVRES',
@@ -177,7 +177,7 @@ class MigrateObjectsCommand extends Command
         $this->excelLogger->write($columns, 1);
         foreach ($oldEntities as $oldEntity) {
             // todo for testing
-//            $oldEntity = $this->test(12);
+//            $oldEntity = $this->test(3906);
 
             $newEntity = $this->createEntity($entity, $oldEntity, $mappingTable, $foundError);
 
@@ -185,7 +185,8 @@ class MigrateObjectsCommand extends Command
             $this->setMaterialTechnique($oldEntity, $newEntity, $mappingTable);
             $this->setStatus($oldEntity, $newEntity);
             $this->addAttachments($oldEntity, $newEntity);
-            $this->findDimensions($oldEntity, $newEntity);
+            $dimensionError = false;
+            $this->findDimensions($oldEntity, $newEntity, $dimensionError);
 
 //
             // todo should fix the logic of migration
@@ -198,9 +199,8 @@ class MigrateObjectsCommand extends Command
             $this->entityManager->persist($newEntity);
 
             // here we add the new entity ID after persisting
-            $dimensions = $this->furnitureDimensions($oldEntity, $newEntity);
-            $this->excelLogger->write($dimensions, $rowCount + 1);
             $rowCount++;
+            $this->logFurnitureDimensions($oldEntity, $newEntity, $rowCount, $dimensionError);
             if ($rowCount % 100 === 0) {
                 $this->entityManager->flush();
                 $this->entityManager->clear();
@@ -321,8 +321,7 @@ class MigrateObjectsCommand extends Command
                 $this->entityManager->persist($materialTechnique);
                 $this->entityManager->flush();
             } else {
-                $materialTechnique = $this->entityManager->getRepository(MaterialTechnique::class)
-                    ->findByLabelAndDenomination($materialTechniqueLabel, $denomination);
+                $materialTechnique = $denomination->getMaterialTechniqueByLabel($materialTechniqueLabel);
             }
         }
         $newFurniture->setMaterialTechnique($materialTechnique);
@@ -374,6 +373,8 @@ class MigrateObjectsCommand extends Command
             $date = $attachement[$mappingTable['date']];
             if ($date) {
                 $newAttachement->setDate(new  DateTime($date));
+            } else {
+                $newAttachement->setDate(new  DateTime());
             }
             $this->entityManager->persist($newAttachement);
             $newFurniture->addAttachment($newAttachement);

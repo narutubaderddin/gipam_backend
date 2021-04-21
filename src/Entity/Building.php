@@ -7,6 +7,8 @@ use DateTimeInterface;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use JMS\Serializer\Annotation as JMS;
+use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * @ORM\Entity(repositoryClass=BuildingRepository::class)
@@ -15,6 +17,8 @@ use Doctrine\ORM\Mapping as ORM;
 class Building
 {
     /**
+     * @JMS\Groups("id")
+     *
      * @ORM\Id
      * @ORM\GeneratedValue
      * @ORM\Column(type="integer")
@@ -22,53 +26,81 @@ class Building
     private $id;
 
     /**
+     * @JMS\Groups("building")
+     *
+     * @Assert\NotBlank
+     *
      * @ORM\Column(name="nom", type="string", length=255, nullable=true)
      */
     private $name;
 
     /**
+     * @JMS\Groups("building")
+     *
      * @ORM\Column(name="addresse", type="string", length=255, nullable=true)
      */
     private $address;
 
     /**
+     * @JMS\Groups("building")
+     *
      * @ORM\Column(name="distrib", type="string", length=255, nullable=true)
      */
     private $distrib;
 
     /**
+     * @JMS\Groups("building")
+     *
+     * @Assert\NotBlank
+     * @Assert\Type("\DateTimeInterface")
+     *
      * @ORM\Column(name="date_debut", type="datetime", nullable=true)
      */
     private $startDate;
 
     /**
+     * @JMS\Groups("building")
+     *
+     * @Assert\NotBlank
+     * @Assert\Type("\DateTimeInterface")
+     *
      * @ORM\Column(name="date_disparition", type="datetime", nullable=true)
      */
     private $disappearanceDate;
 
     /**
+     * @JMS\Groups("building")
+     *
      * @ORM\ManyToOne(targetEntity=Site::class, inversedBy="buildings")
      * @ORM\JoinColumn(name="site_id", referencedColumnName="id")
      */
     private $site;
 
     /**
+     * @JMS\Groups("building")
+     *
      * @ORM\ManyToOne(targetEntity=Commune::class, inversedBy="buildings")
      * @ORM\JoinColumn(name="commune_id", referencedColumnName="id")
      */
     private $commune;
 
     /**
+     * @JMS\Exclude()
+     *
      * @ORM\OneToMany(targetEntity=Room::class, mappedBy="building")
      */
     private $rooms;
 
     /**
+     * @JMS\Groups("building")
+     *
      * @ORM\ManyToMany(targetEntity=Responsible::class, mappedBy="buildings")
      */
     private $responsibles;
 
     /**
+     * @JMS\Groups("building")
+     *
      * @ORM\Column(name="cedex", type="string", length=255, nullable=true)
      */
     private $cedex;

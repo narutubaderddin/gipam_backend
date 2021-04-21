@@ -6,6 +6,8 @@ use App\Repository\MovementTypeRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use JMS\Serializer\Annotation as JMS;
+use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * @ORM\Entity(repositoryClass=MovementTypeRepository::class)
@@ -20,6 +22,8 @@ class MovementType
         'definitive' => 'Sortie définitive',
     ];
     /**
+     * @JMS\Groups("id")
+     *
      * @ORM\Id
      * @ORM\GeneratedValue
      * @ORM\Column(type="integer")
@@ -27,16 +31,24 @@ class MovementType
     private $id;
 
     /**
+     * @JMS\Groups("movement_type")
+     *
+     * @Assert\NotBlank()
+     *
      * @ORM\Column(name="libelle", type="string", length=150, nullable=true)
      */
     private $label;
 
     /**
+     * @JMS\Exclude()
+     *
      * @ORM\OneToMany(targetEntity=Movement::class, mappedBy="type")
      */
     private $movements;
 
     /**
+     * @JMS\Exclude()
+     *
      * @ORM\OneToMany(targetEntity=MovementActionType::class, mappedBy="movementType")
      */
     private $movementActionTypes;

@@ -46,7 +46,7 @@ class Action
     private $actionNature;
 
     /**
-     * @ORM\ManyToOne(targetEntity=ActionType::class, inversedBy="actions")
+     * @ORM\ManyToOne(targetEntity=ActionReportType::class, inversedBy="actions")
      * @ORM\JoinColumn(name="type_id", referencedColumnName="id")
      */
     private $type;
@@ -144,12 +144,12 @@ class Action
         return $this;
     }
 
-    public function getType(): ?ActionType
+    public function getType(): ?ActionReportType
     {
         return $this->type;
     }
 
-    public function setType(?ActionType $type): self
+    public function setType(?ActionReportType $type): self
     {
         $this->type = $type;
 

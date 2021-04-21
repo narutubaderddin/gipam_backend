@@ -6,6 +6,8 @@ use App\Repository\CommuneRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use JMS\Serializer\Annotation as JMS;
+use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * @ORM\Entity(repositoryClass=CommuneRepository::class)
@@ -14,6 +16,8 @@ use Doctrine\ORM\Mapping as ORM;
 class Commune
 {
     /**
+     * @JMS\Groups("id")
+     *
      * @ORM\Id
      * @ORM\GeneratedValue
      * @ORM\Column(type="integer")
@@ -21,27 +25,45 @@ class Commune
     private $id;
 
     /**
+     * @JMS\Groups("commune")
+     *
+     * @Assert\NotBlank
+     *
      * @ORM\Column(name="nom", type="string", length=255, nullable=true)
      */
     private $name;
 
     /**
-     * @ORM\ManyToOne(targetEntity=Departement::class, inversedBy="communes")
+     * @JMS\Groups("commune")
+     *
+     * @ORM\ManyToOne(targetEntity=Department::class, inversedBy="communes")
      * @ORM\JoinColumn(name="departement_id", referencedColumnName="id")
      */
-    private $departement;
+    private $department;
 
     /**
+     * @JMS\Exclude
+     *
      * @ORM\OneToMany(targetEntity=Building::class, mappedBy="commune")
      */
     private $buildings;
 
     /**
+     * @JMS\Groups("commune")
+     *
+     * @Assert\NotBlank
+     * @Assert\Type("\DateTimeInterface")
+     *
      * @ORM\Column(name="date_debut", type="datetime", nullable=true)
      */
     private $startDate;
 
     /**
+     * @JMS\Groups("commune")
+     *
+     * @Assert\NotBlank
+     * @Assert\Type("\DateTimeInterface")
+     *
      * @ORM\Column(name="date_disparition", type="datetime", nullable=true)
      */
     private $disappearanceDate;
@@ -69,14 +91,14 @@ class Commune
         return $this;
     }
 
-    public function getDepartement(): ?Departement
+    public function getDepartment(): ?Department
     {
-        return $this->departement;
+        return $this->department;
     }
 
-    public function setDepartement(?Departement $departement): self
+    public function setDepartment(?Department $department): self
     {
-        $this->departement = $departement;
+        $this->department = $department;
 
         return $this;
     }

@@ -3,6 +3,7 @@
 namespace App\Command\Utils;
 
 use App\Entity\Furniture;
+use PhpOffice\PhpSpreadsheet\Style\Color;
 
 trait ObjectDimensionsTrait
 {
@@ -23,13 +24,11 @@ trait ObjectDimensionsTrait
             'length' => "/^L\s*.?\s*:?\s*",
             'width' => "/^l\s*.?\s*:?\s*",
             'height' => "/^(hauteur|h|H)\s*.?\s*:?\s*",
-            'depth' => "/^(p|P)\s*.?\s*:?\s*",
+            'depth' => "/^(p|P|Prof|prof)\s*.?\s*:?\s*",
         ];
         $digits = "([0-9]*[.,])?[0-9]+";
-//        $digits = "\d{1,}";
-        $linearDimensionPattern = "/(^(((\s?" . $digits . "\s?)[xX]){2}(\s?" . $digits . "))\s*(cm|m|CM|M)?$)" .
-            "|" . "(^((\s?" . $digits . "\s?)[xX](\s?" . $digits . "))\s*(cm|m|CM|M)?$)/";
-
+        $linearDimensionPattern = "/(^(((\s*" . $digits . "\s*)(cm|m|CM|M)?\s*[xX]){2}(\s*" . $digits . "))\s*(cm|m|CM|M)?\s*$)" .
+            "|" . "(^((\s*" . $digits . "\s*)(cm|m|CM|M)?\s*[xX](\s*" . $digits . "))\s*(cm|m|CM|M)?\s*$)/";
         $outputDimensions = [];
         if (!preg_match($linearDimensionPattern, $oldDimensions)) {
             foreach ($inputDimensions as $dimension) {
@@ -58,36 +57,72 @@ trait ObjectDimensionsTrait
         return $outputDimensions;
     }
 
-    private function findDimensions($oldFurniture, Furniture &$newFurniture)
+    private function findDimensions($oldFurniture, Furniture &$newFurniture, &$convertingErrors = false)
     {
         $oldDimensions = MigrationDb::utf8Encode($oldFurniture['OE_DIM']);
         // Sometimes dimensions field is null in the old DB
         if (!$oldDimensions) {
             return null;
         }
+        $oldDimensions = preg_replace("/(env|\(|cadre|\))/i", '', $oldDimensions);
         $newDimensions = [];
         $dimensions = preg_split('/[xX\-;\r\n]/', $oldDimensions);
+
         foreach ($dimensions as $key => $dimension) {
             $dimensions[$key] = preg_replace("/(cm|m|M|CM|\s)/i", '', $dimension);
         }
         $newDimensions = array_merge($newDimensions, $this->getCircularDimensions($oldDimensions, $dimensions) ?? []);
         $newDimensions = array_merge($newDimensions, $this->getLinearDimensions($oldDimensions, $dimensions) ?? []);
         $unit = $this->getDimensionUnit($oldDimensions);
-        if (!empty($newDimensions)) {
-            $this->setDimensions($newDimensions, $unit, $newFurniture);
-        }
+        $this->addDimensionsUnit($newDimensions, $unit);
+        $newDimensions = array_merge($newDimensions, $this->getWeight($oldDimensions) ?? []);
         if (empty($newDimensions)) {
+            $convertingErrors = true;
             return null;
         }
+        $this->setDimensions($newDimensions, $newFurniture);
+        $convertingErrors = count($newDimensions) !== count($dimensions);
         return $newDimensions;
     }
 
-    private function furnitureDimensions($oldFurniture, Furniture $newFurniture)
+    private function addDimensionsUnit(array &$dimensions, string $unit)
     {
+        foreach ($dimensions as $key => $dimension) {
+            $dimensions[$key] = $dimension . " " . $unit;
+        }
+    }
+
+    private function getWeight(string $oldDimensions)
+    {
+        $pattern = "/=?\s*(([0-9]*[.,])?[0-9]+)\s*(kg|t)/i";
+        $matches = [];
+        if (!preg_match($pattern, $oldDimensions, $matches)) {
+            return null;
+        }
+        return ['weight' => $matches[1] . " " . end($matches)];
+    }
+
+    private function logFurnitureDimensions($oldEntity, $newEntity, int $excelRow, $foundErrors = false)
+    {
+        $cellColors = Color::COLOR_WHITE;
+        if ($foundErrors) {
+            $cellColors = Color::COLOR_RED;
+        }
+        $dimensions = $this->furnitureDimensions($oldEntity, $newEntity, $foundErrors);
+        $this->excelLogger->write($dimensions, $excelRow, $cellColors);
+    }
+
+    private function furnitureDimensions($oldFurniture, Furniture $newFurniture, $foundErrors = false)
+    {
+        $comment = "Ok";
+        if ($foundErrors) {
+            $comment = "Erreur";
+        }
         return [
             'id' => $newFurniture->getId(),
             'ancien ID' => $oldFurniture['C_MGPAM'],
             'anciennes dimensions' => MigrationDb::utf8Encode($oldFurniture['OE_DIM']),
+            'commentaire' => $comment,
             'longueur' => $newFurniture->getLength(),
             'largeur' => $newFurniture->getWidth(),
             'hauteur' => $newFurniture->getHeight(),
@@ -102,10 +137,9 @@ trait ObjectDimensionsTrait
         $digits = "([0-9]*[.,])?[0-9]+";
         $patterns = [
             'height' => "/^((hauteur|h|H)\s*.?\s*:?\s*)",
-            'diameter' => "/^(Ø|ø|DIA)\s*.?\s*:?" . $digits . "\s*(cm|m|CM|M)?\s*$/i"
+            'diameter' => "/^(Ø|ø|DIA)|(d\s*=?)\s*.?\s*:?" . $digits . "\s*(cm|m|CM|M)?\s*$/i"
         ];
-//        $digits = "\d{1,}";
-        if (!preg_match("/(Ø|ø|DIA)\s*:?\s*" . $digits . "/i", $oldDimensions)) {
+        if (!preg_match("/(Ø|ø|DIA)|(d\s*=)\s*:?\s*" . $digits . "/i", $oldDimensions)) {
             return null;
         }
         $outputDimensions = [];
@@ -126,16 +160,15 @@ trait ObjectDimensionsTrait
         if ($i === 1 && isset($inputDimensions[1])) {
             $outputDimensions['diameter'] = $inputDimensions[1];
         }
-        // here sometimes the dimension string is h20 dia20
+        // here sometimes the dimension string is h20 dia20 for example
         // so we split the string to an array and we recall the function
         if (count($inputDimensions) === 1 && empty($outputDimensions)) {
             $dimensions = $this->splitDimensionsString($inputDimensions[0]);
-            $this->getCircularDimensions($oldDimensions, $dimensions);
+            $outputDimensions = $this->getCircularDimensions($oldDimensions, $dimensions);
         }
         if (empty($outputDimensions)) {
             return null;
         }
-
         foreach ($outputDimensions as $key => $dimension) {
             $outputDimensions[$key] = trim($dimension);
             $outputDimensions[$key] = preg_replace("/[^\d{1,}]/", '', $dimension);
@@ -161,14 +194,13 @@ trait ObjectDimensionsTrait
 
     /**
      * @param array $dimensions array with keys that are the attributes of furniture object to be set
-     * @param string $unit
      * @param Furniture $furniture
      */
-    private function setDimensions(array $dimensions, string $unit, Furniture $furniture)
+    private function setDimensions(array $dimensions, Furniture $furniture)
     {
         foreach ($dimensions as $property => $dimension) {
             $setter = "set" . ucfirst($property);
-            $furniture->$setter($dimension . $unit);
+            $furniture->$setter($dimension);
         }
     }
 }
