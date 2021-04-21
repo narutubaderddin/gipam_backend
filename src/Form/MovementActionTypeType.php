@@ -4,6 +4,7 @@ namespace App\Form;
 
 use App\Entity\MovementActionType;
 use App\Entity\MovementType;
+use App\Form\Type\BooleanType;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
@@ -19,7 +20,8 @@ class MovementActionTypeType extends AbstractType
             ->add('movementType', EntityType::class, [
                 'class' => MovementType::class,
                 'choice_label' => 'id',
-            ]);
+            ])
+            ->add('active', BooleanType::class, ['required' => true]);
     }
 
     public function configureOptions(OptionsResolver $resolver)

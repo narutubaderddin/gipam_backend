@@ -53,10 +53,27 @@ class MovementType
      */
     private $movementActionTypes;
 
+    /**
+     * @JMS\Groups("movement_type")
+     *
+     * @ORM\Column(name="actif", type="boolean", nullable=false)
+     */
+    private $active = true;
+
     public function __construct()
     {
         $this->movements = new ArrayCollection();
         $this->movementActionTypes = new ArrayCollection();
+    }
+
+    public function isActive(): bool
+    {
+        return $this->active;
+    }
+
+    public function setActive(bool $active): void
+    {
+        $this->active = $active;
     }
 
     public function getId(): ?int
