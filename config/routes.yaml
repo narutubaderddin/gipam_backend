@@ -5,12 +5,12 @@ login_check:
 #  resource: ../../src/Controller/WEB
 #  type: annotation
 api_controllers:
-  resource: ../../src/Controller/API
+  resource: ../src/Controller/API
   type: annotation
   prefix: /api
   name_prefix: api_
 kernel:
-  resource: ../../src/Kernel.php
+  resource: ../src/Kernel.php
   type: annotation
 # config/routes.yaml
 app.swagger_ui:
