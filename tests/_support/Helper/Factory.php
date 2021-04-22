@@ -35,7 +35,7 @@ class Factory extends Module
 
     public function define(string $entityName, array $attribute)
     {
-        if ($this->entityName === '') {
+        if ($this->entityName !== $entityName) {
             $this->entityName = $entityName;
             $this->dataFactory->_define($this->entityName, $attribute);
         }
