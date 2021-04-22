@@ -11,7 +11,6 @@ use Symfony\Component\HttpKernel\KernelInterface;
 class MigrationRepository
 {
 
-
     /**
      * @var Connection|PDO
      */

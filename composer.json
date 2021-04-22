@@ -56,7 +56,8 @@
         "symfony/debug-pack": "*",
         "symfony/profiler-pack": "*",
         "symfony/test-pack": "*",
-        "symfony/web-server-bundle": "4.3.*"
+        "symfony/web-server-bundle": "4.3.*",
+        "theofidry/alice-data-fixtures": "^1.4"
     },
     "config": {
         "preferred-install": {

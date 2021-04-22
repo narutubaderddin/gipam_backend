@@ -1,0 +1,5 @@
+App\Entity\Department:
+  department_1:
+    name: <name()>
+    startDate: <date_create()>
+    region: '@region*'

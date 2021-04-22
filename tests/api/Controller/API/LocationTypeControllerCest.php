@@ -2,9 +2,7 @@
 
 namespace App\Tests\api\Controller\API;
 
-use App\Entity\LocationType;
 use App\Tests\ApiTester;
-use App\Tests\Helper\Factory;
 use Codeception\Util\HttpCode;
 
 class LocationTypeControllerCest
@@ -16,67 +14,40 @@ class LocationTypeControllerCest
      */
     protected $apiTester;
 
-    /**
-     * @var Factory
-     */
-    protected $factory;
-
-    function beforeAllTests(ApiTester $apiTester, Factory $factory)
+    public function _before(ApiTester $apiTester)
     {
         $this->apiTester = $apiTester;
         $this->apiTester->connectApi();
-        $this->factory = $factory;
-        $this->factory->define(LocationType::class, [
-            'label' => "test",
-            'active' => true,
-        ]);
-    }
-
-    public function _before(ApiTester $apiTester, Factory $factory)
-    {
-        $this->apiTester = $apiTester;
-        $this->apiTester->connectApi();
-        $this->factory = $factory;
     }
 
     public function getLocationTypeById()
     {
-        $this->factory->have();
         $this->apiTester->wantTo('get Location Types By id');
         $this->apiTester->haveHttpHeader('Content-Type', 'application/json');
         $this->apiTester->sendGet(self::URL . "1");
         $this->apiTester->seeResponseCodeIs(200);
         $this->apiTester->seeResponseIsJson();
-        $this->apiTester->seeResponseMatchesJsonType([
-            'id' => 'integer',
-            'label' => 'string',
-            'active' => 'boolean',
-        ]);
     }
 
     public function getLocationTypeByIdNotFound()
     {
         $this->apiTester->wantTo('get Location Types By id Not Found');
         $this->apiTester->haveHttpHeader('Content-Type', 'application/json');
-        $this->apiTester->sendGet(self::URL . "1");
+        $this->apiTester->sendGet(self::URL . "2");
         $this->apiTester->seeResponseCodeIs(HttpCode::NOT_FOUND);
     }
 
     public function getLocationTypesList()
     {
-        $this->factory->haveMultiple(2);
         $this->apiTester->wantTo('get Location Types List');
         $this->apiTester->haveHttpHeader('Content-Type', 'application/json');
         $this->apiTester->sendGet(self::URL);
         $this->apiTester->seeResponseCodeIs(200);
-        $this->apiTester->seeResponseIsJson();
-        list($totalQuantity) = $this->apiTester->grabDataFromResponseByJsonPath('$.totalQuantity');
-        $this->apiTester->assertEquals(2, $totalQuantity);
     }
 
     public function createLocationTypeSuccessTest()
     {
-        $this->apiTester->wantTo('create Location Type ,expected Code to be ' . HttpCode::CREATED);
+        $this->apiTester->wantTo('create Location Type ok,expected Code to be ' . HttpCode::CREATED);
         $this->apiTester->haveHttpHeader('Content-Type', 'application/json');
         $this->apiTester->sendPOST(self::URL, [
             "label" => "test Label",
@@ -88,7 +59,7 @@ class LocationTypeControllerCest
 
     public function createLocationTypeFailedTest()
     {
-        $this->apiTester->wantTo('create Location Type ,expected Code to be ' . HttpCode::BAD_REQUEST);
+        $this->apiTester->wantTo('create Location Type failed,expected Code to be ' . HttpCode::BAD_REQUEST);
         $this->apiTester->haveHttpHeader('Content-Type', 'application/json');
         $this->apiTester->sendPOST(self::URL, [
             "label" => "",
@@ -100,34 +71,33 @@ class LocationTypeControllerCest
 
     public function updateLocationTypeSuccessTest()
     {
-        /** @var LocationType $type */
-        $type = $this->factory->have();
-        $this->apiTester->wantTo('create Location Type ,expected Code to be ' . HttpCode::CREATED);
+        $this->apiTester->wantTo('update Location Type ok,expected Code to be ' . HttpCode::CREATED);
         $this->apiTester->haveHttpHeader('Content-Type', 'application/json');
         $this->apiTester->sendPut(self::URL . "1", [
             "label" => "updated Label",
             "active" => 0,
         ]);
         $this->apiTester->seeResponseCodeIs(HttpCode::NO_CONTENT);
-        $updatedType = $this->factory->em->getRepository(LocationType::class)->find(1);
-        $this->apiTester->assertEquals("updated Label", $updatedType->getLabel());
-        $this->apiTester->assertEquals(false, $updatedType->isActive());
+    }
+
+    public function updateLocationTypeFailedTest()
+    {
+        $this->apiTester->wantTo('update Location Type failed,expected Code to be ' . HttpCode::CREATED);
+        $this->apiTester->haveHttpHeader('Content-Type', 'application/json');
+        $this->apiTester->sendPut(self::URL . "1", [
+            "label" => "",
+            "active" => 0,
+        ]);
+        $this->apiTester->seeResponseCodeIs(HttpCode::BAD_REQUEST);
     }
 
     public function deleteLocationType()
     {
-        $this->factory->have();
-        $this->apiTester->wantTo('get Location Types By id');
+        $this->apiTester->wantTo('delete Location Types By id');
         $this->apiTester->haveHttpHeader('Content-Type', 'application/json');
         $this->apiTester->sendDelete(self::URL . "1");
         $this->apiTester->seeResponseCodeIs(HttpCode::NO_CONTENT);
-        $type = $this->factory->em->getRepository(LocationType::class)->find(1);
-        $this->apiTester->assertEquals(null, $type);
+        $this->apiTester->sendGet(self::URL . "1");
+        $this->apiTester->seeResponseCodeIs(HttpCode::NOT_FOUND);
     }
-
-//    public function _after()
-//    {
-//        unset($this->apiTester);
-//        unset($this->factory);
-//    }
 }

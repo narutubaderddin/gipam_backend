@@ -5,9 +5,9 @@ namespace App\Tests\api\Controller\API;
 use App\Tests\ApiTester;
 use Codeception\Util\HttpCode;
 
-class MovementActionTypeControllerCest
+class BuildingControllerCest
 {
-    protected const URL = 'api/movementActionTypes/';
+    protected const URL = 'api/buildings/';
 
     /**
      * @var ApiTester
@@ -20,83 +20,77 @@ class MovementActionTypeControllerCest
         $this->apiTester->connectApi();
     }
 
-    public function getMovementActionTypeByIdTest()
+    public function getBuildingByIdTest()
     {
-        $this->apiTester->wantTo('get Movement Action Type By id');
+        $this->apiTester->wantTo('get Building By id');
         $this->apiTester->haveHttpHeader('Content-Type', 'application/json');
         $this->apiTester->sendGet(self::URL . "1");
         $this->apiTester->seeResponseCodeIs(200);
         $this->apiTester->seeResponseIsJson();
     }
 
-    public function getMovementActionTypeByIdNotFoundTest()
+    public function getBuildingByIdNotFoundTest()
     {
-        $this->apiTester->wantTo('get Movement Action Type By id Not Found');
+        $this->apiTester->wantTo('get Buildings By id Not Found');
         $this->apiTester->haveHttpHeader('Content-Type', 'application/json');
         $this->apiTester->sendGet(self::URL . "2");
         $this->apiTester->seeResponseCodeIs(HttpCode::NOT_FOUND);
     }
 
-    public function getMovementActionTypesList()
+    public function getBuildingsList()
     {
-        $this->apiTester->wantTo('get Movement Action Types List');
+        $this->apiTester->wantTo('get Buildings List');
         $this->apiTester->haveHttpHeader('Content-Type', 'application/json');
         $this->apiTester->sendGet(self::URL);
         $this->apiTester->seeResponseCodeIs(200);
-        $this->apiTester->seeResponseIsJson();
-        list($totalQuantity) = $this->apiTester->grabDataFromResponseByJsonPath('$.totalQuantity');
-        $this->apiTester->assertEquals(1, $totalQuantity);
     }
 
-    public function createMovementActionTypeSuccessTest()
+    public function createBuildingSuccessTest()
     {
-        $this->apiTester->wantTo('create Movement Action Type ok,expected Code to be ' . HttpCode::CREATED);
+        $this->apiTester->wantTo('create Building OK,expected Code to be ' . HttpCode::CREATED);
         $this->apiTester->haveHttpHeader('Content-Type', 'application/json');
         $this->apiTester->sendPOST(self::URL, [
-            "label" => "test Label",
-            "movementType" => 1,
-            "active" => 1,
+            "name" => "test Label",
+            "startDate" => "2021-04-22T14:13:22",
         ]);
         $this->apiTester->seeResponseCodeIs(HttpCode::CREATED);
         $this->apiTester->seeResponseIsJson();
     }
 
-    public function createMovementActionTypeFailedTest()
+    public function createBuildingFailedTest()
     {
-        $this->apiTester->wantTo('create Movement Action Type failed,expected Code to be ' . HttpCode::BAD_REQUEST);
+        $this->apiTester->wantTo('create Building Failed,expected Code to be ' . HttpCode::BAD_REQUEST);
         $this->apiTester->haveHttpHeader('Content-Type', 'application/json');
         $this->apiTester->sendPOST(self::URL, [
-            "label" => "",
-            "movementType" => 1,
-            "active" => 1,
+            "name" => "",
         ]);
         $this->apiTester->seeResponseCodeIs(HttpCode::BAD_REQUEST);
         $this->apiTester->seeResponseIsJson();
     }
 
-    public function updateMovementActionTypeSuccessTest()
+    public function updateBuildingSuccessTest()
     {
-        $this->apiTester->wantTo('update Movement Action Type ok,expected Code to be ' . HttpCode::CREATED);
+        $this->apiTester->wantTo('Update Building ok,expected Code to be ' . HttpCode::CREATED);
         $this->apiTester->haveHttpHeader('Content-Type', 'application/json');
         $this->apiTester->sendPut(self::URL . "1", [
-            "label" => "updated Label",
+            "name" => "updated Label",
         ]);
         $this->apiTester->seeResponseCodeIs(HttpCode::NO_CONTENT);
     }
 
-    public function updateMovementActionTypeFailedTest()
+    public function updateBuildingFailedTest()
     {
-        $this->apiTester->wantTo('update Movement Action Type failed,expected Code to be ' . HttpCode::CREATED);
+        $this->apiTester->wantTo('Update Building Failed,expected Code to be ' . HttpCode::CREATED);
         $this->apiTester->haveHttpHeader('Content-Type', 'application/json');
         $this->apiTester->sendPut(self::URL . "1", [
-            "label" => "",
+            "name" => "",
         ]);
         $this->apiTester->seeResponseCodeIs(HttpCode::BAD_REQUEST);
     }
 
-    public function deleteMovementActionTypeTest()
+    public function deleteBuilding()
     {
-        $this->apiTester->wantTo('delete Movement Action Types By id');
+        $this->apiTester->wantTo('Delete Buildings By id');
         $this->apiTester->haveHttpHeader('Content-Type', 'application/json');
         $this->apiTester->sendDelete(self::URL . "1");
         $this->apiTester->seeResponseCodeIs(HttpCode::NO_CONTENT);

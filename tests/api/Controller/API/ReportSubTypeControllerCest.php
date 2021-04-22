@@ -5,9 +5,9 @@ namespace App\Tests\api\Controller\API;
 use App\Tests\ApiTester;
 use Codeception\Util\HttpCode;
 
-class MovementActionTypeControllerCest
+class ReportSubTypeControllerCest
 {
-    protected const URL = 'api/movementActionTypes/';
+    protected const URL = 'api/reportSubTypes/';
 
     /**
      * @var ApiTester
@@ -20,83 +20,81 @@ class MovementActionTypeControllerCest
         $this->apiTester->connectApi();
     }
 
-    public function getMovementActionTypeByIdTest()
+    public function getReportSubTypeByIdTest()
     {
-        $this->apiTester->wantTo('get Movement Action Type By id');
+        $this->apiTester->wantTo('get Report Subtypes By id');
         $this->apiTester->haveHttpHeader('Content-Type', 'application/json');
         $this->apiTester->sendGet(self::URL . "1");
         $this->apiTester->seeResponseCodeIs(200);
         $this->apiTester->seeResponseIsJson();
     }
 
-    public function getMovementActionTypeByIdNotFoundTest()
+    public function getReportSubTypeByIdNotFoundTest()
     {
-        $this->apiTester->wantTo('get Movement Action Type By id Not Found');
+        $this->apiTester->wantTo('get Report Subtypes By id Not Found');
         $this->apiTester->haveHttpHeader('Content-Type', 'application/json');
         $this->apiTester->sendGet(self::URL . "2");
         $this->apiTester->seeResponseCodeIs(HttpCode::NOT_FOUND);
     }
 
-    public function getMovementActionTypesList()
+    public function getReportSubTypesList()
     {
-        $this->apiTester->wantTo('get Movement Action Types List');
+        $this->apiTester->wantTo('get Report Subtypes List');
         $this->apiTester->haveHttpHeader('Content-Type', 'application/json');
         $this->apiTester->sendGet(self::URL);
         $this->apiTester->seeResponseCodeIs(200);
-        $this->apiTester->seeResponseIsJson();
-        list($totalQuantity) = $this->apiTester->grabDataFromResponseByJsonPath('$.totalQuantity');
-        $this->apiTester->assertEquals(1, $totalQuantity);
     }
 
-    public function createMovementActionTypeSuccessTest()
+    public function createReportSubTypeSuccessTest()
     {
-        $this->apiTester->wantTo('create Movement Action Type ok,expected Code to be ' . HttpCode::CREATED);
+        $this->apiTester->wantTo('create Report Subtype ok,expected Code to be ' . HttpCode::CREATED);
         $this->apiTester->haveHttpHeader('Content-Type', 'application/json');
         $this->apiTester->sendPOST(self::URL, [
             "label" => "test Label",
-            "movementType" => 1,
+            "reportType" => 1,
             "active" => 1,
         ]);
         $this->apiTester->seeResponseCodeIs(HttpCode::CREATED);
         $this->apiTester->seeResponseIsJson();
     }
 
-    public function createMovementActionTypeFailedTest()
+    public function createReportSubTypeFailedTest()
     {
-        $this->apiTester->wantTo('create Movement Action Type failed,expected Code to be ' . HttpCode::BAD_REQUEST);
+        $this->apiTester->wantTo('create Report Subtype failed,expected Code to be ' . HttpCode::BAD_REQUEST);
         $this->apiTester->haveHttpHeader('Content-Type', 'application/json');
         $this->apiTester->sendPOST(self::URL, [
             "label" => "",
-            "movementType" => 1,
             "active" => 1,
         ]);
         $this->apiTester->seeResponseCodeIs(HttpCode::BAD_REQUEST);
         $this->apiTester->seeResponseIsJson();
     }
 
-    public function updateMovementActionTypeSuccessTest()
+    public function updateReportSubTypeSuccessTest()
     {
-        $this->apiTester->wantTo('update Movement Action Type ok,expected Code to be ' . HttpCode::CREATED);
+        $this->apiTester->wantTo('update Report Subtype ok,expected Code to be ' . HttpCode::CREATED);
         $this->apiTester->haveHttpHeader('Content-Type', 'application/json');
         $this->apiTester->sendPut(self::URL . "1", [
             "label" => "updated Label",
+            "active" => 0,
         ]);
         $this->apiTester->seeResponseCodeIs(HttpCode::NO_CONTENT);
     }
 
-    public function updateMovementActionTypeFailedTest()
+    public function updateReportSubTypeFailedTest()
     {
-        $this->apiTester->wantTo('update Movement Action Type failed,expected Code to be ' . HttpCode::CREATED);
+        $this->apiTester->wantTo('update Report Subtype failed,expected Code to be ' . HttpCode::CREATED);
         $this->apiTester->haveHttpHeader('Content-Type', 'application/json');
         $this->apiTester->sendPut(self::URL . "1", [
             "label" => "",
+            "active" => 0,
         ]);
         $this->apiTester->seeResponseCodeIs(HttpCode::BAD_REQUEST);
     }
 
-    public function deleteMovementActionTypeTest()
+    public function deleteReportSubType()
     {
-        $this->apiTester->wantTo('delete Movement Action Types By id');
+        $this->apiTester->wantTo('delete Report Subtypes By id');
         $this->apiTester->haveHttpHeader('Content-Type', 'application/json');
         $this->apiTester->sendDelete(self::URL . "1");
         $this->apiTester->seeResponseCodeIs(HttpCode::NO_CONTENT);

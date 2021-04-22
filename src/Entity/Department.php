@@ -47,7 +47,6 @@ class Department
     /**
      * @JMS\Groups("department")
      *
-     * @Assert\NotBlank
      * @Assert\Type("\DateTimeInterface")
      *
      * @ORM\Column(name="date_disparition", type="datetime", nullable=true)

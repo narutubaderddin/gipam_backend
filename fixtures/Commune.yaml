@@ -1,0 +1,5 @@
+App\Entity\Commune:
+  commune_1:
+    name: <name()>
+    startDate: <date_create()>
+    department: '@department*'
