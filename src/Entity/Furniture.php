@@ -133,6 +133,16 @@ abstract class Furniture
      */
     protected $status;
 
+    /**
+     * @ORM\OneToMany(targetEntity=Hyperlink::class, mappedBy="furniture")
+     */
+    private $hyperlinks;
+
+    /**
+     * @ORM\OneToMany(targetEntity=Photography::class, mappedBy="furniture")
+     */
+    private $photographies;
+
     public function __construct()
     {
         $this->authors = new ArrayCollection();
@@ -140,6 +150,8 @@ abstract class Furniture
         $this->movements = new ArrayCollection();
         $this->reports = new ArrayCollection();
         $this->attachments = new ArrayCollection();
+        $this->hyperlinks = new ArrayCollection();
+        $this->photographies = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -467,6 +479,66 @@ abstract class Furniture
     public function setStatus(?Status $status): self
     {
         $this->status = $status;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|Hyperlink[]
+     */
+    public function getHyperlinks(): Collection
+    {
+        return $this->hyperlinks;
+    }
+
+    public function addHyperlink(Hyperlink $hyperlink): self
+    {
+        if (!$this->hyperlinks->contains($hyperlink)) {
+            $this->hyperlinks[] = $hyperlink;
+            $hyperlink->setFurniture($this);
+        }
+
+        return $this;
+    }
+
+    public function removeHyperlink(Hyperlink $hyperlink): self
+    {
+        if ($this->hyperlinks->removeElement($hyperlink)) {
+            // set the owning side to null (unless already changed)
+            if ($hyperlink->getFurniture() === $this) {
+                $hyperlink->setFurniture(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|Photography[]
+     */
+    public function getPhotographies(): Collection
+    {
+        return $this->photographies;
+    }
+
+    public function addPhotography(Photography $photography): self
+    {
+        if (!$this->photographies->contains($photography)) {
+            $this->photographies[] = $photography;
+            $photography->setFurniture($this);
+        }
+
+        return $this;
+    }
+
+    public function removePhotography(Photography $photography): self
+    {
+        if ($this->photographies->removeElement($photography)) {
+            // set the owning side to null (unless already changed)
+            if ($photography->getFurniture() === $this) {
+                $photography->setFurniture(null);
+            }
+        }
 
         return $this;
     }
