@@ -20,9 +20,9 @@ class Attachment
     private $id;
 
     /**
-     * @ORM\Column(name="date", type="datetime", nullable=true)
+     * @ORM\Column(name="date_creation", type="datetime", nullable=true)
      */
-    private $date;
+    private $creationDate;
 
     /**
      * @ORM\Column(name="commentaire", type="text", nullable=true)
@@ -35,29 +35,35 @@ class Attachment
     private $link;
 
     /**
-     * @ORM\Column(name="image_principale", type="boolean")
-     */
-    private $principleImage;
-
-    /**
      * @ORM\ManyToOne(targetEntity=Furniture::class, inversedBy="attachments")
      * @ORM\JoinColumn(name="objet_mobilier_id", referencedColumnName="id")
      */
     private $furniture;
+
+    /**
+     * @ORM\Column(name="date_modification", type="datetime", nullable=true)
+     */
+    private $updateDate;
+
+    /**
+     * @ORM\ManyToOne(targetEntity=attachmentType::class, inversedBy="attachments")
+     * @ORM\JoinColumn(name="type_fichier_joint_id", referencedColumnName="id", nullable=false)
+     */
+    private $attachmentType;
 
     public function getId(): ?int
     {
         return $this->id;
     }
 
-    public function getDate(): ?DateTimeInterface
+    public function getCreationDate(): ?DateTimeInterface
     {
-        return $this->date;
+        return $this->creationDate;
     }
 
-    public function setDate(DateTimeInterface $date): self
+    public function setCreationDate(DateTimeInterface $creationDate): self
     {
-        $this->date = $date;
+        $this->creationDate = $creationDate;
 
         return $this;
     }
@@ -86,18 +92,6 @@ class Attachment
         return $this;
     }
 
-    public function getPrincipleImage(): ?bool
-    {
-        return $this->principleImage;
-    }
-
-    public function setPrincipleImage(bool $principleImage): self
-    {
-        $this->principleImage = $principleImage;
-
-        return $this;
-    }
-
     public function getFurniture(): ?Furniture
     {
         return $this->furniture;
@@ -106,6 +100,30 @@ class Attachment
     public function setFurniture(?Furniture $furniture): self
     {
         $this->furniture = $furniture;
+
+        return $this;
+    }
+
+    public function getUpdateDate(): ?\DateTimeInterface
+    {
+        return $this->updateDate;
+    }
+
+    public function setUpdateDate(?\DateTimeInterface $updateDate): self
+    {
+        $this->updateDate = $updateDate;
+
+        return $this;
+    }
+
+    public function getAttachmentType(): ?attachmentType
+    {
+        return $this->attachmentType;
+    }
+
+    public function setAttachmentType(?attachmentType $attachmentType): self
+    {
+        $this->attachmentType = $attachmentType;
 
         return $this;
     }
