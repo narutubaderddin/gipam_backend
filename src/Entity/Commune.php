@@ -61,7 +61,6 @@ class Commune
     /**
      * @JMS\Groups("commune")
      *
-     * @Assert\NotBlank
      * @Assert\Type("\DateTimeInterface")
      *
      * @ORM\Column(name="date_disparition", type="datetime", nullable=true)

@@ -1,0 +1,4 @@
+App\Entity\Region:
+  region_1:
+    name: <name()>
+    startDate: <date_create()>

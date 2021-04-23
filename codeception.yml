@@ -10,7 +10,7 @@ extensions:
     enabled:
         - Codeception\Extension\RunFailed
 params:
-    - .env
+    - .env.test
 coverage:
     enabled: true
     remote: true
@@ -18,4 +18,3 @@ coverage:
         - src/*
     exclude:
         - var/cache/*
-

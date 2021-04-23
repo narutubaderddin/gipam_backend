@@ -1,0 +1,5 @@
+App\Entity\MovementActionType:
+  movementActionType_1:
+    label: <name()>
+    movementType: '@movementType*'
+    active: true

@@ -1,0 +1,4 @@
+App\Entity\ActionReportType:
+  actionReportType_1:
+    label: <name()>
+    active: true

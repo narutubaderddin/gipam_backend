@@ -18,7 +18,7 @@ class CommuneType extends AbstractType
         $builder->add('name', TextType::class, ['required' => true])
             ->add('startDate', DateTimeType::class, ['required' => true, 'widget' => 'single_text'])
             ->add('disappearanceDate', DateTimeType::class, ['widget' => 'single_text'])
-            ->add('departement', EntityType::class, [
+            ->add('department', EntityType::class, [
                 'class' => Department::class,
                 'choice_label' => 'id',
             ])

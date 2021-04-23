@@ -16,6 +16,7 @@
         "friendsofsymfony/rest-bundle": "^2.6",
         "hautelook/alice-bundle": "^2.8",
         "jms/serializer-bundle": "^3.5",
+        "league/factory-muffin": "^3.3",
         "lexik/jwt-authentication-bundle": "^2.6",
         "nelmio/api-doc-bundle": "^3.0",
         "nelmio/cors-bundle": "^2.0",
@@ -46,6 +47,7 @@
         "codeception/c3": "^2.4",
         "codeception/codeception": "^4.1",
         "codeception/module-asserts": "^1.1",
+        "codeception/module-datafactory": "^1.1",
         "codeception/module-db": "^1.0",
         "codeception/module-doctrine2": "^1.0",
         "codeception/module-rest": "^1.2",
@@ -54,7 +56,8 @@
         "symfony/debug-pack": "*",
         "symfony/profiler-pack": "*",
         "symfony/test-pack": "*",
-        "symfony/web-server-bundle": "4.3.*"
+        "symfony/web-server-bundle": "4.3.*",
+        "theofidry/alice-data-fixtures": "^1.4"
     },
     "config": {
         "preferred-install": {

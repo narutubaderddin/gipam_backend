@@ -7,7 +7,7 @@ namespace App\Tests\api\Controller\API;
 use App\Tests\ApiTester;
 use Codeception\Util\HttpCode;
 
-class FieldControllerCest
+class FieldControllerTest
 {
     public function getFieldsList(ApiTester $I){
         $I->wantTo('get Fields List');

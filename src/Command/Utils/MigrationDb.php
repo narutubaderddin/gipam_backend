@@ -29,7 +29,6 @@ namespace App\Command\Utils;
  */
 class MigrationDb
 {
-
     public const UPPERCASE_NAME = true;
     public const USE_ACCESS_DB = true;
 
