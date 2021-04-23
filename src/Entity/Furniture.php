@@ -143,6 +143,11 @@ abstract class Furniture
      */
     private $photographies;
 
+    /**
+     * @ORM\Column(type="boolean")
+     */
+    private $visible;
+
     public function __construct()
     {
         $this->authors = new ArrayCollection();
@@ -539,6 +544,18 @@ abstract class Furniture
                 $photography->setFurniture(null);
             }
         }
+
+        return $this;
+    }
+
+    public function getVisible(): ?bool
+    {
+        return $this->visible;
+    }
+
+    public function setVisible(bool $visible): self
+    {
+        $this->visible = $visible;
 
         return $this;
     }

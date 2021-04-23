@@ -20,9 +20,9 @@ class Attachment
     private $id;
 
     /**
-     * @ORM\Column(name="date", type="datetime", nullable=true)
+     * @ORM\Column(name="date_creation", type="datetime", nullable=true)
      */
-    private $date;
+    private $creationDate;
 
     /**
      * @ORM\Column(name="commentaire", type="text", nullable=true)
@@ -56,14 +56,14 @@ class Attachment
         return $this->id;
     }
 
-    public function getDate(): ?DateTimeInterface
+    public function getCreationDate(): ?DateTimeInterface
     {
-        return $this->date;
+        return $this->creationDate;
     }
 
-    public function setDate(DateTimeInterface $date): self
+    public function setCreationDate(DateTimeInterface $creationDate): self
     {
-        $this->date = $date;
+        $this->creationDate = $creationDate;
 
         return $this;
     }
