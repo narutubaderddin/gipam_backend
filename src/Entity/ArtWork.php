@@ -13,11 +13,6 @@ use Doctrine\ORM\Mapping as ORM;
 class ArtWork extends Furniture
 {
     /**
-     * @ORM\Column(name="date_creation", type="datetime", nullable=true)
-     */
-    private $creationDate;
-
-    /**
      * @ORM\Column(name="longueur_totale", type="float", nullable=true)
      */
     private $totalLength;
@@ -66,18 +61,6 @@ class ArtWork extends Furniture
      * @ORM\Column(name="autres_inscription", type="string", length=255, nullable=true)
      */
     private $otherRegistrations;
-
-    public function getCreationDate(): ?DateTimeInterface
-    {
-        return $this->creationDate;
-    }
-
-    public function setCreationDate(?DateTimeInterface $creationDate): self
-    {
-        $this->creationDate = $creationDate;
-
-        return $this;
-    }
 
     public function getTotalLength(): ?float
     {

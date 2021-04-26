@@ -2,6 +2,7 @@
 
 namespace App\Entity;
 
+use App\Entity\Traits\TimestampableEntity;
 use App\Repository\PhotographyTypeRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -13,6 +14,7 @@ use Doctrine\ORM\Mapping as ORM;
  */
 class PhotographyType
 {
+    use TimestampableEntity;
     /**
      * @ORM\Id
      * @ORM\GeneratedValue
@@ -24,16 +26,6 @@ class PhotographyType
      * @ORM\Column(name="type", type="string", length=50)
      */
     private $type;
-
-    /**
-     * @ORM\Column(name="date_creation", type="datetime", nullable=true)
-     */
-    private $creationDate;
-
-    /**
-     * @ORM\Column(name="date_modification", type="datetime", nullable=true)
-     */
-    private $updateDate;
 
     /**
      * @ORM\OneToMany(targetEntity=Photography::class, mappedBy="photographyType")
@@ -58,30 +50,6 @@ class PhotographyType
     public function setType(string $type): self
     {
         $this->type = $type;
-
-        return $this;
-    }
-
-    public function getCreationDate(): ?\DateTimeInterface
-    {
-        return $this->creationDate;
-    }
-
-    public function setCreationDate(?\DateTimeInterface $creationDate): self
-    {
-        $this->creationDate = $creationDate;
-
-        return $this;
-    }
-
-    public function getUpdateDate(): ?\DateTimeInterface
-    {
-        return $this->updateDate;
-    }
-
-    public function setUpdateDate(?\DateTimeInterface $updateDate): self
-    {
-        $this->updateDate = $updateDate;
 
         return $this;
     }

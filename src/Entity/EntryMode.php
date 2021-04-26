@@ -2,6 +2,7 @@
 
 namespace App\Entity;
 
+use App\Entity\Traits\TimestampableEntity;
 use App\Repository\EntryModeRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -13,6 +14,7 @@ use Doctrine\ORM\Mapping as ORM;
  */
 class EntryMode
 {
+    use TimestampableEntity;
     public const LABEL = [
         'inscriptionInventaire' => 'Inscription à l’inventaire',
         'don' => 'Don',

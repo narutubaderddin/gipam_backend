@@ -1,0 +1,4 @@
+App\Entity\PropertyStatusCategory:
+  propertyStatusCategory_1:
+    label: <name()>
+    active: true
