@@ -87,7 +87,7 @@ class RepositoryTraitTest extends Unit
         $queryBuilder
             ->expects($this->once())
             ->method('andWhere')
-            ->with("e.label LIKE :label0")
+            ->with("LOWER(e.label) LIKE :label0")
             ->willReturn($queryBuilder)
         ;
         $queryBuilder = $this->invokeMethod(
