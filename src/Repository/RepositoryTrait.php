@@ -138,13 +138,16 @@ trait RepositoryTrait
                 $queryBuilder->andWhere("$alias.$field != :$parameter")->setParameter($parameter, $value);
                 break;
             case 'contains':
-                $queryBuilder->andWhere("$alias.$field LIKE :$parameter")->setParameter($parameter, "%$value%");
+                $queryBuilder->andWhere("LOWER($alias.$field) LIKE :$parameter")->setParameter($parameter,
+                    '%'.strtolower($value).'%');
                 break;
             case 'startsWith':
-                $queryBuilder->andWhere("$alias.$field LIKE :$parameter")->setParameter($parameter, "$value%");
+                $queryBuilder->andWhere("LOWER($alias.$field) LIKE :$parameter")->setParameter($parameter,
+                    strtolower($value).'%');
                 break;
             case 'endsWith':
-                $queryBuilder->andWhere("$alias.$field LIKE :$parameter")->setParameter($parameter, "%$value");
+                $queryBuilder->andWhere("LOWER($alias.$field) LIKE :$parameter")->setParameter($parameter,
+                    '%'.strtolower($value));
                 break;
             default:
                 throw new \RuntimeException('Unknown comparison operator: ' . $operator);
