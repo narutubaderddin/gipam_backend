@@ -2,6 +2,7 @@
 
 namespace App\Entity;
 
+use App\Entity\Traits\TimestampableEntity;
 use App\Repository\HyperlinkRepository;
 use Doctrine\ORM\Mapping as ORM;
 
@@ -11,6 +12,7 @@ use Doctrine\ORM\Mapping as ORM;
  */
 class Hyperlink
 {
+    use TimestampableEntity;
     /**
      * @ORM\Id
      * @ORM\GeneratedValue
@@ -27,16 +29,6 @@ class Hyperlink
      * @ORM\Column(name="nom", type="string", length=50)
      */
     private $name;
-
-    /**
-     * @ORM\Column(name="date_creation", type="datetime", nullable=true)
-     */
-    private $creationDate;
-
-    /**
-     * @ORM\Column(name="date_modification", type="datetime", nullable=true)
-     */
-    private $updateDate;
 
     /**
      * @ORM\ManyToOne(targetEntity=furniture::class, inversedBy="hyperlinks")
@@ -69,30 +61,6 @@ class Hyperlink
     public function setName(string $name): self
     {
         $this->name = $name;
-
-        return $this;
-    }
-
-    public function getCreationDate(): ?\DateTimeInterface
-    {
-        return $this->creationDate;
-    }
-
-    public function setCreationDate(?\DateTimeInterface $creationDate): self
-    {
-        $this->creationDate = $creationDate;
-
-        return $this;
-    }
-
-    public function getUpdateDate(): ?\DateTimeInterface
-    {
-        return $this->updateDate;
-    }
-
-    public function setUpdateDate(?\DateTimeInterface $updateDate): self
-    {
-        $this->updateDate = $updateDate;
 
         return $this;
     }

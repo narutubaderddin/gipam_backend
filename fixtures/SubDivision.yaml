@@ -1,0 +1,7 @@
+App\Entity\SubDivision:
+  subDivision_1:
+    label: <word()>
+    acronym: <word()>
+    startDate: <date_create()>
+    endDate: <date_create()>
+    establishment: '@establishment*'

@@ -14,6 +14,7 @@
         "codeception/module-asserts": "^1.0.0",
         "codeception/module-phpbrowser": "^1.0.0",
         "friendsofsymfony/rest-bundle": "^2.6",
+        "gedmo/doctrine-extensions": "^3.0",
         "hautelook/alice-bundle": "^2.8",
         "jms/serializer-bundle": "^3.5",
         "league/factory-muffin": "^3.3",

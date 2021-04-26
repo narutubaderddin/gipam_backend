@@ -1,0 +1,4 @@
+App\Entity\Field:
+  field_1:
+    label: <name()>
+    active: true

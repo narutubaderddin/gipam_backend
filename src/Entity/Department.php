@@ -2,6 +2,7 @@
 
 namespace App\Entity;
 
+use App\Entity\Traits\TimestampableEntity;
 use App\Repository\DepartmentRepository;
 use DateTimeInterface;
 use Doctrine\Common\Collections\ArrayCollection;
@@ -16,6 +17,7 @@ use Symfony\Component\Validator\Constraints as Assert;
  */
 class Department
 {
+    use TimestampableEntity;
     /**
      * @JMS\Groups("id")
      *

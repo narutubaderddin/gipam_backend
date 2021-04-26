@@ -2,6 +2,7 @@
 
 namespace App\Entity;
 
+use App\Entity\Traits\TimestampableEntity;
 use App\Repository\PhotographyRepository;
 use Doctrine\ORM\Mapping as ORM;
 
@@ -11,6 +12,7 @@ use Doctrine\ORM\Mapping as ORM;
  */
 class Photography
 {
+    use TimestampableEntity;
     /**
      * @ORM\Id
      * @ORM\GeneratedValue
@@ -34,23 +36,13 @@ class Photography
     private $date;
 
     /**
-     * @ORM\Column(name="date_creation",type="datetime", nullable=true)
-     */
-    private $creationDate;
-
-    /**
-     * @ORM\Column(name="date_modification",type="datetime", nullable=true)
-     */
-    private $updateDate;
-
-    /**
-     * @ORM\ManyToOne(targetEntity=photographyType::class, inversedBy="photographies")
+     * @ORM\ManyToOne(targetEntity=PhotographyType::class, inversedBy="photographies")
      * @ORM\JoinColumn(name="type_photographie_id", referencedColumnName="id", nullable=false)
      */
     private $photographyType;
 
     /**
-     * @ORM\ManyToOne(targetEntity=furniture::class, inversedBy="photographies")
+     * @ORM\ManyToOne(targetEntity=Furniture::class, inversedBy="photographies")
      * @ORM\JoinColumn(name="objet_mobilier_id", referencedColumnName="id", nullable=false)
      */
     private $furniture;
@@ -92,30 +84,6 @@ class Photography
     public function setDate(\DateTimeInterface $date): self
     {
         $this->date = $date;
-
-        return $this;
-    }
-
-    public function getCreationDate(): ?\DateTimeInterface
-    {
-        return $this->creationDate;
-    }
-
-    public function setCreationDate(?\DateTimeInterface $creationDate): self
-    {
-        $this->creationDate = $creationDate;
-
-        return $this;
-    }
-
-    public function getUpdateDate(): ?\DateTimeInterface
-    {
-        return $this->updateDate;
-    }
-
-    public function setUpdateDate(?\DateTimeInterface $updateDate): self
-    {
-        $this->updateDate = $updateDate;
 
         return $this;
     }

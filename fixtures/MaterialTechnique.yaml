@@ -1,0 +1,5 @@
+App\Entity\MaterialTechnique:
+  materialTechnique_1:
+    label: <name()>
+    type: <word()>
+    active: true

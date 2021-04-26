@@ -2,6 +2,7 @@
 
 namespace App\Entity;
 
+use App\Entity\Traits\TimestampableEntity;
 use App\Repository\SubDivisionRepository;
 use DateTimeInterface;
 use Doctrine\Common\Collections\ArrayCollection;
@@ -15,6 +16,7 @@ use JMS\Serializer\Annotation as JMS;
  */
 class SubDivision
 {
+    use TimestampableEntity;
     /**
      * @JMS\Groups("id", "sub_division", "sub_division_id")
      *
@@ -55,7 +57,7 @@ class SubDivision
     /**
      * @JMS\Exclude()
      *
-     * @ORM\OneToMany(targetEntity=location::class, mappedBy="subDivision")
+     * @ORM\OneToMany(targetEntity=Location::class, mappedBy="subDivision")
      */
     private $locations;
 

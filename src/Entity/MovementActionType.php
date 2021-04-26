@@ -2,6 +2,7 @@
 
 namespace App\Entity;
 
+use App\Entity\Traits\TimestampableEntity;
 use App\Repository\MovementActionTypeRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -15,6 +16,7 @@ use Symfony\Component\Validator\Constraints as Assert;
  */
 class MovementActionType
 {
+    use TimestampableEntity;
     public const RESERVE = [
         'oeuvreDisponible' => 'Oeuvre disponible',
         'attenteRestitution' => 'En attente de restitution',

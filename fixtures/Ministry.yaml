@@ -1,0 +1,6 @@
+App\Entity\Ministry:
+  ministry_1:
+    name: <name()>
+    acronym: <word()>
+    startDate: <date_create()>
+    disappearanceDate: <date_create()>
