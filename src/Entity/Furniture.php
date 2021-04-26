@@ -66,11 +66,6 @@ abstract class Furniture
     protected $numberOfUnit;
 
     /**
-     * @ORM\Column(name="description_commentaire", type="text", nullable=true)
-     */
-    protected $description;
-
-    /**
      * @ORM\ManyToMany(targetEntity=Author::class, inversedBy="furniture")
      * @ORM\JoinTable(name="objet_mobilier_auteur",
      *      joinColumns={@ORM\JoinColumn(name="objet_mobilier_id", referencedColumnName="id")},
@@ -150,6 +145,17 @@ abstract class Furniture
      */
     private $visible;
 
+    /**
+     * @ORM\OneToMany(targetEntity=Furniture::class, mappedBy="parent")
+     */
+    private $children;
+
+    /**
+     * @ORM\ManyToOne(targetEntity=Furniture::class, inversedBy="children")
+     * @ORM\JoinColumn(name="parent_id", referencedColumnName="id")
+     */
+    private $parent;
+
     public function __construct()
     {
         $this->authors = new ArrayCollection();
@@ -159,6 +165,7 @@ abstract class Furniture
         $this->attachments = new ArrayCollection();
         $this->hyperlinks = new ArrayCollection();
         $this->photographies = new ArrayCollection();
+        $this->children = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -258,18 +265,6 @@ abstract class Furniture
     public function setNumberOfUnit(?int $numberOfUnit): self
     {
         $this->numberOfUnit = $numberOfUnit;
-
-        return $this;
-    }
-
-    public function getDescription(): ?string
-    {
-        return $this->description;
-    }
-
-    public function setDescription(?string $description): self
-    {
-        $this->description = $description;
 
         return $this;
     }
@@ -558,6 +553,61 @@ abstract class Furniture
     public function setVisible(bool $visible): self
     {
         $this->visible = $visible;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection
+     */
+    public function getChildren(): Collection
+    {
+        return $this->children;
+    }
+
+    /**
+     * @param Furniture $furniture
+     * @return $this
+     */
+    public function addChild(Furniture $furniture): self
+    {
+        if (!$this->children->contains($furniture)) {
+            $this->children[] = $furniture;
+            $furniture->setParent($this);
+        }
+
+        return $this;
+    }
+
+    /**
+     * @param Furniture $furniture
+     * @return $this
+     */
+    public function removeChild(Furniture $furniture): self
+    {
+        if ($this->children->contains($furniture)) {
+            $this->children->removeElement($furniture);
+            $furniture->setParent(null);
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getParent()
+    {
+        return $this->parent;
+    }
+
+    /**
+     * @param Furniture|null $parent
+     * @return $this
+     */
+    public function setParent(?Furniture $parent): self
+    {
+        $this->parent = $parent;
 
         return $this;
     }
