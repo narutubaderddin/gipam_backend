@@ -27,6 +27,11 @@ class DepositStatus extends Status
      */
     private $depositDate;
 
+    /**
+     * @ORM\Column(name="numero_arret", type="integer", nullable=true)
+     */
+    private $stopNumber;
+
     public function getInventoryNumber(): ?string
     {
         return $this->inventoryNumber;
@@ -59,6 +64,18 @@ class DepositStatus extends Status
     public function setDepositDate(?\DateTimeInterface $depositDate): self
     {
         $this->depositDate = $depositDate;
+
+        return $this;
+    }
+
+    public function getStopNumber(): ?string
+    {
+        return $this->stopNumber;
+    }
+
+    public function setStopNumber(?string $stopNumber): self
+    {
+        $this->stopNumber = $stopNumber;
 
         return $this;
     }
