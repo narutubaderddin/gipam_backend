@@ -6,7 +6,7 @@ use App\Repository\AuthorRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
-
+use JMS\Serializer\Annotation as JMS;
 /**
  * @ORM\Entity(repositoryClass=AuthorRepository::class)
  * @ORM\Table(name="auteur")
@@ -14,6 +14,7 @@ use Doctrine\ORM\Mapping as ORM;
 class Author
 {
     /**
+     * @JMS\Groups({"id","furniture_author"})
      * @ORM\Id
      * @ORM\GeneratedValue
      * @ORM\Column(type="integer")
@@ -21,11 +22,13 @@ class Author
     private $id;
 
     /**
+     * @JMS\Groups({"furniture_author"})
      * @ORM\Column(name="prenom", type="string", length=255, nullable=true)
      */
     private $firstName;
 
     /**
+     * @JMS\Groups({"furniture_author"})
      * @ORM\Column(name="nom", type="string", length=255, nullable=true)
      */
     private $lastName;

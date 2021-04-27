@@ -5,6 +5,7 @@ namespace App\Entity;
 use App\Repository\ArtWorkRepository;
 use DateTimeInterface;
 use Doctrine\ORM\Mapping as ORM;
+use JMS\Serializer\Annotation as JMS;
 
 /**
  * @ORM\Entity(repositoryClass=ArtWorkRepository::class)
@@ -13,6 +14,8 @@ use Doctrine\ORM\Mapping as ORM;
 class ArtWork extends Furniture
 {
     /**
+     * @JMS\Groups("art_work")
+     * @JMS\Type("DateTime<'Y-m-d'>")
      * @ORM\Column(name="date_creation", type="datetime", nullable=true)
      */
     private $creationDate;

@@ -6,6 +6,9 @@ use App\Repository\FurnitureRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use JMS\Serializer\Annotation as JMS;
+use Symfony\Component\Serializer\Annotation\Groups;
+use Symfony\Component\Serializer\Annotation\MaxDepth;
 
 /**
  * @ORM\Entity(repositoryClass=FurnitureRepository::class)
@@ -17,6 +20,7 @@ use Doctrine\ORM\Mapping as ORM;
 abstract class Furniture
 {
     /**
+     * @JMS\Groups("id")
      * @ORM\Id
      * @ORM\GeneratedValue
      * @ORM\Column(type="integer")
@@ -24,6 +28,7 @@ abstract class Furniture
     protected $id;
 
     /**
+     * @JMS\Groups({"art_work"})
      * @ORM\Column(name="titre", type="string", length=255, nullable=true)
      */
     protected $title;
@@ -69,39 +74,46 @@ abstract class Furniture
     protected $description;
 
     /**
+     * @JMS\Groups({"furniture","furniture_author"})
      * @ORM\ManyToMany(targetEntity=Author::class, inversedBy="furniture")
      * @ORM\JoinTable(name="objet_mobilier_auteur",
      *      joinColumns={@ORM\JoinColumn(name="objet_mobilier_id", referencedColumnName="id")},
      *      inverseJoinColumns={@ORM\JoinColumn(name="auteur_id", referencedColumnName="id")}
      *      )
+     *
      */
     protected $authors;
 
     /**
+     * @JMS\Groups({"era_furniture"})
      * @ORM\ManyToOne(targetEntity=Era::class, inversedBy="furniture")
      * @ORM\JoinColumn(name="epoque_id", referencedColumnName="id")
      */
     protected $era;
 
     /**
+     * @JMS\Groups({"style_furniture"})
      * @ORM\ManyToOne(targetEntity=Style::class, inversedBy="furniture")
      * @ORM\JoinColumn(name="style_id", referencedColumnName="id")
      */
     protected $style;
 
     /**
+     * @JMS\Groups({"materialTechnique_furniture"})
      * @ORM\ManyToOne(targetEntity=MaterialTechnique::class, inversedBy="furniture")
      * @ORM\JoinColumn(name="matiere_technique_id", referencedColumnName="id")
      */
     protected $materialTechnique;
 
     /**
+     * @JMS\Groups({"denomination_furniture"})
      * @ORM\ManyToOne(targetEntity=Denomination::class, inversedBy="furniture")
      * @ORM\JoinColumn(name="denomination_id", referencedColumnName="id")
      */
     protected $denomination;
 
     /**
+     * @JMS\Groups({"field_furniture"})
      * @ORM\ManyToOne(targetEntity=Field::class, inversedBy="furniture")
      * @ORM\JoinColumn(name="domaine_id", referencedColumnName="id")
      */
@@ -113,6 +125,7 @@ abstract class Furniture
     protected $artWorkLogs;
 
     /**
+     * @JMS\Groups({"mouvement_furniture"})
      * @ORM\OneToMany(targetEntity=Movement::class, mappedBy="furniture")
      */
     protected $movements;
@@ -128,6 +141,7 @@ abstract class Furniture
     protected $attachments;
 
     /**
+     * @JMS\Groups({"status_furniture"})
      * @ORM\ManyToOne(targetEntity=Status::class, inversedBy="furniture")
      * @ORM\JoinColumn(name="status_id", referencedColumnName="id")
      */

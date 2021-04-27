@@ -24,8 +24,7 @@ class Denomination
     private $id;
 
     /**
-     * @JMS\Groups("denomination")
-     *
+     * @JMS\Groups("denomination","denomination_furniture")
      * @ORM\Column(name="libelle", type="string", length=255, nullable=true)
      */
     private $label;

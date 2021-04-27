@@ -24,7 +24,7 @@ class Field
     private $id;
 
     /**
-     * @JMS\Groups("field")
+     * @JMS\Groups("field","field_furniture")
      *
      * @ORM\Column(name="libelle", type="string", length=255, nullable=true)
      */

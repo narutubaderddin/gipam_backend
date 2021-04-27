@@ -24,8 +24,7 @@ class Era
     private $id;
 
     /**
-     * @JMS\Groups("era")
-     *
+     * @JMS\Groups({"era","era_furniture"})
      * @ORM\Column(name="libelle", type="string", length=255, nullable=true)
      */
     private $label;
