@@ -18,10 +18,10 @@ modules:
             dsn: 'sqlite:var/data/gipam_test.db'
             user: ''
             password: ''
-            populate: true # load dump before all tests
-            cleanup: true # load dump for each test
-            dump: 'tests/_data/dump.sql'
-
+#            populate: true # load dump before all tests
+#            cleanup: true # load dump for each test
+#            dump: 'tests/_data/dump.sql'
 params:
     username: "admin@talan.com"
     password: "admin"
+bootstrap: bootstrap.php

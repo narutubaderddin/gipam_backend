@@ -1,0 +1,5 @@
+App\Entity\Building:
+  building_1:
+    name: <name()>
+    startDate: <date_create()>
+    commune: '@commune*'

@@ -1,53 +1,63 @@
-variables:
-  GIT_STRATEGY: none
-
 stages:
-  - deploy
-  - packaging
+  - load_dep
+  - update_schema
+  - build_assets
+  - unit_tests
+  - sonnar_scan
 
-Deploy INTERN:
-  stage: deploy
+before_script:
+  - "cd /var/www/html/backend"
+  - whoami
+  - pwd
+  - git pull origin develop
+
+load_deps:
+  stage: load_dep
   tags:
-    - GIPAM-backend
-  script:
-    - cd /var/www/html/staging/gipam-backend/
-    - git pull origin develop
+    - gipam
+  script: 
     - composer install
-    - php7.4  bin/console c:c --env=dev
-    - php7.4  bin/console c:w --env=dev
   only:
     - develop
-
-Deploy Recette:
-  stage: deploy
+update_schema:
+  stage: update_schema
   tags:
-    - GIPAM-backend
-  script:
-    - cd /var/www/html/gipam-backend/
-    - sh gitlab-ci-update.sh develop dev php7.4
+    - gipam
+  script: 
+    - php bin/console doctrine:schema:update --force
   only:
-    - recette
-
-Build Delivrable Package:
-  artifacts:
-    when: on_success
-    name: "gipam-backend-build-$CI_COMMIT_TAG-$CI_JOB_ID"
-    paths:
-      - "build/gipam-backend-${CI_COMMIT_TAG}-$(date +'%Y-%m-%d').tar.gz"
-  variables:
-    GIT_STRATEGY: clone
-    APP_ENV: prod
-  only:
-    - tags
-  stage: packaging
+    - develop    
+build_assets:
+  stage: build_assets
   tags:
-    - GIPAM-backend
+    - gipam
   script:
-    - composer install
-    - rm -rf var/cache/*
-    - rm -rf var/log/*
-    - rm -rf .env.test .gitignore .gitlab-ci.yml gitlab-ci-update.sh phpunit.xml.dist
-    - cd ../
-    - tar --exclude='.git' -czf "gipam-backend-${CI_COMMIT_TAG}-$(date +'%Y-%m-%d').tar.gz" gipam-backend/
-    - mkdir gipam-backend/build/
-    - mv "gipam-backend-${CI_COMMIT_TAG}-$(date +'%Y-%m-%d').tar.gz" gipam-backend/build/
+    - yarn install
+    - yarn encore production
+  only:
+    - dev
+
+unit_tests:
+  stage: unit_tests
+  tags:
+    - gipam
+  script:
+    - php bin/console d:d:d --force --env=test
+    - php bin/console d:d:c --env=test
+    - php bin/console d:s:u --force --env=test
+    - ./vendor/bin/codecept clean
+    - ./vendor/bin/codecept run api,unit --coverage --coverage-xml --xml --fail-fast
+  when: manual    
+  only:
+    - develop
+sonnar_scan:
+  stage: sonnar_scan
+  tags:
+    - gipam
+  script:
+    - /opt/sonar-scanner/bin/sonar-scanner
+  when: manual    
+  only:
+    - develop 	
+variables:
+  GIT_STRATEGY: clone

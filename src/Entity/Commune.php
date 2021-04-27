@@ -2,6 +2,7 @@
 
 namespace App\Entity;
 
+use App\Entity\Traits\TimestampableEntity;
 use App\Repository\CommuneRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -15,6 +16,7 @@ use Symfony\Component\Validator\Constraints as Assert;
  */
 class Commune
 {
+    use TimestampableEntity;
     /**
      * @JMS\Groups("id")
      *
@@ -61,7 +63,6 @@ class Commune
     /**
      * @JMS\Groups("commune")
      *
-     * @Assert\NotBlank
      * @Assert\Type("\DateTimeInterface")
      *
      * @ORM\Column(name="date_disparition", type="datetime", nullable=true)

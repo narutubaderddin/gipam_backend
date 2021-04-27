@@ -2,6 +2,7 @@
 
 namespace App\Entity;
 
+use App\Entity\Traits\TimestampableEntity;
 use App\Repository\AuthorTypeRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -13,6 +14,7 @@ use Doctrine\ORM\Mapping as ORM;
  */
 class AuthorType
 {
+    use TimestampableEntity;
     public const LABEL = [
         'patronyme' => 'Patronyme',
         'pseudo' => 'pseudo',

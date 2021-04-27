@@ -2,6 +2,7 @@
 
 namespace App\Entity;
 
+use App\Entity\Traits\TimestampableEntity;
 use App\Repository\DenominationRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -14,6 +15,7 @@ use JMS\Serializer\Annotation as JMS;
  */
 class Denomination
 {
+    use TimestampableEntity;
     /**
      * @JMS\Groups("id", "denomination", "denomination_id")
      *

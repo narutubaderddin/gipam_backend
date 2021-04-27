@@ -1,0 +1,4 @@
+App\Entity\LocationType:
+  locationType_1:
+    label: <name()>
+    active: true

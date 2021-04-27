@@ -2,6 +2,7 @@
 
 namespace App\Entity;
 
+use App\Entity\Traits\TimestampableEntity;
 use App\Repository\AuthorRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -13,6 +14,7 @@ use JMS\Serializer\Annotation as JMS;
  */
 class Author
 {
+    use TimestampableEntity;
     /**
      * @JMS\Groups({"id","furniture_author"})
      * @ORM\Id

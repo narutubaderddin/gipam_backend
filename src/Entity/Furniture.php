@@ -2,6 +2,7 @@
 
 namespace App\Entity;
 
+use App\Entity\Traits\TimestampableEntity;
 use App\Repository\FurnitureRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -19,6 +20,7 @@ use Symfony\Component\Serializer\Annotation\MaxDepth;
  */
 abstract class Furniture
 {
+    use TimestampableEntity;
     /**
      * @JMS\Groups("id")
      * @ORM\Id
@@ -67,11 +69,6 @@ abstract class Furniture
      * @ORM\Column(name="nombre_unite", type="integer", nullable=true)
      */
     protected $numberOfUnit;
-
-    /**
-     * @ORM\Column(name="description_commentaire", type="text", nullable=true)
-     */
-    protected $description;
 
     /**
      * @JMS\Groups({"furniture","furniture_author"})
@@ -147,6 +144,32 @@ abstract class Furniture
      */
     protected $status;
 
+    /**
+     * @ORM\OneToMany(targetEntity=Hyperlink::class, mappedBy="furniture")
+     */
+    private $hyperlinks;
+
+    /**
+     * @ORM\OneToMany(targetEntity=Photography::class, mappedBy="furniture")
+     */
+    private $photographies;
+
+    /**
+     * @ORM\Column(type="boolean")
+     */
+    private $visible;
+
+    /**
+     * @ORM\OneToMany(targetEntity=Furniture::class, mappedBy="parent")
+     */
+    private $children;
+
+    /**
+     * @ORM\ManyToOne(targetEntity=Furniture::class, inversedBy="children")
+     * @ORM\JoinColumn(name="parent_id", referencedColumnName="id")
+     */
+    private $parent;
+
     public function __construct()
     {
         $this->authors = new ArrayCollection();
@@ -154,6 +177,9 @@ abstract class Furniture
         $this->movements = new ArrayCollection();
         $this->reports = new ArrayCollection();
         $this->attachments = new ArrayCollection();
+        $this->hyperlinks = new ArrayCollection();
+        $this->photographies = new ArrayCollection();
+        $this->children = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -253,18 +279,6 @@ abstract class Furniture
     public function setNumberOfUnit(?int $numberOfUnit): self
     {
         $this->numberOfUnit = $numberOfUnit;
-
-        return $this;
-    }
-
-    public function getDescription(): ?string
-    {
-        return $this->description;
-    }
-
-    public function setDescription(?string $description): self
-    {
-        $this->description = $description;
 
         return $this;
     }
@@ -481,6 +495,133 @@ abstract class Furniture
     public function setStatus(?Status $status): self
     {
         $this->status = $status;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|Hyperlink[]
+     */
+    public function getHyperlinks(): Collection
+    {
+        return $this->hyperlinks;
+    }
+
+    public function addHyperlink(Hyperlink $hyperlink): self
+    {
+        if (!$this->hyperlinks->contains($hyperlink)) {
+            $this->hyperlinks[] = $hyperlink;
+            $hyperlink->setFurniture($this);
+        }
+
+        return $this;
+    }
+
+    public function removeHyperlink(Hyperlink $hyperlink): self
+    {
+        if ($this->hyperlinks->removeElement($hyperlink)) {
+            // set the owning side to null (unless already changed)
+            if ($hyperlink->getFurniture() === $this) {
+                $hyperlink->setFurniture(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|Photography[]
+     */
+    public function getPhotographies(): Collection
+    {
+        return $this->photographies;
+    }
+
+    public function addPhotography(Photography $photography): self
+    {
+        if (!$this->photographies->contains($photography)) {
+            $this->photographies[] = $photography;
+            $photography->setFurniture($this);
+        }
+
+        return $this;
+    }
+
+    public function removePhotography(Photography $photography): self
+    {
+        if ($this->photographies->removeElement($photography)) {
+            // set the owning side to null (unless already changed)
+            if ($photography->getFurniture() === $this) {
+                $photography->setFurniture(null);
+            }
+        }
+
+        return $this;
+    }
+
+    public function getVisible(): ?bool
+    {
+        return $this->visible;
+    }
+
+    public function setVisible(bool $visible): self
+    {
+        $this->visible = $visible;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection
+     */
+    public function getChildren(): Collection
+    {
+        return $this->children;
+    }
+
+    /**
+     * @param Furniture $furniture
+     * @return $this
+     */
+    public function addChild(Furniture $furniture): self
+    {
+        if (!$this->children->contains($furniture)) {
+            $this->children[] = $furniture;
+            $furniture->setParent($this);
+        }
+
+        return $this;
+    }
+
+    /**
+     * @param Furniture $furniture
+     * @return $this
+     */
+    public function removeChild(Furniture $furniture): self
+    {
+        if ($this->children->contains($furniture)) {
+            $this->children->removeElement($furniture);
+            $furniture->setParent(null);
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getParent()
+    {
+        return $this->parent;
+    }
+
+    /**
+     * @param Furniture|null $parent
+     * @return $this
+     */
+    public function setParent(?Furniture $parent): self
+    {
+        $this->parent = $parent;
 
         return $this;
     }
