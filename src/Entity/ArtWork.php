@@ -13,12 +13,12 @@ use JMS\Serializer\Annotation as JMS;
  */
 class ArtWork extends Furniture
 {
-    /**
-     * @JMS\Groups("art_work")
-     * @JMS\Type("DateTime<'Y-m-d'>")
-     * @ORM\Column(name="date_creation", type="datetime", nullable=true)
-     */
-    private $creationDate;
+//    /**
+//     * @JMS\Groups("art_work")
+//     * @JMS\Type("DateTime<'Y-m-d'>")
+//     * @ORM\Column(name="date_creation", type="datetime", nullable=true)
+//     */
+//    private $creationDate;
 
     /**
      * @ORM\Column(name="longueur_totale", type="float", nullable=true)

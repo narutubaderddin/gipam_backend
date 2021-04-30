@@ -127,8 +127,8 @@ class ArtWorkController extends AbstractFOSRestController
      *      description="sorting order asc|desc"
      * )
      * @Rest\View( serializerGroups={"art_work","style_furniture","materialTechnique_furniture","status_furniture",
-     *     "response","era_furniture","denomination_furniture","field_furniture","mouvement_furniture",
-     *     "furniture_author","id"})
+     *     "response","era_furniture","denomination_furniture","field_furniture","mouvement_furniture","created_at",
+     *     "furniture_author","id"},serializerEnableMaxDepthChecks=true)
      *
      * @param Request $request
      * @param ParamFetcherInterface $paramFetcher

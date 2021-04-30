@@ -30,7 +30,16 @@ class FurnitureRepository extends ServiceEntityRepository
         'auteurs' => ['field' => 'id', 'operator' => 'in', 'entity' => 'authors'],
         'denomination' => ['field' => 'id', 'operator' => 'in', 'entity' => 'denomination'],
         'materialTechnique' => ['field' => 'id', 'operator' => 'in', 'entity' => 'materialTechnique'],
+        'era' => ['field' => 'id', 'operator' => 'in', 'entity' => 'era'],
         'style' => ['field' => 'id', 'operator' => 'in', 'entity' => 'style'],
+        'length' => ['field' => 'length', 'operator' => 'in', 'entity' => 'artWork'],
+        'lengthTotal' => ['field' => 'length', 'operator' => 'in', 'entity' => 'artWork'],
+        'width' => ['field' => 'width', 'operator' => 'in', 'entity' => 'artWork'],
+        'widthTotal' => ['field' => 'width', 'operator' => 'in', 'entity' => 'artWork'],
+        'height' => ['field' => 'height', 'operator' => 'in', 'entity' => 'artWork'],
+        'heightTotal' => ['field' => 'height', 'operator' => 'in', 'entity' => 'artWork'],
+        'depth' => ['field' => 'depth', 'operator' => 'in', 'entity' => 'artWork'],
+        'weight' => ['field' => 'weight', 'operator' => 'in', 'entity' => 'artWork'],
     ];
 
     public function getArtWorkList(array $filter, array $advancedFilter, array $headerFilters,$page,$limit)
@@ -41,6 +50,7 @@ class FurnitureRepository extends ServiceEntityRepository
             ->leftJoin('artWork.denomination', 'denomination')
             ->leftJoin('artWork.materialTechnique', 'materialTechnique')
             ->leftJoin('artWork.authors', 'authors')
+            ->leftJoin('artWork.era','era')
             ->leftJoin('artWork.style', 'style');
         foreach ($filter as $key => $value) {
             if (array_key_exists($key, self::$columns)) {
@@ -51,6 +61,7 @@ class FurnitureRepository extends ServiceEntityRepository
                 }
             }
         }
+
         $query = $this->addAdvancedFilter($query, $advancedFilter, $headerFilters);
         $query->setFirstResult(($page*$limit)+1)->setMaxResults($limit);
         return $query->getQuery()->getResult();
@@ -106,7 +117,7 @@ class FurnitureRepository extends ServiceEntityRepository
     {
         $dqlString = "( ";
         $hasAdvancedFilter = false;
-        $i=0;
+        $i=0;$removedKeys =0;
         foreach ($advancedFilter as $key => $value) {
             $subDqlString = "";
             if (array_key_exists($key, self::$columns) && isset($advancedFilter[$key]) && $advancedFilter[$key] != "") {
@@ -119,11 +130,13 @@ class FurnitureRepository extends ServiceEntityRepository
                 }
                 $i++;
                 $dqlString .= "( " . $subDqlString . " )";
-                if($i<count($advancedFilter)){
+                if($i<count($advancedFilter)-$removedKeys){
                     $operator = $value['operator'] == 'or' ? 'or' : 'and';
                     $dqlString.= $operator;
                 }
                 $hasAdvancedFilter = true;
+            }else{
+                $removedKeys++;
             }
 
         }
@@ -132,13 +145,17 @@ class FurnitureRepository extends ServiceEntityRepository
             return $query;
         }
         $query->andWhere($dqlString);
+
         foreach ($advancedFilter as $key => $value) {
-            $keyData = self::$columns[$key];
-            switch ($keyData['operator']){
-                case 'in':
-                    $query->setParameter($key,$value['value']);
-                    break;
+            if (array_key_exists($key, self::$columns) && isset($advancedFilter[$key]) && $advancedFilter[$key] != "") {
+                $keyData = self::$columns[$key];
+                switch ($keyData['operator']){
+                    case 'in':
+                        $query->setParameter($key,$value['value']);
+                        break;
+                }
             }
+
         }
         return $query;
     }

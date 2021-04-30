@@ -8,6 +8,8 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use JMS\Serializer\Annotation as JMS;
+use JMS\Serializer\Annotation as Serializer;
+
 /**
  * @ORM\Entity(repositoryClass=AuthorRepository::class)
  * @ORM\Table(name="auteur")
@@ -15,6 +17,7 @@ use JMS\Serializer\Annotation as JMS;
 class Author
 {
     use TimestampableEntity;
+
     /**
      * @JMS\Groups({"id","furniture_author"})
      * @ORM\Id
@@ -24,18 +27,19 @@ class Author
     private $id;
 
     /**
-     * @JMS\Groups({"furniture_author"})
+     * @JMS\Groups({"furniture_author","authors"})
      * @ORM\Column(name="prenom", type="string", length=255, nullable=true)
      */
     private $firstName;
 
     /**
-     * @JMS\Groups({"furniture_author"})
+     * @JMS\Groups({"furniture_author","authors"})
      * @ORM\Column(name="nom", type="string", length=255, nullable=true)
      */
     private $lastName;
 
     /**
+     *
      * @ORM\ManyToMany(targetEntity=Furniture::class, mappedBy="authors")
      */
     private $furniture;
@@ -134,5 +138,16 @@ class Author
         $this->type = $type;
 
         return $this;
+    }
+
+    /**
+     * @return string|null
+     * @Serializer\VirtualProperty()
+     * @Serializer\SerializedName("label")
+     * @JMS\Groups("authors","furniture_author")
+     */
+    public function getFullName(): ?string
+    {
+        return $this->firstName . ' ' . $this->lastName;
     }
 }

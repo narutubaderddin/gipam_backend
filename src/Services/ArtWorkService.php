@@ -22,7 +22,7 @@ class ArtWorkService
 
     public function __construct(EntityManagerInterface $entityManager)
     {
-        $this->entityMasnager =$entityManager;
+        $this->entityManager =$entityManager;
     }
 
     /**

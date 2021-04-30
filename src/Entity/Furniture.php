@@ -8,6 +8,7 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use JMS\Serializer\Annotation as JMS;
+use JMS\Serializer\Annotation as Serializer;
 use Symfony\Component\Serializer\Annotation\Groups;
 use Symfony\Component\Serializer\Annotation\MaxDepth;
 
@@ -72,6 +73,7 @@ abstract class Furniture
 
     /**
      * @JMS\Groups({"furniture","furniture_author"})
+     * @JMS\MaxDepth(1)
      * @ORM\ManyToMany(targetEntity=Author::class, inversedBy="furniture")
      * @ORM\JoinTable(name="objet_mobilier_auteur",
      *      joinColumns={@ORM\JoinColumn(name="objet_mobilier_id", referencedColumnName="id")},
@@ -83,6 +85,7 @@ abstract class Furniture
 
     /**
      * @JMS\Groups({"era_furniture"})
+     * @JMS\MaxDepth(1)
      * @ORM\ManyToOne(targetEntity=Era::class, inversedBy="furniture")
      * @ORM\JoinColumn(name="epoque_id", referencedColumnName="id")
      */
@@ -90,6 +93,7 @@ abstract class Furniture
 
     /**
      * @JMS\Groups({"style_furniture"})
+     * @JMS\MaxDepth(1)
      * @ORM\ManyToOne(targetEntity=Style::class, inversedBy="furniture")
      * @ORM\JoinColumn(name="style_id", referencedColumnName="id")
      */
@@ -97,6 +101,7 @@ abstract class Furniture
 
     /**
      * @JMS\Groups({"materialTechnique_furniture"})
+     * @JMS\MaxDepth(1)
      * @ORM\ManyToOne(targetEntity=MaterialTechnique::class, inversedBy="furniture")
      * @ORM\JoinColumn(name="matiere_technique_id", referencedColumnName="id")
      */
@@ -104,6 +109,7 @@ abstract class Furniture
 
     /**
      * @JMS\Groups({"denomination_furniture"})
+     * @JMS\MaxDepth(1)
      * @ORM\ManyToOne(targetEntity=Denomination::class, inversedBy="furniture")
      * @ORM\JoinColumn(name="denomination_id", referencedColumnName="id")
      */
@@ -111,6 +117,7 @@ abstract class Furniture
 
     /**
      * @JMS\Groups({"field_furniture"})
+     * @JMS\MaxDepth(1)
      * @ORM\ManyToOne(targetEntity=Field::class, inversedBy="furniture")
      * @ORM\JoinColumn(name="domaine_id", referencedColumnName="id")
      */
@@ -123,12 +130,14 @@ abstract class Furniture
 
     /**
      * @JMS\Groups({"mouvement_furniture"})
+     * @JMS\MaxDepth(1)
      * @ORM\OneToMany(targetEntity=Movement::class, mappedBy="furniture")
      */
     protected $movements;
 
     /**
      * @ORM\OneToMany(targetEntity=Report::class, mappedBy="furniture")
+     * @JMS\MaxDepth(1)
      */
     protected $reports;
 
@@ -139,6 +148,7 @@ abstract class Furniture
 
     /**
      * @JMS\Groups({"status_furniture"})
+     * @JMS\MaxDepth(1)
      * @ORM\ManyToOne(targetEntity=Status::class, inversedBy="furniture")
      * @ORM\JoinColumn(name="status_id", referencedColumnName="id")
      */
@@ -155,7 +165,8 @@ abstract class Furniture
     private $photographies;
 
     /**
-     * @ORM\Column(type="boolean")
+     * @ORM\Column(type="boolean",options={"default"=true})
+     * @JMS\Groups({"status_furniture"})
      */
     private $visible;
 
@@ -624,5 +635,19 @@ abstract class Furniture
         $this->parent = $parent;
 
         return $this;
+    }
+    /**
+     * @Serializer\VirtualProperty()
+     * @JMS\Type("DateTime<'Y-m-d'>")
+     * @Serializer\SerializedName("creationDate")
+     * @JMS\Groups("art_work")
+     */
+    public function getCreatedAt()
+    {
+        return $this->createdAt;
+    }
+
+    public function getLastReport(){
+
     }
 }
