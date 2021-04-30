@@ -54,11 +54,37 @@ class FormValidationException extends HttpException
 
         foreach ($form->all() as $field) {
             $fieldKey = $field->getName();
-            foreach ($field->getErrors(true) as $error) {
-                if(array_key_exists($fieldKey, $errors)) {
-                    $errors[$fieldKey][] = $error->getMessage();
-                } else {
-                    $errors[$fieldKey] = [$error->getMessage()];
+            if (1 < count($field->all())){
+                foreach ($field->all() as $i => $f){
+                    $fkey = $f->getName();
+                    if (1 < count($f->all())){
+                        foreach ($f->all() as $fp){
+                            $fpkey = $fp->getName();
+                            foreach ($fp->getErrors(true) as $errp) {
+                                if(isset($errors[$fieldKey][$fkey]) && array_key_exists($fpkey, $errors[$fieldKey][$fkey])) {
+                                    $errors[$fieldKey][$fkey][$i][$fpkey][] = $errp->getMessage();
+                                } else {
+                                    $errors[$fieldKey][$fkey][$i][$fpkey] = [$errp->getMessage()];
+                                }
+                            }
+                        }
+                    }else{
+                        foreach ($f->getErrors(true) as $err) {
+                            if(isset($errors[$fieldKey]) && array_key_exists($fkey, $errors[$fieldKey])) {
+                                $errors[$fieldKey][$fkey][] = $err->getMessage();
+                            } else {
+                                $errors[$fieldKey][$fkey] = [$err->getMessage()];
+                            }
+                        }
+                    }
+                }
+            }else {
+                foreach ($field->getErrors(true) as $error) {
+                    if(array_key_exists($fieldKey, $errors)) {
+                        $errors[$fieldKey][] = $error->getMessage();
+                    } else {
+                        $errors[$fieldKey] = [$error->getMessage()];
+                    }
                 }
             }
         }

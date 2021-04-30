@@ -2,6 +2,7 @@
 
 namespace App\Entity;
 
+use App\Entity\Traits\TimestampableEntity;
 use App\Repository\MaterialTechniqueRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -14,8 +15,9 @@ use JMS\Serializer\Annotation as JMS;
  */
 class MaterialTechnique
 {
+    use TimestampableEntity;
     /**
-     * @JMS\Groups("id", "material_technique")
+     * @JMS\Groups("id", "material_technique", "artwork")
      *
      * @ORM\Id
      * @ORM\GeneratedValue

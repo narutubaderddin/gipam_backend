@@ -2,6 +2,7 @@
 
 namespace App\Entity;
 
+use App\Entity\Traits\TimestampableEntity;
 use App\Repository\EstablishmentRepository;
 use DateTimeInterface;
 use Doctrine\Common\Collections\ArrayCollection;
@@ -15,6 +16,7 @@ use JMS\Serializer\Annotation as JMS;
  */
 class Establishment
 {
+    use TimestampableEntity;
     /**
      * @JMS\Groups("id", "establishment", "establishment_id")
      *

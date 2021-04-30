@@ -1,0 +1,7 @@
+App\Entity\Service:
+  service_1:
+    label: <word()>
+    acronym: <word()>
+    startDate: <date_create()>
+    disappearanceDate: <date_create()>
+    subDivision: '@subDivision*'

@@ -2,6 +2,7 @@
 
 namespace App\Entity;
 
+use App\Entity\Traits\TimestampableEntity;
 use App\Repository\ReportSubTypeRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -15,6 +16,7 @@ use Symfony\Component\Validator\Constraints as Assert;
  */
 class ReportSubType
 {
+    use TimestampableEntity;
     public const TYPE_VUE = [
         'oeuvreRestauree' => 'Oeuvre restaurée',
         'bonEtat' => 'Bon état',

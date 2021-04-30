@@ -1,0 +1,5 @@
+App\Entity\Denomination:
+  denomination_1:
+    label: <name()>
+    field: '@field*'
+    active: true
