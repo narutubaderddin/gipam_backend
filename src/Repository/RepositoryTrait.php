@@ -24,7 +24,7 @@ trait RepositoryTrait
     public function findByCriteria(
         array $criteria = [],
         int $offset= 0,
-        int $limit=20,
+        int $limit=0,
         string $orderBy= "id",
         string $order = "asc",
         string $search = null
@@ -49,7 +49,7 @@ trait RepositoryTrait
             $qb->setFirstResult($offset);
         }
 
-        if ($limit != "") {
+        if ($limit && $limit != "") {
             $qb->setMaxResults($limit);
         }
 

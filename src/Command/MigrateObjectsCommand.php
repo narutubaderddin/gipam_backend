@@ -167,7 +167,7 @@ class MigrateObjectsCommand extends Command
             'rel_style' => 'C_STYLE',
             'title' => 'OE_TITRE',
             'number_of_unit' => 'OE_NB',
-            'description' => 'OE_REPRISE',
+//            'description' => 'OE_REPRISE',
         ];
         $oldEntities = $this->migrationRepository
             ->getAll(MigrationRepository::$oldDBConnection, $mappingTable['table']);
@@ -184,7 +184,7 @@ class MigrateObjectsCommand extends Command
             $this->addAuthor($oldEntity, $newEntity);
             $this->setMaterialTechnique($oldEntity, $newEntity, $mappingTable);
             $this->setStatus($oldEntity, $newEntity);
-            $this->addAttachments($oldEntity, $newEntity);
+//            $this->addAttachments($oldEntity, $newEntity);
             $dimensionError = false;
             $this->findDimensions($oldEntity, $newEntity, $dimensionError);
 
@@ -368,8 +368,7 @@ class MigrateObjectsCommand extends Command
         foreach ($oldAttachements as $attachement) {
             $newAttachement = (new Attachment())
                 ->setComment(MigrationDb::utf8Encode($attachement[$mappingTable['commentaire']]))
-                ->setLink(MigrationDb::utf8Encode($attachement[$mappingTable['lien']]))
-                ->setPrincipleImage($attachement[$mappingTable['image_principale']]);
+                ->setLink(MigrationDb::utf8Encode($attachement[$mappingTable['lien']]));
             $date = $attachement[$mappingTable['date']];
             if ($date) {
                 $newAttachement->setDate(new  DateTime($date));
