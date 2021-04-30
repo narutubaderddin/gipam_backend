@@ -209,9 +209,10 @@ class MigrateStaticDataCommand extends Command
             "Autres Musées",
             "Etablissements du Ministère de la Culture",
         ];
-        $sql = $this->migrationRepository->createInsertStatement($tableName, ['libelle', 'actif']);
+        $sql = $this->migrationRepository->createInsertStatement($tableName, ['libelle', 'actif', 'date_creation', 'date_modification']);
+        $date = date("d/m/Y");
         foreach ($newDepositorTypesMatching as $value) {
-            $this->migrationRepository->insertNewEntity($sql, [$value, 'true']);
+            $this->migrationRepository->insertNewEntity($sql, [$value, 'true', $date, $date]);
         }
     }
 
@@ -342,7 +343,7 @@ class MigrateStaticDataCommand extends Command
     {
         $defaultValue = null;
         $config = explode('_', $attribute);
-        $start = ["debut"];
+        $start = ["debut", "creation", "modification"];
         $end = ["disparition", "fin"];
         $date = date("d/m/Y");
         if (in_array(end($config), $start)) {
