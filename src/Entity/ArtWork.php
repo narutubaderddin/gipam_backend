@@ -5,6 +5,7 @@ namespace App\Entity;
 use App\Repository\ArtWorkRepository;
 use DateTimeInterface;
 use Doctrine\ORM\Mapping as ORM;
+use JMS\Serializer\Annotation as JMS;
 
 /**
  * @ORM\Entity(repositoryClass=ArtWorkRepository::class)
@@ -13,16 +14,22 @@ use Doctrine\ORM\Mapping as ORM;
 class ArtWork extends Furniture
 {
     /**
+     * @JMS\Groups("artwork")
+     *
      * @ORM\Column(name="longueur_totale", type="float", nullable=true)
      */
     private $totalLength;
 
     /**
+     * @JMS\Groups("artwork")
+     *
      * @ORM\Column(name="largeur_totale", type="float", nullable=true)
      */
     private $totalWidth;
 
     /**
+     * @JMS\Groups("artwork")
+     *
      * @ORM\Column(name="hauteur_totale", type="float", nullable=true)
      */
     private $totalHeight;

@@ -17,7 +17,7 @@ class Field
 {
     use TimestampableEntity;
     /**
-     * @JMS\Groups("id", "field", "field_id")
+     * @JMS\Groups("id", "field", "field_id", "artwork")
      *
      * @ORM\Id
      * @ORM\GeneratedValue

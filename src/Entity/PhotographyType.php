@@ -7,6 +7,8 @@ use App\Repository\PhotographyTypeRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use JMS\Serializer\Annotation as JMS;
+use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * @ORM\Entity(repositoryClass=PhotographyTypeRepository::class)
@@ -16,6 +18,8 @@ class PhotographyType
 {
     use TimestampableEntity;
     /**
+     * @JMS\Groups("artwork")
+     *
      * @ORM\Id
      * @ORM\GeneratedValue
      * @ORM\Column(type="integer")
@@ -23,11 +27,16 @@ class PhotographyType
     private $id;
 
     /**
+     * @JMS\Groups("artwork")
+     *
+     * @Assert\NotBlank()
+     *
      * @ORM\Column(name="type", type="string", length=50)
      */
     private $type;
 
     /**
+     * @JMS\Exclude()
      * @ORM\OneToMany(targetEntity=Photography::class, mappedBy="photographyType")
      */
     private $photographies;

@@ -17,7 +17,7 @@ class Era
 {
     use TimestampableEntity;
     /**
-     * @JMS\Groups("id", "era")
+     * @JMS\Groups("id", "era", "artwork")
      *
      * @ORM\Id
      * @ORM\GeneratedValue

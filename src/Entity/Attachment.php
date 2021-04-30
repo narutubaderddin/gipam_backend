@@ -6,6 +6,8 @@ use App\Entity\Traits\TimestampableEntity;
 use App\Repository\AttachmentRepository;
 use DateTimeInterface;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
+use JMS\Serializer\Annotation as JMS;
 
 /**
  * @ORM\Entity(repositoryClass=AttachmentRepository::class)
@@ -15,6 +17,8 @@ class Attachment
 {
     use TimestampableEntity;
     /**
+     * @JMS\Groups("artwork")
+     *
      * @ORM\Id
      * @ORM\GeneratedValue
      * @ORM\Column(type="integer")
@@ -22,22 +26,35 @@ class Attachment
     private $id;
 
     /**
+     * @JMS\Groups("artwork")
+     *
      * @ORM\Column(name="commentaire", type="text", nullable=true)
      */
     private $comment;
 
     /**
+     * @JMS\Groups("artwork")
+     *
+     * @Assert\NotBlank()
+     * @Assert\File(maxSize="25M")
+     *
      * @ORM\Column(name="lien", type="string", length=255)
      */
     private $link;
 
     /**
+     * @JMS\Exclude()
+     *
      * @ORM\ManyToOne(targetEntity=Furniture::class, inversedBy="attachments")
      * @ORM\JoinColumn(name="objet_mobilier_id", referencedColumnName="id")
      */
     private $furniture;
 
     /**
+     * @JMS\Groups("artwork")
+     *
+     * @Assert\Valid()
+     *
      * @ORM\ManyToOne(targetEntity=AttachmentType::class, inversedBy="attachments")
      * @ORM\JoinColumn(name="type_fichier_joint_id", referencedColumnName="id", nullable=false)
      */
@@ -60,12 +77,12 @@ class Attachment
         return $this;
     }
 
-    public function getLink(): ?string
+    public function getLink()
     {
         return $this->link;
     }
 
-    public function setLink(string $link): self
+    public function setLink($link): self
     {
         $this->link = $link;
 

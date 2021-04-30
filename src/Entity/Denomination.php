@@ -17,7 +17,7 @@ class Denomination
 {
     use TimestampableEntity;
     /**
-     * @JMS\Groups("id", "denomination", "denomination_id")
+     * @JMS\Groups("id", "denomination", "denomination_id", "artwork")
      *
      * @ORM\Id
      * @ORM\GeneratedValue
