@@ -17,7 +17,7 @@ class Style
 {
     use TimestampableEntity;
     /**
-     * @JMS\Groups("id", "style")
+     * @JMS\Groups("id", "style", "artwork")
      *
      * @ORM\Id
      * @ORM\GeneratedValue

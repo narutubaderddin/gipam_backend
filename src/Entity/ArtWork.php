@@ -21,16 +21,22 @@ class ArtWork extends Furniture
 //    private $creationDate;
 
     /**
+     * @JMS\Groups("artwork")
+     *
      * @ORM\Column(name="longueur_totale", type="float", nullable=true)
      */
     private $totalLength;
 
     /**
+     * @JMS\Groups("artwork")
+     *
      * @ORM\Column(name="largeur_totale", type="float", nullable=true)
      */
     private $totalWidth;
 
     /**
+     * @JMS\Groups("artwork")
+     *
      * @ORM\Column(name="hauteur_totale", type="float", nullable=true)
      */
     private $totalHeight;

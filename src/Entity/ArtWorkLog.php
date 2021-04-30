@@ -6,6 +6,7 @@ use App\Entity\Traits\TimestampableEntity;
 use App\Repository\ArtWorkLogRepository;
 use DateTimeInterface;
 use Doctrine\ORM\Mapping as ORM;
+use JMS\Serializer\Annotation as JMS;
 
 /**
  * @ORM\Entity(repositoryClass=ArtWorkLogRepository::class)
@@ -15,6 +16,8 @@ class ArtWorkLog
 {
     use TimestampableEntity;
     /**
+     * @JMS\Groups("artwork")
+     *
      * @ORM\Id
      * @ORM\GeneratedValue
      * @ORM\Column(type="integer")

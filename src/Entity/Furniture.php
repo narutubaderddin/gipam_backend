@@ -8,6 +8,9 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use JMS\Serializer\Annotation as JMS;
+use Symfony\Component\Validator\Constraints as Assert;
+use Gedmo\Mapping\Annotation as Gedmo;
+use Symfony\Component\Validator\Context\ExecutionContextInterface;
 use JMS\Serializer\Annotation as Serializer;
 use Symfony\Component\Serializer\Annotation\Groups;
 use Symfony\Component\Serializer\Annotation\MaxDepth;
@@ -23,7 +26,7 @@ abstract class Furniture
 {
     use TimestampableEntity;
     /**
-     * @JMS\Groups("id")
+     * @JMS\Groups("artwork", "artwork_id","id")
      * @ORM\Id
      * @ORM\GeneratedValue
      * @ORM\Column(type="integer")
@@ -32,46 +35,64 @@ abstract class Furniture
 
     /**
      * @JMS\Groups({"art_work"})
+     * @JMS\Groups("artwork")
+     *
      * @ORM\Column(name="titre", type="string", length=255, nullable=true)
      */
     protected $title;
 
     /**
+     * @JMS\Groups("artwork")
+     *
      * @ORM\Column(name="longueur", type="string", length=100, nullable=true)
      */
     protected $length;
 
     /**
+     * @JMS\Groups("artwork")
+     *
      * @ORM\Column(name="largeur", type="string", length=100, nullable=true)
      */
     protected $width;
 
     /**
+     * @JMS\Groups("artwork")
+     *
      * @ORM\Column(name="hauteur", type="string", length=100, nullable=true)
      */
     protected $height;
 
     /**
+     * @JMS\Groups("artwork")
+     *
      * @ORM\Column(name="profondeur", type="string", length=100, nullable=true)
      */
     protected $depth;
 
     /**
+     * @JMS\Groups("artwork")
+     *
      * @ORM\Column(name="diametre", type="string", length=100, nullable=true)
      */
     protected $diameter;
 
     /**
+     * @JMS\Groups("artwork")
+     *
      * @ORM\Column(name="poids", type="string", length=100, nullable=true)
      */
     protected $weight;
 
     /**
+     * @JMS\Groups("artwork")
+     *
      * @ORM\Column(name="nombre_unite", type="integer", nullable=true)
      */
     protected $numberOfUnit;
 
     /**
+     * @JMS\Groups("artwork", "artwork_author")
+     *
      * @JMS\Groups({"furniture","furniture_author"})
      * @JMS\MaxDepth(1)
      * @ORM\ManyToMany(targetEntity=Author::class, inversedBy="furniture")
@@ -84,6 +105,8 @@ abstract class Furniture
     protected $authors;
 
     /**
+     * @JMS\Groups("artwork")
+     *
      * @JMS\Groups({"era_furniture"})
      * @JMS\MaxDepth(1)
      * @ORM\ManyToOne(targetEntity=Era::class, inversedBy="furniture")
@@ -92,6 +115,8 @@ abstract class Furniture
     protected $era;
 
     /**
+     * @JMS\Groups("artwork")
+     *
      * @JMS\Groups({"style_furniture"})
      * @JMS\MaxDepth(1)
      * @ORM\ManyToOne(targetEntity=Style::class, inversedBy="furniture")
@@ -100,6 +125,8 @@ abstract class Furniture
     protected $style;
 
     /**
+     * @JMS\Groups("artwork")
+     *
      * @JMS\Groups({"materialTechnique_furniture"})
      * @JMS\MaxDepth(1)
      * @ORM\ManyToOne(targetEntity=MaterialTechnique::class, inversedBy="furniture")
@@ -108,6 +135,8 @@ abstract class Furniture
     protected $materialTechnique;
 
     /**
+     * @JMS\Groups("artwork")
+     *
      * @JMS\Groups({"denomination_furniture"})
      * @JMS\MaxDepth(1)
      * @ORM\ManyToOne(targetEntity=Denomination::class, inversedBy="furniture")
@@ -116,6 +145,8 @@ abstract class Furniture
     protected $denomination;
 
     /**
+     * @JMS\Groups("artwork")
+     *
      * @JMS\Groups({"field_furniture"})
      * @JMS\MaxDepth(1)
      * @ORM\ManyToOne(targetEntity=Field::class, inversedBy="furniture")
@@ -124,11 +155,15 @@ abstract class Furniture
     protected $field;
 
     /**
+     * @JMS\Groups("artwork")
+     *
      * @ORM\OneToMany(targetEntity=ArtWorkLog::class, mappedBy="furniture")
      */
     protected $artWorkLogs;
 
     /**
+     * @JMS\Groups("artwork")
+     *
      * @JMS\Groups({"mouvement_furniture"})
      * @JMS\MaxDepth(1)
      * @ORM\OneToMany(targetEntity=Movement::class, mappedBy="furniture")
@@ -136,17 +171,28 @@ abstract class Furniture
     protected $movements;
 
     /**
+     * @JMS\Groups("artwork")
+     *
      * @ORM\OneToMany(targetEntity=Report::class, mappedBy="furniture")
      * @JMS\MaxDepth(1)
      */
     protected $reports;
 
     /**
-     * @ORM\OneToMany(targetEntity=Attachment::class, mappedBy="furniture")
+     * @JMS\Groups("artwork")
+     *
+     * @Assert\Valid()
+     *
+     * @ORM\OneToMany(targetEntity=Attachment::class, mappedBy="furniture", cascade={"persist", "remove"})
      */
     protected $attachments;
 
     /**
+     * @JMS\Groups("artwork")
+     *
+     * @Assert\Valid()
+     *
+     * @ORM\ManyToOne(targetEntity=Status::class, inversedBy="furniture", cascade={"persist", "remove"})
      * @JMS\Groups({"status_furniture"})
      * @JMS\MaxDepth(1)
      * @ORM\ManyToOne(targetEntity=Status::class, inversedBy="furniture")
@@ -155,31 +201,68 @@ abstract class Furniture
     protected $status;
 
     /**
-     * @ORM\OneToMany(targetEntity=Hyperlink::class, mappedBy="furniture")
+     * @JMS\Groups("artwork")
+     *
+     * @Assert\Valid()
+     *
+     * @ORM\OneToMany(targetEntity=Hyperlink::class, mappedBy="furniture", cascade={"persist", "remove"})
      */
-    private $hyperlinks;
+    protected $hyperlinks;
 
     /**
-     * @ORM\OneToMany(targetEntity=Photography::class, mappedBy="furniture")
+     * @JMS\Groups("artwork")
+     *
+     * @Assert\Valid()
+     *
+     * @ORM\OneToMany(targetEntity=Photography::class, mappedBy="furniture", cascade={"persist", "remove"})
      */
-    private $photographies;
+    protected $photographies;
 
     /**
+     * @JMS\Groups("artwork")
+     *
+     * @ORM\Column(type="boolean")
      * @ORM\Column(type="boolean",options={"default"=true})
      * @JMS\Groups({"status_furniture"})
      */
-    private $visible;
+    protected $visible = true;
 
     /**
+     * @JMS\Exclude()
+     * @JMS\MaxDepth(1)
+     *
      * @ORM\OneToMany(targetEntity=Furniture::class, mappedBy="parent")
      */
-    private $children;
+    protected $children;
 
     /**
+     * @JMS\Groups("artwork")
+     * @JMS\MaxDepth(1)
+     *
      * @ORM\ManyToOne(targetEntity=Furniture::class, inversedBy="children")
      * @ORM\JoinColumn(name="parent_id", referencedColumnName="id")
      */
-    private $parent;
+    protected $parent;
+
+    /**
+     * @var \DateTime
+     *
+     * @JMS\Groups("artwork")
+     *
+     * @Gedmo\Timestampable(on="create")
+     * @ORM\Column(name="date_creation", type="datetime")
+     */
+    protected $createdAt;
+
+    /**
+     * @var \DateTime
+     *
+     * @JMS\Groups("artwork")
+     *
+     * @Gedmo\Timestampable(on="update")
+     * @ORM\Column(name="date_modification", type="datetime")
+     */
+    protected $updatedAt;
 
     public function __construct()
     {
@@ -649,5 +732,68 @@ abstract class Furniture
 
     public function getLastReport(){
 
+    }
+
+    /**
+     * Sets createdAt.
+     *
+     * @return $this
+     */
+    public function setCreatedAt(\DateTime $createdAt)
+    {
+        $this->createdAt = $createdAt;
+
+        return $this;
+    }
+
+    /**
+     * Returns createdAt.
+     *
+     * @return \DateTime
+     */
+    public function getCreatedAt()
+    {
+        return $this->createdAt;
+    }
+
+    /**
+     * Sets updatedAt.
+     *
+     * @return $this
+     */
+    public function setUpdatedAt(\DateTime $updatedAt)
+    {
+        $this->updatedAt = $updatedAt;
+
+        return $this;
+    }
+
+    /**
+     * Returns updatedAt.
+     *
+     * @return \DateTime
+     */
+    public function getUpdatedAt()
+    {
+        return $this->updatedAt;
+    }
+
+    /**
+     * @Assert\Callback()
+     *
+     * @param ExecutionContextInterface $context
+     */
+    public function validate(ExecutionContextInterface $context)
+    {
+        if ($this->getDenomination() instanceof Denomination &&
+            $this->getDenomination()->getField() instanceof Field &&
+            $this->getField() instanceof Field
+        ){
+            if ($this->getDenomination()->getField() != $this->getField()){
+                $context->buildViolation('This Denomination have mapping with another Field')
+                    ->atPath('field')
+                    ->addViolation();
+            }
+        }
     }
 }

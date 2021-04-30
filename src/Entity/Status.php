@@ -22,6 +22,8 @@ abstract class Status
 {
     use TimestampableEntity;
     /**
+     * @JMS\Groups("artwork")
+     *
      * @ORM\Id
      * @ORM\GeneratedValue
      * @ORM\Column(type="integer")
@@ -30,26 +32,35 @@ abstract class Status
     protected $id;
 
     /**
+     * @JMS\Groups("artwork")
+     *
      * @ORM\Column(name="type", type="string", length=255, nullable=true)
      */
     protected $type;
 
     /**
+     * @JMS\Groups("artwork")
+     *
      * @ORM\Column(name="date_debut", type="datetime", nullable=true)
      */
     protected $startDate;
 
     /**
+     * @JMS\Groups("artwork")
+     *
      * @ORM\Column(name="date_fin", type="datetime", nullable=true)
      */
     protected $endDate;
 
     /**
+     * @JMS\Groups("artwork")
+     *
      * @ORM\Column(name="commentaire", type="text", nullable=true)
      */
     protected $comment;
 
     /**
+     * @JMS\Exclude()
      * @ORM\OneToMany(targetEntity=Furniture::class, mappedBy="status")
      */
     protected $furniture;
