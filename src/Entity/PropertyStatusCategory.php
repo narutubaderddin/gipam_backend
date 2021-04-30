@@ -22,7 +22,7 @@ class PropertyStatusCategory
         'bienUsuel' => 'Bien usuel',
     ];
     /**
-     * @JMS\Groups("id", "category")
+     * @JMS\Groups("id", "category", "artwork")
      *
      * @ORM\Id
      * @ORM\GeneratedValue

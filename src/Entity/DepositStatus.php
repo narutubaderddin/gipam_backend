@@ -5,17 +5,19 @@ namespace App\Entity;
 use App\Repository\DepositStatusRepository;
 use Doctrine\ORM\Mapping as ORM;
 use JMS\Serializer\Annotation as JMS;
+use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 
 /**
  * @ORM\Entity(repositoryClass=DepositStatusRepository::class)
  * @ORM\Table(name="statut_depot")
+ * @UniqueEntity("inventoryNumber")
  */
 class DepositStatus extends Status
 {
     /**
      * @JMS\Groups("artwork")
      *
-     * @ORM\Column(name="numero_inventaire", type="integer", length=255, nullable=true)
+     * @ORM\Column(name="numero_inventaire", type="string", length=255, nullable=true)
      */
     private $inventoryNumber;
 
