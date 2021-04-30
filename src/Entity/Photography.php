@@ -5,6 +5,8 @@ namespace App\Entity;
 use App\Entity\Traits\TimestampableEntity;
 use App\Repository\PhotographyRepository;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
+use JMS\Serializer\Annotation as JMS;
 
 /**
  * @ORM\Entity(repositoryClass=PhotographyRepository::class)
@@ -14,6 +16,8 @@ class Photography
 {
     use TimestampableEntity;
     /**
+     * @JMS\Groups("artwork")
+     *
      * @ORM\Id
      * @ORM\GeneratedValue
      * @ORM\Column(type="integer")
@@ -21,27 +25,43 @@ class Photography
     private $id;
 
     /**
+     * @JMS\Groups("artwork")
+     *
      * @ORM\Column(name="nom_image", type="string", length=255)
      */
     private $imageName;
 
     /**
+     * @JMS\Groups("artwork")
+     *
+     * @Assert\Image(maxSize="25M")
+     * @Assert\NotBlank()
+     *
      * @ORM\Column(name="apercu_image",type="string", length=255)
      */
     private $imagePreview;
 
     /**
+     * @JMS\Groups("artwork")
+     *
+     * @Assert\NotBlank()
+     *
      * @ORM\Column(name="date",type="datetime")
      */
     private $date;
 
     /**
+     * @JMS\Groups("artwork")
+     *
+     * @Assert\Valid()
+     *
      * @ORM\ManyToOne(targetEntity=PhotographyType::class, inversedBy="photographies")
      * @ORM\JoinColumn(name="type_photographie_id", referencedColumnName="id", nullable=false)
      */
     private $photographyType;
 
     /**
+     * @JMS\Exclude()
      * @ORM\ManyToOne(targetEntity=Furniture::class, inversedBy="photographies")
      * @ORM\JoinColumn(name="objet_mobilier_id", referencedColumnName="id", nullable=false)
      */
@@ -52,24 +72,24 @@ class Photography
         return $this->id;
     }
 
-    public function getImageName(): ?string
+    public function getImageName()
     {
         return $this->imageName;
     }
 
-    public function setImageName(string $imageName): self
+    public function setImageName($imageName): self
     {
         $this->imageName = $imageName;
 
         return $this;
     }
 
-    public function getImagePreview(): ?string
+    public function getImagePreview()
     {
         return $this->imagePreview;
     }
 
-    public function setImagePreview(string $imagePreview): self
+    public function setImagePreview($imagePreview): self
     {
         $this->imagePreview = $imagePreview;
 
@@ -81,7 +101,7 @@ class Photography
         return $this->date;
     }
 
-    public function setDate(\DateTimeInterface $date): self
+    public function setDate(?\DateTimeInterface $date): self
     {
         $this->date = $date;
 

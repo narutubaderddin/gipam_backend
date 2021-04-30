@@ -4,6 +4,7 @@ namespace App\Entity;
 
 use App\Repository\DepositStatusRepository;
 use Doctrine\ORM\Mapping as ORM;
+use JMS\Serializer\Annotation as JMS;
 
 /**
  * @ORM\Entity(repositoryClass=DepositStatusRepository::class)
@@ -12,22 +13,30 @@ use Doctrine\ORM\Mapping as ORM;
 class DepositStatus extends Status
 {
     /**
+     * @JMS\Groups("artwork")
+     *
      * @ORM\Column(name="numero_inventaire", type="integer", length=255, nullable=true)
      */
     private $inventoryNumber;
 
     /**
+     * @JMS\Groups("artwork")
+     *
      * @ORM\ManyToOne(targetEntity=Depositor::class, inversedBy="depositStatuses")
      * @ORM\JoinColumn(name="deposant_id", referencedColumnName="id")
      */
     private $depositor;
 
     /**
+     * @JMS\Groups("artwork")
+     *
      * @ORM\Column(name="date_depot", type="datetime", nullable=true)
      */
     private $depositDate;
 
     /**
+     * @JMS\Groups("artwork")
+     *
      * @ORM\Column(name="numero_arret", type="integer", nullable=true)
      */
     private $stopNumber;

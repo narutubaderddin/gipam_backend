@@ -5,6 +5,8 @@ namespace App\Entity;
 use App\Entity\Traits\TimestampableEntity;
 use App\Repository\HyperlinkRepository;
 use Doctrine\ORM\Mapping as ORM;
+use JMS\Serializer\Annotation as JMS;
+use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * @ORM\Entity(repositoryClass=HyperlinkRepository::class)
@@ -14,6 +16,8 @@ class Hyperlink
 {
     use TimestampableEntity;
     /**
+     * @JMS\Groups("artwork")
+     *
      * @ORM\Id
      * @ORM\GeneratedValue
      * @ORM\Column(type="integer")
@@ -21,17 +25,25 @@ class Hyperlink
     private $id;
 
     /**
+     * @JMS\Groups("artwork")
+     *
+     * @Assert\Url()
+     * @Assert\NotBlank()
+     *
      * @ORM\Column(type="string", length=255)
      */
     private $url;
 
     /**
+     * @JMS\Groups("artwork")
+     *
      * @ORM\Column(name="nom", type="string", length=50)
      */
     private $name;
 
     /**
-     * @ORM\ManyToOne(targetEntity=furniture::class, inversedBy="hyperlinks")
+     * @JMS\Exclude()
+     * @ORM\ManyToOne(targetEntity=Furniture::class, inversedBy="hyperlinks")
      * @ORM\JoinColumn(name="objet_mobilier_id", referencedColumnName="id", nullable=false)
      */
     private $furniture;
