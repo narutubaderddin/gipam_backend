@@ -50,7 +50,7 @@ trait RepositoryTrait
             $qb->setFirstResult($offset);
         }
 
-        if ($limit && $limit!= "") {
+        if ($limit && $limit != "") {
             $qb->setMaxResults($limit);
         }
 

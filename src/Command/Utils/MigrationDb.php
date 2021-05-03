@@ -80,10 +80,12 @@ class MigrationDb
     ];
 
 
-
     public const DEPOSANT = [
         'id' => 'C_DEPOSANT',
         'table' => 'DEPOSANT',
+        'default_date_date_creation' => 'true',
+        'default_date_date_modification' => 'true',
+        'default_date_date_modification' => 'true',
         'default_date_date_debut' => 'true',
         'default_date_date_fin' => 'true',
         'rel_type_deposant' => 'C_TYPE_DEPOSANTS',
@@ -102,6 +104,8 @@ class MigrationDb
     public const TYPES_DEPOSANTS = [
         'id' => 'C_TYPE_DEPOSANTS',
         'table' => 'TYPES_DEPOSANTS',
+        'default_date_date_creation' => 'true',
+        'default_date_date_modification' => 'true',
         'default_bool_actif' => 'true',
         'libelle' => 'TDEP_DEPOSANTS',
         'old_id' => 'C_TYPE_DEPOSANTS'
@@ -110,6 +114,8 @@ class MigrationDb
     public const STYLES = [
         'id' => 'C_STYLE',
         'table' => 'STYLES',
+        'default_date_date_creation' => 'true',
+        'default_date_date_modification' => 'true',
         'default_bool_actif' => 'true',
         'libelle' => 'STY_STYLE',
         'old_id' => 'C_STYLE'
@@ -118,6 +124,8 @@ class MigrationDb
     public const DENOMINATIONS = [
         'id' => 'C_DENOMINATION',
         'table' => 'DENOMINATIONS',
+        'default_date_date_creation' => 'true',
+        'default_date_date_modification' => 'true',
         'default_bool_actif' => 'true',
         'rel_domaine' => 'C_DOMAINE',
         'libelle' => 'DEN_DENOMINATION',
@@ -127,6 +135,8 @@ class MigrationDb
     public const DOMAINE = [
         'id' => 'C_DOMAINE',
         'table' => 'DOMAINE',
+        'default_date_date_creation' => 'true',
+        'default_date_date_modification' => 'true',
         'default_bool_actif' => 'true',
         'libelle' => 'DOM_DOMAINE',
         'old_id' => 'C_DOMAINE'
@@ -135,6 +145,8 @@ class MigrationDb
     public const EPOQUES = [
         'id' => 'C_EPOQUE',
         'table' => 'EPOQUES',
+        'default_date_date_creation' => 'true',
+        'default_date_date_modification' => 'true',
         'default_bool_actif' => 'true',
         'libelle' => 'EPO_EPOQUE',
         'old_id' => 'C_EPOQUE'
@@ -143,6 +155,8 @@ class MigrationDb
     public const MINISTERES = [
         'id' => 'C_MIN',
         'table' => 'MINISTERES',
+        'default_date_date_creation' => 'true',
+        'default_date_date_modification' => 'true',
         'sigle' => 'MIN_SIGLELDAP',
         'nom' => 'MIN_LIBELLE',
         'date_debut' => 'MIN_DATE_CRE',
@@ -153,6 +167,8 @@ class MigrationDb
     public const ETAB_DIR = [
         'id' => 'C_ETABDIR',
         'table' => 'ETAB_DIR',
+        'default_date_date_creation' => 'true',
+        'default_date_date_modification' => 'true',
         'rel_ministere' => 'C_MIN',
         'default_date_date_debut' => 'ED_ACTIF',
         'default_date_date_disparition' => 'ED_ACTIF',
@@ -164,6 +180,8 @@ class MigrationDb
     public const SOUS_DIRECTION = [
         'id' => 'C_ETABDIR',
         'table' => 'ETAB_DIR',
+        'default_date_date_creation' => 'true',
+        'default_date_date_modification' => 'true',
         'rel_etablissement' => 'C_ETABDIR',
         'default_date_date_debut' => 'ED_ACTIF',
         'default_date_date_fin' => 'ED_ACTIF',
@@ -175,6 +193,8 @@ class MigrationDb
     public const CORRESPONDANTS = [
         'id' => 'C_COR',
         'table' => 'CORRESPONDANTS',
+        'default_date_date_creation' => 'true',
+        'default_date_date_modification' => 'true',
         'rel_service' => 'C_SERVICE',
         'rel_etablissement' => 'C_ETABDIR',
         'default_date_date_debut' => 'COR_ACTIF',
@@ -190,6 +210,8 @@ class MigrationDb
     public const SERVICES = [
         'id' => 'C_SERVICE',
         'table' => 'SERVICES',
+        'default_date_date_creation' => 'true',
+        'default_date_date_modification' => 'true',
         'rel_sous_direction' => 'C_ETABDIR',
         'default_date_date_debut' => 'SERV_ACTIF',
         'default_date_date_disparition' => 'SERV_ACTIF',
@@ -213,6 +235,8 @@ class MigrationDb
     public const TYPES_MOUVEMENTS = [
         'id' => 'C_TYPEMVT',
         'table' => 'TYPES_MOUVEMENTS',
+        'default_date_date_creation' => 'true',
+        'default_date_date_modification' => 'true',
         'libelle' => 'TMVT_MOUVEMENT',
         'old_id' => 'C_TYPEMVT',
     ];
@@ -221,6 +245,8 @@ class MigrationDb
     public const ACTIONS = [
         'id' => 'C_TYPEMVT',
         'table' => 'ACTIONS',
+        'default_date_date_creation' => 'true',
+        'default_date_date_modification' => 'true',
         'rel_objet_mobilier' => 'C_MGPAM',
         'rel_constat' => 'C_TYPESTATUT',
         'rel_sous_type_constat' => 'C_TYPEETAT',
@@ -233,12 +259,16 @@ class MigrationDb
     public const TYPES_ACTIONS = [
         'id' => 'C_TYPEACT',
         'table' => 'TYPES_ACTIONS',
+        'default_date_date_creation' => 'true',
+        'default_date_date_modification' => 'true',
         'libelle' => 'TACT_ACTION',
     ];
 
     public const STATUTS = [
         'id' => 'C_TYPESTATUT',
         'table' => 'STATUTS',
+        'default_date_date_creation' => 'true',
+        'default_date_date_modification' => 'true',
         'libelle' => 'TST_STATUT',
         'old_id' => 'C_TYPESTATUT',
     ];
@@ -246,6 +276,8 @@ class MigrationDb
     public const ETATS = [
         'id' => 'C_TYPEETAT',
         'table' => 'ETATS',
+        'default_date_date_creation' => 'true',
+        'default_date_date_modification' => 'true',
         'libelle' => 'TET_ETAT',
         'old_id' => 'C_TYPEETAT',
     ];
@@ -253,6 +285,8 @@ class MigrationDb
     public const PHOTOGRAPHIES = [
         'id' => 'C_PHOTO',
         'table' => 'PHOTOGRAPHIES',
+        'default_date_date_creation' => 'true',
+        'default_date_date_modification' => 'true',
         'rel_objet_mobilier' => 'C_MGPAM',
         'date' => 'PH_DATE',
         'commentaire' => 'PH_COMM',
@@ -264,6 +298,8 @@ class MigrationDb
     public const OEUVRES = [
         'id' => 'C_MGPAM',
         'table' => 'OEUVRES',
+        'default_date_date_creation' => 'true',
+        'default_date_date_modification' => 'true',
         'rel_denomination' => 'C_DENOMINATION',
         'rel_domaine' => 'C_DOMAINE',
         'rel_epoque' => 'C_EPOQUE',
@@ -277,12 +313,16 @@ class MigrationDb
     public const LOG_OEUVRE = [
         'id' => 'C_MGPAM',
         'table' => 'OEUVRES',
+        'default_date_date_creation' => 'true',
+        'default_date_date_modification' => 'true',
         'date' => 'OE_DATEENR',
     ];
 
     public const STATUT = [
         'id' => 'C_MGPAM',
         'table' => 'OEUVRES',
+        'default_date_date_creation' => 'true',
+        'default_date_date_modification' => 'true',
         'commentaire' => 'OE_DEPOT',
         'rel_deposant' => 'C_DEPOSANT',
     ];
@@ -290,6 +330,8 @@ class MigrationDb
     public const STATUT_PROPRIETE = [
         'id' => 'C_MGPAM',
         'table' => 'OEUVRES',
+        'default_date_date_creation' => 'true',
+        'default_date_date_modification' => 'true',
         'date_entree' => 'OE_DATEDEPOT',
         'commentaire' => 'OE_DEPOT',
         'prop_un_pour_cent' => 'OE_UNPOURCENT',
@@ -298,6 +340,8 @@ class MigrationDb
     public const STATUT_DEPOT = [
         'id' => 'C_MGPAM',
         'table' => 'OEUVRES',
+        'default_date_date_creation' => 'true',
+        'default_date_date_modification' => 'true',
         'commentaire' => 'OE_DEPOT',
         'date_depot' => 'OE_DATEDEPOT',
         'rel_deposant' => 'C_DEPOSANT',
@@ -306,6 +350,8 @@ class MigrationDb
     public const SITES_6A = [
         'id' => 'C_SITE',
         'table' => 'SITES_6A',
+        'default_date_date_creation' => 'true',
+        'default_date_date_modification' => 'true',
         'rel_commune' => 'COM',
         'default_date_date_debut' => 'SITE_ACTIF',
         'default_date_date_disparition' => 'SITE_ACTIF',
@@ -319,6 +365,8 @@ class MigrationDb
     public const SITES = [
         'id' => 'C_SITE',
         'table' => 'SITES',
+        'default_date_date_creation' => 'true',
+        'default_date_date_modification' => 'true',
         'default_date_date_debut' => 'true',
         'default_date_date_disparition' => 'true',
         'libelle' => 'SITE_NOM',
@@ -328,6 +376,8 @@ class MigrationDb
     public const COMMUNES = [
         'id' => 'COM',
         'table' => 'COMMUNES',
+        'default_date_date_creation' => 'true',
+        'default_date_date_modification' => 'true',
         'default_date_date_debut' => 'true',
         'default_date_date_disparition' => 'true',
         'rel_departement' => 'DEP',
@@ -339,6 +389,8 @@ class MigrationDb
     public const DEPARTEMENTS = [
         'id' => 'DEP',
         'table' => 'DEPARTEMENTS',
+        'default_date_date_creation' => 'true',
+        'default_date_date_modification' => 'true',
         'default_date_date_debut' => 'true',
         'default_date_date_disparition' => 'true',
         'rel_region' => 'REGION',
@@ -349,6 +401,8 @@ class MigrationDb
     public const REGIONS = [
         'id' => 'REGION',
         'table' => 'REGIONS',
+        'default_date_date_creation' => 'true',
+        'default_date_date_modification' => 'true',
         'default_date_date_debut' => 'true',
         'default_date_date_disparition' => 'true',
         'nom' => 'NCCENR',

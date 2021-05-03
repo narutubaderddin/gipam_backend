@@ -11,6 +11,7 @@ use FOS\RestBundle\Controller\AbstractFOSRestController;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use FOS\RestBundle\Controller\Annotations\Route;
 use FOS\RestBundle\Request\ParamFetcherInterface;
+use FOS\RestBundle\View\View;
 use Nelmio\ApiDocBundle\Annotation\Model;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -31,8 +32,7 @@ class ServiceController extends AbstractFOSRestController
 
     public function __construct(
         ApiManager $apiManager
-    )
-    {
+    ) {
         $this->apiManager = $apiManager;
     }
 
@@ -51,7 +51,7 @@ class ServiceController extends AbstractFOSRestController
      *
      * @param Service $service
      *
-     * @return Response
+     * @return View
      */
     public function showService(Service $service)
     {
@@ -144,10 +144,8 @@ class ServiceController extends AbstractFOSRestController
      *
      * @param Request $request
      *
-     * @return Response
+     * @return View
      *
-     * @throws \Doctrine\ORM\ORMException
-     * @throws \Doctrine\ORM\OptimisticLockException
      */
     public function postService(Request $request)
     {
@@ -186,10 +184,8 @@ class ServiceController extends AbstractFOSRestController
      * @param Request $request
      * @param Service $service
      *
-     * @return Response
+     * @return View
      *
-     * @throws \Doctrine\ORM\ORMException
-     * @throws \Doctrine\ORM\OptimisticLockException
      */
     public function updateService(Request $request, Service $service)
     {
@@ -218,11 +214,12 @@ class ServiceController extends AbstractFOSRestController
      *
      * @param Service $service
      *
-     * @return Response
+     * @return View
      */
     public function removeService(Service $service)
     {
         $this->apiManager->delete($service);
         return $this->view(null, Response::HTTP_NO_CONTENT);
     }
+
 }
