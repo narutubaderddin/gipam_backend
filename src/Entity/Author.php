@@ -8,7 +8,6 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use JMS\Serializer\Annotation as JMS;
-use JMS\Serializer\Annotation as Serializer;
 
 /**
  * @ORM\Entity(repositoryClass=AuthorRepository::class)
@@ -142,8 +141,8 @@ class Author
 
     /**
      * @return string|null
-     * @Serializer\VirtualProperty()
-     * @Serializer\SerializedName("label")
+     * @JMS\VirtualProperty()
+     * @JMS\SerializedName("label")
      * @JMS\Groups("authors","furniture_author")
      */
     public function getFullName(): ?string

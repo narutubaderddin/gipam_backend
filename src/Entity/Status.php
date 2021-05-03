@@ -9,7 +9,6 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use JMS\Serializer\Annotation as JMS;
-use JMS\Serializer\Annotation as Serializer;
 
 /**
  * @ORM\Entity(repositoryClass=StatusRepository::class)
@@ -153,8 +152,8 @@ abstract class Status
         return $this;
     }
     /**
-     * @Serializer\VirtualProperty()
-     * @Serializer\SerializedName("statusType")
+     * @JMS\VirtualProperty()
+     * @JMS\SerializedName("statusType")
      * @JMS\Groups("status_furniture")
      */
     public function getStatusType(){
@@ -162,8 +161,8 @@ abstract class Status
     }
 
     /**
-     * @Serializer\VirtualProperty()
-     * @Serializer\SerializedName("depsitorName")
+     * @JMS\VirtualProperty()
+     * @JMS\SerializedName("depsitorName")
      * @JMS\Groups("status_furniture")
      */
     public function getDepositorName(){

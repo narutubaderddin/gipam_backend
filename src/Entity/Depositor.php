@@ -8,7 +8,6 @@ use DateTimeInterface;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
-use JMS\Serializer\Annotation as Serializer;
 
 /**
  * @ORM\Entity(repositoryClass=DepositorRepository::class)
@@ -18,7 +17,7 @@ class Depositor
 {
     use TimestampableEntity;
     /**
-     * @Serializer\Groups("id")
+     * @JMS\Groups("id")
      * @ORM\Id
      * @ORM\GeneratedValue
      * @ORM\Column(type="integer")
@@ -32,7 +31,7 @@ class Depositor
     private $acronym;
 
     /**
-     * @Serializer\Groups("depositors")
+     * @JMS\Groups("depositors")
      * @ORM\Column(name="nom", type="string", length=255, nullable=true)
      */
     private $name;
