@@ -8,6 +8,7 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use JMS\Serializer\Annotation as JMS;
+use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * @ORM\Entity(repositoryClass=EstablishmentTypeRepository::class)
@@ -16,6 +17,7 @@ use JMS\Serializer\Annotation as JMS;
 class EstablishmentType
 {
     use TimestampableEntity;
+
     /**
      * @JMS\Groups("id", "establishment_type", "establishment_type_id")
      *
@@ -26,18 +28,41 @@ class EstablishmentType
     private $id;
 
     /**
+     * @JMS\Groups("establishment_type")
+     *
+     * @Assert\NotBlank
+     *
      * @ORM\Column(name="libelle", type="string", length=255, nullable=true)
      */
     private $label;
 
     /**
+     * @JMS\Exclude
+     *
      * @ORM\OneToMany(targetEntity=Establishment::class, mappedBy="type")
      */
     private $establishments;
 
+    /**
+     * @ORM\Column(name="actif", type="boolean", nullable=false)
+     */
+    private $active = true;
+
     public function __construct()
     {
         $this->establishments = new ArrayCollection();
+    }
+
+    public function isActive(): bool
+    {
+        return $this->active;
+    }
+
+    public function setActive(bool $active): self
+    {
+        $this->active = $active;
+
+        return $this;
     }
 
     public function getId(): ?int
