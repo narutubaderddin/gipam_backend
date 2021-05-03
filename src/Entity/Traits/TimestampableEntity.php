@@ -17,7 +17,7 @@ trait TimestampableEntity
      *
      * @JMS\Exclude()
      * @Gedmo\Timestampable(on="create")
-     * @ORM\Column(name="date_creation", type="datetime")
+     * @ORM\Column(name="date_creation", type="datetime",options={"default"="CURRENT_TIMESTAMP"})
      */
     protected $createdAt;
 
@@ -26,7 +26,7 @@ trait TimestampableEntity
      *
      * @JMS\Exclude()
      * @Gedmo\Timestampable(on="update")
-     * @ORM\Column(name="date_modification", type="datetime")
+     * @ORM\Column(name="date_modification", type="datetime",options={"default"="CURRENT_TIMESTAMP"})
      */
     protected $updatedAt;
 

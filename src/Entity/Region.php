@@ -47,6 +47,7 @@ class Region
 
     /**
      * @JMS\Groups("region")
+     *
      * @Assert\Type("\DateTimeInterface")  *
      * @ORM\Column(name="date_disparition", type="datetime", nullable=true)
      */

@@ -7,6 +7,7 @@ use App\Repository\EntryModeRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use JMS\Serializer\Annotation as JMS;
 
 /**
  * @ORM\Entity(repositoryClass=EntryModeRepository::class)
@@ -23,6 +24,8 @@ class EntryMode
         'artistique' => '1% artistique',
     ];
     /**
+     * @JMS\Groups("artwork","short")
+     *
      * @ORM\Id
      * @ORM\GeneratedValue
      * @ORM\Column(type="integer")
@@ -30,6 +33,7 @@ class EntryMode
     private $id;
 
     /**
+     * @JMS\Groups("short")
      * @ORM\Column(name="libelle", type="string", length=255, nullable=true)
      */
     private $label;

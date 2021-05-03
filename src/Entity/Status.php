@@ -26,6 +26,7 @@ abstract class Status
      * @ORM\Id
      * @ORM\GeneratedValue
      * @ORM\Column(type="integer")
+     * @JMS\Groups("id")
      */
     protected $id;
 
@@ -149,5 +150,25 @@ abstract class Status
         }
 
         return $this;
+    }
+    /**
+     * @JMS\VirtualProperty()
+     * @JMS\SerializedName("statusType")
+     * @JMS\Groups("status_furniture")
+     */
+    public function getStatusType(){
+        return $this instanceof DepositStatus ?'DepositStatus':'PropertyStatus';
+    }
+
+    /**
+     * @JMS\VirtualProperty()
+     * @JMS\SerializedName("depsitorName")
+     * @JMS\Groups("status_furniture")
+     */
+    public function getDepositorName(){
+        if($this instanceof  DepositStatus){
+            return  $this->getDepositor()->getName();
+        }
+        return null;
     }
 }

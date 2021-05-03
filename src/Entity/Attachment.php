@@ -56,7 +56,7 @@ class Attachment
      * @Assert\Valid()
      *
      * @ORM\ManyToOne(targetEntity=AttachmentType::class, inversedBy="attachments")
-     * @ORM\JoinColumn(name="type_fichier_joint_id", referencedColumnName="id", nullable=false)
+     * @ORM\JoinColumn(name="type_fichier_joint_id", referencedColumnName="id")
      */
     private $attachmentType;
 

@@ -101,7 +101,7 @@ class PropertyStatusCategoryController extends AbstractFOSRestController
      * @Rest\QueryParam(name="sort", requirements="(asc|desc)", nullable=true, default="asc", description="tri order asc|desc")
      * @Rest\QueryParam(name="label", map=true, nullable=false, description="filter by label. example: label[eq]=value")
      * @Rest\QueryParam(name="active", map=true, nullable=false, description="filter by active. example: active[eq]=1")
-     *
+     * @Rest\QueryParam(name="search", map=false, nullable=true, description="search. example: search=text")
      * @Rest\View()
      *
      * @param ParamFetcherInterface $paramFetcher

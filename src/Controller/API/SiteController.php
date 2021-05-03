@@ -7,10 +7,12 @@ use App\Exception\FormValidationException;
 use App\Form\SiteType;
 use App\Model\ApiResponse;
 use App\Services\ApiManager;
+use FOS\RestBundle\Context\Context;
 use FOS\RestBundle\Controller\AbstractFOSRestController;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use FOS\RestBundle\Controller\Annotations\Route;
 use FOS\RestBundle\Request\ParamFetcherInterface;
+use FOS\RestBundle\View\View;
 use Nelmio\ApiDocBundle\Annotation\Model;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -103,16 +105,21 @@ class SiteController extends AbstractFOSRestController
      * @Rest\QueryParam(name="startDate", map=true, nullable=false, description="filter by startDate. example: startDate[lt]=value")
      * @Rest\QueryParam(name="disappearanceDate", map=true, nullable=false, description="filter by disappearanceDate. example: disappearanceDate[lt]=value")
      * @Rest\QueryParam(name="search", map=false, nullable=true, description="search. example: search=text")
+     *
      * @Rest\View()
      *
      * @param ParamFetcherInterface $paramFetcher
      *
-     * @return Response
+     * @return View
      */
-    public function listSites(ParamFetcherInterface $paramFetcher)
+    public function listSites(ParamFetcherInterface $paramFetcher,Request $request)
     {
+        $serializerGroups =$request->get('serializer_group','["default"]');
+        $serializerGroups = json_decode($serializerGroups,true);
+        $context= new Context();
+        $context->setGroups($serializerGroups);
         $records = $this->apiManager->findRecordsByEntityName(Site::class, $paramFetcher);
-        return $this->view($records, Response::HTTP_OK);
+        return $this->view($records, Response::HTTP_OK)->setContext($context);
     }
 
     /**
@@ -141,10 +148,8 @@ class SiteController extends AbstractFOSRestController
      *
      * @param Request $request
      *
-     * @return Response
+     * @return View
      *
-     * @throws \Doctrine\ORM\ORMException
-     * @throws \Doctrine\ORM\OptimisticLockException
      */
     public function postSite(Request $request)
     {
@@ -183,10 +188,8 @@ class SiteController extends AbstractFOSRestController
      * @param Request $request
      * @param Site $site
      *
-     * @return Response
+     * @return View
      *
-     * @throws \Doctrine\ORM\ORMException
-     * @throws \Doctrine\ORM\OptimisticLockException
      */
     public function updateSite(Request $request, Site $site)
     {
@@ -215,7 +218,7 @@ class SiteController extends AbstractFOSRestController
      *
      * @param Site $site
      *
-     * @return Response
+     * @return View
      */
     public function removeSite(Site $site)
     {

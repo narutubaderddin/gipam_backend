@@ -120,7 +120,6 @@ class MovementActionTypeController extends AbstractFOSRestController
      * @Rest\QueryParam(name="label",map=true, nullable=false, description="filter by label. example: label[eq]=value")
      * @Rest\QueryParam(name="movementType", nullable=false, description="filter by Movement Type id. example: movementType[eq]=value")
      * @Rest\QueryParam(name="search", map=false, nullable=true, description="search. example: search=text")
-     *
      * @Rest\View()
      *
      * @param ParamFetcherInterface $paramFetcher

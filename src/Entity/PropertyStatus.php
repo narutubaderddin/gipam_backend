@@ -5,6 +5,8 @@ namespace App\Entity;
 use App\Repository\PropertyStatusRepository;
 use DateTimeInterface;
 use Doctrine\ORM\Mapping as ORM;
+use JMS\Serializer\Annotation as JMS;
+use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * @ORM\Entity(repositoryClass=PropertyStatusRepository::class)
@@ -13,58 +15,83 @@ use Doctrine\ORM\Mapping as ORM;
 class PropertyStatus extends Status
 {
     /**
+     * @JMS\Groups("artwork")
+     * @Assert\NotBlank()
+     *
      * @ORM\Column(name="date_entree", type="datetime", nullable=true)
      */
     private $entryDate;
 
     /**
+     * @JMS\Groups("artwork")
+     *
      * @ORM\Column(name="marquage", type="string", length=255, nullable=true)
      */
     private $marking;
 
     /**
+     * @JMS\Groups("artwork")
+     * @Assert\NotBlank()
+     *
      * @ORM\ManyToOne(targetEntity=EntryMode::class, inversedBy="propertyStatuses")
      * @ORM\JoinColumn(name="mode_entree_id", referencedColumnName="id")
      */
     private $entryMode;
 
     /**
+     * @JMS\Groups("artwork")
+     * @Assert\NotBlank()
+     *
      * @ORM\ManyToOne(targetEntity=PropertyStatusCategory::class, inversedBy="propertyStatuses")
      * @ORM\JoinColumn(name="categorie_id", referencedColumnName="id")
      */
     private $category;
 
     /**
+     * @JMS\Groups("artwork")
+     *
      * @ORM\Column(name="propUnPourCent", type="boolean", nullable=true)
      */
     private $propOnePercent;
 
     /**
+     * @JMS\Groups("artwork")
+     *
      * @ORM\Column(name="signature_inscription", type="string", length=255, nullable=true)
      */
     private $registrationSignature;
 
     /**
+     * @JMS\Groups("artwork")
+     *
      * @ORM\Column(name="mots_descriptifs", type="string", length=255, nullable=true)
      */
     private $descriptiveWords;
 
     /**
+     * @JMS\Groups("artwork")
+     *
      * @ORM\Column(name="valeur_assurance", type="integer", nullable=true)
      */
     private $insuranceValue;
 
     /**
+     * @JMS\Groups("artwork")
+     *
      * @ORM\Column(name="date_valeur_assurance", type="datetime", nullable=true)
      */
     private $insuranceValueDate;
 
     /**
+     * @JMS\Groups("artwork")
+     *
      * @ORM\Column(name="autres_inscription", type="string", length=255, nullable=true)
      */
     private $otherRegistrations;
 
     /**
+     * @JMS\Groups("artwork")
+     *
      * @ORM\Column(name="description_commentaire", type="text", nullable=true)
      */
     protected $description;
@@ -199,5 +226,16 @@ class PropertyStatus extends Status
         $this->description = $description;
 
         return $this;
+    }
+
+    /**
+     *
+     * @JMS\Groups("artwork")
+     * @JMS\VirtualProperty(name="inventoryNumber")
+     * @return int|null
+     */
+    public function getInventoryNumber()
+    {
+        return $this->getId();
     }
 }

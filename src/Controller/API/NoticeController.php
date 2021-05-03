@@ -43,7 +43,7 @@ class NoticeController extends AbstractFOSRestController
      *     response=200,
      *     description="Returns attributes"
      * )
-     * @SWG\Tag(name="notice")
+     * @SWG\Tag(name="notices")
      *
      * @Rest\QueryParam(name="denomination_id", requirements="\d+", nullable=true, description="id denomination")
      * @Rest\QueryParam(name="field_id", requirements="\d+", nullable=true, description="id field")
@@ -66,7 +66,7 @@ class NoticeController extends AbstractFOSRestController
     /**
      * @Rest\Post("/deposit")
      *
-     * @SWG\Tag(name="notice")
+     * @SWG\Tag(name="notices")
      * @SWG\Response(
      *     response=201,
      *     description="Returns created ArtWork",
@@ -99,6 +99,53 @@ class NoticeController extends AbstractFOSRestController
     {
         $form = $this->createForm(ArtWorkType::class, null, [
             'status' => ArtWorkType::DEPOSIT_STATUS]
+        );
+        $form->submit($this->apiManager->getPostDataFromRequest($request));
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $artWork = $this->apiManager->save($form->getData());
+            return $this->view($artWork, Response::HTTP_CREATED);
+        } else {
+            throw new FormValidationException($form);
+        }
+    }
+
+    /**
+     * @Rest\Post("/property")
+     *
+     * @SWG\Tag(name="notices")
+     * @SWG\Response(
+     *     response=201,
+     *     description="Returns created ArtWork",
+     *     @SWG\Schema(
+     *         ref=@Model(type=ArtWork::class, groups={"artwork"})
+     *     )
+     * )
+     * @SWG\Response(
+     *     response=400,
+     *     description="Creation error"
+     * )
+     * @SWG\Parameter(
+     *     name="form",
+     *     in="body",
+     *     description="Add ArtWork",
+     *     @Model(type=ArtWork::class, groups={"artwork"})
+     * )
+     *
+     *
+     * @Rest\View(serializerGroups={"artwork"}, serializerEnableMaxDepthChecks=true)
+     *
+     * @param Request $request
+     *
+     * @return Response
+     *
+     * @throws \Doctrine\ORM\ORMException
+     * @throws \Doctrine\ORM\OptimisticLockException
+     */
+    public function createPropertyNotice(Request $request)
+    {
+        $form = $this->createForm(ArtWorkType::class, null, [
+                'status' => ArtWorkType::PROPERTY_STATUS]
         );
         $form->submit($this->apiManager->getPostDataFromRequest($request));
 

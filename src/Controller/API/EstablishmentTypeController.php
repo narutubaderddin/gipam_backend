@@ -2,9 +2,9 @@
 
 namespace App\Controller\API;
 
-use App\Entity\ReportType;
+use App\Entity\EstablishmentType;
 use App\Exception\FormValidationException;
-use App\Form\ReportTypeType;
+use App\Form\EstablishmentTypeType;
 use App\Model\ApiResponse;
 use App\Services\ApiManager;
 use FOS\RestBundle\Controller\AbstractFOSRestController;
@@ -16,32 +16,24 @@ use Nelmio\ApiDocBundle\Annotation\Model;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Swagger\Annotations as SWG;
-use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 /**
- * Class ReportTypeController
+ * Class EstablishmentTypeController
  * @package App\Controller\API
- * @Route("/reportTypes")
+ * @Route("/establishmentTypes")
  */
-class ReportTypeController extends AbstractFOSRestController
+class EstablishmentTypeController extends AbstractFOSRestController
 {
+
     /**
      * @var ApiManager
      */
     protected $apiManager;
 
-    /**
-     * @var ValidatorInterface
-     */
-    protected $validator;
-
     public function __construct(
-        ApiManager $apiManager,
-        ValidatorInterface $validator
-    )
-    {
+        ApiManager $apiManager
+    ) {
         $this->apiManager = $apiManager;
-        $this->validator = $validator;
     }
 
     /**
@@ -49,21 +41,21 @@ class ReportTypeController extends AbstractFOSRestController
      *
      * @SWG\Response(
      *     response=200,
-     *     description="Returns ReportType by id",
+     *     description="Returns Establishment Type by id",
      *     @SWG\Schema(
-     *         ref=@Model(type=ReportType::class, groups={"report_type", "id"})
+     *         ref=@Model(type=EstablishmentType::class, groups={"establishmentType"})
      *     )
      * )
-     * @SWG\Tag(name="reportTypes")
-     * @Rest\View(serializerGroups={"report_type", "id"})
+     * @SWG\Tag(name="establishmentTypes")
+     * @Rest\View(serializerGroups={"establishment_type"})
      *
-     * @param ReportType $reportType
+     * @param EstablishmentType $establishmentType
      *
      * @return View
      */
-    public function showReportType(ReportType $reportType)
+    public function showEstablishmentType(EstablishmentType $establishmentType)
     {
-        return $this->view($reportType, Response::HTTP_OK);
+        return $this->view($establishmentType, Response::HTTP_OK);
     }
 
     /**
@@ -71,7 +63,7 @@ class ReportTypeController extends AbstractFOSRestController
      *
      * @SWG\Response(
      *     response=200,
-     *     description="Returns the list of Report Types",
+     *     description="Returns the list of Establishment Types",
      *     @SWG\Schema(
      *         @SWG\Items(ref=@Model(type=ApiResponse::class))
      *     )
@@ -100,24 +92,14 @@ class ReportTypeController extends AbstractFOSRestController
      *     type="string",
      *     description="The field used to sort type"
      * )
-     * @SWG\Parameter(
-     *     name="label",
-     *     in="query",
-     *     type="string",
-     *     description="The field used to filter by label"
-     * )
-     * @SWG\Tag(name="reportTypes")
+     *
+     * @SWG\Tag(name="establishmentTypes")
      *
      * @Rest\QueryParam(name="page", requirements="\d+", default="1", description="page number.")
      * @Rest\QueryParam(name="limit", requirements="\d+", default="0", description="page size.")
      * @Rest\QueryParam(name="sort_by", nullable=true, default="id", description="order by")
-     * @Rest\QueryParam(name="search", map=false, nullable=true, description="search. example: search=text")
-     * @Rest\QueryParam(
-     *     name="sort", requirements="(asc|desc)",
-     *      nullable=true, default="asc",
-     *      description="sorting order asc|desc"
-     * )
-     * @Rest\QueryParam(name="label",map=true, nullable=false, description="filter by label. example: label[eq]=value")
+     * @Rest\QueryParam(name="sort", requirements="(asc|desc)", nullable=true, default="asc", description="tri order asc|desc")
+     * @Rest\QueryParam(name="label", map=true, nullable=false, description="filter by label. example: label[eq]=value")
      * @Rest\QueryParam(name="search", map=false, nullable=true, description="search. example: search=text")
      *
      * @Rest\View()
@@ -126,9 +108,9 @@ class ReportTypeController extends AbstractFOSRestController
      *
      * @return View
      */
-    public function listReportTypes(ParamFetcherInterface $paramFetcher)
+    public function listEstablishmentTypes(ParamFetcherInterface $paramFetcher)
     {
-        $records = $this->apiManager->findRecordsByEntityName(ReportType::class, $paramFetcher);
+        $records = $this->apiManager->findRecordsByEntityName(EstablishmentType::class, $paramFetcher);
         return $this->view($records, Response::HTTP_OK);
     }
 
@@ -137,9 +119,9 @@ class ReportTypeController extends AbstractFOSRestController
      *
      * @SWG\Response(
      *     response=201,
-     *     description="Returns created ReportType",
+     *     description="Returns created Establishment Type",
      *     @SWG\Schema(
-     *         ref=@Model(type=ReportType::class, groups={"report_type", "id"})
+     *         ref=@Model(type=EstablishmentType::class, groups={"establishment_type"})
      *     )
      * )
      * @SWG\Response(
@@ -149,25 +131,28 @@ class ReportTypeController extends AbstractFOSRestController
      * @SWG\Parameter(
      *     name="form",
      *     in="body",
-     *     description="Add ReportType",
-     *     @Model(type=ReportType::class, groups={"report_type"})
+     *     description="Add Establishment Type",
+     *     @Model(type=EstablishmentType::class, groups={"establishment_type"})
      * )
-     * @SWG\Tag(name="reportTypes")
+     * @SWG\Tag(name="establishmentTypes")
      *
-     * @Rest\View(serializerGroups={"report_type", "id"})
+     * @Rest\View(serializerGroups={"establishment_type"})
      *
      * @param Request $request
+     *
      * @return View
+     *
      */
-    public function postReportType(Request $request)
+    public function postEstablishmentType(Request $request)
     {
-        $form = $this->createForm(ReportTypeType::class);
+        $form = $this->createForm(EstablishmentTypeType::class);
         $form->submit($request->request->all());
         if ($form->isValid()) {
-            $reportType = $this->apiManager->save($form->getData());
-            return $this->view($reportType, Response::HTTP_CREATED);
+            $establishmentType = $this->apiManager->save($form->getData());
+            return $this->view($establishmentType, Response::HTTP_CREATED);
+        } else {
+            throw new FormValidationException($form);
         }
-        throw new FormValidationException($form);
     }
 
     /**
@@ -175,40 +160,40 @@ class ReportTypeController extends AbstractFOSRestController
      *
      * @SWG\Response(
      *     response=204,
-     *     description="Report Type is updated"
+     *     description="EstablishmentType is updated"
      *     )
      * )
      * @SWG\Response(
      *     response=400,
      *     description="Update error"
      * )
-     * @SWG\Response(
-     *     response=404,
-     *     description="Report Type not found"
-     * )
      * @SWG\Parameter(
      *     name="form",
      *     in="body",
-     *     description="Update a ReportType",
-     *     @Model(type=ReportType::class, groups={"report_type"})
+     *     description="Update a EstablishmentType",
+     *     @Model(type=EstablishmentType::class, groups={"establishment_type"})
      * )
-     * @SWG\Tag(name="reportTypes")
+     * @SWG\Tag(name="establishmentTypes")
      *
      * @Rest\View()
      *
      * @param Request $request
-     * @param ReportType $reportType
+     * @param EstablishmentType $establishmentType
+     *
      * @return View
+     *
      */
-    public function updateReportType(Request $request, ReportType $reportType)
+    public function updateEstablishmentType(Request $request, EstablishmentType $establishmentType)
     {
-        $form = $this->createForm(ReportTypeType::class, $reportType);
+        $form = $this->createForm(EstablishmentTypeType::class, $establishmentType);
         $form->submit($request->request->all(), false);
+
         if ($form->isValid()) {
-            $this->apiManager->save($reportType);
+            $this->apiManager->save($establishmentType);
             return $this->view(null, Response::HTTP_NO_CONTENT);
+        } else {
+            throw new FormValidationException($form);
         }
-        throw new FormValidationException($form);
     }
 
     /**
@@ -216,25 +201,20 @@ class ReportTypeController extends AbstractFOSRestController
      *
      * @SWG\Response(
      *     response=204,
-     *     description="Report Type is removed"
+     *     description="EstablishmentType is removed"
      *     )
      * )
-     * @SWG\Response(
-     *     response=400,
-     *     description="Deleting errors"
-     *     )
-     * )
-     * @SWG\Tag(name="reportTypes")
+     * @SWG\Tag(name="establishmentTypes")
      *
      * @Rest\View()
      *
-     * @param ReportType $reportType
+     * @param EstablishmentType $establishmentType
      *
      * @return View
      */
-    public function removeReportType(ReportType $reportType)
+    public function removeEstablishmentType(EstablishmentType $establishmentType)
     {
-        $this->apiManager->delete($reportType);
+        $this->apiManager->delete($establishmentType);
         return $this->view(null, Response::HTTP_NO_CONTENT);
     }
 }
