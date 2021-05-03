@@ -16,6 +16,8 @@ class ReportSubTypeRepository extends ServiceEntityRepository
 {
     use RepositoryTrait;
 
+    public const SEARCH_FIELDS = ['label_param' => 'label'];
+
     public function __construct(ManagerRegistry $registry)
     {
         parent::__construct($registry, ReportSubType::class);

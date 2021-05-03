@@ -16,6 +16,11 @@ class MinistryRepository extends ServiceEntityRepository
 {
     use RepositoryTrait;
 
+    public const SEARCH_FIELDS = [
+        'name_param' => 'name',
+        'acronym_param'=>'acronym'
+    ];
+
     public function __construct(ManagerRegistry $registry)
     {
         parent::__construct($registry, Ministry::class);

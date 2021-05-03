@@ -130,6 +130,8 @@ class BuildingController extends AbstractFOSRestController
      *      map=true, nullable=false,
      *      description="filter by disappearance date. example: disappearanceDate[eq]=value"
      * )
+     * @Rest\QueryParam(name="search", map=false, nullable=true, description="search. example: search=text")
+     *
      * @Rest\View()
      *
      * @param ParamFetcherInterface $paramFetcher
