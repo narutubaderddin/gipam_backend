@@ -96,13 +96,13 @@ class SiteController extends AbstractFOSRestController
      * @SWG\Tag(name="sites")
      *
      * @Rest\QueryParam(name="page", requirements="\d+", default="1", description="page number.")
-     * @Rest\QueryParam(name="limit", requirements="\d+", default="20", description="page size.")
+     * @Rest\QueryParam(name="limit", requirements="\d+", default="0", description="page size.")
      * @Rest\QueryParam(name="sort_by", nullable=true, default="id", description="order by")
      * @Rest\QueryParam(name="sort", requirements="(asc|desc)", nullable=true, default="asc", description="tri order asc|desc")
      * @Rest\QueryParam(name="label", map=true, nullable=false, description="filter by name. example: label[eq]=value")
      * @Rest\QueryParam(name="startDate", map=true, nullable=false, description="filter by startDate. example: startDate[lt]=value")
      * @Rest\QueryParam(name="disappearanceDate", map=true, nullable=false, description="filter by disappearanceDate. example: disappearanceDate[lt]=value")
-     *
+     * @Rest\QueryParam(name="search", map=false, nullable=true, description="search. example: search=text")
      * @Rest\View()
      *
      * @param ParamFetcherInterface $paramFetcher
