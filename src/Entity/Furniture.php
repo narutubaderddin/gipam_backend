@@ -2,7 +2,6 @@
 
 namespace App\Entity;
 
-use App\Entity\Traits\TimestampableEntity;
 use App\Repository\FurnitureRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -11,9 +10,7 @@ use JMS\Serializer\Annotation as JMS;
 use Symfony\Component\Validator\Constraints as Assert;
 use Gedmo\Mapping\Annotation as Gedmo;
 use Symfony\Component\Validator\Context\ExecutionContextInterface;
-use JMS\Serializer\Annotation as Serializer;
-use Symfony\Component\Serializer\Annotation\Groups;
-use Symfony\Component\Serializer\Annotation\MaxDepth;
+
 
 /**
  * @ORM\Entity(repositoryClass=FurnitureRepository::class)
@@ -24,7 +21,6 @@ use Symfony\Component\Serializer\Annotation\MaxDepth;
  */
 abstract class Furniture
 {
-    use TimestampableEntity;
     /**
      * @JMS\Groups("artwork", "artwork_id","id")
      * @ORM\Id
@@ -211,6 +207,9 @@ abstract class Furniture
      * @var \DateTime
      * @JMS\Groups("artwork")
      * @Gedmo\Timestampable(on="create")
+     * @JMS\Type("DateTime<'Y-m-d'>")
+     * @JMS\SerializedName("creationDate")
+     * @JMS\Groups("art_work_list")
      * @ORM\Column(name="date_creation", type="datetime")
      */
     protected $createdAt;
@@ -678,16 +677,8 @@ abstract class Furniture
 
         return $this;
     }
-    /**
-     * @Serializer\VirtualProperty()
-     * @JMS\Type("DateTime<'Y-m-d'>")
-     * @Serializer\SerializedName("creationDate")
-     * @JMS\Groups("art_work_list")
-     */
-    public function getCreationDate()
-    {
-        return $this->createdAt;
-    }
+
+
 
     public function getLastReport(){
 

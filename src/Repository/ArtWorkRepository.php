@@ -3,6 +3,8 @@
 namespace App\Repository;
 
 use App\Entity\ArtWork;
+use App\Entity\DepositStatus;
+use App\Entity\PropertyStatus;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\DBAL\Connection;
 use Doctrine\ORM\NonUniqueResultException;
@@ -24,7 +26,10 @@ class ArtWorkRepository extends ServiceEntityRepository
     {
         parent::__construct($registry, ArtWork::class);
     }
-
+    private static $entityInstance=[
+        'depot'=>DepositStatus::class,
+        'propriete'=>PropertyStatus::class
+    ];
     public static $columns = [
         'id' => ['field' => 'id', 'operator' => 'equal', 'entity' => 'artWork'],
         'titre' => ['field' => 'title', 'operator' => 'like', 'entity' => 'artWork'],
@@ -47,6 +52,7 @@ class ArtWorkRepository extends ServiceEntityRepository
         'heightTotal' => ['field' => 'totalHeight', 'operator' => 'range', 'entity' => 'artWork'],
         'depth' => ['field' => 'depth', 'operator' => 'range', 'entity' => 'artWork'],
         'weight' => ['field' => 'weight', 'operator' => 'range', 'entity' => 'artWork'],
+        'status' => ['field' => 'status', 'operator' => 'instance', 'entity' => 'status'],
     ];
 
     /**
@@ -78,6 +84,8 @@ class ArtWorkRepository extends ServiceEntityRepository
             ->leftJoin('reportSubType.reportType','reportType')
             ->leftJoin('reports.actions','reportAction')
             ->leftJoin('reportAction.type','reportActionType')
+            ->leftJoin('artWork.status','status')
+
         ;
 
         foreach ($filter as $key => $value) {
@@ -141,6 +149,32 @@ class ArtWorkRepository extends ServiceEntityRepository
                         $data = ($isColumnHeaderFilterExist && is_array($headerFilters[$column]) &&count($headerFilters[$column]) > 0) ? array_unique(array_merge($data, $headerFilters[$column])) : $data;
                         $query->andWhere($entity . '.' . $queryKey . ' in (:' . $column . ')');
                         $query->setParameter($column, $data, Connection::PARAM_STR_ARRAY);
+                    }
+                    break;
+                case 'instance':
+                    $data=[];
+                    $data = ($isColumnFilterExist&& is_array($filter[$column]) && count($filter[$column]) > 0) ? array_unique(array_merge($data, $filter[$column])) : $data;
+                    $data = ($isColumnHeaderFilterExist && is_array($headerFilters[$column]) &&count($headerFilters[$column]) > 0) ? array_unique(array_merge($data, $headerFilters[$column])) : $data;
+                    $subDql="";$i=0;
+                    foreach ($data as $entityData){
+                        if(array_key_exists($entityData,self::$entityInstance)){
+                            $subDql .= "($entity INSTANCE of :entity_$i)";
+                            if($entityData !== end($data)) {
+                                $subDql.=' or ';
+                            }
+                            $i++;
+                        }
+
+                    }
+                    if(count($data)>0 && strlen($subDql)>0){
+                        $query->andWhere("($subDql)");$i=0;
+                        foreach ($data as $entityData){
+                            if(array_key_exists($entityData,self::$entityInstance)){
+                                $query->setParameter("entity_$i",$this->getEntityManager()->getClassMetadata(self::$entityInstance[$entityData]));
+                                $i++;
+                            }
+
+                        }
                     }
                     break;
             }
