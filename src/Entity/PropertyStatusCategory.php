@@ -16,6 +16,7 @@ use JMS\Serializer\Annotation as JMS;
 class PropertyStatusCategory
 {
     use TimestampableEntity;
+
     public const LABEL = [
         'bienRemarquable' => 'Bien Patrimonial remarquable',
         'bienStandard' => 'Bien Patrimonial standard',
