@@ -1,6 +1,7 @@
 ###> IDE ###
 .idea
 .vs
+c3.php
 ###< IDE ###
 
 ###> symfony/framework-bundle ###

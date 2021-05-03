@@ -74,7 +74,6 @@ class ApiManager
         $criteria = $this->getCriteriaFromParamFetcher($paramFetcher);
         $offset = $this->getOffsetFromPageNumber($page, $limit);
         $repo = $this->em->getRepository($fqcn);
-
         return new ApiResponse(
             $page,
             $limit,

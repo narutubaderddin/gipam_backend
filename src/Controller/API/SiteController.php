@@ -7,6 +7,7 @@ use App\Exception\FormValidationException;
 use App\Form\SiteType;
 use App\Model\ApiResponse;
 use App\Services\ApiManager;
+use FOS\RestBundle\Context\Context;
 use FOS\RestBundle\Controller\AbstractFOSRestController;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use FOS\RestBundle\Controller\Annotations\Route;
@@ -111,10 +112,14 @@ class SiteController extends AbstractFOSRestController
      *
      * @return View
      */
-    public function listSites(ParamFetcherInterface $paramFetcher)
+    public function listSites(ParamFetcherInterface $paramFetcher,Request $request)
     {
+        $serializerGroups =$request->get('serializer_group','["default"]');
+        $serializerGroups = json_decode($serializerGroups,true);
+        $context= new Context();
+        $context->setGroups($serializerGroups);
         $records = $this->apiManager->findRecordsByEntityName(Site::class, $paramFetcher);
-        return $this->view($records, Response::HTTP_OK);
+        return $this->view($records, Response::HTTP_OK)->setContext($context);
     }
 
     /**
