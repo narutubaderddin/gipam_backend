@@ -29,7 +29,7 @@ class AppFixtures extends Fixture
         $author->setFirstName('Paul');
         $author->setLastName('Véronèse');
         $manager->persist($author);
-        $artWork->setDescription('une sculpture en marbre dégagée en 1651');
+        //$artWork->setDescription('une sculpture en marbre dégagée en 1651');
         $artWork->addAuthor($author);
         $field1 = new Field();
         $field1->setLabel('Art textile');
@@ -45,7 +45,7 @@ class AppFixtures extends Fixture
         $artWork->setField($field1);
         $attachement  = new Attachment();
         $attachement->setLink('assets/images/365.jpg');
-        $attachement->setPrincipleImage(true);
+        //$attachement->setPrincipleImage(true);
         $manager->persist($attachement);
         $artWork->addAttachment($attachement);
         $manager->persist($artWork);
@@ -63,7 +63,7 @@ class AppFixtures extends Fixture
         $author->setFirstName('NECHMI');
         $author->setLastName('Badr');
         $manager->persist($author);
-        $artWork->setDescription('une sculpture en marbre dégagée en 1651');
+        //$artWork->setDescription('une sculpture en marbre dégagée en 1651');
         $artWork->addAuthor($author);
         $field = new Field();
         $field->setLabel('Art graphique');
@@ -72,7 +72,7 @@ class AppFixtures extends Fixture
         $artWork->setField($field);
         $attachement  = new Attachment();
         $attachement->setLink('assets/images/35.jpg');
-        $attachement->setPrincipleImage(true);
+        //$attachement->setPrincipleImage(true);
         $manager->persist($attachement);
         $artWork->addAttachment($attachement);
         $manager->persist($artWork);
@@ -90,7 +90,7 @@ class AppFixtures extends Fixture
         $author->setFirstName('Paul ');
         $author->setLastName('Véronèse');
         $manager->persist($author);
-        $artWork->setDescription('une sculpture en marbre dégagée en 1651');
+        //$artWork->setDescription('une sculpture en marbre dégagée en 1651');
         $artWork->addAuthor($author);
         $field = new Field();
         $field->setLabel('Horlogerie');
@@ -106,7 +106,7 @@ class AppFixtures extends Fixture
         $artWork->setField($field);
         $attachement  = new Attachment();
         $attachement->setLink('assets/images/304.jpg');
-        $attachement->setPrincipleImage(true);
+        //$attachement->setPrincipleImage(true);
         $manager->persist($attachement);
         $artWork->addAttachment($attachement);
         $manager->persist($artWork);
@@ -128,7 +128,7 @@ class AppFixtures extends Fixture
         $author->setFirstName('Mari ');
         $author->setLastName('lopein');
         $manager->persist($author);
-        $artWork->setDescription('Peint sur une planche de noyer et mesure 69 × 57 cm');
+        //$artWork->setDescription('Peint sur une planche de noyer et mesure 69 × 57 cm');
         $artWork->addAuthor($author);
         $era = new Era();
         $manager->persist($era);
@@ -147,7 +147,7 @@ class AppFixtures extends Fixture
         $artWork->setField($field);
         $attachement = new Attachment();
         $attachement->setLink("assets/images/12.jpg");
-        $attachement->setPrincipleImage(true);
+        //$attachement->setPrincipleImage(true);
         $manager->persist($attachement);
         $artWork->addAttachment($attachement);
         $manager->persist($artWork);
@@ -166,12 +166,12 @@ class AppFixtures extends Fixture
         $author->setFirstName('Sebastein');
         $author->setLastName('lorein');
         $manager->persist($author);
-        $artWork->setDescription('une sculpture en marbre dégagée en 1651');
+        //$artWork->setDescription('une sculpture en marbre dégagée en 1651');
         $artWork->addAuthor($author);
         $artWork->setField($field1);
         $attachement  = new Attachment();
         $attachement->setLink('assets/images/365.jpg');
-        $attachement->setPrincipleImage(true);
+        //$attachement->setPrincipleImage(true);
         $manager->persist($attachement);
         $artWork->addAttachment($attachement);
         $manager->persist($artWork);
