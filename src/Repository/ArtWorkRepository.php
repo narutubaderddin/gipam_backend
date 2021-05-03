@@ -115,22 +115,22 @@ class ArtWorkRepository extends ServiceEntityRepository
                 case 'like':
                     $subDql = "";
                     if ($isColumnFilterExist) {
-                        $subDql .= $entity . '.' . $queryKey . ' like :' . $column;
+                        $subDql .= 'LOWER('.$entity . '.' . $queryKey . ') like :' . $column;
                         if ($isColumnHeaderFilterExist) {
                             $subDql .= " and ";
                         }
                     }
                     if ($isColumnHeaderFilterExist) {
-                        $subDql .= $entity . '.' . $queryKey . ' like :header' . $column;
+                        $subDql .='LOWER('.$entity . '.' . $queryKey . ') like :header' . $column;
                     }
 
                     $query->andWhere('(' . $subDql . ')');
 
                     if ($isColumnFilterExist) {
-                        $query->setParameter($column, '%' . $filter[$column] . '%');
+                        $query->setParameter($column, '%' . strtolower($filter[$column]) . '%');
                     }
                     if ($isColumnHeaderFilterExist) {
-                        $query->setParameter('header' . $column, '%' . $headerFilters[$column] . '%');
+                        $query->setParameter('header' . $column, '%' . strtolower($headerFilters[$column]) . '%');
                     }
                     break;
                 case 'range':
@@ -195,7 +195,6 @@ class ArtWorkRepository extends ServiceEntityRepository
         $dqlString = "( ";
         $hasAdvancedFilter = false;
         $i = 0;
-        $removedKeys = 0;
         $keysOperator ="";
         $operator ='and';
         foreach ($advancedFilter as $key => $value) {
