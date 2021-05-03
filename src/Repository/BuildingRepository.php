@@ -16,6 +16,13 @@ class BuildingRepository extends ServiceEntityRepository
 {
     use RepositoryTrait;
 
+    public const SEARCH_FIELDS = [
+        'name_param' => 'name',
+        'address_param'=>'address',
+        'cedex_param' => 'cedex',
+        'distrib_param' => 'distrib'
+    ];
+
     public function __construct(ManagerRegistry $registry)
     {
         parent::__construct($registry, Building::class);

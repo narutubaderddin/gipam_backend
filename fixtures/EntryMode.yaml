@@ -1,0 +1,4 @@
+App\Entity\EntryMode:
+  entry_mode_1:
+    label: <name()>
+    active: true
