@@ -3,6 +3,7 @@
 namespace App\Repository;
 
 use Doctrine\Common\Collections\Criteria;
+use Doctrine\DBAL\Connection;
 use Doctrine\ORM\QueryBuilder;
 
 /**
@@ -168,6 +169,13 @@ trait RepositoryTrait
             case 'startsWith':
                 $queryBuilder->andWhere("LOWER($alias.$field) LIKE :$parameter")->setParameter($parameter,
                     strtolower($value).'%');
+                break;
+            case 'in':
+                eval("\$value = $value;");
+                if(!is_array($value)){
+                  throw new \RuntimeException('value should be an array');
+                }
+                $queryBuilder->andWhere("$alias.$field IN (:$parameter)")->setParameter($parameter,$value,Connection::PARAM_STR_ARRAY);
                 break;
             case 'endsWith':
                 $queryBuilder->andWhere("LOWER($alias.$field) LIKE :$parameter")->setParameter($parameter,

@@ -30,7 +30,7 @@ class ArtWorkType extends AbstractType
     const DEPOSIT_STATUS = 'deposit';
     const STATUS = [
         self::DEPOSIT_STATUS => DepositStatusType::class,
-        self::PROPERTY_STATUS => DepositStatusType::class
+        self::PROPERTY_STATUS => PropertyStatusType::class
     ];
 
     protected $furnitureService;
@@ -208,7 +208,7 @@ class ArtWorkType extends AbstractType
                 $event->setData($artWork);
             }
             if (in_array('status', $this->attributes)) {
-                $form->add('status',DepositStatusType::class);
+                $form->add('status',$this->statusType);
             } else {
                 unset($artWork['status']);
                 $event->setData($artWork);

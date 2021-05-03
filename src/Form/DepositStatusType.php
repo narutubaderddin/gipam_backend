@@ -22,7 +22,7 @@ class DepositStatusType extends AbstractType
             ->add('startDate',DateTimeType::class, ['widget' => 'single_text'])
             ->add('endDate',DateTimeType::class, ['widget' => 'single_text'])
             ->add('comment',TextType::class)
-            ->add('inventoryNumber',IntegerType::class, ['required'=>true])
+            ->add('inventoryNumber',TextType::class)
             ->add('depositor', EntityType::class, [
                 'class' => Depositor::class,
                 'choice_label' => 'id',

@@ -18,7 +18,7 @@ class Commune
 {
     use TimestampableEntity;
     /**
-     * @JMS\Groups("id")
+     * @JMS\Groups("id","short")
      *
      * @ORM\Id
      * @ORM\GeneratedValue
@@ -27,7 +27,7 @@ class Commune
     private $id;
 
     /**
-     * @JMS\Groups("commune")
+     * @JMS\Groups("commune","short")
      *
      * @Assert\NotBlank
      *

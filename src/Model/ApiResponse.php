@@ -9,26 +9,31 @@ class ApiResponse
 {
     /**
      * @JMS\Type(name="int")
+     * @JMS\Groups("response")
      */
     protected $page;
 
     /**
      * @JMS\Type(name="int")
+     * @JMS\Groups("response")
      */
     protected $size;
 
     /**
      * @JMS\Type(name="int")
+     * @JMS\Groups("response")
      */
     protected $filteredQuantity;
 
     /**
      * @JMS\Type(name="int")
+     * @JMS\Groups("response")
      */
     protected $totalQuantity;
 
     /**
      * @JMS\Type(name="array")
+     * @JMS\Groups("response")
      */
     protected $results;
 
