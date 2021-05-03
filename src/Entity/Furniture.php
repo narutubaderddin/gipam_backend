@@ -205,11 +205,10 @@ abstract class Furniture
 
     /**
      * @var \DateTime
-     * @JMS\Groups("artwork")
+     * @JMS\Groups("artwork","art_work_list")
      * @Gedmo\Timestampable(on="create")
      * @JMS\Type("DateTime<'Y-m-d'>")
      * @JMS\SerializedName("creationDate")
-     * @JMS\Groups("art_work_list")
      * @ORM\Column(name="date_creation", type="datetime")
      */
     protected $createdAt;
