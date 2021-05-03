@@ -2,6 +2,7 @@
 
 namespace App\Entity;
 
+use App\Entity\Traits\TimestampableEntity;
 use App\Repository\BuildingRepository;
 use DateTimeInterface;
 use Doctrine\Common\Collections\ArrayCollection;
@@ -16,6 +17,7 @@ use Symfony\Component\Validator\Constraints as Assert;
  */
 class Building
 {
+    use TimestampableEntity;
     /**
      * @JMS\Groups("id")
      *
@@ -61,7 +63,6 @@ class Building
     /**
      * @JMS\Groups("building")
      *
-     * @Assert\NotBlank
      * @Assert\Type("\DateTimeInterface")
      *
      * @ORM\Column(name="date_disparition", type="datetime", nullable=true)

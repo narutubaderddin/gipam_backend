@@ -2,6 +2,7 @@
 
 namespace App\Entity;
 
+use App\Entity\Traits\TimestampableEntity;
 use App\Repository\EraRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -14,8 +15,9 @@ use JMS\Serializer\Annotation as JMS;
  */
 class Era
 {
+    use TimestampableEntity;
     /**
-     * @JMS\Groups("id", "era")
+     * @JMS\Groups("id", "era", "artwork")
      *
      * @ORM\Id
      * @ORM\GeneratedValue
@@ -24,8 +26,7 @@ class Era
     private $id;
 
     /**
-     * @JMS\Groups("era","art_work_details")
-     *
+     * @JMS\Groups({"era","era_furniture","art_work_details"})
      * @ORM\Column(name="libelle", type="string", length=255, nullable=true)
      */
     private $label;

@@ -2,6 +2,7 @@
 
 namespace App\Entity;
 
+use App\Entity\Traits\TimestampableEntity;
 use App\Repository\PropertyStatusCategoryRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -14,13 +15,15 @@ use JMS\Serializer\Annotation as JMS;
  */
 class PropertyStatusCategory
 {
+    use TimestampableEntity;
+
     public const LABEL = [
         'bienRemarquable' => 'Bien Patrimonial remarquable',
         'bienStandard' => 'Bien Patrimonial standard',
         'bienUsuel' => 'Bien usuel',
     ];
     /**
-     * @JMS\Groups("id", "category")
+     * @JMS\Groups("id", "category", "artwork")
      *
      * @ORM\Id
      * @ORM\GeneratedValue

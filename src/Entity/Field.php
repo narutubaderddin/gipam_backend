@@ -2,6 +2,7 @@
 
 namespace App\Entity;
 
+use App\Entity\Traits\TimestampableEntity;
 use App\Repository\FieldRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -14,18 +15,18 @@ use JMS\Serializer\Annotation as JMS;
  */
 class Field
 {
+    use TimestampableEntity;
     /**
-     * @JMS\Groups("id", "field", "field_id")
+     * @JMS\Groups("id", "field", "field_id", "artwork","field_list")
      *
      * @ORM\Id
      * @ORM\GeneratedValue
      * @ORM\Column(type="integer")
-     * @JMS\Groups("field_list")
      */
     private $id;
 
     /**
-     * @JMS\Groups("field","field_list","art_work_list","art_work_details")
+     * @JMS\Groups("field","field_furniture","field_list","art_work_list","art_work_details")
      *
      * @ORM\Column(name="libelle", type="string", length=255, nullable=true)
      */

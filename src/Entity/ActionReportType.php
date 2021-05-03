@@ -2,6 +2,7 @@
 
 namespace App\Entity;
 
+use App\Entity\Traits\TimestampableEntity;
 use App\Repository\ActionReportTypeRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -15,6 +16,7 @@ use Symfony\Component\Validator\Constraints as Assert;
  */
 class ActionReportType
 {
+    use TimestampableEntity;
     public const LABEL = [
       'enRecherche' => 'En recherche',
       'depotPlainte' => 'Dépôt de plainte',

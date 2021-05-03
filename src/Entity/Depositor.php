@@ -2,11 +2,13 @@
 
 namespace App\Entity;
 
+use App\Entity\Traits\TimestampableEntity;
 use App\Repository\DepositorRepository;
 use DateTimeInterface;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use JMS\Serializer\Annotation as JMS;
 
 /**
  * @ORM\Entity(repositoryClass=DepositorRepository::class)
@@ -14,10 +16,13 @@ use Doctrine\ORM\Mapping as ORM;
  */
 class Depositor
 {
+    use TimestampableEntity;
     /**
+     * @JMS\Groups("id")
      * @ORM\Id
      * @ORM\GeneratedValue
      * @ORM\Column(type="integer")
+     *
      */
     private $id;
 
@@ -27,6 +32,7 @@ class Depositor
     private $acronym;
 
     /**
+     * @JMS\Groups("depositors")
      * @ORM\Column(name="nom", type="string", length=255, nullable=true)
      */
     private $name;

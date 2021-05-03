@@ -2,9 +2,11 @@
 
 namespace App\Entity;
 
+use App\Entity\Traits\TimestampableEntity;
 use App\Repository\AttachmentRepository;
 use DateTimeInterface;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
 use JMS\Serializer\Annotation as JMS;
 
 /**
@@ -13,7 +15,10 @@ use JMS\Serializer\Annotation as JMS;
  */
 class Attachment
 {
+    use TimestampableEntity;
     /**
+     * @JMS\Groups("artwork")
+     *
      * @ORM\Id
      * @ORM\GeneratedValue
      * @ORM\Column(type="integer")
@@ -21,48 +26,43 @@ class Attachment
     private $id;
 
     /**
-     * @ORM\Column(name="date", type="datetime", nullable=true)
-     */
-    private $date;
-
-    /**
+     * @JMS\Groups("artwork")
+     *
      * @ORM\Column(name="commentaire", type="text", nullable=true)
      */
     private $comment;
 
     /**
+     * @JMS\Groups("artwork","art_work_list","art_work_details")
+     *
+     * @Assert\NotBlank()
+     * @Assert\File(maxSize="25M")
+     *
      * @ORM\Column(name="lien", type="string", length=255)
-     * @JMS\Groups("art_work_list","art_work_details")
      */
     private $link;
 
     /**
-     * @ORM\Column(name="image_principale", type="boolean")
-     * @JMS\Groups("art_work_list","art_work_details")
-     */
-    private $principleImage;
-
-    /**
+     * @JMS\Exclude()
+     *
      * @ORM\ManyToOne(targetEntity=Furniture::class, inversedBy="attachments")
      * @ORM\JoinColumn(name="objet_mobilier_id", referencedColumnName="id")
      */
     private $furniture;
 
+    /**
+     * @JMS\Groups("artwork")
+     *
+     * @Assert\Valid()
+     *
+     * @ORM\ManyToOne(targetEntity=AttachmentType::class, inversedBy="attachments")
+     * @ORM\JoinColumn(name="type_fichier_joint_id", referencedColumnName="id")
+     */
+    private $attachmentType;
+
     public function getId(): ?int
     {
         return $this->id;
-    }
-
-    public function getDate(): ?DateTimeInterface
-    {
-        return $this->date;
-    }
-
-    public function setDate(DateTimeInterface $date): self
-    {
-        $this->date = $date;
-
-        return $this;
     }
 
     public function getComment(): ?string
@@ -77,26 +77,14 @@ class Attachment
         return $this;
     }
 
-    public function getLink(): ?string
+    public function getLink()
     {
         return $this->link;
     }
 
-    public function setLink(string $link): self
+    public function setLink($link): self
     {
         $this->link = $link;
-
-        return $this;
-    }
-
-    public function getPrincipleImage(): ?bool
-    {
-        return $this->principleImage;
-    }
-
-    public function setPrincipleImage(bool $principleImage): self
-    {
-        $this->principleImage = $principleImage;
 
         return $this;
     }
@@ -109,6 +97,18 @@ class Attachment
     public function setFurniture(?Furniture $furniture): self
     {
         $this->furniture = $furniture;
+
+        return $this;
+    }
+
+    public function getAttachmentType(): ?attachmentType
+    {
+        return $this->attachmentType;
+    }
+
+    public function setAttachmentType(?attachmentType $attachmentType): self
+    {
+        $this->attachmentType = $attachmentType;
 
         return $this;
     }

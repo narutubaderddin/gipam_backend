@@ -2,6 +2,7 @@
 
 namespace App\Entity;
 
+use App\Entity\Traits\TimestampableEntity;
 use App\Repository\AuthorRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -14,7 +15,10 @@ use JMS\Serializer\Annotation as JMS;
  */
 class Author
 {
+    use TimestampableEntity;
+
     /**
+     * @JMS\Groups({"id","furniture_author","artwork"})
      * @ORM\Id
      * @ORM\GeneratedValue
      * @ORM\Column(type="integer")
@@ -22,18 +26,21 @@ class Author
     private $id;
 
     /**
+     * @JMS\Groups({"furniture_author","authors"})
      * @ORM\Column(name="prenom", type="string", length=255, nullable=true)
      * @JMS\Groups("art_work_list","art_work_details")
      */
     private $firstName;
 
     /**
+     * @JMS\Groups({"furniture_author","authors"})
      * @ORM\Column(name="nom", type="string", length=255, nullable=true)
      * @JMS\Groups("art_work_list","art_work_details")
      */
     private $lastName;
 
     /**
+     *
      * @ORM\ManyToMany(targetEntity=Furniture::class, mappedBy="authors")
      */
     private $furniture;
@@ -132,5 +139,16 @@ class Author
         $this->type = $type;
 
         return $this;
+    }
+
+    /**
+     * @return string|null
+     * @JMS\VirtualProperty()
+     * @JMS\SerializedName("label")
+     * @JMS\Groups("authors","furniture_author")
+     */
+    public function getFullName(): ?string
+    {
+        return $this->firstName . ' ' . $this->lastName;
     }
 }

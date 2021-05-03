@@ -4,28 +4,44 @@ namespace App\Entity;
 
 use App\Repository\DepositStatusRepository;
 use Doctrine\ORM\Mapping as ORM;
+use JMS\Serializer\Annotation as JMS;
+use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 
 /**
  * @ORM\Entity(repositoryClass=DepositStatusRepository::class)
  * @ORM\Table(name="statut_depot")
+ * @UniqueEntity("inventoryNumber")
  */
 class DepositStatus extends Status
 {
     /**
-     * @ORM\Column(name="numero_inventaire", type="integer", length=255, nullable=true)
+     * @JMS\Groups("artwork")
+     *
+     * @ORM\Column(name="numero_inventaire", type="string", length=255, nullable=true)
      */
     private $inventoryNumber;
 
     /**
+     * @JMS\Groups("artwork")
+     *
      * @ORM\ManyToOne(targetEntity=Depositor::class, inversedBy="depositStatuses")
      * @ORM\JoinColumn(name="deposant_id", referencedColumnName="id")
      */
     private $depositor;
 
     /**
+     * @JMS\Groups("artwork")
+     *
      * @ORM\Column(name="date_depot", type="datetime", nullable=true)
      */
     private $depositDate;
+
+    /**
+     * @JMS\Groups("artwork")
+     *
+     * @ORM\Column(name="numero_arret", type="integer", nullable=true)
+     */
+    private $stopNumber;
 
     public function getInventoryNumber(): ?string
     {
@@ -59,6 +75,18 @@ class DepositStatus extends Status
     public function setDepositDate(?\DateTimeInterface $depositDate): self
     {
         $this->depositDate = $depositDate;
+
+        return $this;
+    }
+
+    public function getStopNumber(): ?string
+    {
+        return $this->stopNumber;
+    }
+
+    public function setStopNumber(?string $stopNumber): self
+    {
+        $this->stopNumber = $stopNumber;
 
         return $this;
     }

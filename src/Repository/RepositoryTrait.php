@@ -3,6 +3,7 @@
 namespace App\Repository;
 
 use Doctrine\Common\Collections\Criteria;
+use Doctrine\DBAL\Connection;
 use Doctrine\ORM\QueryBuilder;
 
 /**
@@ -17,26 +18,39 @@ trait RepositoryTrait
      * @param int $limit
      * @param string $orderBy
      * @param string $order
+     * @param string|null $search
      * @return int|mixed|string
      * @throws \Doctrine\ORM\Query\QueryException
      */
     public function findByCriteria(
         array $criteria = [],
         int $offset= 0,
-        int $limit=20,
+        int $limit=0,
         string $orderBy= "id",
-        string $order = "asc" )
+        string $order = "asc",
+        string $search = null
+    )
     {
 
         $columns = $this->getClassMetadata()->getFieldNames();
         $qb = $this->createQueryBuilder('e');
         $qb = $this->addCriteria($qb, $criteria);
+        if ($search){
+            $or = $qb->expr()->orX();
+            foreach (self::SEARCH_FIELDS as $key => $value){
+                $or->add("LOWER(e.$value) LIKE  :$key");
+            }
+            $qb->andWhere($or);
+            foreach (self::SEARCH_FIELDS as $key => $value){
+                $qb->setParameter("$key", '%'.strtolower($search).'%');
+            }
+        }
 
         if ($offset != "") {
             $qb->setFirstResult($offset);
         }
 
-        if ($limit != "") {
+        if ($limit && $limit != "") {
             $qb->setMaxResults($limit);
         }
 
@@ -51,16 +65,27 @@ trait RepositoryTrait
 
     /**
      * @param array $criteria
+     * @param string|null $search
      * @return int
      * @throws \Doctrine\ORM\NoResultException
      * @throws \Doctrine\ORM\NonUniqueResultException
      * @throws \Doctrine\ORM\Query\QueryException
      */
-    public function countByCriteria(array $criteria = []) : int
+    public function countByCriteria(array $criteria = [], string $search = null) : int
     {
         $qb = $this->createQueryBuilder('e');
         $qb->select('count(e.id)');
         $qb = $this->addCriteria($qb, $criteria);
+        if ($search){
+            $or = $qb->expr()->orX();
+            foreach (self::SEARCH_FIELDS as $key => $value){
+                $or->add("LOWER(e.$value) LIKE  :$key");
+            }
+            $qb->andWhere($or);
+            foreach (self::SEARCH_FIELDS as $key => $value){
+                $qb->setParameter("$key", '%'.strtolower($search).'%');
+            }
+        }
         return (int)$qb->getQuery()->getSingleScalarResult();
     }
 
@@ -138,13 +163,23 @@ trait RepositoryTrait
                 $queryBuilder->andWhere("$alias.$field != :$parameter")->setParameter($parameter, $value);
                 break;
             case 'contains':
-                $queryBuilder->andWhere("$alias.$field LIKE :$parameter")->setParameter($parameter, "%$value%");
+                $queryBuilder->andWhere("LOWER($alias.$field) LIKE :$parameter")->setParameter($parameter,
+                    '%'.strtolower($value).'%');
                 break;
             case 'startsWith':
-                $queryBuilder->andWhere("$alias.$field LIKE :$parameter")->setParameter($parameter, "$value%");
+                $queryBuilder->andWhere("LOWER($alias.$field) LIKE :$parameter")->setParameter($parameter,
+                    strtolower($value).'%');
+                break;
+            case 'in':
+                eval("\$value = $value;");
+                if(!is_array($value)){
+                  throw new \RuntimeException('value should be an array');
+                }
+                $queryBuilder->andWhere("$alias.$field IN (:$parameter)")->setParameter($parameter,$value,Connection::PARAM_STR_ARRAY);
                 break;
             case 'endsWith':
-                $queryBuilder->andWhere("$alias.$field LIKE :$parameter")->setParameter($parameter, "%$value");
+                $queryBuilder->andWhere("LOWER($alias.$field) LIKE :$parameter")->setParameter($parameter,
+                    '%'.strtolower($value));
                 break;
             case 'in':
                 $queryBuilder->andWhere("$alias.$field IN (:ids)")->setParameter('ids', json_decode($value));

@@ -1,0 +1,4 @@
+App\Entity\DepositType:
+  depositType_1:
+    label: <name()>
+    active: true

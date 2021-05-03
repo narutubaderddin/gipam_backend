@@ -6,6 +6,7 @@ use App\Model\ApiResponse;
 use Doctrine\ORM\EntityManagerInterface;
 use FOS\RestBundle\Controller\Annotations\QueryParam;
 use FOS\RestBundle\Request\ParamFetcherInterface;
+use Symfony\Component\HttpFoundation\Request;
 
 /**
  * Class ApiManager
@@ -66,19 +67,19 @@ class ApiManager
     public function findRecordsByEntityName(string $fqcn, ParamFetcherInterface $paramFetcher): ApiResponse
     {
         $page = $paramFetcher->get('page', true)?? 1;
-        $limit = $paramFetcher->get('limit', true)?? 20;
+        $limit = $paramFetcher->get('limit', true)?? 0;
         $sortBy = $paramFetcher->get('sort_by')?? 'id';
         $sort = $paramFetcher->get('sort')?? 'asc';
+        $search = $paramFetcher->get('search')?? null;
         $criteria = $this->getCriteriaFromParamFetcher($paramFetcher);
         $offset = $this->getOffsetFromPageNumber($page, $limit);
         $repo = $this->em->getRepository($fqcn);
-
         return new ApiResponse(
             $page,
             $limit,
-            $repo->countByCriteria($criteria),
+            $repo->countByCriteria($criteria, $search),
             $repo->count([]),
-            $repo->findByCriteria($criteria, $offset, $limit, $sortBy, $sort)
+            $repo->findByCriteria($criteria, $offset, $limit, $sortBy, $sort, $search)
         );
     }
 
@@ -106,6 +107,10 @@ class ApiManager
         $values = $paramFetcher->all();
 
         foreach ($values as $name => $value) {
+            if ($name == 'search')
+            {
+                continue;
+            }
             if (null !== $value
                 && isset($annotations[$name])
                 && $annotations[$name] instanceof QueryParam
@@ -116,6 +121,25 @@ class ApiManager
         }
 
         return $criteria;
+    }
+
+    /**
+     * @param Request $request
+     * @return array
+     */
+    public function getPostDataFromRequest(Request $request):array
+    {
+        $data = $request->request->all();
+        foreach($request->files->all() as $key => $file){
+            if (isset($data[$key])){
+                foreach ($data[$key] as $k => &$value){
+                    $value = array_merge($value, $file[$k]);
+                }
+            }else{
+                $data[$key] = $file;
+            }
+        }
+        return $data;
     }
 
 

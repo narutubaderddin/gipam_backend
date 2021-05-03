@@ -1,0 +1,5 @@
+App\Entity\ReportSubType:
+  reportSubType_1:
+    label: <name()>
+    reportType: '@reportType*'
+    active: true

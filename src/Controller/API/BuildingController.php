@@ -108,7 +108,7 @@ class BuildingController extends AbstractFOSRestController
      * @SWG\Tag(name="buildings")
      *
      * @Rest\QueryParam(name="page", requirements="\d+", default="1", description="page number.")
-     * @Rest\QueryParam(name="limit", requirements="\d+", default="20", description="page size.")
+     * @Rest\QueryParam(name="limit", requirements="\d+", default="0", description="page size.")
      * @Rest\QueryParam(name="sort_by", nullable=true, default="id", description="order by")
      * @Rest\QueryParam(
      *     name="sort", requirements="(asc|desc)",
@@ -121,6 +121,7 @@ class BuildingController extends AbstractFOSRestController
      * @Rest\QueryParam(name="cedex", map=true, nullable=false, description="filter by cedex. example: cedex[eq]=value")
      * @Rest\QueryParam(name="site", nullable=false, description="filter by site id. example: site[eq]=value")
      * @Rest\QueryParam(name="commune", nullable=false, description="filter by commune id. example: commune[eq]=value")
+     * @Rest\QueryParam(name="search", map=false, nullable=true, description="search. example: search=text")
      * @Rest\QueryParam(name="startDate",
      *      map=true, nullable=false,
      *      description="filter by start date. example: startDate[eq]=value"
@@ -129,6 +130,8 @@ class BuildingController extends AbstractFOSRestController
      *      map=true, nullable=false,
      *      description="filter by disappearance date. example: disappearanceDate[eq]=value"
      * )
+     * @Rest\QueryParam(name="search", map=false, nullable=true, description="search. example: search=text")
+     *
      * @Rest\View()
      *
      * @param ParamFetcherInterface $paramFetcher

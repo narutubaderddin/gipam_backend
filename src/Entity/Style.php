@@ -2,6 +2,7 @@
 
 namespace App\Entity;
 
+use App\Entity\Traits\TimestampableEntity;
 use App\Repository\StyleRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -14,8 +15,9 @@ use JMS\Serializer\Annotation as JMS;
  */
 class Style
 {
+    use TimestampableEntity;
     /**
-     * @JMS\Groups("id", "style")
+     * @JMS\Groups("id", "style", "artwork")
      *
      * @ORM\Id
      * @ORM\GeneratedValue
@@ -24,7 +26,7 @@ class Style
     private $id;
 
     /**
-     * @JMS\Groups("style","art_work_details")
+     * @JMS\Groups("style","style_furniture","art_work_details")
      *
      * @ORM\Column(name="libelle", type="string", length=255, nullable=true)
      */

@@ -1,0 +1,7 @@
+App\Entity\Establishment:
+  establishment_1:
+    label: <word()>
+    acronym: <word()>
+    startDate: <date_create()>
+    disappearanceDate: <date_create()>
+    ministry: '@ministry*'

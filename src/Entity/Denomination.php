@@ -2,6 +2,7 @@
 
 namespace App\Entity;
 
+use App\Entity\Traits\TimestampableEntity;
 use App\Repository\DenominationRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -14,19 +15,18 @@ use JMS\Serializer\Annotation as JMS;
  */
 class Denomination
 {
+    use TimestampableEntity;
     /**
-     * @JMS\Groups("id", "denomination", "denomination_id")
+     * @JMS\Groups("id", "denomination", "denomination_id", "artwork",""field_list"")
      *
      * @ORM\Id
      * @ORM\GeneratedValue
      * @ORM\Column(type="integer")
-     * @JMS\Groups("field_list")
      */
     private $id;
 
     /**
-     * @JMS\Groups("denomination","art_work_details","field_list")
-     *
+     * @JMS\Groups("denomination","denomination_furniture","art_work_details","field_list")
      * @ORM\Column(name="libelle", type="string", length=255, nullable=true)
      */
     private $label;

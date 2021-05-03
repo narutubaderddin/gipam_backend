@@ -7,6 +7,10 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use JMS\Serializer\Annotation as JMS;
+use Symfony\Component\Validator\Constraints as Assert;
+use Gedmo\Mapping\Annotation as Gedmo;
+use Symfony\Component\Validator\Context\ExecutionContextInterface;
+
 
 /**
  * @ORM\Entity(repositoryClass=FurnitureRepository::class)
@@ -18,141 +22,203 @@ use JMS\Serializer\Annotation as JMS;
 abstract class Furniture
 {
     /**
+     * @JMS\Groups("artwork", "artwork_id","id","art_work_list","art_work_details")
      * @ORM\Id
      * @ORM\GeneratedValue
      * @ORM\Column(type="integer")
-     * @JMS\Groups("art_work_list","art_work_details")
      */
     protected $id;
 
     /**
+     * @JMS\Groups({"art_work_list","artwork","art_work_details"})
      * @ORM\Column(name="titre", type="string", length=255, nullable=true)
-     * @JMS\Groups("art_work_list","art_work_details")
      */
     protected $title;
 
     /**
+     * @JMS\Groups("artwork","art_work_details","art_work_list")
      * @ORM\Column(name="longueur", type="float", length=100, nullable=true)
-     * @JMS\Groups("art_work_details","art_work_list")
      */
     protected $length;
 
     /**
+     * @JMS\Groups("artwork","art_work_details","art_work_list")
      * @ORM\Column(name="largeur", type="float", nullable=true)
-     * @JMS\Groups("art_work_details","art_work_list")
      */
     protected $width;
 
     /**
+     * @JMS\Groups("artwork","art_work_details")
      * @ORM\Column(name="hauteur", type="float", nullable=true)
-     * @JMS\Groups("art_work_details")
      */
     protected $height;
 
     /**
+     * @JMS\Groups("artwork","art_work_details")
      * @ORM\Column(name="profondeur", type="string", length=100, nullable=true)
-     * @JMS\Groups("art_work_details")
      */
     protected $depth;
 
     /**
+     * @JMS\Groups("artwork","art_work_details")
      * @ORM\Column(name="diametre", type="string", length=100, nullable=true)
-     * @JMS\Groups("art_work_details")
      */
     protected $diameter;
 
     /**
+     * @JMS\Groups("artwork","art_work_details")
      * @ORM\Column(name="poids", type="float", nullable=true)
-     * @JMS\Groups("art_work_details")
      */
     protected $weight;
 
     /**
+     * @JMS\Groups("artwork","art_work_details")
      * @ORM\Column(name="nombre_unite", type="integer", nullable=true)
-     *  @JMS\Groups("art_work_details")
      */
     protected $numberOfUnit;
 
     /**
-     * @ORM\Column(name="description_commentaire", type="text", nullable=true)
-     *  @JMS\Groups("art_work_details")
-     */
-    protected $description;
-
-    /**
+     * @JMS\Groups("artwork", "artwork_author","furniture","furniture_author","art_work_list","art_work_details")
+     * @JMS\MaxDepth(1)
      * @ORM\ManyToMany(targetEntity=Author::class, inversedBy="furniture")
      * @ORM\JoinTable(name="objet_mobilier_auteur",
      *      joinColumns={@ORM\JoinColumn(name="objet_mobilier_id", referencedColumnName="id")},
      *      inverseJoinColumns={@ORM\JoinColumn(name="auteur_id", referencedColumnName="id")}
      *      )
-     * @JMS\Groups("art_work_list","art_work_details")
+     *
      */
     protected $authors;
 
     /**
+     * @JMS\Groups("artwork","era_furniture","art_work_details")
+     * @JMS\MaxDepth(1)
      * @ORM\ManyToOne(targetEntity=Era::class, inversedBy="furniture")
      * @ORM\JoinColumn(name="epoque_id", referencedColumnName="id")
-     * @JMS\Groups("art_work_details")
      */
     protected $era;
 
     /**
+     * @JMS\Groups("artwork","style_furniture","art_work_details")
+     * @JMS\MaxDepth(1)
      * @ORM\ManyToOne(targetEntity=Style::class, inversedBy="furniture")
      * @ORM\JoinColumn(name="style_id", referencedColumnName="id")
-     * @JMS\Groups("art_work_details")
      */
     protected $style;
 
     /**
+     * @JMS\Groups("artwork","materialTechnique_furniture","art_work_details")
+     * @JMS\MaxDepth(1)
      * @ORM\ManyToOne(targetEntity=MaterialTechnique::class, inversedBy="furniture")
      * @ORM\JoinColumn(name="matiere_technique_id", referencedColumnName="id")
-     * @JMS\Groups("art_work_details")
      */
     protected $materialTechnique;
 
     /**
+     * @JMS\Groups("artwork","denomination_furniture","art_work_details")
+     * @JMS\MaxDepth(1)
      * @ORM\ManyToOne(targetEntity=Denomination::class, inversedBy="furniture")
      * @ORM\JoinColumn(name="denomination_id", referencedColumnName="id")
-     * @JMS\Groups("art_work_details")
      */
     protected $denomination;
 
     /**
+     * @JMS\Groups("artwork","field_furniture","art_work_details","art_work_list")
+     * @JMS\MaxDepth(1)
      * @ORM\ManyToOne(targetEntity=Field::class, inversedBy="furniture")
      * @ORM\JoinColumn(name="domaine_id", referencedColumnName="id")
-     * @JMS\Groups("art_work_list","art_work_details")
      */
     protected $field;
 
     /**
+     * @JMS\Groups("artwork")
      * @ORM\OneToMany(targetEntity=ArtWorkLog::class, mappedBy="furniture")
      */
     protected $artWorkLogs;
 
     /**
+     * @JMS\Groups("artwork","mouvement_furniture","art_work_details")
+     * @JMS\MaxDepth(1)
      * @ORM\OneToMany(targetEntity=Movement::class, mappedBy="furniture")
-     * @JMS\Groups("art_work_details")
      */
     protected $movements;
 
     /**
+     * @JMS\Groups("artwork","art_work_details")
      * @ORM\OneToMany(targetEntity=Report::class, mappedBy="furniture")
-     * @JMS\Groups("art_work_details")
+     * @JMS\MaxDepth(1)
      */
     protected $reports;
 
     /**
-     * @ORM\OneToMany(targetEntity=Attachment::class, mappedBy="furniture")
-     * @JMS\Groups("art_work_list","art_work_details")
+     * @JMS\Groups("artwork","art_work_list","art_work_details")
+     * @Assert\Valid()
+     * @ORM\OneToMany(targetEntity=Attachment::class, mappedBy="furniture", cascade={"persist", "remove"})
      */
     protected $attachments;
 
     /**
+     * @JMS\Groups("artwork","status_furniture","art_work_details")
+     * @Assert\Valid()
+     * @ORM\ManyToOne(targetEntity=Status::class, inversedBy="furniture", cascade={"persist", "remove"})
+     * @JMS\MaxDepth(1)
      * @ORM\ManyToOne(targetEntity=Status::class, inversedBy="furniture")
      * @ORM\JoinColumn(name="status_id", referencedColumnName="id")
-     * @JMS\Groups("art_work_details")
      */
     protected $status;
+
+    /**
+     * @JMS\Groups("artwork")
+     * @Assert\Valid()
+     * @ORM\OneToMany(targetEntity=Hyperlink::class, mappedBy="furniture", cascade={"persist", "remove"})
+     */
+    protected $hyperlinks;
+
+    /**
+     * @JMS\Groups("artwork")
+     * @Assert\Valid()
+     * @ORM\OneToMany(targetEntity=Photography::class, mappedBy="furniture", cascade={"persist", "remove"})
+     */
+    protected $photographies;
+
+    /**
+     * @JMS\Groups("artwork","status_furniture")
+     * @ORM\Column(type="boolean")
+     * @ORM\Column(type="boolean",options={"default"=true})
+     */
+    protected $visible = true;
+
+    /**
+     * @JMS\Exclude()
+     * @JMS\MaxDepth(1)
+     * @ORM\OneToMany(targetEntity=Furniture::class, mappedBy="parent")
+     */
+    protected $children;
+
+    /**
+     * @JMS\Groups("artwork")
+     * @JMS\MaxDepth(1)
+     * @ORM\ManyToOne(targetEntity=Furniture::class, inversedBy="children")
+     * @ORM\JoinColumn(name="parent_id", referencedColumnName="id")
+     */
+    protected $parent;
+
+    /**
+     * @var \DateTime
+     * @JMS\Groups("artwork","art_work_list")
+     * @Gedmo\Timestampable(on="create")
+     * @JMS\Type("DateTime<'Y-m-d'>")
+     * @JMS\SerializedName("creationDate")
+     * @ORM\Column(name="date_creation", type="datetime")
+     */
+    protected $createdAt;
+
+    /**
+     * @var \DateTime
+     * @JMS\Groups("artwork")
+     * @Gedmo\Timestampable(on="update")
+     * @ORM\Column(name="date_modification", type="datetime")
+     */
+    protected $updatedAt;
 
     public function __construct()
     {
@@ -161,6 +227,9 @@ abstract class Furniture
         $this->movements = new ArrayCollection();
         $this->reports = new ArrayCollection();
         $this->attachments = new ArrayCollection();
+        $this->hyperlinks = new ArrayCollection();
+        $this->photographies = new ArrayCollection();
+        $this->children = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -260,18 +329,6 @@ abstract class Furniture
     public function setNumberOfUnit(?int $numberOfUnit): self
     {
         $this->numberOfUnit = $numberOfUnit;
-
-        return $this;
-    }
-
-    public function getDescription(): ?string
-    {
-        return $this->description;
-    }
-
-    public function setDescription(?string $description): self
-    {
-        $this->description = $description;
 
         return $this;
     }
@@ -490,5 +547,192 @@ abstract class Furniture
         $this->status = $status;
 
         return $this;
+    }
+
+    /**
+     * @return Collection|Hyperlink[]
+     */
+    public function getHyperlinks(): Collection
+    {
+        return $this->hyperlinks;
+    }
+
+    public function addHyperlink(Hyperlink $hyperlink): self
+    {
+        if (!$this->hyperlinks->contains($hyperlink)) {
+            $this->hyperlinks[] = $hyperlink;
+            $hyperlink->setFurniture($this);
+        }
+
+        return $this;
+    }
+
+    public function removeHyperlink(Hyperlink $hyperlink): self
+    {
+        if ($this->hyperlinks->removeElement($hyperlink)) {
+            // set the owning side to null (unless already changed)
+            if ($hyperlink->getFurniture() === $this) {
+                $hyperlink->setFurniture(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|Photography[]
+     */
+    public function getPhotographies(): Collection
+    {
+        return $this->photographies;
+    }
+
+    public function addPhotography(Photography $photography): self
+    {
+        if (!$this->photographies->contains($photography)) {
+            $this->photographies[] = $photography;
+            $photography->setFurniture($this);
+        }
+
+        return $this;
+    }
+
+    public function removePhotography(Photography $photography): self
+    {
+        if ($this->photographies->removeElement($photography)) {
+            // set the owning side to null (unless already changed)
+            if ($photography->getFurniture() === $this) {
+                $photography->setFurniture(null);
+            }
+        }
+
+        return $this;
+    }
+
+    public function getVisible(): ?bool
+    {
+        return $this->visible;
+    }
+
+    public function setVisible(bool $visible): self
+    {
+        $this->visible = $visible;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection
+     */
+    public function getChildren(): Collection
+    {
+        return $this->children;
+    }
+
+    /**
+     * @param Furniture $furniture
+     * @return $this
+     */
+    public function addChild(Furniture $furniture): self
+    {
+        if (!$this->children->contains($furniture)) {
+            $this->children[] = $furniture;
+            $furniture->setParent($this);
+        }
+
+        return $this;
+    }
+
+    /**
+     * @param Furniture $furniture
+     * @return $this
+     */
+    public function removeChild(Furniture $furniture): self
+    {
+        if ($this->children->contains($furniture)) {
+            $this->children->removeElement($furniture);
+            $furniture->setParent(null);
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getParent()
+    {
+        return $this->parent;
+    }
+
+    /**
+     * @param Furniture|null $parent
+     * @return $this
+     */
+    public function setParent(?Furniture $parent): self
+    {
+        $this->parent = $parent;
+
+        return $this;
+    }
+
+
+
+    public function getLastReport(){
+
+    }
+
+    /**
+     * Sets createdAt.
+     *
+     * @return $this
+     */
+    public function setCreatedAt(\DateTime $createdAt)
+    {
+        $this->createdAt = $createdAt;
+
+        return $this;
+    }
+
+
+    /**
+     * Sets updatedAt.
+     *
+     * @return $this
+     */
+    public function setUpdatedAt(\DateTime $updatedAt)
+    {
+        $this->updatedAt = $updatedAt;
+
+        return $this;
+    }
+
+    /**
+     * Returns updatedAt.
+     *
+     * @return \DateTime
+     */
+    public function getUpdatedAt()
+    {
+        return $this->updatedAt;
+    }
+
+    /**
+     * @Assert\Callback()
+     *
+     * @param ExecutionContextInterface $context
+     */
+    public function validate(ExecutionContextInterface $context)
+    {
+        if ($this->getDenomination() instanceof Denomination &&
+            $this->getDenomination()->getField() instanceof Field &&
+            $this->getField() instanceof Field
+        ){
+            if ($this->getDenomination()->getField() != $this->getField()){
+                $context->buildViolation('This Denomination have mapping with another Field')
+                    ->atPath('field')
+                    ->addViolation();
+            }
+        }
     }
 }

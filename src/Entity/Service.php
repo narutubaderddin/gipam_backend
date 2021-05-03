@@ -2,6 +2,7 @@
 
 namespace App\Entity;
 
+use App\Entity\Traits\TimestampableEntity;
 use App\Repository\ServiceRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -14,6 +15,7 @@ use JMS\Serializer\Annotation as JMS;
  */
 class Service
 {
+    use TimestampableEntity;
     /**
      * @JMS\Groups("id", "service", "service_id")
      *

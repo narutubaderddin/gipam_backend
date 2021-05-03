@@ -7,10 +7,14 @@ use App\Exception\FormValidationException;
 use App\Form\MaterialTechniqueType;
 use App\Model\ApiResponse;
 use App\Services\ApiManager;
+use App\Services\MaterialTechniqueService;
+use Doctrine\ORM\NonUniqueResultException;
+use Doctrine\ORM\NoResultException;
 use FOS\RestBundle\Controller\AbstractFOSRestController;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use FOS\RestBundle\Controller\Annotations\Route;
 use FOS\RestBundle\Request\ParamFetcherInterface;
+use FOS\RestBundle\View\View;
 use Nelmio\ApiDocBundle\Annotation\Model;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -96,12 +100,14 @@ class MaterialTechniqueController extends AbstractFOSRestController
      * @SWG\Tag(name="materialTechniques")
      *
      * @Rest\QueryParam(name="page", requirements="\d+", default="1", description="page number.")
-     * @Rest\QueryParam(name="limit", requirements="\d+", default="20", description="page size.")
+     * @Rest\QueryParam(name="limit", requirements="\d+", default="0", description="page size.")
      * @Rest\QueryParam(name="sort_by", nullable=true, default="id", description="order by")
      * @Rest\QueryParam(name="sort", requirements="(asc|desc)", nullable=true, default="asc", description="tri order asc|desc")
      * @Rest\QueryParam(name="label",map=true, nullable=false, description="filter by label. example: label[eq]=value")
      * @Rest\QueryParam(name="type",map=true, nullable=false, description="filter by type. example: type[eq]=value")
      * @Rest\QueryParam(name="active" ,map=true, nullable=false, description="filter by active. example: active[eq]=1")
+     * @Rest\QueryParam(name="denominations", map=true, nullable=false, description="filter by denomination. denominations: field[eq]=1")
+     * @Rest\QueryParam(name="search", map=false, nullable=true, description="search. example: search=text")
      *
      * @Rest\View()
      *
@@ -113,6 +119,64 @@ class MaterialTechniqueController extends AbstractFOSRestController
     {
         $records = $this->apiManager->findRecordsByEntityName(MaterialTechnique::class, $paramFetcher);
         return $this->view($records, Response::HTTP_OK);
+    }
+
+    /**
+     *
+     * @Rest\Get("/findByCriteria")
+     *
+     * @SWG\Response(
+     *     response=200,
+     *     description="Returns the list of an MaterialTechnique filtred by Field and denomination",
+     *     @SWG\Schema(
+     *         @SWG\Items(ref=@Model(type=ApiResponse::class))
+     *     )
+     * )
+     *
+     * @SWG\Parameter(
+     *     name="page",
+     *     in="query",
+     *     type="integer",
+     *     description="The field used to page number"
+     * )
+     * @SWG\Parameter(
+     *     name="limit",
+     *     in="query",
+     *     type="integer",
+     *     description="The field used to page size"
+     * )
+     *
+     * @SWG\Parameter(
+     *     name="field_id",
+     *     in="query",
+     *     type="integer",
+     *     description="field id"
+     * )
+     * @SWG\Parameter(
+     *     name="denomination_id",
+     *     in="query",
+     *     type="integer",
+     *     description="denomination id"
+     * )
+     *
+     * @SWG\Tag(name="materialTechniques")
+     *
+     * @Rest\QueryParam(name="page", requirements="\d+", default="1", description="page number.")
+     * @Rest\QueryParam(name="limit", requirements="\d+", default="0", description="page size.")
+     * @Rest\QueryParam(name="field", nullable=true, default="", description="field_id")
+     * @Rest\QueryParam(name="denomination", nullable=true, default="", description="denomination_id")
+     *
+     * @Rest\View()
+     *
+     * @param ParamFetcherInterface $paramFetcher
+     * @param MaterialTechniqueService $materialTechniqueService
+     * @return View
+     * @throws NoResultException
+     * @throws NonUniqueResultException
+     */
+    public function listMaterialTechniqueByFieldAndDenomination(ParamFetcherInterface $paramFetcher,MaterialTechniqueService $materialTechniqueService){
+            $records = $materialTechniqueService->findMaterialTechniqueByFieldAndDenomination($paramFetcher);
+             return $this->view($records, Response::HTTP_OK);
     }
 
     /**

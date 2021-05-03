@@ -1,0 +1,4 @@
+App\Entity\Era:
+  era_1:
+    label: <name()>
+    active: true

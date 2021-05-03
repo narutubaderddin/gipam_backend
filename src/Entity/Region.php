@@ -2,6 +2,7 @@
 
 namespace App\Entity;
 
+use App\Entity\Traits\TimestampableEntity;
 use App\Repository\RegionRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -15,6 +16,7 @@ use Symfony\Component\Validator\Constraints as Assert;
  */
 class Region
 {
+    use TimestampableEntity;
     /**
      * @JMS\Groups("id")
      *
@@ -45,6 +47,7 @@ class Region
 
     /**
      * @JMS\Groups("region")
+     *
      * @Assert\Type("\DateTimeInterface")  *
      * @ORM\Column(name="date_disparition", type="datetime", nullable=true)
      */
