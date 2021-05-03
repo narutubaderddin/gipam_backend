@@ -16,6 +16,7 @@ use JMS\Serializer\Annotation as JMS;
 class DepositType
 {
     use TimestampableEntity;
+
     public const LIBELLE = [
         'particuliers' => 'Particuliers',
         'institutionsPrivees' => 'Institutions privées',
