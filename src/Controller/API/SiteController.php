@@ -112,14 +112,18 @@ class SiteController extends AbstractFOSRestController
      *
      * @return View
      */
-    public function listSites(ParamFetcherInterface $paramFetcher,Request $request)
+    public function listSites(ParamFetcherInterface $paramFetcher, Request $request)
     {
-        $serializerGroups =$request->get('serializer_group','["default"]');
-        $serializerGroups = json_decode($serializerGroups,true);
-        $context= new Context();
-        $context->setGroups($serializerGroups);
+        $serializerGroups = $request->get('serializer_group') ?? null;
+        if ($serializerGroups) {
+            $serializerGroups = json_decode($serializerGroups, true);
+            $context = new Context();
+            $context->setGroups($serializerGroups);
+            $records = $this->apiManager->findRecordsByEntityName(Site::class, $paramFetcher);
+            return $this->view($records, Response::HTTP_OK)->setContext($context);
+        }
         $records = $this->apiManager->findRecordsByEntityName(Site::class, $paramFetcher);
-        return $this->view($records, Response::HTTP_OK)->setContext($context);
+        return $this->view($records, Response::HTTP_OK);
     }
 
     /**
