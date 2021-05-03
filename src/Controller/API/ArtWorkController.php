@@ -66,7 +66,7 @@ class ArtWorkController extends AbstractFOSRestController
      *     )
      * )
      * @SWG\Tag(name="ArtWorks")
-     * @Rest\View(serializerGroups={"art_work", "id"})
+     * @Rest\View(serializerGroups={"art_work_list", "id"})
      *
      * @param ArtWork $artWork
      * @return View
@@ -126,8 +126,8 @@ class ArtWorkController extends AbstractFOSRestController
      *      nullable=true, default="asc",
      *      description="sorting order asc|desc"
      * )
-     * @Rest\View( serializerGroups={"art_work","style_furniture","materialTechnique_furniture","status_furniture",
-     *     "response","era_furniture","denomination_furniture","field_furniture","mouvement_furniture","created_at",
+     * @Rest\View( serializerGroups={"art_work_list","style_furniture","materialTechnique_furniture","status_furniture",
+     *     "response","era_furniture","denomination_furniture","field_furniture","mouvement_furniture",
      *     "furniture_author","id"},serializerEnableMaxDepthChecks=true)
      *
      * @param Request $request

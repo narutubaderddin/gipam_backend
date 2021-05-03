@@ -4,6 +4,10 @@ namespace App\Repository;
 
 use App\Entity\ArtWork;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Doctrine\DBAL\Connection;
+use Doctrine\ORM\NonUniqueResultException;
+use Doctrine\ORM\NoResultException;
+use Doctrine\ORM\QueryBuilder;
 use Doctrine\Persistence\ManagerRegistry;
 
 /**
@@ -15,8 +19,220 @@ use Doctrine\Persistence\ManagerRegistry;
 class ArtWorkRepository extends ServiceEntityRepository
 {
     use RepositoryTrait;
+
     public function __construct(ManagerRegistry $registry)
     {
         parent::__construct($registry, ArtWork::class);
+    }
+
+    public static $columns = [
+        'id' => ['field' => 'id', 'operator' => 'equal', 'entity' => 'artWork'],
+        'titre' => ['field' => 'title', 'operator' => 'like', 'entity' => 'artWork'],
+        'domaine' => ['field' => 'id', 'operator' => 'in', 'entity' => 'field'],
+        'unitNumber' => ['field' => 'numberOfUnit', 'operator' => 'equal', 'entity' => 'artWork'],
+        'auteurs' => ['field' => 'id', 'operator' => 'in', 'entity' => 'authors'],
+        'denomination' => ['field' => 'id', 'operator' => 'in', 'entity' => 'denomination'],
+        'materialTechnique' => ['field' => 'id', 'operator' => 'in', 'entity' => 'materialTechnique'],
+        'era' => ['field' => 'id', 'operator' => 'in', 'entity' => 'era'],
+        'style' => ['field' => 'id', 'operator' => 'in', 'entity' => 'style'],
+        'mouvement' => ['field' => 'id', 'operator' => 'in', 'entity' => 'movementType'],
+        'mouvementAction' => ['field' => 'id', 'operator' => 'in', 'entity' => 'movementActionTypes'],
+        'constat' => ['field' => 'id', 'operator' => 'in', 'entity' => 'reportType'],
+        'constatAction' => ['field' => 'id', 'operator' => 'in', 'entity' => 'reportActionType'],
+        'length' => ['field' => 'length', 'operator' => 'range', 'entity' => 'artWork'],
+        'lengthTotal' => ['field' => 'totalLength', 'operator' => 'range', 'entity' => 'artWork'],
+        'width' => ['field' => 'width', 'operator' => 'range', 'entity' => 'artWork'],
+        'widthTotal' => ['field' => 'totalWidth', 'operator' => 'range', 'entity' => 'artWork'],
+        'height' => ['field' => 'height', 'operator' => 'range', 'entity' => 'artWork'],
+        'heightTotal' => ['field' => 'totalHeight', 'operator' => 'range', 'entity' => 'artWork'],
+        'depth' => ['field' => 'depth', 'operator' => 'range', 'entity' => 'artWork'],
+        'weight' => ['field' => 'weight', 'operator' => 'range', 'entity' => 'artWork'],
+    ];
+
+    /**
+     * @param array $filter
+     * @param array $advancedFilter
+     * @param array $headerFilters
+     * @param $page
+     * @param $limit
+     * @param bool $count
+     * @return int|mixed|string
+     * @throws NoResultException
+     * @throws NonUniqueResultException
+     */
+    public function getArtWorkList(array $filter, array $advancedFilter, array $headerFilters, $page, $limit,$count=false)
+    {
+        $query = $this->createQueryBuilder('artWork');
+        $query->where($query->expr()->isInstanceOf('artWork', ArtWork::class));
+        $query->leftJoin('artWork.field', 'field')
+            ->leftJoin('artWork.denomination', 'denomination')
+            ->leftJoin('artWork.materialTechnique', 'materialTechnique')
+            ->leftJoin('artWork.authors', 'authors')
+            ->leftJoin('artWork.era', 'era')
+            ->leftJoin('artWork.style', 'style')
+            ->leftJoin('artWork.movements','movements')
+            ->leftJoin('movements.type','movementType')
+            ->leftJoin('movementType.movementActionTypes','movementActionTypes')
+            ->leftJoin('artWork.reports','reports')
+            ->leftJoin('reports.reportSubType','reportSubType')
+            ->leftJoin('reportSubType.reportType','reportType')
+            ->leftJoin('reports.actions','reportAction')
+            ->leftJoin('reportAction.type','reportActionType')
+        ;
+
+        foreach ($filter as $key => $value) {
+            if (array_key_exists($key, self::$columns)) {
+                if ($key == 'id' && is_array($filter['id'])) {
+                    $query = $this->addColumnFilter($query, $filter, $headerFilters, $key, self::$columns[$key]['field'], 'range', self::$columns[$key]['entity']);
+                } else {
+                    $query = $this->addColumnFilter($query, $filter, $headerFilters, $key, self::$columns[$key]['field'], self::$columns[$key]['operator'], self::$columns[$key]['entity']);
+                }
+            }
+        }
+        $query = $this->addAdvancedFilter($query, $advancedFilter, $headerFilters);
+        if($count){
+            $query->select('count(artWork.id)');
+            return  $query->getQuery()->getSingleScalarResult();
+        }
+        $query->setFirstResult(($page - 1) * $limit)->setMaxResults($limit);
+        return $query->getQuery()->getResult();
+    }
+
+    public function addColumnFilter(QueryBuilder $query, array $filter, array $headerFilters, string $column, string $queryKey, string $type, string $entity)
+    {
+        $isColumnFilterExist = (array_key_exists($column, $filter) && isset($filter[$column]) && $filter[$column] != "");
+        $isColumnHeaderFilterExist = (array_key_exists($column, $headerFilters) && isset($headerFilters[$column]) && $headerFilters[$column] != "");
+        if ($isColumnFilterExist || $isColumnHeaderFilterExist) {
+            switch ($type) {
+                case 'like':
+                    $subDql = "";
+                    if ($isColumnFilterExist) {
+                        $subDql .= $entity . '.' . $queryKey . ' like :' . $column;
+                        if ($isColumnHeaderFilterExist) {
+                            $subDql .= " and ";
+                        }
+                    }
+                    if ($isColumnHeaderFilterExist) {
+                        $subDql .= $entity . '.' . $queryKey . ' like :header' . $column;
+                    }
+
+                    $query->andWhere('(' . $subDql . ')');
+
+                    if ($isColumnFilterExist) {
+                        $query->setParameter($column, '%' . $filter[$column] . '%');
+                    }
+                    if ($isColumnHeaderFilterExist) {
+                        $query->setParameter('header' . $column, '%' . $headerFilters[$column] . '%');
+                    }
+                    break;
+                case 'range':
+                    $query->andWhere($entity . '.' . $queryKey . ' between :data1 and :data2');
+                    $query->setParameter('data1', $filter[$column][0])
+                        ->setParameter('data2', $filter[$column][1]);
+                    break;
+                case 'equal':
+                    $query->andWhere($entity . '.' . $queryKey . ' = :' . $column)
+                        ->setParameter($column, $filter[$column]);
+                    break;
+                case 'in':
+                    if (($isColumnFilterExist && count($filter[$column]) > 0) || ($isColumnHeaderFilterExist && count($headerFilters[$column]) > 0)) {
+                        $data = [];
+                        $data = ($isColumnFilterExist&& is_array($filter[$column]) && count($filter[$column]) > 0) ? array_unique(array_merge($data, $filter[$column])) : $data;
+                        $data = ($isColumnHeaderFilterExist && is_array($headerFilters[$column]) &&count($headerFilters[$column]) > 0) ? array_unique(array_merge($data, $headerFilters[$column])) : $data;
+                        $query->andWhere($entity . '.' . $queryKey . ' in (:' . $column . ')');
+                        $query->setParameter($column, $data, Connection::PARAM_STR_ARRAY);
+                    }
+                    break;
+            }
+
+        }
+
+        return $query;
+    }
+
+    /**
+     * @param QueryBuilder $query
+     * @param array $advancedFilter
+     * @param array $headerFilter
+     * @return QueryBuilder
+     */
+    private function addAdvancedFilter(QueryBuilder $query, array $advancedFilter, array $headerFilter)
+    {
+        $dqlString = "( ";
+        $hasAdvancedFilter = false;
+        $i = 0;
+        $removedKeys = 0;
+        $keysOperator ="";
+        $operator ='and';
+        foreach ($advancedFilter as $key => $value) {
+            $subDqlString = "";
+            $isColumnAdvancedFilterExist =array_key_exists($key, self::$columns) && isset($advancedFilter[$key]) && $advancedFilter[$key]['value'] != "";
+            $isColumnHeaderFilterExist =array_key_exists($key, self::$columns) && isset($headerFilter[$key]) && $headerFilter[$key] != "";
+
+            if ($isColumnHeaderFilterExist || $isColumnAdvancedFilterExist) {
+                $dqlOperator="";
+                $keyData = self::$columns[$key];
+                switch ($keyData['operator']) {
+                    case'in':
+                        if(($isColumnAdvancedFilterExist &&count($value['value'])>0) || ($isColumnHeaderFilterExist&&count($headerFilter[$key])>0)){
+                            $dqlOperator = (is_array($value)&&$operator== 'not')  ? ' not in' : ' in';
+                            $subDqlString = $keyData['entity'] . '.' . $keyData['field'] . $dqlOperator . ' (:' . $key . ')';
+                        }
+                        break;
+                    case 'equal':
+                        $dqlOperator = (is_array($value)&&$operator== 'not') ? ' !=' : ' =';
+                        $subDqlString = $keyData['entity'] . '.' . $keyData['field'] . $dqlOperator . ' :' . $key . '';
+                        break;
+                    case 'range':
+                        if ($operator != 'not') {
+                            $subDqlString .= $keyData['entity'] . '.' . $keyData['field'] . ' between :value1 and :value2';
+                        }else{
+                            $subDqlString.= $keyData['entity']. '.' . $keyData['field'].' > :value1 and '.$keyData['entity']. '.' . $keyData['field'].' < :value2';
+                        }
+                        break;
+                }
+                $dqlString .= (strlen($subDqlString)>0)?  $keysOperator. "( " . $subDqlString . " )":"";
+                if ($i < count($advancedFilter) &&  strlen($subDqlString)>0) {
+                    $keysOperator = (is_array($value)&&$operator== 'or')  ? 'or' : 'and';
+                    $hasAdvancedFilter = true;
+                }
+
+            }
+            $operator = $value['operator'];
+
+            $i++;
+        }
+        $dqlString .= ' )';
+        if (!$hasAdvancedFilter) {
+            return $query;
+        }
+        $query->andWhere($dqlString);
+
+        foreach ($advancedFilter as $key => $value) {
+            $isColumnAdvancedFilterExist =array_key_exists($key, self::$columns) && isset($advancedFilter[$key]) && $advancedFilter[$key] ['value']!= "";
+            $isColumnHeaderFilterExist =array_key_exists($key, self::$columns) && isset($headerFilter[$key]) && $headerFilter[$key] != "";
+            if ($isColumnHeaderFilterExist || $isColumnAdvancedFilterExist) {
+                $keyData = self::$columns[$key];
+                switch ($keyData['operator']) {
+                    case 'in':
+                        $data = [];
+                        $data = ($isColumnAdvancedFilterExist&& is_array($value['value']) && count($value['value']) > 0) ? array_unique(array_merge($data, $value['value'])) : $data;
+                        $data = ($isColumnHeaderFilterExist && is_array($headerFilter[$key]) &&count($headerFilter[$key]) > 0) ? array_unique(array_merge($data, $headerFilter[$key])) : $data;
+                        if(count($data)>0){
+                            $query->setParameter($key,$data);
+                        }
+                        break;
+                    case 'equal':
+                        $query->setParameter($key, $value['value']);
+                        break;
+                    case 'range':
+                        $query->setParameter('value1', $value['value'][0]);
+                        $query->setParameter('value2', $value['value'][1]);
+                        break;
+                }
+            }
+
+        }
+        return $query;
     }
 }

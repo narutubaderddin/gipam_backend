@@ -19,7 +19,7 @@ class Author
     use TimestampableEntity;
 
     /**
-     * @JMS\Groups({"id","furniture_author",artwork})
+     * @JMS\Groups({"id","furniture_author","artwork"})
      * @ORM\Id
      * @ORM\GeneratedValue
      * @ORM\Column(type="integer")

@@ -40,7 +40,7 @@ class MaterialTechniqueService
          * @var MaterialTechniqueRepository $materialTechniqueRepo
          */
         $materialTechniqueRepo = $this->entityManager->getRepository(MaterialTechnique::class);
-        $recordsCount =(int) $this->entityManager->getRepository(MaterialTechnique::class)->findByFieldAndDenomination($page,$limit,$field,$denomination,true);
+        $recordsCount =(int) $materialTechniqueRepo->findByFieldAndDenomination($page,$limit,$field,$denomination,true);
         $records = $materialTechniqueRepo->findByFieldAndDenomination($page,$limit,$field,$denomination);
         return new ApiResponse(
           $page,
