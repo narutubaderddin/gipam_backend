@@ -39,7 +39,8 @@ class CommuneController extends AbstractFOSRestController
     public function __construct(
         ApiManager $apiManager,
         ValidatorInterface $validator
-    ) {
+    )
+    {
         $this->apiManager = $apiManager;
         $this->validator = $validator;
     }
@@ -133,14 +134,18 @@ class CommuneController extends AbstractFOSRestController
      * @param Request $request
      * @return View
      */
-    public function listcommune(ParamFetcherInterface $paramFetcher,Request $request)
+    public function listCommune(ParamFetcherInterface $paramFetcher, Request $request)
     {
-        $serializerGroups =$request->get('serializer_group','["default"]');
-        $serializerGroups = json_decode($serializerGroups,true);
-        $context= new Context();
-        $context->setGroups($serializerGroups);
+        $serializerGroups = $request->get('serializer_group') ?? null;
+        if ($serializerGroups) {
+            $serializerGroups = json_decode($serializerGroups, true);
+            $context = new Context();
+            $context->setGroups($serializerGroups);
+            $records = $this->apiManager->findRecordsByEntityName(Commune::class, $paramFetcher);
+            return $this->view($records, Response::HTTP_OK)->setContext($context);
+        }
         $records = $this->apiManager->findRecordsByEntityName(Commune::class, $paramFetcher);
-        return $this->view($records, Response::HTTP_OK)->setContext($context);
+        return $this->view($records, Response::HTTP_OK);
     }
 
     /**
