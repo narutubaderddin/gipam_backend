@@ -44,7 +44,7 @@ class EstablishmentType
     private $establishments;
 
     /**
-     * @ORM\Column(name="actif", type="boolean", nullable=false)
+     * @ORM\Column(name="actif", type="boolean", nullable=false,options={"default"="true"})
      */
     private $active = true;
 
