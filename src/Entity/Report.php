@@ -6,6 +6,7 @@ use App\Repository\ReportRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use JMS\Serializer\Annotation as JMS;
 
 /**
  * @ORM\Entity(repositoryClass=ReportRepository::class)
@@ -22,11 +23,13 @@ class Report
 
     /**
      * @ORM\Column(name="date", type="datetime")
+     * @JMS\Groups("art_work_details")
      */
     private $date;
 
     /**
      * @ORM\Column(name="commentaire", type="text", nullable=true)
+     * @JMS\Groups("art_work_details")
      */
     private $comment;
 

@@ -102,7 +102,7 @@ class FieldController extends AbstractFOSRestController
      * @Rest\QueryParam(name="label", map=true, nullable=false, description="filter by label. example: label[eq]=value")
      * @Rest\QueryParam(name="active" ,map=true, nullable=false, description="filter by active. example: active[eq]=1")
      *
-     * @Rest\View()
+     * @Rest\View(serializerGroups={"response","field_list"})
      *
      * @param ParamFetcherInterface $paramFetcher
      *

@@ -20,11 +20,12 @@ class Field
      * @ORM\Id
      * @ORM\GeneratedValue
      * @ORM\Column(type="integer")
+     * @JMS\Groups("field_list")
      */
     private $id;
 
     /**
-     * @JMS\Groups("field")
+     * @JMS\Groups("field","field_list","art_work_list","art_work_details")
      *
      * @ORM\Column(name="libelle", type="string", length=255, nullable=true)
      */
@@ -38,8 +39,7 @@ class Field
     private $active = true;
 
     /**
-     * @JMS\Exclude()
-     *
+     * @JMS\Groups("field_list")
      * @ORM\OneToMany(targetEntity=Denomination::class, mappedBy="field")
      */
     private $denominations;

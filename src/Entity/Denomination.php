@@ -20,11 +20,12 @@ class Denomination
      * @ORM\Id
      * @ORM\GeneratedValue
      * @ORM\Column(type="integer")
+     * @JMS\Groups("field_list")
      */
     private $id;
 
     /**
-     * @JMS\Groups("denomination")
+     * @JMS\Groups("denomination","art_work_details","field_list")
      *
      * @ORM\Column(name="libelle", type="string", length=255, nullable=true)
      */

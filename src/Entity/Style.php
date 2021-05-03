@@ -24,7 +24,7 @@ class Style
     private $id;
 
     /**
-     * @JMS\Groups("style")
+     * @JMS\Groups("style","art_work_details")
      *
      * @ORM\Column(name="libelle", type="string", length=255, nullable=true)
      */

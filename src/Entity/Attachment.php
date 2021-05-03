@@ -5,6 +5,7 @@ namespace App\Entity;
 use App\Repository\AttachmentRepository;
 use DateTimeInterface;
 use Doctrine\ORM\Mapping as ORM;
+use JMS\Serializer\Annotation as JMS;
 
 /**
  * @ORM\Entity(repositoryClass=AttachmentRepository::class)
@@ -31,11 +32,13 @@ class Attachment
 
     /**
      * @ORM\Column(name="lien", type="string", length=255)
+     * @JMS\Groups("art_work_list","art_work_details")
      */
     private $link;
 
     /**
      * @ORM\Column(name="image_principale", type="boolean")
+     * @JMS\Groups("art_work_list","art_work_details")
      */
     private $principleImage;
 

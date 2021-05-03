@@ -6,6 +6,7 @@ use App\Repository\FurnitureRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use JMS\Serializer\Annotation as JMS;
 
 /**
  * @ORM\Entity(repositoryClass=FurnitureRepository::class)
@@ -20,51 +21,61 @@ abstract class Furniture
      * @ORM\Id
      * @ORM\GeneratedValue
      * @ORM\Column(type="integer")
+     * @JMS\Groups("art_work_list","art_work_details")
      */
     protected $id;
 
     /**
      * @ORM\Column(name="titre", type="string", length=255, nullable=true)
+     * @JMS\Groups("art_work_list","art_work_details")
      */
     protected $title;
 
     /**
-     * @ORM\Column(name="longueur", type="string", length=100, nullable=true)
+     * @ORM\Column(name="longueur", type="float", length=100, nullable=true)
+     * @JMS\Groups("art_work_details","art_work_list")
      */
     protected $length;
 
     /**
-     * @ORM\Column(name="largeur", type="string", length=100, nullable=true)
+     * @ORM\Column(name="largeur", type="float", nullable=true)
+     * @JMS\Groups("art_work_details","art_work_list")
      */
     protected $width;
 
     /**
-     * @ORM\Column(name="hauteur", type="string", length=100, nullable=true)
+     * @ORM\Column(name="hauteur", type="float", nullable=true)
+     * @JMS\Groups("art_work_details")
      */
     protected $height;
 
     /**
      * @ORM\Column(name="profondeur", type="string", length=100, nullable=true)
+     * @JMS\Groups("art_work_details")
      */
     protected $depth;
 
     /**
      * @ORM\Column(name="diametre", type="string", length=100, nullable=true)
+     * @JMS\Groups("art_work_details")
      */
     protected $diameter;
 
     /**
-     * @ORM\Column(name="poids", type="string", length=100, nullable=true)
+     * @ORM\Column(name="poids", type="float", nullable=true)
+     * @JMS\Groups("art_work_details")
      */
     protected $weight;
 
     /**
      * @ORM\Column(name="nombre_unite", type="integer", nullable=true)
+     *  @JMS\Groups("art_work_details")
      */
     protected $numberOfUnit;
 
     /**
      * @ORM\Column(name="description_commentaire", type="text", nullable=true)
+     *  @JMS\Groups("art_work_details")
      */
     protected $description;
 
@@ -74,36 +85,42 @@ abstract class Furniture
      *      joinColumns={@ORM\JoinColumn(name="objet_mobilier_id", referencedColumnName="id")},
      *      inverseJoinColumns={@ORM\JoinColumn(name="auteur_id", referencedColumnName="id")}
      *      )
+     * @JMS\Groups("art_work_list","art_work_details")
      */
     protected $authors;
 
     /**
      * @ORM\ManyToOne(targetEntity=Era::class, inversedBy="furniture")
      * @ORM\JoinColumn(name="epoque_id", referencedColumnName="id")
+     * @JMS\Groups("art_work_details")
      */
     protected $era;
 
     /**
      * @ORM\ManyToOne(targetEntity=Style::class, inversedBy="furniture")
      * @ORM\JoinColumn(name="style_id", referencedColumnName="id")
+     * @JMS\Groups("art_work_details")
      */
     protected $style;
 
     /**
      * @ORM\ManyToOne(targetEntity=MaterialTechnique::class, inversedBy="furniture")
      * @ORM\JoinColumn(name="matiere_technique_id", referencedColumnName="id")
+     * @JMS\Groups("art_work_details")
      */
     protected $materialTechnique;
 
     /**
      * @ORM\ManyToOne(targetEntity=Denomination::class, inversedBy="furniture")
      * @ORM\JoinColumn(name="denomination_id", referencedColumnName="id")
+     * @JMS\Groups("art_work_details")
      */
     protected $denomination;
 
     /**
      * @ORM\ManyToOne(targetEntity=Field::class, inversedBy="furniture")
      * @ORM\JoinColumn(name="domaine_id", referencedColumnName="id")
+     * @JMS\Groups("art_work_list","art_work_details")
      */
     protected $field;
 
@@ -114,22 +131,26 @@ abstract class Furniture
 
     /**
      * @ORM\OneToMany(targetEntity=Movement::class, mappedBy="furniture")
+     * @JMS\Groups("art_work_details")
      */
     protected $movements;
 
     /**
      * @ORM\OneToMany(targetEntity=Report::class, mappedBy="furniture")
+     * @JMS\Groups("art_work_details")
      */
     protected $reports;
 
     /**
      * @ORM\OneToMany(targetEntity=Attachment::class, mappedBy="furniture")
+     * @JMS\Groups("art_work_list","art_work_details")
      */
     protected $attachments;
 
     /**
      * @ORM\ManyToOne(targetEntity=Status::class, inversedBy="furniture")
      * @ORM\JoinColumn(name="status_id", referencedColumnName="id")
+     * @JMS\Groups("art_work_details")
      */
     protected $status;
 
@@ -171,24 +192,24 @@ abstract class Furniture
         return $this;
     }
 
-    public function getWidth(): ?string
+    public function getWidth(): ?float
     {
         return $this->width;
     }
 
-    public function setWidth(?string $width): self
+    public function setWidth(?float $width): self
     {
         $this->width = $width;
 
         return $this;
     }
 
-    public function getHeight(): ?string
+    public function getHeight(): ?float
     {
         return $this->height;
     }
 
-    public function setHeight(?string $height): self
+    public function setHeight(?float $height): self
     {
         $this->height = $height;
 
@@ -219,12 +240,12 @@ abstract class Furniture
         return $this;
     }
 
-    public function getWeight(): ?string
+    public function getWeight(): ?float
     {
         return $this->weight;
     }
 
-    public function setWeight(?string $weight): self
+    public function setWeight(?float $weight): self
     {
         $this->weight = $weight;
 

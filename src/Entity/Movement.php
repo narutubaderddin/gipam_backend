@@ -7,6 +7,7 @@ use DateTimeInterface;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use JMS\Serializer\Annotation as JMS;
 
 /**
  * @ORM\Entity(repositoryClass=MovementRepository::class)
@@ -28,6 +29,7 @@ class Movement
 
     /**
      * @ORM\Column(name="commentaire", type="text", nullable=true)
+     * @JMS\Groups("art_work_details")
      */
     private $comment;
 

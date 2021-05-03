@@ -24,7 +24,7 @@ class MaterialTechnique
     private $id;
 
     /**
-     * @JMS\Groups("material_technique")
+     * @JMS\Groups("material_technique","art_work_details")
      *
      * @ORM\Column(name="libelle", type="string", length=255, nullable=true)
      */
