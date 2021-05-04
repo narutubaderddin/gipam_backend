@@ -33,7 +33,7 @@ class Attachment
     private $comment;
 
     /**
-     * @JMS\Groups("artwork")
+     * @JMS\Groups("artwork","art_work_list","art_work_details")
      *
      * @Assert\NotBlank()
      * @Assert\File(maxSize="25M")

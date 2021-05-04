@@ -28,12 +28,14 @@ class Author
     /**
      * @JMS\Groups({"furniture_author","authors"})
      * @ORM\Column(name="prenom", type="string", length=255, nullable=true)
+     * @JMS\Groups("art_work_list","art_work_details")
      */
     private $firstName;
 
     /**
      * @JMS\Groups({"furniture_author","authors"})
      * @ORM\Column(name="nom", type="string", length=255, nullable=true)
+     * @JMS\Groups("art_work_list","art_work_details")
      */
     private $lastName;
 
