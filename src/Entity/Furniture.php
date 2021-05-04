@@ -37,7 +37,7 @@ abstract class Furniture
 
     /**
      * @JMS\Groups("artwork","art_work_details","art_work_list")
-     * @ORM\Column(name="longueur", type="float", length=100, nullable=true)
+     * @ORM\Column(name="longueur", type="float", nullable=true)
      */
     protected $length;
 
@@ -55,13 +55,13 @@ abstract class Furniture
 
     /**
      * @JMS\Groups("artwork","art_work_details")
-     * @ORM\Column(name="profondeur", type="string", length=100, nullable=true)
+     * @ORM\Column(name="profondeur", type="float", nullable=true)
      */
     protected $depth;
 
     /**
      * @JMS\Groups("artwork","art_work_details")
-     * @ORM\Column(name="diametre", type="string", length=100, nullable=true)
+     * @ORM\Column(name="diametre", type="float", nullable=true)
      */
     protected $diameter;
 

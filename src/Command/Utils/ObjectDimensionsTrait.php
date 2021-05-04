@@ -10,10 +10,10 @@ trait ObjectDimensionsTrait
     private function getDimensionUnit(string $dimension)
     {
         if (preg_match("/[0-9\s]cm/i", $dimension)) {
-            return ' cm';
+            return 'cm';
         }
         if (preg_match("/[0-9\s]m/i", $dimension)) {
-            return ' m';
+            return 'm';
         }
         return '';
     }
@@ -88,7 +88,12 @@ trait ObjectDimensionsTrait
     private function addDimensionsUnit(array &$dimensions, string $unit)
     {
         foreach ($dimensions as $key => $dimension) {
-            $dimensions[$key] = $dimension . " " . $unit;
+            $dimension = floatval(preg_replace("/,/i", '.', $dimension));
+            if ($unit === 'm') {
+                $dimensions[$key] =  $dimension * 100;
+            } else {
+                $dimensions[$key] = $dimension;
+            }
         }
     }
 
@@ -99,7 +104,12 @@ trait ObjectDimensionsTrait
         if (!preg_match($pattern, $oldDimensions, $matches)) {
             return null;
         }
-        return ['weight' => $matches[1] . " " . end($matches)];
+        $unit = end($matches);
+        $weight = floatval(preg_replace("/,/i", '.', $matches[1]));
+        if (strtolower($unit) === 't') {
+            $weight = $weight * 1000;
+        }
+        return ['weight' => $weight];
     }
 
     private function logFurnitureDimensions($oldEntity, $newEntity, int $excelRow, $foundErrors = false)
