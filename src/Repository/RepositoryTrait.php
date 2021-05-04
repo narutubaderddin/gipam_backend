@@ -24,9 +24,9 @@ trait RepositoryTrait
      */
     public function findByCriteria(
         array $criteria = [],
-        int $offset= 0,
-        int $limit=0,
-        string $orderBy= "id",
+        int $offset = 0,
+        int $limit = 0,
+        string $orderBy = "id",
         string $order = "asc",
         string $search = null
     )
@@ -34,15 +34,17 @@ trait RepositoryTrait
 
         $columns = $this->getClassMetadata()->getFieldNames();
         $qb = $this->createQueryBuilder('e');
+        $this->leftJoins($qb, $criteria);
         $qb = $this->addCriteria($qb, $criteria);
-        if ($search){
+        if ($search) {
             $or = $qb->expr()->orX();
-            foreach (self::SEARCH_FIELDS as $key => $value){
-                $or->add("LOWER(e.$value) LIKE  :$key");
+            foreach (self::SEARCH_FIELDS as $key => $value) {
+                $field = $this->getSearchField($qb, $value);
+                $or->add("LOWER($field) LIKE  :$key");
             }
             $qb->andWhere($or);
-            foreach (self::SEARCH_FIELDS as $key => $value){
-                $qb->setParameter("$key", '%'.strtolower($search).'%');
+            foreach (self::SEARCH_FIELDS as $key => $value) {
+                $qb->setParameter("$key", '%' . strtolower($search) . '%');
             }
         }
 
@@ -75,11 +77,13 @@ trait RepositoryTrait
     {
         $qb = $this->createQueryBuilder('e');
         $qb->select('count(e.id)');
+        $this->leftJoins($qb, $criteria);
         $qb = $this->addCriteria($qb, $criteria);
         if ($search){
             $or = $qb->expr()->orX();
-            foreach (self::SEARCH_FIELDS as $key => $value){
-                $or->add("LOWER(e.$value) LIKE  :$key");
+            foreach (self::SEARCH_FIELDS as $key => $value) {
+                $field = $this->getSearchField($qb, $value);
+                $or->add("LOWER($field) LIKE  :$key");
             }
             $qb->andWhere($or);
             foreach (self::SEARCH_FIELDS as $key => $value){
@@ -89,31 +93,68 @@ trait RepositoryTrait
         return (int)$qb->getQuery()->getSingleScalarResult();
     }
 
+    public function getSearchField(QueryBuilder $queryBuilder, $value): string
+    {
+        $alias = $queryBuilder->getRootAliases()[0];
+        $dql = $queryBuilder->getDQL();
+        if (strpos($value, '_')) {
+            $ret = explode('_', $value);
+            $relatedEntity = $ret[0];
+            $relatedEntityField = $ret[1];
+            if (!stripos( $dql, "left join $alias.$relatedEntity $relatedEntity")) {
+                $queryBuilder->leftJoin("$alias.$relatedEntity", $relatedEntity);
+            }
+            return "$relatedEntity.$relatedEntityField";
+        }
+        return  "$alias.$value";
+    }
+
+    public function leftJoins(QueryBuilder $queryBuilder, array &$criteria = [])
+    {
+        $alias = $queryBuilder->getRootAliases()[0];
+        $joined = [];
+        $dql = $queryBuilder->getDQL();
+        foreach ($criteria as $key => $value) {
+            if (strpos($key, '_') && $value !== '') {
+                $ret = explode('_', $key);
+                $relatedEntity = $ret[0];
+                $relatedEntityField = $ret[1];
+                if (!in_array($relatedEntity, $joined) && !stripos( $dql, "left join $alias.$relatedEntity $relatedEntity")) {
+                    $queryBuilder->leftJoin("$alias.$relatedEntity", $relatedEntity);
+                    $joined[] = $relatedEntity;
+                }
+                $criteria["$relatedEntity.$relatedEntityField"] = $criteria[$key];
+                unset($criteria[$key]);
+            }
+        }
+    }
+
     /**
      * @param string $operator
      * @param string $key
      * @param $value
      * @return Criteria
      */
-    private function createCriteria(string $operator, string $key, $value) : Criteria
+    private function createCriteria(string $operator, string $key, $value): Criteria
     {
         return Criteria::create()
             ->andWhere(Criteria::expr()->$operator($key, $value));
     }
+
     /**
      * @param QueryBuilder $queryBuilder
      * @param array $criteria
      * @return QueryBuilder
      * @throws \Doctrine\ORM\Query\QueryException
      */
-    private function addCriteria(QueryBuilder $queryBuilder, array $criteria = []) : QueryBuilder
+    private function addCriteria(QueryBuilder $queryBuilder, array $criteria = []): QueryBuilder
     {
-        foreach ($criteria as $key => $value){
-            if ('' != $value){
-                if(\is_array($value)){
-                    $i=1;
-                    foreach ($value as $op => $v){
-                        $queryBuilder = $this->andWhere($queryBuilder, $key, $op, $key.$i, $v);
+        foreach ($criteria as $key => $value) {
+            if ('' != $value) {
+                if (\is_array($value)) {
+                    $i = 1;
+                    foreach ($value as $op => $v) {
+                        $queryBuilder = $this->andWhere($queryBuilder, $key, $op, $key . $i, $v);
                         $i++;
                     }
                 } else {
@@ -143,43 +184,48 @@ trait RepositoryTrait
     ): QueryBuilder
     {
         $alias = $queryBuilder->getRootAliases()[0];
-        switch ($operator){
+        if (!strpos( $field, '.')) {
+            $field = "$alias.$field";
+        } else {
+            $parameter = str_replace('.', '', $parameter);
+        }
+        switch ($operator) {
             case 'eq':
-                $queryBuilder->andWhere("$alias.$field = :$parameter")->setParameter($parameter, $value);
+                $queryBuilder->andWhere("$field = :$parameter")->setParameter($parameter, $value);
                 break;
             case 'lt':
-                $queryBuilder->andWhere("$alias.$field < :$parameter")->setParameter($parameter, $value);
+                $queryBuilder->andWhere("$field < :$parameter")->setParameter($parameter, $value);
                 break;
             case 'gt':
-                $queryBuilder->andWhere("$alias.$field > :$parameter")->setParameter($parameter, $value);
+                $queryBuilder->andWhere("$field > :$parameter")->setParameter($parameter, $value);
                 break;
             case 'lte':
-                $queryBuilder->andWhere("$alias.$field <= :$parameter")->setParameter($parameter, $value);
+                $queryBuilder->andWhere("$field <= :$parameter")->setParameter($parameter, $value);
                 break;
             case 'gte':
-                $queryBuilder->andWhere("$alias.$field >= :$parameter")->setParameter($parameter, $value);
+                $queryBuilder->andWhere("$field >= :$parameter")->setParameter($parameter, $value);
                 break;
             case 'neq':
-                $queryBuilder->andWhere("$alias.$field != :$parameter")->setParameter($parameter, $value);
+                $queryBuilder->andWhere("$field != :$parameter")->setParameter($parameter, $value);
                 break;
             case 'contains':
-                $queryBuilder->andWhere("LOWER($alias.$field) LIKE :$parameter")->setParameter($parameter,
-                    '%'.strtolower($value).'%');
+                $queryBuilder->andWhere("LOWER($field) LIKE :$parameter")->setParameter($parameter,
+                    '%' . strtolower($value) . '%');
                 break;
             case 'startsWith':
-                $queryBuilder->andWhere("LOWER($alias.$field) LIKE :$parameter")->setParameter($parameter,
-                    strtolower($value).'%');
+                $queryBuilder->andWhere("LOWER($field) LIKE :$parameter")->setParameter($parameter,
+                    strtolower($value) . '%');
                 break;
             case 'in':
                 eval("\$value = $value;");
-                if(!is_array($value)){
-                  throw new \RuntimeException('value should be an array');
+                if (!is_array($value)) {
+                    throw new \RuntimeException('value should be an array');
                 }
-                $queryBuilder->andWhere("$alias.$field IN (:$parameter)")->setParameter($parameter,$value,Connection::PARAM_STR_ARRAY);
+                $queryBuilder->andWhere("$field IN (:$parameter)")->setParameter($parameter, $value, Connection::PARAM_STR_ARRAY);
                 break;
             case 'endsWith':
-                $queryBuilder->andWhere("LOWER($alias.$field) LIKE :$parameter")->setParameter($parameter,
-                    '%'.strtolower($value));
+                $queryBuilder->andWhere("LOWER($field) LIKE :$parameter")->setParameter($parameter,
+                    '%' . strtolower($value));
                 break;
             default:
                 throw new \RuntimeException('Unknown comparison operator: ' . $operator);
