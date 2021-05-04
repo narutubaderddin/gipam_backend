@@ -5,6 +5,7 @@ namespace App\Repository;
 use App\Entity\SubDivision;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
+use FOS\RestBundle\Request\ParamFetcherInterface;
 
 /**
  * @method SubDivision|null find($id, $lockMode = null, $lockVersion = null)
@@ -22,7 +23,9 @@ class SubDivisionRepository extends ServiceEntityRepository
     {
         parent::__construct($registry, SubDivision::class);
     }
-    public function findSubDivisionByCriteria($page, $limit, $ministry, $establishment,$count=false){
+    public function findRecordsByEntityNameAndCriteria(ParamFetcherInterface $paramFetcher,$count,$page=1,$limit=0){
+        $ministry =$paramFetcher->get('ministries')??"";
+        $establishment =$paramFetcher->get('establishments')??"";
         $query = $this->createQueryBuilder('sub_division')
                        ->leftJoin('sub_division.establishment','establishment')
                        ->leftJoin('establishment.ministry','ministry');

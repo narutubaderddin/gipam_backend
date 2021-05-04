@@ -8,6 +8,7 @@ use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\ORM\NonUniqueResultException;
 use Doctrine\ORM\NoResultException;
 use Doctrine\Persistence\ManagerRegistry;
+use FOS\RestBundle\Request\ParamFetcherInterface;
 
 /**
  * @method MaterialTechnique|null find($id, $lockMode = null, $lockVersion = null)
@@ -39,16 +40,17 @@ class MaterialTechniqueRepository extends ServiceEntityRepository
     }
 
     /**
-     * @param $page
-     * @param $limit
-     * @param $field
-     * @param $denomination
+     * @param ParamFetcherInterface $paramFetcher
      * @param bool $count
+     * @param int $page
+     * @param int $limit
      * @return int|mixed|string
      * @throws NoResultException
      * @throws NonUniqueResultException
      */
-    public function findByFieldAndDenomination($page,$limit,$field,$denomination,$count=false){
+    public function findRecordsByEntityNameAndCriteria(ParamFetcherInterface $paramFetcher,$count,$page=1,$limit=0){
+        $field =$paramFetcher->get('fields')??"";
+        $denomination =$paramFetcher->get('denominations')??"";
         $query = $this->createQueryBuilder('materialTechnique')
                       ->leftJoin('materialTechnique.denominations','denominations')
                       ->leftJoin('denominations.field','field')

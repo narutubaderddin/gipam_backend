@@ -163,19 +163,17 @@ class MaterialTechniqueController extends AbstractFOSRestController
      *
      * @Rest\QueryParam(name="page", requirements="\d+", default="1", description="page number.")
      * @Rest\QueryParam(name="limit", requirements="\d+", default="0", description="page size.")
-     * @Rest\QueryParam(name="field", nullable=true, default="", description="field_id")
-     * @Rest\QueryParam(name="denomination", nullable=true, default="", description="denomination_id")
+     * @Rest\QueryParam(name="fields", nullable=true, default="", description="field_id")
+     * @Rest\QueryParam(name="denominations", nullable=true, default="", description="denomination_id")
      *
      * @Rest\View()
      *
      * @param ParamFetcherInterface $paramFetcher
-     * @param MaterialTechniqueService $materialTechniqueService
+     * @param ApiManager $apiManager
      * @return View
-     * @throws NoResultException
-     * @throws NonUniqueResultException
      */
-    public function listMaterialTechniqueByFieldAndDenomination(ParamFetcherInterface $paramFetcher,MaterialTechniqueService $materialTechniqueService){
-            $records = $materialTechniqueService->findMaterialTechniqueByFieldAndDenomination($paramFetcher);
+    public function listMaterialTechniqueByCriteria(ParamFetcherInterface $paramFetcher,ApiManager $apiManager){
+        $records =$apiManager->findRecordsByEntityNameAndCriteria(MaterialTechnique::class,$paramFetcher);
              return $this->view($records, Response::HTTP_OK);
     }
 

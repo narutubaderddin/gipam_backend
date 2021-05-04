@@ -141,4 +141,26 @@ class ApiManager
         }
         return $data;
     }
+
+    /**
+     * @param string $fgcn
+     * @param ParamFetcherInterface $paramFetcher
+     * @return ApiResponse
+     */
+    public function findRecordsByEntityNameAndCriteria(string $fgcn,ParamFetcherInterface $paramFetcher):ApiResponse
+    {
+        $page = $paramFetcher->get('page', true)?? 1;
+        $limit = $paramFetcher->get('limit', true)?? 0;
+        $repo = $this->em->getRepository($fgcn);
+        $filteredCount = $repo->findRecordsByEntityNameAndCriteria($paramFetcher,true);
+        $record = $repo->findRecordsByEntityNameAndCriteria($paramFetcher,false,$page,$limit);
+        return  new ApiResponse(
+            $page,
+            $limit,
+            $filteredCount,
+            $repo->count([]),
+            $record
+        );
+
+    }
 }
