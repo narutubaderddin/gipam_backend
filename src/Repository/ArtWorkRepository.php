@@ -357,7 +357,7 @@ class ArtWorkRepository extends ServiceEntityRepository
      * @throws \Doctrine\ORM\NonUniqueResultException
      * @throws \Doctrine\ORM\Query\QueryException
      */
-    public function countByCriteria(array $criteria = []) : int
+    public function countSearchByCriteria(array $criteria = []) : int
     {
         $qb = $this->createQueryBuilder('e');
         $qb->select('count(e.id)');
@@ -373,9 +373,9 @@ class ArtWorkRepository extends ServiceEntityRepository
      */
     public function addSearchCriteria(array $criteria, QueryBuilder $qb): QueryBuilder
     {
-        if (isset($criteria['search']) && !empty($criteria['search'])) {
-            $search = $criteria['search'];
-            unset($criteria['search']);
+        if (isset($criteria['searchArt']) && !empty($criteria['searchArt'])) {
+            $search = $criteria['searchArt'];
+            unset($criteria['searchArt']);
             foreach ($search as $key => $value) {
                 $qb = $this->searchByOrCriteria($qb, $criteria, $value);
             }

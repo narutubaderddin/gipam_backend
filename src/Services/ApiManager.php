@@ -161,7 +161,7 @@ class ApiManager
         return new ApiResponse(
             $page,
             $limit,
-            $repo->countByCriteria($criteria),
+            $repo->countSearchByCriteria($criteria),
             $repo->count([]),
             $repo->searchByCriteria($criteria, $offset, $limit, $sortBy, $sort)
         );

@@ -191,7 +191,7 @@ class ArtWorkController extends AbstractFOSRestController
      * @Rest\QueryParam(name="insuranceValue", nullable=false, description="filter by insuranceValue. example: insuranceValue[eq]=1")
      * @Rest\QueryParam(name="denomination", map=true, nullable=true, description="filter by denomination. example: denomination[eq]=value")
      * @Rest\QueryParam(name="field", map=true, nullable=true, description="filter by field. example: field[eq]=value")
-     * @Rest\QueryParam(name="search", nullable=false, description="filter by search. example: search[eq]=1")
+     * @Rest\QueryParam(name="searchArt", nullable=false, description="filter by search. example: search[eq]=1")
      * @Rest\QueryParam(name="mode", nullable=false, description="filter by mode. example: mode[eq]=1")
      * @Rest\QueryParam(name="page", requirements="\d+", default="1", description="page number.")
      * @Rest\QueryParam(name="limit", requirements="\d+", default="20", description="page size.")
