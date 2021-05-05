@@ -268,4 +268,13 @@ class ArtWorkRepository extends ServiceEntityRepository
         }
         return $query;
     }
+
+    public function getDescriptionAutocompleteData(string $searchQuery)
+    {
+        $query = $this->createQueryBuilder('artWork');
+        $query->where('LOWER(artWork.title) like :param');
+        $query->setParameter('param',strtolower("%".$searchQuery."%"));
+        $query->select('artWork.title');
+        return $query->getQuery()->getResult();
+    }
 }

@@ -174,7 +174,7 @@ class MaterialTechniqueController extends AbstractFOSRestController
      */
     public function listMaterialTechniqueByCriteria(ParamFetcherInterface $paramFetcher,ApiManager $apiManager){
         $records =$apiManager->findRecordsByEntityNameAndCriteria(MaterialTechnique::class,$paramFetcher);
-             return $this->view($records, Response::HTTP_OK);
+        return $this->view($records, Response::HTTP_OK);
     }
 
     /**

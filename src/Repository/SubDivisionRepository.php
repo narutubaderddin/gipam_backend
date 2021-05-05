@@ -30,7 +30,7 @@ class SubDivisionRepository extends ServiceEntityRepository
                        ->leftJoin('sub_division.establishment','establishment')
                        ->leftJoin('establishment.ministry','ministry');
         if($ministry != ""){
-            eval("\$ministry = $ministry;");
+            $ministry = json_decode($ministry, true);
             if(!is_array($ministry)){
                 throw  new \RuntimeException('ministry value should be an array');
             }
@@ -39,7 +39,7 @@ class SubDivisionRepository extends ServiceEntityRepository
             }
         }
         if($establishment !=""){
-            eval("\$establishment = $establishment;");
+            $establishment = json_decode($establishment, true);
             if(!is_array($establishment)){
                 throw  new \RuntimeException('establishment value should be an array');
             }

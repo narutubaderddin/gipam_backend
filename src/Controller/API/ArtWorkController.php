@@ -6,6 +6,7 @@ namespace App\Controller\API;
 
 use App\Entity\ArtWork;
 use App\Model\ApiResponse;
+use App\Repository\ArtWorkRepository;
 use App\Repository\FurnitureRepository;
 use App\Services\ApiManager;
 use App\Services\ArtWorkService;
@@ -140,5 +141,24 @@ class ArtWorkController extends AbstractFOSRestController
          $records=$artWorkService->findArtWorkRecord($paramFetcher,$request->get('filter',[])
              ,$request->get('advancedFilter',[]),$request->get('headerFilters',[]));
         return $this->view($records,Response::HTTP_OK);
+    }
+
+    /**
+     * @param ParamFetcherInterface $paramFetcher
+     * @param ArtWorkService $artWorkService
+     * @Rest\Get("/autocompleteData")
+     * @SWG\Response(
+     *     response=200,
+     *     description="Returns the list of Art Works",
+     *     @SWG\Schema(
+     *         @SWG\Items(ref=@Model(type=ApiResponse::class))
+     *     )
+     * )
+     * @Rest\QueryParam(name="query", nullable=true, default="", description="query to search")
+     * @Rest\View()
+     * @return array
+     */
+    public function findDescriptionAutocompleteData(ParamFetcherInterface $paramFetcher,ArtWorkService $artWorkService){
+        return $artWorkService->findAutocompleteData($paramFetcher->get('query')??"");
     }
 }

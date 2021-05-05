@@ -56,7 +56,7 @@ class MaterialTechniqueRepository extends ServiceEntityRepository
                       ->leftJoin('denominations.field','field')
                        ->where('materialTechnique.active = true') ;
         if($field!=""){
-            eval("\$field = $field;");
+            $field = json_decode($field, true);
             if(!is_array($field)){
                 throw  new \RuntimeException('field value should be an array');
             }
@@ -66,7 +66,7 @@ class MaterialTechniqueRepository extends ServiceEntityRepository
         }
 
         if($denomination!=""){
-            eval("\$denomination = $denomination;");
+            $denomination = json_decode($denomination, true);
             if(!is_array($denomination)){
                 throw  new \RuntimeException('denomination value should be an array');
             }
