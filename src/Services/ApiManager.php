@@ -163,4 +163,31 @@ class ApiManager
         );
 
     }
+
+
+    /**
+     * @param string $fqcn
+     * @param ParamFetcherInterface $paramFetcher
+     * @return ApiResponse
+     */
+    public function searchByEntityName(string $fqcn, ParamFetcherInterface $paramFetcher): ApiResponse
+    {
+        $page = $paramFetcher->get('page', true)?? 1;
+        $limit = $paramFetcher->get('limit', true)?? 20;
+        $sortBy = $paramFetcher->get('sort_by')?? 'id';
+        $sort = $paramFetcher->get('sort')?? 'asc';
+        $criteria = $this->getCriteriaFromParamFetcher($paramFetcher);
+        $offset = $this->getOffsetFromPageNumber($page, $limit);
+        $repo = $this->em->getRepository($fqcn);
+
+        return new ApiResponse(
+            $page,
+            $limit,
+            $repo->countSearchByCriteria($criteria),
+            $repo->count([]),
+            $repo->searchByCriteria($criteria, $offset, $limit, $sortBy, $sort)
+        );
+
+
+    }
 }

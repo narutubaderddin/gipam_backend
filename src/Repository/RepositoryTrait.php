@@ -182,6 +182,9 @@ trait RepositoryTrait
                 $queryBuilder->andWhere("LOWER($alias.$field) LIKE :$parameter")->setParameter($parameter,
                     '%' . strtolower($value));
                 break;
+            case 'in':
+                $queryBuilder->andWhere("$alias.$field IN (:ids)")->setParameter('ids', json_decode($value));
+                break;
             default:
                 throw new \RuntimeException('Unknown comparison operator: ' . $operator);
         }
@@ -193,7 +196,7 @@ trait RepositoryTrait
      */
     public static function getOperators(): array
     {
-        return ['eq', 'gt', 'lt', 'gte', 'lte', 'neq', 'contains', 'startsWith', 'endsWith'];
+        return ['eq', 'gt', 'lt', 'gte', 'lte', 'neq', 'contains', 'startsWith', 'endsWith','in'];
     }
 
     public function findRecordsByEntityNameAndCriteria($count, $page = 1, $limit = 0)
