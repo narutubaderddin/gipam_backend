@@ -8,6 +8,7 @@ use DateTimeInterface;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use JMS\Serializer\Annotation as Serializer;
 
 /**
  * @ORM\Entity(repositoryClass=RoomRepository::class)
@@ -20,11 +21,13 @@ class Room
      * @ORM\Id
      * @ORM\GeneratedValue
      * @ORM\Column(type="integer")
+     * @Serializer\Groups("id","short")
      */
     private $id;
 
     /**
      * @ORM\Column(name="reference", type="string", length=255, nullable=true)
+     * @Serializer\Groups("short")
      */
     private $reference;
 

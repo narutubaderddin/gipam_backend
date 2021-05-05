@@ -5,6 +5,7 @@ namespace App\Repository;
 use App\Entity\SubDivision;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
+use FOS\RestBundle\Request\ParamFetcherInterface;
 
 /**
  * @method SubDivision|null find($id, $lockMode = null, $lockVersion = null)
@@ -22,12 +23,14 @@ class SubDivisionRepository extends ServiceEntityRepository
     {
         parent::__construct($registry, SubDivision::class);
     }
-    public function findSubDivisionByCriteria($page, $limit, $ministry, $establishment,$count=false){
+    public function findRecordsByEntityNameAndCriteria(ParamFetcherInterface $paramFetcher,$count,$page=1,$limit=0){
+        $ministry =$paramFetcher->get('ministries')??"";
+        $establishment =$paramFetcher->get('establishments')??"";
         $query = $this->createQueryBuilder('sub_division')
                        ->leftJoin('sub_division.establishment','establishment')
                        ->leftJoin('establishment.ministry','ministry');
         if($ministry != ""){
-            eval("\$ministry = $ministry;");
+            $ministry = json_decode($ministry, true);
             if(!is_array($ministry)){
                 throw  new \RuntimeException('ministry value should be an array');
             }
@@ -36,7 +39,7 @@ class SubDivisionRepository extends ServiceEntityRepository
             }
         }
         if($establishment !=""){
-            eval("\$establishment = $establishment;");
+            $establishment = json_decode($establishment, true);
             if(!is_array($establishment)){
                 throw  new \RuntimeException('establishment value should be an array');
             }

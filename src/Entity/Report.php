@@ -27,11 +27,13 @@ class Report
 
     /**
      * @ORM\Column(name="date", type="datetime")
+     * @JMS\Groups("art_work_details")
      */
     private $date;
 
     /**
      * @ORM\Column(name="commentaire", type="text", nullable=true)
+     * @JMS\Groups("art_work_details")
      */
     private $comment;
 

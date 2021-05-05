@@ -17,7 +17,7 @@ class Field
 {
     use TimestampableEntity;
     /**
-     * @JMS\Groups("id", "field", "field_id", "artwork")
+     * @JMS\Groups("id", "field", "field_id", "artwork","field_list")
      *
      * @ORM\Id
      * @ORM\GeneratedValue
@@ -26,7 +26,7 @@ class Field
     private $id;
 
     /**
-     * @JMS\Groups("field","field_furniture")
+     * @JMS\Groups("field","field_furniture","field_list","art_work_list","art_work_details")
      *
      * @ORM\Column(name="libelle", type="string", length=255, nullable=true)
      */
@@ -40,8 +40,7 @@ class Field
     private $active = true;
 
     /**
-     * @JMS\Exclude()
-     *
+     * @JMS\Groups("field_list")
      * @ORM\OneToMany(targetEntity=Denomination::class, mappedBy="field")
      */
     private $denominations;

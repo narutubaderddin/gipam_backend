@@ -49,4 +49,18 @@ class ArtWorkService
 
     }
 
+    public function findAutocompleteData($searchQuery){
+        $queryData = $this->entityManager->getRepository(ArtWork::class)->getDescriptionAutocompleteData($searchQuery);
+        $result=[];
+        foreach ($queryData as $query){
+            $options = explode(" ",$query['title']);
+            foreach ($options as $option){
+                if(strpos(strtolower($option),strtolower($searchQuery))!==false&&!in_array(strtolower($option),$result)){
+                    $result[]= strtolower($option);
+                }
+            }
+        }
+        return $result;
+    }
+
 }

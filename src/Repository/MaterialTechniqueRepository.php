@@ -8,6 +8,7 @@ use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\ORM\NonUniqueResultException;
 use Doctrine\ORM\NoResultException;
 use Doctrine\Persistence\ManagerRegistry;
+use FOS\RestBundle\Request\ParamFetcherInterface;
 
 /**
  * @method MaterialTechnique|null find($id, $lockMode = null, $lockVersion = null)
@@ -39,22 +40,23 @@ class MaterialTechniqueRepository extends ServiceEntityRepository
     }
 
     /**
-     * @param $page
-     * @param $limit
-     * @param $field
-     * @param $denomination
+     * @param ParamFetcherInterface $paramFetcher
      * @param bool $count
+     * @param int $page
+     * @param int $limit
      * @return int|mixed|string
      * @throws NoResultException
      * @throws NonUniqueResultException
      */
-    public function findByFieldAndDenomination($page,$limit,$field,$denomination,$count=false){
+    public function findRecordsByEntityNameAndCriteria(ParamFetcherInterface $paramFetcher,$count,$page=1,$limit=0){
+        $field =$paramFetcher->get('fields')??"";
+        $denomination =$paramFetcher->get('denominations')??"";
         $query = $this->createQueryBuilder('materialTechnique')
                       ->leftJoin('materialTechnique.denominations','denominations')
                       ->leftJoin('denominations.field','field')
                        ->where('materialTechnique.active = true') ;
         if($field!=""){
-            eval("\$field = $field;");
+            $field = json_decode($field, true);
             if(!is_array($field)){
                 throw  new \RuntimeException('field value should be an array');
             }
@@ -64,7 +66,7 @@ class MaterialTechniqueRepository extends ServiceEntityRepository
         }
 
         if($denomination!=""){
-            eval("\$denomination = $denomination;");
+            $denomination = json_decode($denomination, true);
             if(!is_array($denomination)){
                 throw  new \RuntimeException('denomination value should be an array');
             }

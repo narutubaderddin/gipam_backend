@@ -18,7 +18,9 @@ use App\Entity\Depositor;
 use App\Entity\DepositStatus;
 use App\Entity\Furniture;
 use App\Entity\MaterialTechnique;
+use App\Entity\Photography;
 use App\Entity\PropertyStatus;
+use App\Services\FileUploader;
 use App\Services\LoggerService;
 use DateTime;
 use Doctrine\ORM\EntityManagerInterface;
@@ -57,6 +59,7 @@ class MigrateObjectsCommand extends Command
     private $loggerService;
     private $excelLogger;
     private $initializationScriptService;
+    private $fileUploader;
 
     public function __construct(
         EntityManagerInterface $entityManager,
@@ -64,7 +67,8 @@ class MigrateObjectsCommand extends Command
         Stopwatch $stopwatch,
         LoggerService $loggerService,
         ExcelLogger $excelLogger,
-        InitializationScriptService $initializationScriptService
+        InitializationScriptService $initializationScriptService,
+        FileUploader $fileUploader
     )
     {
         parent::__construct();
@@ -77,6 +81,7 @@ class MigrateObjectsCommand extends Command
         $loggerService->init('db_migration');
         $this->excelLogger->initFile('objectMigration');
         $this->initializationScriptService = $initializationScriptService;
+        $this->fileUploader = $fileUploader;
     }
 
     protected function configure()
@@ -177,14 +182,14 @@ class MigrateObjectsCommand extends Command
         $this->excelLogger->write($columns, 1);
         foreach ($oldEntities as $oldEntity) {
             // todo for testing
-//            $oldEntity = $this->test(3906);
+//            $oldEntity = $this->test(1601);
 
             $newEntity = $this->createEntity($entity, $oldEntity, $mappingTable, $foundError);
 
             $this->addAuthor($oldEntity, $newEntity);
             $this->setMaterialTechnique($oldEntity, $newEntity, $mappingTable);
             $this->setStatus($oldEntity, $newEntity);
-//            $this->addAttachments($oldEntity, $newEntity);
+//            $this->addPhotography($oldEntity, $newEntity);
             $dimensionError = false;
             $this->findDimensions($oldEntity, $newEntity, $dimensionError);
 
@@ -195,7 +200,6 @@ class MigrateObjectsCommand extends Command
 
             // todo object log isn't correct
 //            $this->addObjectLog($oldEntity, $newEntity);
-
             $this->entityManager->persist($newEntity);
 
             // here we add the new entity ID after persisting
@@ -358,7 +362,7 @@ class MigrateObjectsCommand extends Command
         $newFurniture->setStatus($status);
     }
 
-    private function addAttachments($oldFurniture, Furniture &$newFurniture)
+    private function addPhotography($oldFurniture, Furniture &$newFurniture)
     {
         $mappingTable = MigrationDb::getMappingTable('fichier_joint');
         $oldRelation = $oldFurniture[$mappingTable['rel_objet_mobilier']];
@@ -366,8 +370,8 @@ class MigrateObjectsCommand extends Command
         $oldAttachements = $this->migrationRepository
             ->getBy(MigrationRepository::$oldDBConnection, $mappingTable['table'], $criteria);
         foreach ($oldAttachements as $attachement) {
-            $newAttachement = (new Attachment())
-                ->setComment(MigrationDb::utf8Encode($attachement[$mappingTable['commentaire']]))
+            $newAttachement = (new Photography())
+                ->setImageName()
                 ->setLink(MigrationDb::utf8Encode($attachement[$mappingTable['lien']]));
             $date = $attachement[$mappingTable['date']];
             if ($date) {
