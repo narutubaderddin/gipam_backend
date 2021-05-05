@@ -19,7 +19,7 @@ class EstablishmentType extends AbstractType
         $builder
             ->add('label',TextType::class, ['required'=>true])
             ->add('acronym',TextType::class, ['required'=>true])
-            ->add('startDate', DateTimeType::class, ['widget' => 'single_text', 'required'=>true])
+            ->add('startDate', DateTimeType::class, ['widget' => 'single_text', 'required' => true])
             ->add('disappearanceDate', DateTimeType::class, ['widget' => 'single_text'])
             ->add('ministry', EntityType::class, [
                     'class' => Ministry::class,
