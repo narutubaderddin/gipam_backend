@@ -2,12 +2,11 @@
 
 namespace App\Controller\API;
 
-use App\Entity\Commune;
+use App\Entity\Correspondent;
 use App\Exception\FormValidationException;
-use App\Form\CommuneType;
+use App\Form\CorrespondentType;
 use App\Model\ApiResponse;
 use App\Services\ApiManager;
-use FOS\RestBundle\Context\Context;
 use FOS\RestBundle\Controller\AbstractFOSRestController;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use FOS\RestBundle\Controller\Annotations\Route;
@@ -20,11 +19,11 @@ use Swagger\Annotations as SWG;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 /**
- * Class CommuneController
+ * Class CorrespondentController
  * @package App\Controller\API
- * @Route("/communes")
+ * @Route("/correspondents")
  */
-class CommuneController extends AbstractFOSRestController
+class CorrespondentController extends AbstractFOSRestController
 {
     /**
      * @var ApiManager
@@ -43,35 +42,33 @@ class CommuneController extends AbstractFOSRestController
         $this->apiManager = $apiManager;
         $this->validator = $validator;
     }
-
     /**
      * @Rest\Get("/{id}", requirements={"id"="\d+"})
      *
      * @SWG\Response(
      *     response=200,
-     *     description="Returns Commune by id",
+     *     description="Returns Correspondent by id",
      *     @SWG\Schema(
-     *         ref=@Model(type=Commune::class, groups={"commune", "id"})
+     *         ref=@Model(type=Correspondent::class, groups={"correspondent", "id"})
      *     )
      * )
-     * @SWG\Tag(name="communes")
-     * @Rest\View(serializerGroups={"commune", "id"})
+     * @SWG\Tag(name="correspondents")
+     * @Rest\View(serializerGroups={"correspondent", "id"})
      *
-     * @param Commune $commune
+     * @param Correspondent $correspondent
      *
      * @return View
      */
-    public function showCommune(Commune $commune)
+    public function showCorrespondent(Correspondent $correspondent)
     {
-        return $this->view($commune, Response::HTTP_OK);
+        return $this->view($correspondent, Response::HTTP_OK);
     }
-
     /**
      * @Rest\Get("/")
      *
      * @SWG\Response(
      *     response=200,
-     *     description="Returns the list of communes",
+     *     description="Returns the list of correspondents",
      *     @SWG\Schema(
      *         @SWG\Items(ref=@Model(type=ApiResponse::class))
      *     )
@@ -106,25 +103,33 @@ class CommuneController extends AbstractFOSRestController
      *     type="string",
      *     description="The field used to filter by name"
      * )
-     * @SWG\Tag(name="communes")
+     * @SWG\Tag(name="correspondents")
      *
      * @Rest\QueryParam(name="page", requirements="\d+", default="1", description="page number.")
      * @Rest\QueryParam(name="limit", requirements="\d+", default="0", description="page size.")
      * @Rest\QueryParam(name="sort_by", nullable=true, default="id", description="order by")
-     * @Rest\QueryParam(name="search", map=false, nullable=true, description="search. example: search=text")
      * @Rest\QueryParam(
      *     name="sort", requirements="(asc|desc)",
      *      nullable=true, default="asc",
      *      description="sorting order asc|desc"
      * )
-     * @Rest\QueryParam(name="name", map=true, nullable=false, description="filter by name. example: name[eq]=value")
+     * @Rest\QueryParam(name="firstName", map=true, nullable=false, description="filter by firstName. example: firstName[eq]=value")
+     * @Rest\QueryParam(name="lastName", map=true, nullable=false, description="filter by lastName. example: lastName[eq]=value")
+     * @Rest\QueryParam(name="phone", map=true, nullable=true, description="filter by phone. example: phone[eq]=value")
+     * @Rest\QueryParam(name="fax", map=true, nullable=true, description="filter by fax. example: fax[eq]=value")
+     * @Rest\QueryParam(name="mail", map=true, nullable=false, description="filter by mail. example: mail[eq]=value")
+
+     * @Rest\QueryParam(name="establishment", nullable=true, description="filter by establishment id. example: establishment[eq]=value")
+     * @Rest\QueryParam(name="subDivision", nullable=true, description="filter by subDivision id. example: subDivision[eq]=value")
+     * @Rest\QueryParam(name="service", nullable=true, description="filter by service id. example: service[eq]=value")
+     *
      * @Rest\QueryParam(name="startDate",
      *      map=true, nullable=false,
      *      description="filter by start date. example: startDate[eq]=value"
      * )
-     * @Rest\QueryParam(name="disappearanceDate",
+     * @Rest\QueryParam(name="endDate",
      *      map=true, nullable=false,
-     *      description="filter by disappearance date. example: disappearanceDate[eq]=value"
+     *      description="filter by end date. example: endDate[eq]=value"
      * )
      * @Rest\QueryParam(name="search", map=false, nullable=true, description="search. example: search=text")
      *
@@ -132,32 +137,21 @@ class CommuneController extends AbstractFOSRestController
      *
      * @param ParamFetcherInterface $paramFetcher
      *
-     * @param Request $request
      * @return View
      */
-    public function listcommune(ParamFetcherInterface $paramFetcher,Request $request)
+    public function listCorrespondent(ParamFetcherInterface $paramFetcher)
     {
-        $serializerGroups = $request->get('serializer_group') ?? null;
-        if ($serializerGroups) {
-            $serializerGroups = json_decode($serializerGroups, true);
-            $context = new Context();
-            $context->setGroups($serializerGroups);
-            $records = $this->apiManager->findRecordsByEntityName(Commune::class, $paramFetcher);
-            return $this->view($records, Response::HTTP_OK)->setContext($context);
-        }
-        $records = $this->apiManager->findRecordsByEntityName(Commune::class, $paramFetcher);
+        $records = $this->apiManager->findRecordsByEntityName(Correspondent::class, $paramFetcher);
         return $this->view($records, Response::HTTP_OK);
-
     }
-
     /**
      * @Rest\Post("/")
      *
      * @SWG\Response(
      *     response=201,
-     *     description="Returns created Commune",
+     *     description="Returns created correspondent",
      *     @SWG\Schema(
-     *         ref=@Model(type=Commune::class, groups={"commune", "id"})
+     *         ref=@Model(type=Correspondent::class, groups={"correspondent", "id"})
      *     )
      * )
      * @SWG\Response(
@@ -167,33 +161,32 @@ class CommuneController extends AbstractFOSRestController
      * @SWG\Parameter(
      *     name="form",
      *     in="body",
-     *     description="Add Commune",
-     *     @Model(type=Commune::class, groups={"commune"})
+     *     description="Add Correspondent",
+     *     @Model(type=Correspondent::class, groups={"correspondent"})
      * )
-     * @SWG\Tag(name="communes")
+     * @SWG\Tag(name="correspondents")
      *
-     * @Rest\View(serializerGroups={"commune", "id"})
+     * @Rest\View(serializerGroups={"correspondent", "id"})
      *
      * @param Request $request
      * @return View
      */
-    public function postCommune(Request $request)
+    public function postCorrespondent(Request $request)
     {
-        $form = $this->createForm(CommuneType::class);
+        $form = $this->createForm(CorrespondentType::class);
         $form->submit($request->request->all());
         if ($form->isValid()) {
-            $commune = $this->apiManager->save($form->getData());
-            return $this->view($commune, Response::HTTP_CREATED);
+            $correspondent = $this->apiManager->save($form->getData());
+            return $this->view($correspondent, Response::HTTP_CREATED);
         }
         throw new FormValidationException($form);
     }
-
     /**
      * @Rest\Put("/{id}", requirements={"id"="\d+"})
      *
      * @SWG\Response(
      *     response=204,
-     *     description="Commune is updated"
+     *     description="Correspondent is updated"
      *     )
      * )
      * @SWG\Response(
@@ -202,39 +195,38 @@ class CommuneController extends AbstractFOSRestController
      * )
      * @SWG\Response(
      *     response=404,
-     *     description="Commune not found"
+     *     description="Correspondent not found"
      * )
      * @SWG\Parameter(
      *     name="form",
      *     in="body",
-     *     description="Update a Commune",
-     *     @Model(type=Commune::class, groups={"commune"})
+     *     description="Update a Correspondent",
+     *     @Model(type=Correspondent::class, groups={"correspondent"})
      * )
-     * @SWG\Tag(name="communes")
+     * @SWG\Tag(name="correspondents")
      *
      * @Rest\View()
      *
      * @param Request $request
-     * @param Commune $commune
+     * @param Correspondent $correspondent
      * @return View
      */
-    public function updateCommune(Request $request, Commune $commune)
+    public function updateBuilding(Request $request, Correspondent $correspondent)
     {
-        $form = $this->createForm(CommuneType::class, $commune);
+        $form = $this->createForm(CorrespondentType::class, $correspondent);
         $form->submit($request->request->all(), false);
         if ($form->isValid()) {
-            $this->apiManager->save($commune);
+            $this->apiManager->save($correspondent);
             return $this->view(null, Response::HTTP_NO_CONTENT);
         }
         throw new FormValidationException($form);
     }
-
     /**
      * @Rest\Delete("/{id}", requirements={"id"="\d+"})
      *
      * @SWG\Response(
      *     response=204,
-     *     description="Commune is removed"
+     *     description="Correspondent is removed"
      *     )
      * )
      * @SWG\Response(
@@ -242,17 +234,17 @@ class CommuneController extends AbstractFOSRestController
      *     description="Deleting errors"
      *     )
      * )
-     * @SWG\Tag(name="communes")
+     * @SWG\Tag(name="correspondents")
      *
      * @Rest\View()
      *
-     * @param Commune $commune
+     * @param Correspondent $correspondent
      *
      * @return View
      */
-    public function removeCommune(Commune $commune)
+    public function removeCorrespondent(Correspondent $correspondent)
     {
-        $this->apiManager->delete($commune);
+        $this->apiManager->delete($correspondent);
         return $this->view(null, Response::HTTP_NO_CONTENT);
     }
 }
