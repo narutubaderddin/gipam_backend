@@ -33,13 +33,14 @@ trait RepositoryTrait
     {
 
         $columns = $this->getClassMetadata()->getFieldNames();
+        $columns = array_merge($columns, self::SEARCH_FIELDS);
         $qb = $this->createQueryBuilder('e');
         $this->leftJoins($qb, $criteria);
         $qb = $this->addCriteria($qb, $criteria);
         if ($search) {
             $or = $qb->expr()->orX();
             foreach (self::SEARCH_FIELDS as $key => $value) {
-                $field = $this->getSearchField($qb, $value);
+                $field = $this->getField($qb, $value);
                 $or->add("LOWER($field) LIKE  :$key");
             }
             $qb->andWhere($or);
@@ -56,10 +57,9 @@ trait RepositoryTrait
             $qb->setMaxResults($limit);
         }
 
-        if (in_array($orderBy, $columns)) {
-            if (in_array($order, ['asc', 'desc'])) {
-                $qb->orderBy("e.$orderBy", $order);
-            }
+        if (in_array($orderBy, $columns) && in_array($order, ['asc', 'desc'])) {
+            $field =  $this->getField($qb, $orderBy);
+            $qb->orderBy($field, $order);
         }
 
         return $qb->getQuery()->getResult();
@@ -82,7 +82,7 @@ trait RepositoryTrait
         if ($search){
             $or = $qb->expr()->orX();
             foreach (self::SEARCH_FIELDS as $key => $value) {
-                $field = $this->getSearchField($qb, $value);
+                $field = $this->getField($qb, $value);
                 $or->add("LOWER($field) LIKE  :$key");
             }
             $qb->andWhere($or);
@@ -93,12 +93,12 @@ trait RepositoryTrait
         return (int)$qb->getQuery()->getSingleScalarResult();
     }
 
-    public function getSearchField(QueryBuilder $queryBuilder, $value): string
+    public function getField(QueryBuilder $queryBuilder, $field): string
     {
         $alias = $queryBuilder->getRootAliases()[0];
         $dql = $queryBuilder->getDQL();
-        if (strpos($value, '_')) {
-            $ret = explode('_', $value);
+        if (strpos($field, '_')) {
+            $ret = explode('_', $field);
             $relatedEntity = $ret[0];
             $relatedEntityField = $ret[1];
             if (!stripos( $dql, "left join $alias.$relatedEntity $relatedEntity")) {
@@ -106,7 +106,7 @@ trait RepositoryTrait
             }
             return "$relatedEntity.$relatedEntityField";
         }
-        return  "$alias.$value";
+        return  "$alias.$field";
     }
 
     public function leftJoins(QueryBuilder $queryBuilder, array &$criteria = [])
@@ -234,6 +234,18 @@ trait RepositoryTrait
                 throw new \RuntimeException('Unknown comparison operator: ' . $operator);
         }
         return $queryBuilder;
+    }
+
+    public function iFindBy(array $criteria)
+    {
+        $queryBuilder = $this->createQueryBuilder('e');
+        $columns = $this->getClassMetadata()->getFieldNames();
+        foreach ($criteria as $key => $value) {
+            if (in_array($key, $columns)) {
+                $queryBuilder->andWhere("LOWER(e.$key) = :param_$key")->setParameter("param_$key", strtolower($value));
+            }
+        }
+        return $queryBuilder->getQuery()->getResult();
     }
 
     /**

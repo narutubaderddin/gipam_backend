@@ -109,7 +109,7 @@ class EstablishmentController extends AbstractFOSRestController
      * @Rest\QueryParam(name="type", map=true, nullable=false, description="filter by type. example: type[eq]=value")
      * @Rest\QueryParam(name="search", map=false, nullable=true, description="search. example: search=text")
      *
-     * @Rest\View()
+     * @Rest\View(serializerGroups={"response", "establishment", "short"})
      *
      * @param ParamFetcherInterface $paramFetcher
      *

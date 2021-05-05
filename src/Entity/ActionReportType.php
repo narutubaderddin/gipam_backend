@@ -8,15 +8,18 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use JMS\Serializer\Annotation as JMS;
+use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * @ORM\Entity(repositoryClass=ActionReportTypeRepository::class)
  * @ORM\Table(name="type_constat_action")
+ * @UniqueEntity("label", repositoryMethod="iFindBy", message="Un type action constat avec ce libellé existe déjà!")
  */
 class ActionReportType
 {
     use TimestampableEntity;
+
     public const LABEL = [
       'enRecherche' => 'En recherche',
       'depotPlainte' => 'Dépôt de plainte',
