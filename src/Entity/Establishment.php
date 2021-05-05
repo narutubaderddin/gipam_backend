@@ -91,11 +91,17 @@ class Establishment
      */
     private $type;
 
+    /**
+     * @ORM\OneToMany(targetEntity=Request::class, mappedBy="establishement")
+     */
+    private $requests;
+
     public function __construct()
     {
         $this->locations = new ArrayCollection();
         $this->correspondents = new ArrayCollection();
         $this->subDivisions = new ArrayCollection();
+        $this->requests = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -261,6 +267,36 @@ class Establishment
     public function setType(?EstablishmentType $type): self
     {
         $this->type = $type;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|Request[]
+     */
+    public function getRequests(): Collection
+    {
+        return $this->requests;
+    }
+
+    public function addRequest(Request $request): self
+    {
+        if (!$this->requests->contains($request)) {
+            $this->requests[] = $request;
+            $request->setEstablishement($this);
+        }
+
+        return $this;
+    }
+
+    public function removeRequest(Request $request): self
+    {
+        if ($this->requests->removeElement($request)) {
+            // set the owning side to null (unless already changed)
+            if ($request->getEstablishement() === $this) {
+                $request->setEstablishement(null);
+            }
+        }
 
         return $this;
     }

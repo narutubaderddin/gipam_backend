@@ -106,10 +106,16 @@ class Building
      */
     private $cedex;
 
+    /**
+     * @ORM\OneToMany(targetEntity=Request::class, mappedBy="building")
+     */
+    private $requests;
+
     public function __construct()
     {
         $this->rooms = new ArrayCollection();
         $this->responsibles = new ArrayCollection();
+        $this->requests = new ArrayCollection();
     }
 
 
@@ -267,6 +273,36 @@ class Building
     public function setCedex(?string $cedex): self
     {
         $this->cedex = $cedex;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|Request[]
+     */
+    public function getRequests(): Collection
+    {
+        return $this->requests;
+    }
+
+    public function addRequest(Request $request): self
+    {
+        if (!$this->requests->contains($request)) {
+            $this->requests[] = $request;
+            $request->setBuilding($this);
+        }
+
+        return $this;
+    }
+
+    public function removeRequest(Request $request): self
+    {
+        if ($this->requests->removeElement($request)) {
+            // set the owning side to null (unless already changed)
+            if ($request->getBuilding() === $this) {
+                $request->setBuilding(null);
+            }
+        }
 
         return $this;
     }

@@ -34,6 +34,11 @@ class ArtWork extends Furniture
      */
     private $totalHeight;
 
+    /**
+     * @ORM\ManyToOne(targetEntity=Request::class, inversedBy="artWorks")
+     */
+    private $request;
+
     public function getTotalLength(): ?float
     {
         return $this->totalLength;
@@ -66,6 +71,18 @@ class ArtWork extends Furniture
     public function setTotalHeight(?float $totalHeight): self
     {
         $this->totalHeight = $totalHeight;
+
+        return $this;
+    }
+
+    public function getRequest(): ?Request
+    {
+        return $this->request;
+    }
+
+    public function setRequest(?Request $request): self
+    {
+        $this->request = $request;
 
         return $this;
     }

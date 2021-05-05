@@ -303,7 +303,7 @@ class ArtWorkRepository extends ServiceEntityRepository
      */
     public function searchByMode(QueryBuilder $qb, $mode): QueryBuilder
     {
-        [$operation,$operationLength,$operationWidth] = $mode == "Portait" ? [">=","IS NOT","IS"] : ["<=","IS","IS NOT"];
+        [$operation,$operationLength,$operationWidth] = $mode == "Portrait" ? [">=","IS NOT","IS"] : ["<=","IS","IS NOT"];
         $qb->andWhere("((e.length $operation e.width) or (e.length $operationLength NULL and e.width $operationWidth NULL ))
          or 
          (((e.length IS NULL and e.width IS NULL) and (e.totalLength $operation e.totalWidth)) or (e.totalLength $operationLength NULL and e.totalWidth $operationWidth NULL ))");
