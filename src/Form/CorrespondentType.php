@@ -26,6 +26,8 @@ class CorrespondentType extends AbstractType
             ->add('phone', TextType::class, ['required' => true])
             ->add('fax', TextType::class)
             ->add('mail', EmailType::class)
+            ->add('login', TextType::class)
+            ->add('function', TextType::class)
             ->add('startDate', DateTimeType::class, ['required' => true, 'widget' => 'single_text'])
             ->add('endDate', DateTimeType::class, ['widget' => 'single_text'])
             ->add('establishment', EntityType::class, [

@@ -107,6 +107,18 @@ class Correspondent
      */
     private $movements;
 
+    /**
+     * @JMS\Groups("correspondent")
+     * @ORM\Column(name="connexion", type="string", length=255, nullable=true)
+     */
+    private $login;
+
+    /**
+     * @JMS\Groups("correspondent")
+     * @ORM\Column(name="fonction", type="string", length=255, nullable=true)
+     */
+    private $function;
+
     public function __construct()
     {
         $this->movements = new ArrayCollection();
@@ -260,6 +272,30 @@ class Correspondent
         if ($this->movements->removeElement($movement)) {
             $movement->removeCorrespondent($this);
         }
+
+        return $this;
+    }
+
+    public function getLogin(): ?string
+    {
+        return $this->login;
+    }
+
+    public function setLogin(?string $login): self
+    {
+        $this->login = $login;
+
+        return $this;
+    }
+
+    public function getFunction(): ?string
+    {
+        return $this->function;
+    }
+
+    public function setFunction(?string $function): self
+    {
+        $this->function = $function;
 
         return $this;
     }

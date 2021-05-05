@@ -20,6 +20,8 @@ class CorrespondentRepository extends ServiceEntityRepository
     public const SEARCH_FIELDS = [
         'firstName_param' => 'firstName',
         'lastName_param'=>'lastName',
+        'function_param'=>'function',
+        'login_param'=>'login',
         'phone_param' => 'phone',
         'fax_param' => 'fax',
         'mail_param' => 'mail'
