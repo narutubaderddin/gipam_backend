@@ -143,6 +143,68 @@ class BuildingController extends AbstractFOSRestController
         $records = $this->apiManager->findRecordsByEntityName(Building::class, $paramFetcher);
         return $this->view($records, Response::HTTP_OK);
     }
+    /**
+     *
+     * @Rest\Get("/findByCriteria")
+     *
+     * @SWG\Response(
+     *     response=200,
+     *     description="Returns the list of an building filtred ",
+     *     @SWG\Schema(
+     *         @SWG\Items(ref=@Model(type=ApiResponse::class))
+     *     )
+     * )
+     *
+     * @SWG\Parameter(
+     *     name="page",
+     *     in="query",
+     *     type="integer",
+     *     description="The field used to page number"
+     * )
+     * @SWG\Parameter(
+     *     name="limit",
+     *     in="query",
+     *     type="integer",
+     *     description="The field used to page size"
+     * )
+     *
+     * @SWG\Parameter(
+     *     name="departement",
+     *     in="query",
+     *     type="string",
+     *     description="departements id"
+     * )
+     * @SWG\Parameter(
+     *     name="region",
+     *      type="string",
+     *     in="query",
+     *     description="regions id"
+     * )
+     * @SWG\Parameter(
+     *     name="commune",
+     *     type="string",
+     *     in="query",
+     *     description="commune id"
+     * )
+     *
+     * @SWG\Tag(name="buildings")
+     *
+     * @Rest\QueryParam(name="page", requirements="\d+", default="1", description="page number.")
+     * @Rest\QueryParam(name="limit", requirements="\d+", default="0", description="page size.")
+     * @Rest\QueryParam(name="region", nullable=true, default="", description="region id")
+     * @Rest\QueryParam(name="departement", nullable=true, default="", description="epartement id")
+     * @Rest\QueryParam(name="commune", nullable=true, default="", description="commune id")
+     *
+     * @Rest\View()
+     *
+     * @param ParamFetcherInterface $paramFetcher
+     * @param ApiManager $apiManager
+     * @return View
+     */
+    public function listBuildingByCriteria(ParamFetcherInterface $paramFetcher,ApiManager $apiManager){
+        $records =$apiManager->findRecordsByEntityNameAndCriteria(Building::class,$paramFetcher);
+        return $this->view($records, Response::HTTP_OK);
+    }
 
     /**
      * @Rest\Post("/")

@@ -24,9 +24,9 @@ trait RepositoryTrait
      */
     public function findByCriteria(
         array $criteria = [],
-        int $offset= 0,
-        int $limit=0,
-        string $orderBy= "id",
+        int $offset = 0,
+        int $limit = 0,
+        string $orderBy = "id",
         string $order = "asc",
         string $search = null
     )
@@ -35,14 +35,14 @@ trait RepositoryTrait
         $columns = $this->getClassMetadata()->getFieldNames();
         $qb = $this->createQueryBuilder('e');
         $qb = $this->addCriteria($qb, $criteria);
-        if ($search){
+        if ($search) {
             $or = $qb->expr()->orX();
-            foreach (self::SEARCH_FIELDS as $key => $value){
+            foreach (self::SEARCH_FIELDS as $key => $value) {
                 $or->add("LOWER(e.$value) LIKE  :$key");
             }
             $qb->andWhere($or);
-            foreach (self::SEARCH_FIELDS as $key => $value){
-                $qb->setParameter("$key", '%'.strtolower($search).'%');
+            foreach (self::SEARCH_FIELDS as $key => $value) {
+                $qb->setParameter("$key", '%' . strtolower($search) . '%');
             }
         }
 
@@ -71,19 +71,19 @@ trait RepositoryTrait
      * @throws \Doctrine\ORM\NonUniqueResultException
      * @throws \Doctrine\ORM\Query\QueryException
      */
-    public function countByCriteria(array $criteria = [], string $search = null) : int
+    public function countByCriteria(array $criteria = [], string $search = null): int
     {
         $qb = $this->createQueryBuilder('e');
         $qb->select('count(e.id)');
         $qb = $this->addCriteria($qb, $criteria);
-        if ($search){
+        if ($search) {
             $or = $qb->expr()->orX();
-            foreach (self::SEARCH_FIELDS as $key => $value){
+            foreach (self::SEARCH_FIELDS as $key => $value) {
                 $or->add("LOWER(e.$value) LIKE  :$key");
             }
             $qb->andWhere($or);
-            foreach (self::SEARCH_FIELDS as $key => $value){
-                $qb->setParameter("$key", '%'.strtolower($search).'%');
+            foreach (self::SEARCH_FIELDS as $key => $value) {
+                $qb->setParameter("$key", '%' . strtolower($search) . '%');
             }
         }
         return (int)$qb->getQuery()->getSingleScalarResult();
@@ -95,25 +95,26 @@ trait RepositoryTrait
      * @param $value
      * @return Criteria
      */
-    private function createCriteria(string $operator, string $key, $value) : Criteria
+    private function createCriteria(string $operator, string $key, $value): Criteria
     {
         return Criteria::create()
             ->andWhere(Criteria::expr()->$operator($key, $value));
     }
+
     /**
      * @param QueryBuilder $queryBuilder
      * @param array $criteria
      * @return QueryBuilder
      * @throws \Doctrine\ORM\Query\QueryException
      */
-    private function addCriteria(QueryBuilder $queryBuilder, array $criteria = []) : QueryBuilder
+    private function addCriteria(QueryBuilder $queryBuilder, array $criteria = []): QueryBuilder
     {
-        foreach ($criteria as $key => $value){
-            if ('' != $value){
-                if(\is_array($value)){
-                    $i=1;
-                    foreach ($value as $op => $v){
-                        $queryBuilder = $this->andWhere($queryBuilder, $key, $op, $key.$i, $v);
+        foreach ($criteria as $key => $value) {
+            if ('' != $value) {
+                if (\is_array($value)) {
+                    $i = 1;
+                    foreach ($value as $op => $v) {
+                        $queryBuilder = $this->andWhere($queryBuilder, $key, $op, $key . $i, $v);
                         $i++;
                     }
                 } else {
@@ -143,7 +144,7 @@ trait RepositoryTrait
     ): QueryBuilder
     {
         $alias = $queryBuilder->getRootAliases()[0];
-        switch ($operator){
+        switch ($operator) {
             case 'eq':
                 $queryBuilder->andWhere("$alias.$field = :$parameter")->setParameter($parameter, $value);
                 break;
@@ -164,22 +165,22 @@ trait RepositoryTrait
                 break;
             case 'contains':
                 $queryBuilder->andWhere("LOWER($alias.$field) LIKE :$parameter")->setParameter($parameter,
-                    '%'.strtolower($value).'%');
+                    '%' . strtolower($value) . '%');
                 break;
             case 'startsWith':
                 $queryBuilder->andWhere("LOWER($alias.$field) LIKE :$parameter")->setParameter($parameter,
-                    strtolower($value).'%');
+                    strtolower($value) . '%');
                 break;
             case 'in':
-                eval("\$value = $value;");
-                if(!is_array($value)){
-                  throw new \RuntimeException('value should be an array');
+                $value = json_decode($value, true);
+                if (!is_array($value)) {
+                    throw new \RuntimeException('value should be an array');
                 }
-                $queryBuilder->andWhere("$alias.$field IN (:$parameter)")->setParameter($parameter,$value,Connection::PARAM_STR_ARRAY);
+                $queryBuilder->andWhere("$alias.$field IN (:$parameter)")->setParameter($parameter, $value, Connection::PARAM_STR_ARRAY);
                 break;
             case 'endsWith':
                 $queryBuilder->andWhere("LOWER($alias.$field) LIKE :$parameter")->setParameter($parameter,
-                    '%'.strtolower($value));
+                    '%' . strtolower($value));
                 break;
             case 'in':
                 $queryBuilder->andWhere("$alias.$field IN (:ids)")->setParameter('ids', json_decode($value));
@@ -196,5 +197,35 @@ trait RepositoryTrait
     public static function getOperators(): array
     {
         return ['eq', 'gt', 'lt', 'gte', 'lte', 'neq', 'contains', 'startsWith', 'endsWith','in'];
+    }
+
+    public function findRecordsByEntityNameAndCriteria($count, $page = 1, $limit = 0)
+    {
+        if ($count) {
+            return $this->count([]);
+        }
+        $query = $this->createQueryBuilder('repositoryTrait');
+        if ($page != "") {
+            $query->setFirstResult(($page * $limit) + 1);
+        }
+        if ($limit && $limit != "") {
+            $query->setMaxResults($limit);
+        }
+        return $query->getQuery()->getResult();
+
+    }
+
+    private function addArrayCriteriaCondition(QueryBuilder $query, $data, $key)
+    {
+
+        $data = is_string($data) ? json_decode($data, true) : false;
+        if ($data && !is_array($data)) {
+            throw new \RuntimeException("$key value should be an array");
+
+        }
+        if ($data && count($data) > 0) {
+            $query->andWhere($key . ".id in (:" . $key . ")")->setParameter($key, $data);
+        }
+        return $query;
     }
 }

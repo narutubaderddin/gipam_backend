@@ -8,6 +8,7 @@ use App\Form\SubDivisionType;
 use App\Model\ApiResponse;
 use App\Services\ApiManager;
 use App\Services\SubDivisionService;
+use FOS\RestBundle\Context\Context;
 use FOS\RestBundle\Controller\AbstractFOSRestController;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use FOS\RestBundle\Controller\Annotations\Route;
@@ -161,20 +162,28 @@ class SubDivisionController extends AbstractFOSRestController
      * @Rest\QueryParam(name="limit", requirements="\d+", default="0", description="page size.")
      * @Rest\QueryParam(name="sort_by", nullable=true, default="id", description="order by")
      * @Rest\QueryParam(name="sort", requirements="(asc|desc)", nullable=true, default="asc", description="tri order asc|desc")
-     * @Rest\QueryParam(name="ministry", nullable=true, default="", description="ministries ids")
-     * @Rest\QueryParam(name="establishment", nullable=true, default="", description="establishement ids")
+     * @Rest\QueryParam(name="ministries", nullable=true, default="", description="ministries ids ,ministries=[1,2]")
+     * @Rest\QueryParam(name="establishments", nullable=true, default="", description="establishement ids")
      * @Rest\QueryParam(name="search", map=false, nullable=true, description="search. example: search=text")
      *
      * @Rest\View()
      *
      * @param ParamFetcherInterface $paramFetcher
      *
-     * @param SubDivisionService $divisionService
+     * @param ApiManager $apiManager
      * @return View
      */
-    public function listSubDivisionsByCriteria(ParamFetcherInterface $paramFetcher,SubDivisionService $divisionService)
+    public function listSubDivisionsByCriteria(ParamFetcherInterface $paramFetcher,ApiManager $apiManager,Request $request)
     {
-        $records =$divisionService->findSubdivisionByCriteria($paramFetcher);
+        $serializerGroups = $request->get('serializer_group') ?? null;
+        if ($serializerGroups) {
+            $serializerGroups = json_decode($serializerGroups, true);
+            $context = new Context();
+            $context->setGroups($serializerGroups);
+            $records = $this->apiManager->findRecordsByEntityNameAndCriteria(SubDivision::class, $paramFetcher);
+            return $this->view($records, Response::HTTP_OK)->setContext($context);
+        }
+        $records =$apiManager->findRecordsByEntityNameAndCriteria(SubDivision::class,$paramFetcher);
         return $this->view($records, Response::HTTP_OK);
     }
     /**
