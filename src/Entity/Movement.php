@@ -33,6 +33,7 @@ class Movement
 
     /**
      * @ORM\Column(name="commentaire", type="text", nullable=true)
+     * @JMS\Groups("art_work_details")
      */
     private $comment;
 

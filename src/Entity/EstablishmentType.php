@@ -4,6 +4,7 @@ namespace App\Entity;
 
 use App\Entity\Traits\TimestampableEntity;
 use App\Repository\EstablishmentTypeRepository;
+use DateTimeInterface;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
@@ -44,25 +45,22 @@ class EstablishmentType
     private $establishments;
 
     /**
-     * @ORM\Column(name="actif", type="boolean", nullable=false,options={"default"="true"})
+     * @JMS\Groups("establishment_type")
+     *
+     * @ORM\Column(name="date_debut", type="datetime", nullable=true)
      */
-    private $active = true;
+    private $startDate;
+
+    /**
+     * @JMS\Groups("establishment_type")
+     *
+     * @ORM\Column(name="date_disparition", type="datetime", nullable=true)
+     */
+    private $disappearanceDate;
 
     public function __construct()
     {
         $this->establishments = new ArrayCollection();
-    }
-
-    public function isActive(): bool
-    {
-        return $this->active;
-    }
-
-    public function setActive(bool $active): self
-    {
-        $this->active = $active;
-
-        return $this;
     }
 
     public function getId(): ?int
@@ -108,6 +106,30 @@ class EstablishmentType
                 $establishment->setType(null);
             }
         }
+
+        return $this;
+    }
+
+    public function getStartDate(): ?DateTimeInterface
+    {
+        return $this->startDate;
+    }
+
+    public function setStartDate(?DateTimeInterface $startDate): self
+    {
+        $this->startDate = $startDate;
+
+        return $this;
+    }
+
+    public function getDisappearanceDate(): ?DateTimeInterface
+    {
+        return $this->disappearanceDate;
+    }
+
+    public function setDisappearanceDate(?DateTimeInterface $disappearanceDate): self
+    {
+        $this->disappearanceDate = $disappearanceDate;
 
         return $this;
     }

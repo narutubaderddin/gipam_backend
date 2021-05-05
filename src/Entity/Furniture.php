@@ -22,7 +22,7 @@ use Symfony\Component\Validator\Context\ExecutionContextInterface;
 abstract class Furniture
 {
     /**
-     * @JMS\Groups("artwork", "artwork_id","id")
+     * @JMS\Groups("artwork", "artwork_id","id","art_work_list","art_work_details")
      * @ORM\Id
      * @ORM\GeneratedValue
      * @ORM\Column(type="integer")
@@ -30,56 +30,55 @@ abstract class Furniture
     protected $id;
 
     /**
-     * @JMS\Groups({"art_work_list","artwork"})
+     * @JMS\Groups({"art_work_list","artwork","art_work_details"})
      * @ORM\Column(name="titre", type="string", length=255, nullable=true)
      */
     protected $title;
 
     /**
-     * @JMS\Groups("artwork")
-     *
-     * @ORM\Column(name="longueur", type="string", length=100, nullable=true)
+     * @JMS\Groups("artwork","art_work_details","art_work_list")
+     * @ORM\Column(name="longueur", type="float", nullable=true)
      */
     protected $length;
 
     /**
-     * @JMS\Groups("artwork")
-     * @ORM\Column(name="largeur", type="string", length=100, nullable=true)
+     * @JMS\Groups("artwork","art_work_details","art_work_list")
+     * @ORM\Column(name="largeur", type="float", nullable=true)
      */
     protected $width;
 
     /**
-     * @JMS\Groups("artwork")
-     * @ORM\Column(name="hauteur", type="string", length=100, nullable=true)
+     * @JMS\Groups("artwork","art_work_details")
+     * @ORM\Column(name="hauteur", type="float", nullable=true)
      */
     protected $height;
 
     /**
-     * @JMS\Groups("artwork")
-     * @ORM\Column(name="profondeur", type="string", length=100, nullable=true)
+     * @JMS\Groups("artwork","art_work_details")
+     * @ORM\Column(name="profondeur", type="float", nullable=true)
      */
     protected $depth;
 
     /**
-     * @JMS\Groups("artwork")
-     * @ORM\Column(name="diametre", type="string", length=100, nullable=true)
+     * @JMS\Groups("artwork","art_work_details")
+     * @ORM\Column(name="diametre", type="float", nullable=true)
      */
     protected $diameter;
 
     /**
-     * @JMS\Groups("artwork")
-     * @ORM\Column(name="poids", type="string", length=100, nullable=true)
+     * @JMS\Groups("artwork","art_work_details")
+     * @ORM\Column(name="poids", type="float", nullable=true)
      */
     protected $weight;
 
     /**
-     * @JMS\Groups("artwork")
+     * @JMS\Groups("artwork","art_work_details")
      * @ORM\Column(name="nombre_unite", type="integer", nullable=true)
      */
     protected $numberOfUnit;
 
     /**
-     * @JMS\Groups("artwork", "artwork_author","furniture","furniture_author")
+     * @JMS\Groups("artwork", "artwork_author","furniture","furniture_author","art_work_list","art_work_details")
      * @JMS\MaxDepth(1)
      * @ORM\ManyToMany(targetEntity=Author::class, inversedBy="furniture")
      * @ORM\JoinTable(name="objet_mobilier_auteur",
@@ -91,7 +90,7 @@ abstract class Furniture
     protected $authors;
 
     /**
-     * @JMS\Groups("artwork","era_furniture")
+     * @JMS\Groups("artwork","era_furniture","art_work_details")
      * @JMS\MaxDepth(1)
      * @ORM\ManyToOne(targetEntity=Era::class, inversedBy="furniture")
      * @ORM\JoinColumn(name="epoque_id", referencedColumnName="id")
@@ -99,7 +98,7 @@ abstract class Furniture
     protected $era;
 
     /**
-     * @JMS\Groups("artwork","style_furniture")
+     * @JMS\Groups("artwork","style_furniture","art_work_details")
      * @JMS\MaxDepth(1)
      * @ORM\ManyToOne(targetEntity=Style::class, inversedBy="furniture")
      * @ORM\JoinColumn(name="style_id", referencedColumnName="id")
@@ -107,7 +106,7 @@ abstract class Furniture
     protected $style;
 
     /**
-     * @JMS\Groups("artwork","materialTechnique_furniture")
+     * @JMS\Groups("artwork","materialTechnique_furniture","art_work_details")
      * @JMS\MaxDepth(1)
      * @ORM\ManyToOne(targetEntity=MaterialTechnique::class, inversedBy="furniture")
      * @ORM\JoinColumn(name="matiere_technique_id", referencedColumnName="id")
@@ -115,7 +114,7 @@ abstract class Furniture
     protected $materialTechnique;
 
     /**
-     * @JMS\Groups("artwork","denomination_furniture")
+     * @JMS\Groups("artwork","denomination_furniture","art_work_details")
      * @JMS\MaxDepth(1)
      * @ORM\ManyToOne(targetEntity=Denomination::class, inversedBy="furniture")
      * @ORM\JoinColumn(name="denomination_id", referencedColumnName="id")
@@ -123,7 +122,7 @@ abstract class Furniture
     protected $denomination;
 
     /**
-     * @JMS\Groups("artwork","field_furniture")
+     * @JMS\Groups("artwork","field_furniture","art_work_details","art_work_list")
      * @JMS\MaxDepth(1)
      * @ORM\ManyToOne(targetEntity=Field::class, inversedBy="furniture")
      * @ORM\JoinColumn(name="domaine_id", referencedColumnName="id")
@@ -137,28 +136,28 @@ abstract class Furniture
     protected $artWorkLogs;
 
     /**
-     * @JMS\Groups("artwork","mouvement_furniture")
+     * @JMS\Groups("artwork","mouvement_furniture","art_work_details")
      * @JMS\MaxDepth(1)
      * @ORM\OneToMany(targetEntity=Movement::class, mappedBy="furniture")
      */
     protected $movements;
 
     /**
-     * @JMS\Groups("artwork")
+     * @JMS\Groups("artwork","art_work_details")
      * @ORM\OneToMany(targetEntity=Report::class, mappedBy="furniture")
      * @JMS\MaxDepth(1)
      */
     protected $reports;
 
     /**
-     * @JMS\Groups("artwork")
+     * @JMS\Groups("artwork","art_work_list","art_work_details")
      * @Assert\Valid()
      * @ORM\OneToMany(targetEntity=Attachment::class, mappedBy="furniture", cascade={"persist", "remove"})
      */
     protected $attachments;
 
     /**
-     * @JMS\Groups("artwork","status_furniture")
+     * @JMS\Groups("artwork","status_furniture","art_work_details")
      * @Assert\Valid()
      * @ORM\ManyToOne(targetEntity=Status::class, inversedBy="furniture", cascade={"persist", "remove"})
      * @JMS\MaxDepth(1)
@@ -262,24 +261,24 @@ abstract class Furniture
         return $this;
     }
 
-    public function getWidth(): ?string
+    public function getWidth(): ?float
     {
         return $this->width;
     }
 
-    public function setWidth(?string $width): self
+    public function setWidth(?float $width): self
     {
         $this->width = $width;
 
         return $this;
     }
 
-    public function getHeight(): ?string
+    public function getHeight(): ?float
     {
         return $this->height;
     }
 
-    public function setHeight(?string $height): self
+    public function setHeight(?float $height): self
     {
         $this->height = $height;
 
@@ -310,12 +309,12 @@ abstract class Furniture
         return $this;
     }
 
-    public function getWeight(): ?string
+    public function getWeight(): ?float
     {
         return $this->weight;
     }
 
-    public function setWeight(?string $weight): self
+    public function setWeight(?float $weight): self
     {
         $this->weight = $weight;
 

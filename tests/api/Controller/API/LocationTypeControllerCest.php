@@ -17,7 +17,7 @@ class LocationTypeControllerCest
     public function _before(ApiTester $apiTester)
     {
         $this->apiTester = $apiTester;
-        $this->apiTester->connectApi();
+//        $this->apiTester->connectApi();
     }
 
     public function getLocationTypeById()
@@ -51,7 +51,7 @@ class LocationTypeControllerCest
         $this->apiTester->haveHttpHeader('Content-Type', 'application/json');
         $this->apiTester->sendPOST(self::URL, [
             "label" => "test Label",
-            "active" => 1,
+            "startDate" => "2021-04-23T15:00:00",
         ]);
         $this->apiTester->seeResponseCodeIs(HttpCode::CREATED);
         $this->apiTester->seeResponseIsJson();

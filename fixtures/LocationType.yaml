@@ -1,4 +1,5 @@
 App\Entity\LocationType:
   locationType_1:
     label: <name()>
-    active: true
+    startDate: <date_create()>
+    disappearanceDate: <date_create()>
