@@ -18,7 +18,7 @@ class SubDivision
 {
     use TimestampableEntity;
     /**
-     * @JMS\Groups("id", "sub_division", "sub_division_id")
+     * @JMS\Groups("id", "sub_division", "sub_division_id","short")
      *
      * @ORM\Id
      * @ORM\GeneratedValue
@@ -27,7 +27,7 @@ class SubDivision
     private $id;
 
     /**
-     * @JMS\Groups("sub_division")
+     * @JMS\Groups("sub_division","short")
      *
      * @ORM\Column(name="libelle", type="string", length=255, nullable=true)
      */

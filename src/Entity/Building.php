@@ -19,7 +19,7 @@ class Building
 {
     use TimestampableEntity;
     /**
-     * @JMS\Groups("id")
+     * @JMS\Groups("id","short")
      *
      * @ORM\Id
      * @ORM\GeneratedValue
@@ -28,7 +28,7 @@ class Building
     private $id;
 
     /**
-     * @JMS\Groups("building")
+     * @JMS\Groups("building","short")
      *
      * @Assert\NotBlank
      *
