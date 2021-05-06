@@ -22,7 +22,7 @@ class SubDivision
     use TimestampableEntity;
 
     /**
-     * @JMS\Groups("id", "sub_division", "sub_division_id","short")
+     * @JMS\Groups("id", "sub_division", "sub_division_id", "short")
      *
      * @ORM\Id
      * @ORM\GeneratedValue

@@ -63,7 +63,6 @@ class LocationTypeControllerCest
         $this->apiTester->haveHttpHeader('Content-Type', 'application/json');
         $this->apiTester->sendPOST(self::URL, [
             "label" => "",
-            "active" => 1,
         ]);
         $this->apiTester->seeResponseCodeIs(HttpCode::BAD_REQUEST);
         $this->apiTester->seeResponseIsJson();
@@ -74,8 +73,7 @@ class LocationTypeControllerCest
         $this->apiTester->wantTo('update Location Type ok,expected Code to be ' . HttpCode::CREATED);
         $this->apiTester->haveHttpHeader('Content-Type', 'application/json');
         $this->apiTester->sendPut(self::URL . "1", [
-            "label" => "updated Label",
-            "active" => 0,
+            "label" => "updated Label"
         ]);
         $this->apiTester->seeResponseCodeIs(HttpCode::NO_CONTENT);
     }
@@ -86,7 +84,6 @@ class LocationTypeControllerCest
         $this->apiTester->haveHttpHeader('Content-Type', 'application/json');
         $this->apiTester->sendPut(self::URL . "1", [
             "label" => "",
-            "active" => 0,
         ]);
         $this->apiTester->seeResponseCodeIs(HttpCode::BAD_REQUEST);
     }

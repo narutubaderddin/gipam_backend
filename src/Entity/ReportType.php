@@ -20,7 +20,7 @@ class ReportType
 {
     use TimestampableEntity;
 
-    public const LIBELLE = [
+    public const LABEL = [
         'vue' => 'vue',
         'nonVue' => 'non vue',
         'identite' => 'identite',

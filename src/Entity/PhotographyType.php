@@ -17,6 +17,11 @@ use Symfony\Component\Validator\Constraints as Assert;
 class PhotographyType
 {
     use TimestampableEntity;
+
+    public const TYPE = [
+        'principle' => 'Photo Principale',
+        'detail' => 'Photo de détail',
+    ];
     /**
      * @JMS\Groups("artwork")
      *

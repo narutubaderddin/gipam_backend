@@ -19,6 +19,7 @@ use App\Entity\DepositStatus;
 use App\Entity\Furniture;
 use App\Entity\MaterialTechnique;
 use App\Entity\Photography;
+use App\Entity\PhotographyType;
 use App\Entity\PropertyStatus;
 use App\Services\FileUploader;
 use App\Services\LoggerService;
@@ -59,7 +60,14 @@ class MigrateObjectsCommand extends Command
     private $loggerService;
     private $excelLogger;
     private $initializationScriptService;
-    private $fileUploader;
+    /**
+     * @var PhotographyType
+     */
+    private $principlePhotographyType;
+    /**
+     * @var PhotographyType
+     */
+    private $detailPhotographyType;
 
     public function __construct(
         EntityManagerInterface $entityManager,
@@ -67,8 +75,7 @@ class MigrateObjectsCommand extends Command
         Stopwatch $stopwatch,
         LoggerService $loggerService,
         ExcelLogger $excelLogger,
-        InitializationScriptService $initializationScriptService,
-        FileUploader $fileUploader
+        InitializationScriptService $initializationScriptService
     )
     {
         parent::__construct();
@@ -81,7 +88,6 @@ class MigrateObjectsCommand extends Command
         $loggerService->init('db_migration');
         $this->excelLogger->initFile('objectMigration');
         $this->initializationScriptService = $initializationScriptService;
-        $this->fileUploader = $fileUploader;
     }
 
     protected function configure()
@@ -124,6 +130,10 @@ class MigrateObjectsCommand extends Command
 
         // todo initilization script
         $this->initializationScriptService->initializeTypes();
+//        $this->principlePhotographyType = $this->entityManager->getRepository(PhotographyType::class)
+//            ->findOneBy(['type' => PhotographyType::TYPE['principle']]);
+//        $this->detailPhotographyType = $this->entityManager->getRepository(PhotographyType::class)
+//            ->findOneBy(['type' => PhotographyType::TYPE['detail']]);
         $this->createFurniture($output);
 
         // todo drop old columns after migrating Furniture
@@ -180,16 +190,17 @@ class MigrateObjectsCommand extends Command
         $rowCount = 1;
         $columns = array_keys($this->furnitureDimensions($oldEntities[0], new ArtWork()));
         $this->excelLogger->write($columns, 1);
+
         foreach ($oldEntities as $oldEntity) {
             // todo for testing
 //            $oldEntity = $this->test(1601);
 
-            $newEntity = $this->createEntity($entity, $oldEntity, $mappingTable, $foundError);
+            $newEntity = $this->createEntity($entity, $oldEntity, $mappingTable, $foundError, $rowCount);
 
             $this->addAuthor($oldEntity, $newEntity);
             $this->setMaterialTechnique($oldEntity, $newEntity, $mappingTable);
             $this->setStatus($oldEntity, $newEntity);
-//            $this->addPhotography($oldEntity, $newEntity);
+            $this->addPhotography($oldEntity, $newEntity);
             $dimensionError = false;
             $this->findDimensions($oldEntity, $newEntity, $dimensionError);
 
@@ -234,7 +245,7 @@ class MigrateObjectsCommand extends Command
         $this->excelLogger->save();
     }
 
-    private function createEntity($entity, $oldEntity, $mappingTable, bool &$foundError)
+    private function createEntity($entity, $oldEntity, $mappingTable, bool &$foundError, int $id)
     {
         $className = $this->getClass($entity);
         $newEntity = new $className();
@@ -367,21 +378,31 @@ class MigrateObjectsCommand extends Command
         $mappingTable = MigrationDb::getMappingTable('fichier_joint');
         $oldRelation = $oldFurniture[$mappingTable['rel_objet_mobilier']];
         $criteria = [$mappingTable['rel_objet_mobilier'] => $oldRelation];
-        $oldAttachements = $this->migrationRepository
+        $oldPhotographies = $this->migrationRepository
             ->getBy(MigrationRepository::$oldDBConnection, $mappingTable['table'], $criteria);
-        foreach ($oldAttachements as $attachement) {
-            $newAttachement = (new Photography())
-                ->setImageName()
-                ->setLink(MigrationDb::utf8Encode($attachement[$mappingTable['lien']]));
-            $date = $attachement[$mappingTable['date']];
-            if ($date) {
-                $newAttachement->setDate(new  DateTime($date));
+        foreach ($oldPhotographies as $oldPhotography) {
+            $isPrincipleType = $oldPhotography[$mappingTable['type']];
+            $newPhotography = (new Photography())
+                ->setImageName(MigrationDb::utf8Encode($newFurniture))
+                ->setImagePreview(MigrationDb::utf8Encode($oldPhotography[$mappingTable['lien']]));
+            if ($isPrincipleType) {
+                $principlePhotographyType = $this->entityManager->getRepository(PhotographyType::class)
+                    ->findOneBy(['type' => PhotographyType::TYPE['principle']]);
+                $newPhotography->setPhotographyType($principlePhotographyType);
             } else {
-                $newAttachement->setDate(new  DateTime());
+                $detailPhotographyType = $this->entityManager->getRepository(PhotographyType::class)
+                    ->findOneBy(['type' => PhotographyType::TYPE['detail']]);
+                $newPhotography->setPhotographyType($detailPhotographyType);
             }
-            $this->entityManager->persist($newAttachement);
-            $newFurniture->addAttachment($newAttachement);
+            $date = $oldPhotography[$mappingTable['date']];
+            if ($date) {
+                $newPhotography->setDate(new  DateTime($date));
+            } else {
+                $newPhotography->setDate(new  DateTime());
+            }
+            $this->entityManager->persist($newPhotography);
+            $newFurniture->addPhotography($newPhotography);
         }
-        unset($oldAttachements);
+        unset($oldPhotographies);
     }
 }
