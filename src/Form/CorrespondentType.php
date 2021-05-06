@@ -53,15 +53,14 @@ class CorrespondentType extends AbstractType
                 'allow_add' => true,
                 'prototype' => true,
                 'by_reference' => false,
-            ])
-        ;
+            ]);
     }
 
     public function configureOptions(OptionsResolver $resolver)
     {
         $resolver->setDefaults([
             'csrf_protection' => false,
-            'data_class' => Correspondent::class,
+            'data_class' => Correspondent::class
         ]);
     }
 }

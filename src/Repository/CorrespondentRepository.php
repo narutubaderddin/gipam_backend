@@ -5,6 +5,7 @@ namespace App\Repository;
 use App\Entity\Correspondent;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
+use FOS\RestBundle\Request\ParamFetcherInterface;
 
 /**
  * @method Correspondent|null find($id, $lockMode = null, $lockVersion = null)
@@ -31,4 +32,5 @@ class CorrespondentRepository extends ServiceEntityRepository
     {
         parent::__construct($registry, Correspondent::class);
     }
+
 }

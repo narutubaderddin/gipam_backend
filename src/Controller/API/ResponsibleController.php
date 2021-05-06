@@ -2,9 +2,10 @@
 
 namespace App\Controller\API;
 
-use App\Entity\Correspondent;
+
+use App\Entity\Responsible;
 use App\Exception\FormValidationException;
-use App\Form\CorrespondentType;
+use App\Form\ResponsibleType;
 use App\Model\ApiResponse;
 use App\Services\ApiManager;
 use FOS\RestBundle\Controller\AbstractFOSRestController;
@@ -16,59 +17,55 @@ use Nelmio\ApiDocBundle\Annotation\Model;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Swagger\Annotations as SWG;
-use Symfony\Component\Validator\Validator\ValidatorInterface;
+
 
 /**
- * Class CorrespondentController
+ * Class ResponsibleController
  * @package App\Controller\API
- * @Route("/correspondents")
+ * @Route("/responsibles")
  */
-class CorrespondentController extends AbstractFOSRestController
+class ResponsibleController extends AbstractFOSRestController
 {
     /**
      * @var ApiManager
      */
     protected $apiManager;
 
-    /**
-     * @var ValidatorInterface
-     */
-    protected $validator;
 
     public function __construct(
-        ApiManager $apiManager,
-        ValidatorInterface $validator
+        ApiManager $apiManager
     ) {
         $this->apiManager = $apiManager;
-        $this->validator = $validator;
+
     }
+
     /**
      * @Rest\Get("/{id}", requirements={"id"="\d+"})
      *
      * @SWG\Response(
      *     response=200,
-     *     description="Returns Correspondent by id",
+     *     description="Returns Responsible by id",
      *     @SWG\Schema(
-     *         ref=@Model(type=Correspondent::class, groups={"correspondent", "id"})
+     *         ref=@Model(type=Responsible::class, groups={"responsible", "id"})
      *     )
      * )
-     * @SWG\Tag(name="correspondents")
-     * @Rest\View(serializerGroups={"correspondent", "id"})
+     * @SWG\Tag(name="responsibles")
+     * @Rest\View(serializerGroups={"responsible", "id"})
      *
-     * @param Correspondent $correspondent
+     * @param Responsible $responsible
      *
      * @return View
      */
-    public function showCorrespondent(Correspondent $correspondent)
+    public function showResponsible(Responsible $responsible)
     {
-        return $this->view($correspondent, Response::HTTP_OK);
+        return $this->view($responsible, Response::HTTP_OK);
     }
     /**
      * @Rest\Get("/")
      *
      * @SWG\Response(
      *     response=200,
-     *     description="Returns the list of correspondents",
+     *     description="Returns the list of responsibles",
      *     @SWG\Schema(
      *         @SWG\Items(ref=@Model(type=ApiResponse::class))
      *     )
@@ -97,8 +94,7 @@ class CorrespondentController extends AbstractFOSRestController
      *     type="string",
      *     description="The field used to sort type"
      * )
-
-     * @SWG\Tag(name="correspondents")
+     * @SWG\Tag(name="responsibles")
      *
      * @Rest\QueryParam(name="page", requirements="\d+", default="1", description="page number.")
      * @Rest\QueryParam(name="limit", requirements="\d+", default="0", description="page size.")
@@ -110,15 +106,13 @@ class CorrespondentController extends AbstractFOSRestController
      * )
      * @Rest\QueryParam(name="firstName", map=true, nullable=false, description="filter by firstName. example: firstName[eq]=value")
      * @Rest\QueryParam(name="lastName", map=true, nullable=false, description="filter by lastName. example: lastName[eq]=value")
-     * @Rest\QueryParam(name="function", map=true, nullable=false, description="filter by function. example: function[eq]=value")
+     * @Rest\QueryParam(name="function", map=true, nullable=true, description="filter by function. example: function[eq]=value")
      * @Rest\QueryParam(name="phone", map=true, nullable=true, description="filter by phone. example: phone[eq]=value")
      * @Rest\QueryParam(name="fax", map=true, nullable=true, description="filter by fax. example: fax[eq]=value")
-     * @Rest\QueryParam(name="mail", map=true, nullable=false, description="filter by mail. example: mail[eq]=value")
-     * @Rest\QueryParam(name="login", map=true, nullable=false, description="filter by login. example: login[eq]=value")
+     * @Rest\QueryParam(name="mail", map=true, nullable=true, description="filter by mail. example: mail[eq]=value")
+     * @Rest\QueryParam(name="login", map=true, nullable=true, description="filter by login. example: login[eq]=value")
 
-     * @Rest\QueryParam(name="establishment", nullable=true, description="filter by establishment id. example: establishment[eq]=value")
-     * @Rest\QueryParam(name="subDivision", nullable=true, description="filter by subDivision id. example: subDivision[eq]=value")
-     * @Rest\QueryParam(name="service", nullable=true, description="filter by service id. example: service[eq]=value")
+     * @Rest\QueryParam(name="batiment", nullable=true, description="filter by batiment id. example: batiment[eq]=value")
      *
      * @Rest\QueryParam(name="startDate",
      *      map=true, nullable=false,
@@ -136,9 +130,9 @@ class CorrespondentController extends AbstractFOSRestController
      *
      * @return View
      */
-    public function listCorrespondent(ParamFetcherInterface $paramFetcher)
+    public function listResponsible(ParamFetcherInterface $paramFetcher)
     {
-        $records = $this->apiManager->findRecordsByEntityName(Correspondent::class, $paramFetcher);
+        $records = $this->apiManager->findRecordsByEntityName(Responsible::class, $paramFetcher);
         return $this->view($records, Response::HTTP_OK);
     }
     /**
@@ -146,9 +140,9 @@ class CorrespondentController extends AbstractFOSRestController
      *
      * @SWG\Response(
      *     response=201,
-     *     description="Returns created correspondent",
+     *     description="Returns created responsible",
      *     @SWG\Schema(
-     *         ref=@Model(type=Correspondent::class, groups={"correspondent", "id"})
+     *         ref=@Model(type=Responsible::class, groups={"responsible", "id"})
      *     )
      * )
      * @SWG\Response(
@@ -158,23 +152,23 @@ class CorrespondentController extends AbstractFOSRestController
      * @SWG\Parameter(
      *     name="form",
      *     in="body",
-     *     description="Add Correspondent",
-     *     @Model(type=Correspondent::class, groups={"correspondent"})
+     *     description="Add Responsible",
+     *     @Model(type=Responsible::class, groups={"responsible"})
      * )
-     * @SWG\Tag(name="correspondents")
+     * @SWG\Tag(name="responsibles")
      *
-     * @Rest\View(serializerGroups={"correspondent", "id"})
+     * @Rest\View(serializerGroups={"responsible", "id"})
      *
      * @param Request $request
      * @return View
      */
-    public function postCorrespondent(Request $request)
+    public function postResponsible(Request $request)
     {
-        $form = $this->createForm(CorrespondentType::class);
+        $form = $this->createForm(ResponsibleType::class);
         $form->submit($request->request->all());
         if ($form->isValid()) {
-            $correspondent = $this->apiManager->save($form->getData());
-            return $this->view($correspondent, Response::HTTP_CREATED);
+            $responsible = $this->apiManager->save($form->getData());
+            return $this->view($responsible, Response::HTTP_CREATED);
         }
         throw new FormValidationException($form);
     }
@@ -183,7 +177,7 @@ class CorrespondentController extends AbstractFOSRestController
      *
      * @SWG\Response(
      *     response=204,
-     *     description="Correspondent is updated"
+     *     description="Responsible is updated"
      *     )
      * )
      * @SWG\Response(
@@ -192,28 +186,28 @@ class CorrespondentController extends AbstractFOSRestController
      * )
      * @SWG\Response(
      *     response=404,
-     *     description="Correspondent not found"
+     *     description="Responsible not found"
      * )
      * @SWG\Parameter(
      *     name="form",
      *     in="body",
-     *     description="Update a Correspondent",
-     *     @Model(type=Correspondent::class, groups={"correspondent"})
+     *     description="Update a Responsible",
+     *     @Model(type=Responsible::class, groups={"responsible"})
      * )
-     * @SWG\Tag(name="correspondents")
+     * @SWG\Tag(name="responsibles")
      *
      * @Rest\View()
      *
      * @param Request $request
-     * @param Correspondent $correspondent
+     * @param Responsible $responsible
      * @return View
      */
-    public function updateBuilding(Request $request, Correspondent $correspondent)
+    public function updateBuilding(Request $request, Responsible $responsible)
     {
-        $form = $this->createForm(CorrespondentType::class, $correspondent);
+        $form = $this->createForm(ResponsibleType::class, $responsible);
         $form->submit($request->request->all(), false);
         if ($form->isValid()) {
-            $this->apiManager->save($correspondent);
+            $this->apiManager->save($responsible);
             return $this->view(null, Response::HTTP_NO_CONTENT);
         }
         throw new FormValidationException($form);
@@ -223,7 +217,7 @@ class CorrespondentController extends AbstractFOSRestController
      *
      * @SWG\Response(
      *     response=204,
-     *     description="Correspondent is removed"
+     *     description="Responsible is removed"
      *     )
      * )
      * @SWG\Response(
@@ -231,17 +225,17 @@ class CorrespondentController extends AbstractFOSRestController
      *     description="Deleting errors"
      *     )
      * )
-     * @SWG\Tag(name="correspondents")
+     * @SWG\Tag(name="responsibles")
      *
      * @Rest\View()
      *
-     * @param Correspondent $correspondent
+     * @param Responsible $responsible
      *
      * @return View
      */
-    public function removeCorrespondent(Correspondent $correspondent)
+    public function removeResponsible(Responsible $responsible)
     {
-        $this->apiManager->delete($correspondent);
+        $this->apiManager->delete($responsible);
         return $this->view(null, Response::HTTP_NO_CONTENT);
     }
 }

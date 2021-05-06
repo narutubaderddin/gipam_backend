@@ -107,17 +107,18 @@ class Correspondent
      */
     private $movements;
 
-    /**
-     * @JMS\Groups("correspondent")
-     * @ORM\Column(name="connexion", type="string", length=255, nullable=true)
-     */
-    private $login;
 
     /**
      * @JMS\Groups("correspondent")
      * @ORM\Column(name="fonction", type="string", length=255, nullable=true)
      */
     private $function;
+
+    /**
+     * @JMS\Groups("correspondent")
+     * @ORM\Column(name="connexion",type="string", length=255, nullable=true)
+     */
+    private $login;
 
     public function __construct()
     {
@@ -276,17 +277,7 @@ class Correspondent
         return $this;
     }
 
-    public function getLogin(): ?string
-    {
-        return $this->login;
-    }
 
-    public function setLogin(?string $login): self
-    {
-        $this->login = $login;
-
-        return $this;
-    }
 
     public function getFunction(): ?string
     {
@@ -296,6 +287,18 @@ class Correspondent
     public function setFunction(?string $function): self
     {
         $this->function = $function;
+
+        return $this;
+    }
+
+    public function getLogin(): ?string
+    {
+        return $this->login;
+    }
+
+    public function setLogin(?string $login): self
+    {
+        $this->login = $login;
 
         return $this;
     }
