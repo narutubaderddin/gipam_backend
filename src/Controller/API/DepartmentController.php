@@ -139,7 +139,55 @@ class DepartmentController extends AbstractFOSRestController
         $records = $this->apiManager->findRecordsByEntityName(Department::class, $paramFetcher);
         return $this->view($records, Response::HTTP_OK);
     }
+    /**
+     *
+     * @Rest\Get("/findByCriteria")
+     *
+     * @SWG\Response(
+     *     response=200,
+     *     description="Returns the list of an departments filtred ",
+     *     @SWG\Schema(
+     *         @SWG\Items(ref=@Model(type=ApiResponse::class))
+     *     )
+     * )
+     *
+     * @SWG\Parameter(
+     *     name="page",
+     *     in="query",
+     *     type="integer",
+     *     description="The field used to page number"
+     * )
+     * @SWG\Parameter(
+     *     name="limit",
+     *     in="query",
+     *     type="integer",
+     *     description="The field used to page size"
+     * )
+     *
+     * @SWG\Parameter(
+     *     name="region",
+     *      in="query",
+     *      type="string",
+     *     description="regions id"
+     * )
+     *
+     * @SWG\Tag(name="departments")
+     *
+     * @Rest\QueryParam(name="page", requirements="\d+", default="1", description="page number.")
+     * @Rest\QueryParam(name="limit", requirements="\d+", default="0", description="page size.")
+     * @Rest\QueryParam(name="region", nullable=true, default="", description="region id")
+     *
+     * @Rest\View()
+     *
+     * @param ParamFetcherInterface $paramFetcher
+     * @param ApiManager $apiManager
+     * @return View
+     */
+    public function listCommuneByCriteria(ParamFetcherInterface $paramFetcher,ApiManager $apiManager){
 
+        $records =$apiManager->findRecordsByEntityNameAndCriteria(Department::class,$paramFetcher);
+        return $this->view($records, Response::HTTP_OK);
+    }
     /**
      * @Rest\Post("/")
      *

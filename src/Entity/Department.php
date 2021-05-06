@@ -19,7 +19,7 @@ class Department
 {
     use TimestampableEntity;
     /**
-     * @JMS\Groups("id")
+     * @JMS\Groups("id","short")
      *
      * @ORM\Id
      * @ORM\GeneratedValue
@@ -28,7 +28,7 @@ class Department
     private $id;
 
     /**
-     * @JMS\Groups("department")
+     * @JMS\Groups("department","short")
      *
      * @Assert\NotBlank
      *

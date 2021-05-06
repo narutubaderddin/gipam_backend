@@ -31,6 +31,7 @@ trait RepositoryTrait
         string $search = null
     )
     {
+
         $columns = $this->getClassMetadata()->getFieldNames();
         if (defined('SEARCH_FIELDS')) {
             $columns = array_merge($columns, self::SEARCH_FIELDS);
@@ -74,21 +75,21 @@ trait RepositoryTrait
      * @throws \Doctrine\ORM\NonUniqueResultException
      * @throws \Doctrine\ORM\Query\QueryException
      */
-    public function countByCriteria(array $criteria = [], string $search = null) : int
+    public function countByCriteria(array $criteria = [], string $search = null): int
     {
         $qb = $this->createQueryBuilder('e');
         $qb->select('count(e.id)');
         $this->leftJoins($qb, $criteria);
         $qb = $this->addCriteria($qb, $criteria);
-        if ($search){
+        if ($search) {
             $or = $qb->expr()->orX();
             foreach (self::SEARCH_FIELDS as $key => $value) {
                 $field = $this->getField($qb, $value);
                 $or->add("LOWER($field) LIKE  :$key");
             }
             $qb->andWhere($or);
-            foreach (self::SEARCH_FIELDS as $key => $value){
-                $qb->setParameter("$key", '%'.strtolower($search).'%');
+            foreach (self::SEARCH_FIELDS as $key => $value) {
+                $qb->setParameter("$key", '%' . strtolower($search) . '%');
             }
         }
         return (int)$qb->getQuery()->getSingleScalarResult();
@@ -218,7 +219,7 @@ trait RepositoryTrait
                     strtolower($value) . '%');
                 break;
             case 'in':
-                eval("\$value = $value;");
+                $value = json_decode($value, true);
                 if (!is_array($value)) {
                     throw new \RuntimeException('value should be an array');
                 }
@@ -255,5 +256,35 @@ trait RepositoryTrait
     public static function getOperators(): array
     {
         return ['eq', 'gt', 'lt', 'gte', 'lte', 'neq', 'contains', 'startsWith', 'endsWith','in'];
+    }
+
+    public function findRecordsByEntityNameAndCriteria($count, $page = 1, $limit = 0)
+    {
+        if ($count) {
+            return $this->count([]);
+        }
+        $query = $this->createQueryBuilder('repositoryTrait');
+        if ($page != "") {
+            $query->setFirstResult(($page * $limit) + 1);
+        }
+        if ($limit && $limit != "") {
+            $query->setMaxResults($limit);
+        }
+        return $query->getQuery()->getResult();
+
+    }
+
+    private function addArrayCriteriaCondition(QueryBuilder $query, $data, $key)
+    {
+
+        $data = is_string($data) ? json_decode($data, true) : false;
+        if ($data && !is_array($data)) {
+            throw new \RuntimeException("$key value should be an array");
+
+        }
+        if ($data && count($data) > 0) {
+            $query->andWhere($key . ".id in (:" . $key . ")")->setParameter($key, $data);
+        }
+        return $query;
     }
 }
