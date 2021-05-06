@@ -186,6 +186,7 @@ trait RepositoryTrait
     ): QueryBuilder
     {
         $alias = $queryBuilder->getRootAliases()[0];
+        // here field could be with a join entityName.field so we omit adding alias
         if (!strpos( $field, '.')) {
             $field = "$alias.$field";
         } else {
@@ -228,9 +229,6 @@ trait RepositoryTrait
             case 'endsWith':
                 $queryBuilder->andWhere("LOWER($field) LIKE :$parameter")->setParameter($parameter,
                     '%' . strtolower($value));
-                break;
-            case 'in':
-                $queryBuilder->andWhere("$alias.$field IN (:ids)")->setParameter('ids', json_decode($value));
                 break;
             default:
                 throw new \RuntimeException('Unknown comparison operator: ' . $operator);
