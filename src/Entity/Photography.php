@@ -16,7 +16,7 @@ class Photography
 {
     use TimestampableEntity;
     /**
-     * @JMS\Groups("artwork")
+     * @JMS\Groups("artwork", "art_work_details", "art_work")
      *
      * @ORM\Id
      * @ORM\GeneratedValue
@@ -25,14 +25,14 @@ class Photography
     private $id;
 
     /**
-     * @JMS\Groups("artwork")
+     * @JMS\Groups("artwork", "art_work")
      *
      * @ORM\Column(name="nom_image", type="string", length=255)
      */
     private $imageName;
 
     /**
-     * @JMS\Groups("artwork")
+     * @JMS\Groups("artwork", "art_work")
      *
      * @Assert\Image(maxSize="25M")
      * @Assert\NotBlank()
@@ -42,7 +42,7 @@ class Photography
     private $imagePreview;
 
     /**
-     * @JMS\Groups("artwork")
+     * @JMS\Groups("artwork", "art_work")
      *
      * @Assert\NotBlank()
      *
@@ -51,7 +51,7 @@ class Photography
     private $date;
 
     /**
-     * @JMS\Groups("artwork")
+     * @JMS\Groups("artwork", "art_work")
      *
      * @Assert\Valid()
      *

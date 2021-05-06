@@ -42,3 +42,7 @@ services:
     App\EventSubscriber\FileUploadSubscriber:
         tags:
             - { name: 'doctrine.event_subscriber' }
+
+    App\EventSubscriber\SerializerEventSubscriber:
+        tags:
+            - { name: jms_serializer.event_subscriber }

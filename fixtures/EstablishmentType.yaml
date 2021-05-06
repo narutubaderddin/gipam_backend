@@ -1,0 +1,5 @@
+App\Entity\EstablishmentType:
+  establishmentType_1:
+    label: <word()>
+    startDate: <date_create()>
+    disappearanceDate: <date_create()>

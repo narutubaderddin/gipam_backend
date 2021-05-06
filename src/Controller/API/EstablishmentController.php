@@ -104,11 +104,12 @@ class EstablishmentController extends AbstractFOSRestController
      * @Rest\QueryParam(name="acronym", map=true, nullable=false, description="filter by acronym. example: acronym[eq]=value")
      * @Rest\QueryParam(name="startDate", map=true, nullable=false, description="filter by startDate. example: startDate[lt]=value")
      * @Rest\QueryParam(name="disappearanceDate", map=true, nullable=false, description="filter by disappearanceDate. example: disappearanceDate[lt]=value")
-     * @Rest\QueryParam(name="ministry", map=true, nullable=false, description="filter by ministry. example: ministry[eq]=value")
+     * @Rest\QueryParam(name="ministry", map=true, nullable=false, description="filter by ministry id. example: ministry[eq]=value")
+     * @Rest\QueryParam(name="ministry_name", map=true, nullable=false, description="filter by ministry name. example: ministry_name[eq]=value")
      * @Rest\QueryParam(name="type", map=true, nullable=false, description="filter by type. example: type[eq]=value")
      * @Rest\QueryParam(name="search", map=false, nullable=true, description="search. example: search=text")
      *
-     * @Rest\View()
+     * @Rest\View(serializerGroups={"response", "establishment", "short"})
      *
      * @param ParamFetcherInterface $paramFetcher
      *

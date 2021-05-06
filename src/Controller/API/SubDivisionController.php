@@ -109,11 +109,11 @@ class SubDivisionController extends AbstractFOSRestController
      * @Rest\QueryParam(name="establishment", map=true, nullable=false, description="filter by establishment. example: establishment[eq]=value")
      * @Rest\QueryParam(name="search", map=false, nullable=true, description="search. example: search=text")
      *
-     * @Rest\View()
+     * @Rest\View(serializerGroups={"sub_division", "short", "response"})
      *
      * @param ParamFetcherInterface $paramFetcher
      *
-     * @return Response
+     * @return View
      */
     public function listSubDivisions(ParamFetcherInterface $paramFetcher)
     {

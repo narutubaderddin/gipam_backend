@@ -57,3 +57,4 @@ yarn-error.log
 ###< symfony/phpunit-bridge ###
 
 /public/img/
+/public/uploads/

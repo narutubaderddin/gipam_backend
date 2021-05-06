@@ -90,7 +90,7 @@ class RepositoryTraitTest extends Unit
             ->with("LOWER(e.label) LIKE :label0")
             ->willReturn($queryBuilder)
         ;
-        $queryBuilder = $this->invokeMethod(
+       $this->invokeMethod(
             $this->repositoryTrait,
             'andWhere',
             [$queryBuilder, 'label', 'contains', 'label0', 'tes']
@@ -100,9 +100,76 @@ class RepositoryTraitTest extends Unit
 
     public function testGetOperators()
     {
-        $expected = ['eq', 'gt', 'lt', 'gte', 'lte', 'neq', 'contains', 'startsWith', 'endsWith'];
+        $expected = ['eq', 'gt', 'lt', 'gte', 'lte', 'neq', 'contains', 'startsWith', 'endsWith','in'];
         $operators = RepositoryTrait::getOperators();
-        $this->assertCount(9, $operators);
+        $this->assertCount(10, $operators);
         $this->assertEquals($expected, $operators);
+    }
+
+    public function testGetField()
+    {
+        $queryBuilder = $this->createMock(QueryBuilder::class);
+        $queryBuilder
+            ->expects($this->once())
+            ->method('getRootAliases')
+            ->willReturn(['e'])
+        ;
+        $queryBuilder
+            ->expects($this->once())
+            ->method('getDql')
+            ->willReturn('select * from entity')
+        ;
+
+        $field = $this->invokeMethod(
+            $this->repositoryTrait,
+            'getField',
+            [$queryBuilder, 'label']
+        );
+        $this->assertEquals($field, 'e.label');
+    }
+
+    public function testGetFieldWithRelated()
+    {
+        $queryBuilder = $this->createMock(QueryBuilder::class);
+        $queryBuilder
+            ->expects($this->once())
+            ->method('getRootAliases')
+            ->willReturn(['e']);
+        $queryBuilder
+            ->expects($this->once())
+            ->method('getDql')
+            ->willReturn('select * from entity');
+
+        $field = $this->invokeMethod(
+            $this->repositoryTrait,
+            'getField',
+            [$queryBuilder, 'ministry_name']
+        );
+        $this->assertEquals($field, 'ministry.name');
+    }
+
+    public function testLeftJoin()
+    {
+        $criteria = [
+            'label' => ['startsWith' => 'te'],
+            'ministry_name' => ['endsWith' => 't'],
+        ];
+        $queryBuilder = $this->createMock(QueryBuilder::class);
+        $queryBuilder
+            ->expects($this->once())
+            ->method('getRootAliases')
+            ->willReturn(['e']);
+        $queryBuilder
+            ->expects($this->once())
+            ->method('getDql')
+            ->willReturn('select * from entity');
+
+        $this->invokeMethod(
+            $this->repositoryTrait,
+            'leftJoins',
+            [$queryBuilder, &$criteria]
+        );
+        $this->assertArrayHasKey('ministry.name', $criteria);
+        $this->assertArrayHasKey('label', $criteria);
     }
 }
