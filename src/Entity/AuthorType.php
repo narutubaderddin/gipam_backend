@@ -7,6 +7,7 @@ use App\Repository\AuthorTypeRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use JMS\Serializer\Annotation as JMS;
 
 /**
  * @ORM\Entity(repositoryClass=AuthorTypeRepository::class)
@@ -26,6 +27,8 @@ class AuthorType
         'fabricant' => 'fabricant',
     ];
     /**
+     * @JMS\Groups("id")
+     *
      * @ORM\Id
      * @ORM\GeneratedValue
      * @ORM\Column(type="integer")
@@ -33,16 +36,22 @@ class AuthorType
     private $id;
 
     /**
+     * @JMS\Groups({"authorType"})
+     *
      * @ORM\Column(name="libelle", type="string", length=255, nullable=true)
      */
     private $label;
 
     /**
+     * @JMS\Exclude()
+     *
      * @ORM\OneToMany(targetEntity=Author::class, mappedBy="type")
      */
     private $authors;
 
     /**
+     * @JMS\Groups({"authorType"})
+     *
      * @ORM\Column(name="actif", type="boolean", nullable=false)
      */
     private $active = true;

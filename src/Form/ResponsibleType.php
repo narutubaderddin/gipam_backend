@@ -7,6 +7,7 @@ use App\Entity\Responsible;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\CollectionType;
+use Symfony\Component\Form\Extension\Core\Type\EmailType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
@@ -21,7 +22,7 @@ class ResponsibleType extends AbstractType
             ->add('lastName',TextType::class, ['required' => true])
             ->add('phone',TextType::class)
             ->add('fax',TextType::class)
-            ->add('mail',TextType::class)
+            ->add('mail',EmailType::class)
             ->add('login',TextType::class)
             ->add('startDate', DateTimeType::class, ['required' => true, 'widget' => 'single_text'])
             ->add('endDate', DateTimeType::class, ['widget' => 'single_text'])

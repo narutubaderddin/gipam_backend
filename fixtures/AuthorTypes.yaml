@@ -1,0 +1,4 @@
+App\Entity\AuthorType:
+  authorType_1:
+    label: <name()>
+    active: true

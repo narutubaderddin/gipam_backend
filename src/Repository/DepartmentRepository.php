@@ -17,7 +17,10 @@ class DepartmentRepository extends ServiceEntityRepository
 {
     use RepositoryTrait;
 
-    public const SEARCH_FIELDS = ['name_param' => 'name'];
+    public const SEARCH_FIELDS = [
+        'name_param' => 'name',
+        "region_name_param" => "region_name"
+    ];
 
     public function __construct(ManagerRegistry $registry)
     {

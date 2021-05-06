@@ -25,7 +25,10 @@ class CorrespondentRepository extends ServiceEntityRepository
         'login_param'=>'login',
         'phone_param' => 'phone',
         'fax_param' => 'fax',
-        'mail_param' => 'mail'
+        'mail_param' => 'mail',
+        'establishment_label_param'=>'establishment_label',
+        'service_label_param'=>'service_label',
+        'subDivision_label_param'=>'subDivision_label'
     ];
 
     public function __construct(ManagerRegistry $registry)
