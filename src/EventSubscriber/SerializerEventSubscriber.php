@@ -26,8 +26,8 @@ class SerializerEventSubscriber implements EventSubscriberInterface
         if (!$photography instanceof Photography) {
             return;
         }
-//        $path = preg_replace('/\\\\/', "/", $this->projectDir . '\\public\\uploads\\' . $photography->getImagePreview());
-//        $photography->setImagePreview($path);
+        $path = preg_replace('/\\\\/', "/", '\\uploads\\' . $photography->getImagePreview());
+        $photography->setImagePreview($path);
     }
 
     public static function getSubscribedEvents()

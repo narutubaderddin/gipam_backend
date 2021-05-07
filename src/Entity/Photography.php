@@ -25,14 +25,14 @@ class Photography
     private $id;
 
     /**
-     * @JMS\Groups("artwork", "art_work")
+     * @JMS\Groups("artwork", "art_work", "art_work_details")
      *
      * @ORM\Column(name="nom_image", type="string", length=255)
      */
     private $imageName;
 
     /**
-     * @JMS\Groups("artwork", "art_work")
+     * @JMS\Groups("artwork", "art_work", "art_work_details")
      *
      * @Assert\Image(maxSize="25M")
      * @Assert\NotBlank()
