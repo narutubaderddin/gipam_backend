@@ -1,0 +1,4 @@
+App\Entity\AttachmentType:
+  attachement_1:
+    type: <name()>
+    active: true
