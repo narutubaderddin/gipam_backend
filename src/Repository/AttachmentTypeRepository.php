@@ -16,7 +16,7 @@ class AttachmentTypeRepository extends ServiceEntityRepository
 {
     use RepositoryTrait;
 
-    public const SEARCH_FIELDS = ['label_param' => 'label'];
+    public const SEARCH_FIELDS = ['type_param' => 'type'];
 
     public function __construct(ManagerRegistry $registry)
     {

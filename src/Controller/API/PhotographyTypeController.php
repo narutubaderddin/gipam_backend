@@ -2,9 +2,9 @@
 
 namespace App\Controller\API;
 
-use App\Entity\AttachmentType;
+use App\Entity\PhotographyType;
 use App\Exception\FormValidationException;
-use App\Form\AttachmentTypeType;
+use App\Form\PhotographyTypeType;
 use App\Model\ApiResponse;
 use App\Services\ApiManager;
 use FOS\RestBundle\Controller\AbstractFOSRestController;
@@ -19,11 +19,11 @@ use Swagger\Annotations as SWG;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 /**
- * Class AttachmentTypeController
+ * Class PhotographyTypeController
  * @package App\Controller\API
- * @Route("/attachmentTypes")
+ * @Route("/photographyTypes")
  */
-class AttachmentTypeController extends AbstractFOSRestController
+class PhotographyTypeController extends AbstractFOSRestController
 {
     /**
      * @var ApiManager
@@ -49,21 +49,21 @@ class AttachmentTypeController extends AbstractFOSRestController
      *
      * @SWG\Response(
      *     response=200,
-     *     description="Returns AttachmentType by id",
+     *     description="Returns Photography Type by id",
      *     @SWG\Schema(
-     *         ref=@Model(type=AttachmentType::class, groups={"attachment_type", "id"})
+     *         ref=@Model(type=PhotographyType::class, groups={"photography_type", "id"})
      *     )
      * )
-     * @SWG\Tag(name="attachmentTypes")
-     * @Rest\View(serializerGroups={"attachment_type", "id"})
+     * @SWG\Tag(name="photographyTypes")
+     * @Rest\View(serializerGroups={"photography_type", "id"})
      *
-     * @param AttachmentType $attachmentType
+     * @param PhotographyType $photographyType
      *
      * @return View
      */
-    public function showAttachmentType(AttachmentType $attachmentType)
+    public function showPhotographyType(PhotographyType $photographyType)
     {
-        return $this->view($attachmentType, Response::HTTP_OK);
+        return $this->view($photographyType, Response::HTTP_OK);
     }
 
     /**
@@ -71,7 +71,7 @@ class AttachmentTypeController extends AbstractFOSRestController
      *
      * @SWG\Response(
      *     response=200,
-     *     description="Returns the list of Attachment Types",
+     *     description="Returns the list of Photography Types",
      *     @SWG\Schema(
      *         @SWG\Items(ref=@Model(type=ApiResponse::class))
      *     )
@@ -106,7 +106,7 @@ class AttachmentTypeController extends AbstractFOSRestController
      *     type="string",
      *     description="The field used to filter by type"
      * )
-     * @SWG\Tag(name="attachmentTypes")
+     * @SWG\Tag(name="photographyTypes")
      *
      * @Rest\QueryParam(name="page", requirements="\d+", default="1", description="page number.")
      * @Rest\QueryParam(name="limit", requirements="\d+", default="0", description="page size.")
@@ -126,9 +126,9 @@ class AttachmentTypeController extends AbstractFOSRestController
      *
      * @return View
      */
-    public function listAttachmentTypes(ParamFetcherInterface $paramFetcher)
+    public function listPhotographyTypes(ParamFetcherInterface $paramFetcher)
     {
-        $records = $this->apiManager->findRecordsByEntityName(AttachmentType::class, $paramFetcher);
+        $records = $this->apiManager->findRecordsByEntityName(PhotographyType::class, $paramFetcher);
         return $this->view($records, Response::HTTP_OK);
     }
 
@@ -137,9 +137,9 @@ class AttachmentTypeController extends AbstractFOSRestController
      *
      * @SWG\Response(
      *     response=201,
-     *     description="Returns created Attachment Type",
+     *     description="Returns created Photography Type",
      *     @SWG\Schema(
-     *         ref=@Model(type=AttachmentType::class, groups={"attachment_type"})
+     *         ref=@Model(type=PhotographyType::class, groups={"photography_type"})
      *     )
      * )
      * @SWG\Response(
@@ -149,23 +149,23 @@ class AttachmentTypeController extends AbstractFOSRestController
      * @SWG\Parameter(
      *     name="form",
      *     in="body",
-     *     description="Add AttachmentType",
-     *     @Model(type=AttachmentType::class, groups={"attachment_type"})
+     *     description="Add Photography Type",
+     *     @Model(type=PhotographyType::class, groups={"photography_type"})
      * )
-     * @SWG\Tag(name="attachmentTypes")
+     * @SWG\Tag(name="photographyTypes")
      *
-     * @Rest\View(serializerGroups={"attachment_type", "id"})
+     * @Rest\View(serializerGroups={"photography_type", "id"})
      *
      * @param Request $request
      * @return View
      */
-    public function postAttachmentType(Request $request)
+    public function postPhotographyType(Request $request)
     {
-        $form = $this->createForm(AttachmentTypeType::class);
+        $form = $this->createForm(PhotographyTypeType::class);
         $form->submit($request->request->all());
         if ($form->isValid()) {
-            $attachmentType = $this->apiManager->save($form->getData());
-            return $this->view($attachmentType, Response::HTTP_CREATED);
+            $photographyType = $this->apiManager->save($form->getData());
+            return $this->view($photographyType, Response::HTTP_CREATED);
         }
         throw new FormValidationException($form);
     }
@@ -175,7 +175,7 @@ class AttachmentTypeController extends AbstractFOSRestController
      *
      * @SWG\Response(
      *     response=204,
-     *     description="Attachment Type is updated"
+     *     description="Photography Type is updated"
      *     )
      * )
      * @SWG\Response(
@@ -184,28 +184,28 @@ class AttachmentTypeController extends AbstractFOSRestController
      * )
      * @SWG\Response(
      *     response=404,
-     *     description="Attachment Type not found"
+     *     description="Photography Type not found"
      * )
      * @SWG\Parameter(
      *     name="form",
      *     in="body",
-     *     description="Update an Attachment Type",
-     *     @Model(type=AttachmentType::class, groups={"attachment_type"})
+     *     description="Update a Photography Type",
+     *     @Model(type=PhotographyType::class, groups={"photography_type"})
      * )
-     * @SWG\Tag(name="attachmentTypes")
+     * @SWG\Tag(name="photographyTypes")
      *
      * @Rest\View()
      *
      * @param Request $request
-     * @param AttachmentType $attachmentType
+     * @param PhotographyType $photographyType
      * @return View
      */
-    public function updateAttachmentType(Request $request, AttachmentType $attachmentType)
+    public function updatePhotographyType(Request $request, PhotographyType $photographyType)
     {
-        $form = $this->createForm(AttachmentTypeType::class, $attachmentType);
+        $form = $this->createForm(PhotographyTypeType::class, $photographyType);
         $form->submit($request->request->all(), false);
         if ($form->isValid()) {
-            $this->apiManager->save($attachmentType);
+            $this->apiManager->save($photographyType);
             return $this->view(null, Response::HTTP_NO_CONTENT);
         }
         throw new FormValidationException($form);
@@ -216,7 +216,7 @@ class AttachmentTypeController extends AbstractFOSRestController
      *
      * @SWG\Response(
      *     response=204,
-     *     description="Attachment Type is removed"
+     *     description="Photography Type is removed"
      *     )
      * )
      * @SWG\Response(
@@ -224,17 +224,17 @@ class AttachmentTypeController extends AbstractFOSRestController
      *     description="Deleting errors"
      *     )
      * )
-     * @SWG\Tag(name="attachmentTypes")
+     * @SWG\Tag(name="photographyTypes")
      *
      * @Rest\View()
      *
-     * @param AttachmentType $attachmentType
+     * @param PhotographyType $photographyType
      *
      * @return View
      */
-    public function removeAttachmentType(AttachmentType $attachmentType)
+    public function removePhotographyType(PhotographyType $photographyType)
     {
-        $this->apiManager->delete($attachmentType);
+        $this->apiManager->delete($photographyType);
         return $this->view(null, Response::HTTP_NO_CONTENT);
     }
 }
