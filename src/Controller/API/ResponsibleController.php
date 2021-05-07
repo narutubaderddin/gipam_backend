@@ -1,69 +1,71 @@
 <?php
 
-
 namespace App\Controller\API;
 
 
-use App\Entity\EntryMode;
+use App\Entity\Responsible;
 use App\Exception\FormValidationException;
-use App\Form\EntryModeType;
+use App\Form\ResponsibleType;
 use App\Model\ApiResponse;
 use App\Services\ApiManager;
 use FOS\RestBundle\Controller\AbstractFOSRestController;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use FOS\RestBundle\Controller\Annotations\Route;
 use FOS\RestBundle\Request\ParamFetcherInterface;
+use FOS\RestBundle\View\View;
 use Nelmio\ApiDocBundle\Annotation\Model;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Swagger\Annotations as SWG;
-use FOS\RestBundle\View\View;
+
 
 /**
- * Class FieldController
+ * Class ResponsibleController
  * @package App\Controller\API
- * @Route("/entryModes")
+ * @Route("/responsibles")
  */
-class EntryModeController extends  AbstractFOSRestController
+class ResponsibleController extends AbstractFOSRestController
 {
     /**
      * @var ApiManager
      */
     protected $apiManager;
 
+
     public function __construct(
         ApiManager $apiManager
-    )
-    {
+    ) {
         $this->apiManager = $apiManager;
+
     }
+
     /**
      * @Rest\Get("/{id}", requirements={"id"="\d+"})
      *
      * @SWG\Response(
      *     response=200,
-     *     description="Returns Entry mode by id",
+     *     description="Returns Responsible by id",
      *     @SWG\Schema(
-     *         ref=@Model(type=EntryMode::class, groups={"entrymode", "id"})
+     *         ref=@Model(type=Responsible::class, groups={"responsible", "id"})
      *     )
      * )
-     * @SWG\Tag(name="EntryModes")
-     * @Rest\View(serializerGroups={"entrymode", "id"})
+     * @SWG\Tag(name="responsibles")
+     * @Rest\View(serializerGroups={"responsible", "id"})
      *
-     * @param EntryMode $entryMode
+     * @param Responsible $responsible
      *
      * @return View
      */
-    public function showEntryMode(EntryMode $entryMode)
+    public function showResponsible(Responsible $responsible)
     {
-        return $this->view($entryMode, Response::HTTP_OK);
+        return $this->view($responsible, Response::HTTP_OK);
     }
     /**
      * @Rest\Get("/")
      *
      * @SWG\Response(
      *     response=200,
-     *     description="Returns the list of entry modes",
+     *     description="Returns the list of responsibles",
      *     @SWG\Schema(
      *         @SWG\Items(ref=@Model(type=ApiResponse::class))
      *     )
@@ -92,25 +94,45 @@ class EntryModeController extends  AbstractFOSRestController
      *     type="string",
      *     description="The field used to sort type"
      * )
-     *
-     * @SWG\Tag(name="EntryModes")
+     * @SWG\Tag(name="responsibles")
      *
      * @Rest\QueryParam(name="page", requirements="\d+", default="1", description="page number.")
      * @Rest\QueryParam(name="limit", requirements="\d+", default="0", description="page size.")
      * @Rest\QueryParam(name="sort_by", nullable=true, default="id", description="order by")
-     * @Rest\QueryParam(name="sort", requirements="(asc|desc)", nullable=true, default="asc", description="tri order asc|desc")
-     * @Rest\QueryParam(name="label", map=true, nullable=false, description="filter by label. example: label[eq]=value")
-     * @Rest\QueryParam(name="active" ,map=true, nullable=false, description="filter by active. example: active[eq]=1")
+     * @Rest\QueryParam(
+     *     name="sort", requirements="(asc|desc)",
+     *      nullable=true, default="asc",
+     *      description="sorting order asc|desc"
+     * )
+     * @Rest\QueryParam(name="firstName", map=true, nullable=false, description="filter by firstName. example: firstName[eq]=value")
+     * @Rest\QueryParam(name="lastName", map=true, nullable=false, description="filter by lastName. example: lastName[eq]=value")
+     * @Rest\QueryParam(name="function", map=true, nullable=true, description="filter by function. example: function[eq]=value")
+     * @Rest\QueryParam(name="phone", map=true, nullable=true, description="filter by phone. example: phone[eq]=value")
+     * @Rest\QueryParam(name="fax", map=true, nullable=true, description="filter by fax. example: fax[eq]=value")
+     * @Rest\QueryParam(name="mail", map=true, nullable=true, description="filter by mail. example: mail[eq]=value")
+     * @Rest\QueryParam(name="login", map=true, nullable=true, description="filter by login. example: login[eq]=value")
+
+     * @Rest\QueryParam(name="batiment", nullable=true, description="filter by batiment id. example: batiment[eq]=value")
+     *
+     * @Rest\QueryParam(name="startDate",
+     *      map=true, nullable=false,
+     *      description="filter by start date. example: startDate[eq]=value"
+     * )
+     * @Rest\QueryParam(name="endDate",
+     *      map=true, nullable=false,
+     *      description="filter by end date. example: endDate[eq]=value"
+     * )
      * @Rest\QueryParam(name="search", map=false, nullable=true, description="search. example: search=text")
+     *
      * @Rest\View()
      *
      * @param ParamFetcherInterface $paramFetcher
      *
      * @return View
      */
-    public function ListEntryMode(ParamFetcherInterface $paramFetcher)
+    public function listResponsible(ParamFetcherInterface $paramFetcher)
     {
-        $records = $this->apiManager->findRecordsByEntityName(EntryMode::class, $paramFetcher);
+        $records = $this->apiManager->findRecordsByEntityName(Responsible::class, $paramFetcher);
         return $this->view($records, Response::HTTP_OK);
     }
     /**
@@ -118,9 +140,9 @@ class EntryModeController extends  AbstractFOSRestController
      *
      * @SWG\Response(
      *     response=201,
-     *     description="Returns created Entry Mode",
+     *     description="Returns created responsible",
      *     @SWG\Schema(
-     *         ref=@Model(type=EntryMode::class, groups={"entrymode", "id"})
+     *         ref=@Model(type=Responsible::class, groups={"responsible", "id"})
      *     )
      * )
      * @SWG\Response(
@@ -130,23 +152,23 @@ class EntryModeController extends  AbstractFOSRestController
      * @SWG\Parameter(
      *     name="form",
      *     in="body",
-     *     description="Add Entry Mode",
-     *     @Model(type=EntryMode::class, groups={"entrymode"})
+     *     description="Add Responsible",
+     *     @Model(type=Responsible::class, groups={"responsible"})
      * )
-     * @SWG\Tag(name="EntryModes")
+     * @SWG\Tag(name="responsibles")
      *
-     * @Rest\View(serializerGroups={"entrymode", "id"})
+     * @Rest\View(serializerGroups={"responsible", "id"})
      *
      * @param Request $request
      * @return View
      */
-    public function postEntryMode(Request $request)
+    public function postResponsible(Request $request)
     {
-        $form = $this->createForm(EntryModeType::class);
+        $form = $this->createForm(ResponsibleType::class);
         $form->submit($request->request->all());
         if ($form->isValid()) {
-            $entrymode = $this->apiManager->save($form->getData());
-            return $this->view($entrymode, Response::HTTP_CREATED);
+            $responsible = $this->apiManager->save($form->getData());
+            return $this->view($responsible, Response::HTTP_CREATED);
         }
         throw new FormValidationException($form);
     }
@@ -155,7 +177,7 @@ class EntryModeController extends  AbstractFOSRestController
      *
      * @SWG\Response(
      *     response=204,
-     *     description="Entry Mode is updated"
+     *     description="Responsible is updated"
      *     )
      * )
      * @SWG\Response(
@@ -164,28 +186,28 @@ class EntryModeController extends  AbstractFOSRestController
      * )
      * @SWG\Response(
      *     response=404,
-     *     description="Entry Mode not found"
+     *     description="Responsible not found"
      * )
      * @SWG\Parameter(
      *     name="form",
      *     in="body",
-     *     description="Update an Entry Mode",
-     *     @Model(type=EntryMode::class, groups={"entrymode"})
+     *     description="Update a Responsible",
+     *     @Model(type=Responsible::class, groups={"responsible"})
      * )
-     * @SWG\Tag(name="EntryModes")
+     * @SWG\Tag(name="responsibles")
      *
      * @Rest\View()
      *
      * @param Request $request
-     * @param EntryMode $entrymode
+     * @param Responsible $responsible
      * @return View
      */
-    public function updateEntryMode(Request $request, EntryMode $entrymode)
+    public function updateBuilding(Request $request, Responsible $responsible)
     {
-        $form = $this->createForm(EntryModeType::class, $entrymode);
+        $form = $this->createForm(ResponsibleType::class, $responsible);
         $form->submit($request->request->all(), false);
         if ($form->isValid()) {
-            $this->apiManager->save($entrymode);
+            $this->apiManager->save($responsible);
             return $this->view(null, Response::HTTP_NO_CONTENT);
         }
         throw new FormValidationException($form);
@@ -195,7 +217,7 @@ class EntryModeController extends  AbstractFOSRestController
      *
      * @SWG\Response(
      *     response=204,
-     *     description="Entry Mode is removed"
+     *     description="Responsible is removed"
      *     )
      * )
      * @SWG\Response(
@@ -203,18 +225,17 @@ class EntryModeController extends  AbstractFOSRestController
      *     description="Deleting errors"
      *     )
      * )
-     * @SWG\Tag(name="EntryModes")
+     * @SWG\Tag(name="responsibles")
      *
      * @Rest\View()
      *
-     * @param EntryMode $entryMode
+     * @param Responsible $responsible
      *
      * @return View
      */
-    public function removeEntryMode(EntryMode $entryMode)
+    public function removeResponsible(Responsible $responsible)
     {
-        $this->apiManager->delete($entryMode);
+        $this->apiManager->delete($responsible);
         return $this->view(null, Response::HTTP_NO_CONTENT);
     }
-
 }

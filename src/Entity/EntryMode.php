@@ -24,7 +24,7 @@ class EntryMode
         'artistique' => '1% artistique',
     ];
     /**
-     * @JMS\Groups("artwork","short")
+     * @JMS\Groups("artwork","short", "id")
      *
      * @ORM\Id
      * @ORM\GeneratedValue
@@ -33,17 +33,20 @@ class EntryMode
     private $id;
 
     /**
-     * @JMS\Groups("short")
+     * @JMS\Groups("short", "entrymode")
      * @ORM\Column(name="libelle", type="string", length=255, nullable=true)
      */
     private $label;
 
     /**
+     * @JMS\Exclude()
      * @ORM\OneToMany(targetEntity=PropertyStatus::class, mappedBy="entryMode")
      */
     private $propertyStatuses;
 
     /**
+     * @JMS\Groups("entrymode")
+     *
      * @ORM\Column(name="actif", type="boolean", nullable=false)
      */
     private $active = true;

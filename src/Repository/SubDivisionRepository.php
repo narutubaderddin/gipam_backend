@@ -52,7 +52,7 @@ class SubDivisionRepository extends ServiceEntityRepository
             return $query->getQuery()->getSingleScalarResult();
         }
         if($page!=""){
-            $query->setFirstResult(($page*$limit)+1);
+            $query->setFirstResult(($page - 1) * $limit);
         }
         if($limit && $limit!=""){
             $query->setMaxResults($limit);

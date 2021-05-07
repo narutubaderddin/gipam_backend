@@ -1,0 +1,9 @@
+App\Entity\Responsible:
+  responsible_1:
+    firstName: <name()>
+
+    fax: <name()>
+    phone: <name()>
+    mail: <name()>
+    startDate: <date_create()>
+

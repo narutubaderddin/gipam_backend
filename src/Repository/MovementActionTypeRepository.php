@@ -17,7 +17,8 @@ class MovementActionTypeRepository extends ServiceEntityRepository
     use RepositoryTrait;
 
     public const SEARCH_FIELDS = [
-        'label_param' => 'label'
+        'label_param' => 'label',
+        'movementType_label_param'=>'movementType_label'
     ];
 
     public function __construct(ManagerRegistry $registry)
