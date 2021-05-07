@@ -4,6 +4,7 @@ namespace App\Entity;
 
 use App\Entity\Traits\TimestampableEntity;
 use App\Repository\LocationTypeRepository;
+use DateTimeInterface;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
@@ -55,9 +56,16 @@ class LocationType
     /**
      * @JMS\Groups("location_type")
      *
-     * @ORM\Column(name="actif", type="boolean", nullable=false)
+     * @ORM\Column(name="date_debut", type="datetime", nullable=true)
      */
-    private $active = true;
+    private $startDate;
+
+    /**
+     * @JMS\Groups("location_type")
+     *
+     * @ORM\Column(name="date_disparition", type="datetime", nullable=true)
+     */
+    private $disappearanceDate;
 
     public function __construct()
     {
@@ -111,13 +119,27 @@ class LocationType
         return $this;
     }
 
-    public function isActive(): bool
+    public function getStartDate(): ?DateTimeInterface
     {
-        return $this->active;
+        return $this->startDate;
     }
 
-    public function setActive(bool $active): void
+    public function setStartDate(?DateTimeInterface $startDate): self
     {
-        $this->active = $active;
+        $this->startDate = $startDate;
+
+        return $this;
+    }
+
+    public function getDisappearanceDate(): ?DateTimeInterface
+    {
+        return $this->disappearanceDate;
+    }
+
+    public function setDisappearanceDate(?DateTimeInterface $disappearanceDate): self
+    {
+        $this->disappearanceDate = $disappearanceDate;
+
+        return $this;
     }
 }

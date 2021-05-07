@@ -36,7 +36,7 @@ class ReportSubType
 
     public const TYPE_NON_VUE = ['nonVue' => 'Non vue'];
 
-    public const LIBELLE = [
+    public const LABEL = [
         'vue' => self::TYPE_VUE,
         'nonVue' => self::TYPE_NON_VUE,
         'identite' => self::TYPE_IDENTITE,

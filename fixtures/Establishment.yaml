@@ -5,3 +5,4 @@ App\Entity\Establishment:
     startDate: <date_create()>
     disappearanceDate: <date_create()>
     ministry: '@ministry*'
+    type: '@establishmentType*'

@@ -9,14 +9,17 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use JMS\Serializer\Annotation as JMS;
+use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 
 /**
  * @ORM\Entity(repositoryClass=SiteRepository::class)
  * @ORM\Table(name="site")
+ * @UniqueEntity("label", repositoryMethod="iFindBy", message="Un site avec ce libellé existe déjà!")
  */
 class Site
 {
     use TimestampableEntity;
+
     /**
      * @JMS\Groups("id", "site","short")
      *

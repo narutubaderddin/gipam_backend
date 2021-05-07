@@ -9,16 +9,19 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use JMS\Serializer\Annotation as JMS;
+use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 
 /**
  * @ORM\Entity(repositoryClass=EstablishmentRepository::class)
  * @ORM\Table(name="etablissement")
+ * @UniqueEntity("label", repositoryMethod="iFindBy", message="Un établissement avec ce libellé existe déjà!")
+ * @UniqueEntity("acronym", repositoryMethod="iFindBy", message="Un établissement avec ce sigle existe déjà!")
  */
 class Establishment
 {
     use TimestampableEntity;
     /**
-     * @JMS\Groups("id", "establishment", "establishment_id")
+     * @JMS\Groups("id", "establishment", "establishment_id", "short")
      *
      * @ORM\Id
      * @ORM\GeneratedValue
@@ -27,7 +30,7 @@ class Establishment
     private $id;
 
     /**
-     * @JMS\Groups("establishment")
+     * @JMS\Groups("establishment", "short")
      *
      * @ORM\Column(name="libelle", type="string", length=255, nullable=true)
      */

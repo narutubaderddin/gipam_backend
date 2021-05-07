@@ -291,7 +291,7 @@ class MigrationDb
         'date' => 'PH_DATE',
         'commentaire' => 'PH_COMM',
         'lien' => 'PH_LIEN',
-        'image_principale' => 'PH_PRINC',
+        'type' => 'PH_PRINC',
         'old_id' => 'C_PHOTO',
     ];
 

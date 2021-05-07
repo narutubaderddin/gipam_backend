@@ -16,7 +16,7 @@ class EstablishmentRepository extends ServiceEntityRepository
 {
     use RepositoryTrait;
 
-    public const SEARCH_FIELDS = ['label_param' => 'label', 'acronym_param' => 'acronym'];
+    public const SEARCH_FIELDS = ['label_param' => 'label', 'acronym_param' => 'acronym', 'ministry_name_param' => 'ministry_name'];
 
     public function __construct(ManagerRegistry $registry)
     {
