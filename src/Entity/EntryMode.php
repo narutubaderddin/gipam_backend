@@ -8,14 +8,17 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use JMS\Serializer\Annotation as JMS;
+use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 
 /**
  * @ORM\Entity(repositoryClass=EntryModeRepository::class)
  * @ORM\Table(name="mode_entree")
+ * @UniqueEntity("label", repositoryMethod="iFindBy", message="Un mode d'entrée avec ce libellé existe déjà!")
  */
 class EntryMode
 {
     use TimestampableEntity;
+
     public const LABEL = [
         'inscriptionInventaire' => 'Inscription à l’inventaire',
         'don' => 'Don',
