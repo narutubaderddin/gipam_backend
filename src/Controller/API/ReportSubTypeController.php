@@ -118,6 +118,7 @@ class ReportSubTypeController extends AbstractFOSRestController
      * )
      * @Rest\QueryParam(name="label",map=true, nullable=false, description="filter by label. example: label[eq]=value")
      * @Rest\QueryParam(name="reportType", nullable=false, description="filter by report type id. example: reportType[eq]=1")
+     * @Rest\QueryParam(name="reportType_label", map=true, nullable=false, description="filter by report type label. example: reportType_label[eq]=value")
      * @Rest\QueryParam(name="search", map=false, nullable=true, description="search. example: search=text")
      *
      * @Rest\View()

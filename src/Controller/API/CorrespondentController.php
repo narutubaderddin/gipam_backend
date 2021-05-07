@@ -119,6 +119,9 @@ class CorrespondentController extends AbstractFOSRestController
      * @Rest\QueryParam(name="establishment", nullable=true, description="filter by establishment id. example: establishment[eq]=value")
      * @Rest\QueryParam(name="subDivision", nullable=true, description="filter by subDivision id. example: subDivision[eq]=value")
      * @Rest\QueryParam(name="service", nullable=true, description="filter by service id. example: service[eq]=value")
+     * @Rest\QueryParam(name="establishment_label", map=true, nullable=false, description="filter by establishment label. example: establishment_label[eq]=value")
+     * @Rest\QueryParam(name="subDivision_label", map=true, nullable=false, description="filter by subDivision label. example: subDivision_label[eq]=value")
+     * @Rest\QueryParam(name="service_label", map=true, nullable=false, description="filter by service label. example: service_label[eq]=value")
      *
      * @Rest\QueryParam(name="startDate",
      *      map=true, nullable=false,
