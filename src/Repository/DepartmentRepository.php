@@ -25,16 +25,20 @@ class DepartmentRepository extends ServiceEntityRepository
     }
     public function findRecordsByEntityNameAndCriteria(ParamFetcherInterface $paramFetcher,$count,$page=1,$limit=0){
         $region =$paramFetcher->get('region')??"";
+        $name  = $paramFetcher->get('search')??"";
         $query = $this->createQueryBuilder('department')
                 ->leftJoin('department.region','region');
         $query = $this->addArrayCriteriaCondition($query, $region, 'region');
+        if($name!=""){
+            $query = $this->andWhere($query,'name','contains','name',$name);
+        }
 
         if($count){
             $query->select('count(department.id)');
             return $query->getQuery()->getSingleScalarResult();
         }
         if($page!=""){
-            $query->setFirstResult(($page*$limit)+1);
+            $query->setFirstResult(($page - 1) * $limit);
         }
         if($limit && $limit!= ""){
             $query->setMaxResults($limit);

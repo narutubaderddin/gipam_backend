@@ -25,15 +25,15 @@ class CommuneRepository extends ServiceEntityRepository
     }
 
     public function findRecordsByEntityNameAndCriteria(ParamFetcherInterface $paramFetcher,$count,$page=1,$limit=0){
-       $name = $paramFetcher->get('name')??"";
+       $name = $paramFetcher->get('search')??"";
        $departement =$paramFetcher->get('departement')??"";
        $region =$paramFetcher->get('region')??"";
        $query = $this->createQueryBuilder('commune')
                      ->leftJoin('commune.department','departement')
                      ->leftJoin('departement.region','region');
-       if($name){
-           $query->andWhere('LOWER(commune.name) like :name')->setParameter('name',strtolower($name).'%');
-       }
+        if($name!=""){
+            $query = $this->andWhere($query,'name','contains','name',$name);
+        }
         $query = $this->addArrayCriteriaCondition($query, $departement, 'departement');
         $query = $this->addArrayCriteriaCondition($query, $region, 'region');
 
@@ -42,7 +42,7 @@ class CommuneRepository extends ServiceEntityRepository
             return $query->getQuery()->getSingleScalarResult();
         }
         if($page!=""){
-            $query->setFirstResult(($page*$limit)+1);
+            $query->setFirstResult(($page-1)*$limit);
         }
         if($limit && $limit!= ""){
             $query->setMaxResults($limit);
