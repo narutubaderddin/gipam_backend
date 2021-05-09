@@ -9,16 +9,20 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use JMS\Serializer\Annotation as JMS;
+use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 
 /**
  * @ORM\Entity(repositoryClass=SubDivisionRepository::class)
  * @ORM\Table(name="sous_direction")
+ * @UniqueEntity("label", repositoryMethod="iFindBy", message="Une sous-direction avec ce libellé existe déjà!")
+ * @UniqueEntity("acronym", repositoryMethod="iFindBy", message="Une sous-direction avec ce sigle existe déjà!")
  */
 class SubDivision
 {
     use TimestampableEntity;
+
     /**
-     * @JMS\Groups("id", "sub_division", "sub_division_id","short")
+     * @JMS\Groups("id", "sub_division", "sub_division_id", "short")
      *
      * @ORM\Id
      * @ORM\GeneratedValue

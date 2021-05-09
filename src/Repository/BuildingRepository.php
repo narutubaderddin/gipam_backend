@@ -52,7 +52,7 @@ class BuildingRepository extends ServiceEntityRepository
         }
 
         if ($page != "") {
-            $query->setFirstResult(($page * $limit) + 1);
+            $query->setFirstResult(($page - 1) * $limit);
         }
         if ($limit && $limit != "") {
             $query->setMaxResults($limit);

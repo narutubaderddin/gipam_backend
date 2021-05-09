@@ -4,22 +4,25 @@ namespace App\Entity;
 
 use App\Entity\Traits\TimestampableEntity;
 use App\Repository\EstablishmentTypeRepository;
+use DateTimeInterface;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use JMS\Serializer\Annotation as JMS;
+use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * @ORM\Entity(repositoryClass=EstablishmentTypeRepository::class)
  * @ORM\Table(name="type_etablissement")
+ * @UniqueEntity("label", repositoryMethod="iFindBy", message="Un type établissement avec ce libellé existe déjà!")
  */
 class EstablishmentType
 {
     use TimestampableEntity;
 
     /**
-     * @JMS\Groups("id", "establishment_type", "establishment_type_id")
+     * @JMS\Groups("id", "establishment_type", "establishment_type_id", "short")
      *
      * @ORM\Id
      * @ORM\GeneratedValue
@@ -28,7 +31,7 @@ class EstablishmentType
     private $id;
 
     /**
-     * @JMS\Groups("establishment_type")
+     * @JMS\Groups("establishment_type", "short")
      *
      * @Assert\NotBlank
      *
@@ -44,25 +47,22 @@ class EstablishmentType
     private $establishments;
 
     /**
-     * @ORM\Column(name="actif", type="boolean", nullable=false,options={"default"="true"})
+     * @JMS\Groups("establishment_type")
+     *
+     * @ORM\Column(name="date_debut", type="datetime", nullable=true)
      */
-    private $active = true;
+    private $startDate;
+
+    /**
+     * @JMS\Groups("establishment_type")
+     *
+     * @ORM\Column(name="date_disparition", type="datetime", nullable=true)
+     */
+    private $disappearanceDate;
 
     public function __construct()
     {
         $this->establishments = new ArrayCollection();
-    }
-
-    public function isActive(): bool
-    {
-        return $this->active;
-    }
-
-    public function setActive(bool $active): self
-    {
-        $this->active = $active;
-
-        return $this;
     }
 
     public function getId(): ?int
@@ -108,6 +108,30 @@ class EstablishmentType
                 $establishment->setType(null);
             }
         }
+
+        return $this;
+    }
+
+    public function getStartDate(): ?DateTimeInterface
+    {
+        return $this->startDate;
+    }
+
+    public function setStartDate(?DateTimeInterface $startDate): self
+    {
+        $this->startDate = $startDate;
+
+        return $this;
+    }
+
+    public function getDisappearanceDate(): ?DateTimeInterface
+    {
+        return $this->disappearanceDate;
+    }
+
+    public function setDisappearanceDate(?DateTimeInterface $disappearanceDate): self
+    {
+        $this->disappearanceDate = $disappearanceDate;
 
         return $this;
     }

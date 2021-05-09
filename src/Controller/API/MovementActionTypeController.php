@@ -116,7 +116,7 @@ class MovementActionTypeController extends AbstractFOSRestController
      *      nullable=true, default="asc",
      *      description="sorting order asc|desc"
      * )
-     *
+     * @Rest\QueryParam(name="movementType_label", map=true, nullable=false, description="filter by movement Type label. example: movementType_label[eq]=value")
      * @Rest\QueryParam(name="label",map=true, nullable=false, description="filter by label. example: label[eq]=value")
      * @Rest\QueryParam(name="movementType", nullable=false, description="filter by Movement Type id. example: movementType[eq]=value")
      * @Rest\QueryParam(name="search", map=false, nullable=true, description="search. example: search=text")

@@ -177,7 +177,7 @@ abstract class Furniture
     protected $hyperlinks;
 
     /**
-     * @JMS\Groups("artwork")
+     * @JMS\Groups("artwork", "art_work_details")
      * @Assert\Valid()
      * @ORM\OneToMany(targetEntity=Photography::class, mappedBy="furniture", cascade={"persist", "remove"})
      */

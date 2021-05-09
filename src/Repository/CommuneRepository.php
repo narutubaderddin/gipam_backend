@@ -17,7 +17,10 @@ class CommuneRepository extends ServiceEntityRepository
 {
     use RepositoryTrait;
 
-    public const SEARCH_FIELDS = ['name_param' => 'name'];
+    public const SEARCH_FIELDS = [
+        'name_param' => 'name',
+        "department_name_param" => "department_name"
+    ];
 
     public function __construct(ManagerRegistry $registry)
     {

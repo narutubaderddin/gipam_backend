@@ -1,0 +1,4 @@
+App\Entity\PhotographyType:
+  photography_1:
+    type: <name()>
+    active: true
