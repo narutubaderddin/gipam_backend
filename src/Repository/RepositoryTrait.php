@@ -182,9 +182,6 @@ trait RepositoryTrait
                 $queryBuilder->andWhere("LOWER($alias.$field) LIKE :$parameter")->setParameter($parameter,
                     '%' . strtolower($value));
                 break;
-            /*case 'in':
-                $queryBuilder->andWhere("$alias.$field IN (:ids)")->setParameter('ids', json_decode($value));
-                break;*/
             default:
                 throw new \RuntimeException('Unknown comparison operator: ' . $operator);
         }
