@@ -22,6 +22,9 @@ class PersonRepository extends ServiceEntityRepository
         'website_param' => 'website',
         'phone_param' => 'phone',
         'email_param' => 'email',
+        'comment_param' => 'comment',
+        'author_firstName_param' => 'author_firstName',
+        'author_lastName_param' => 'author_lastName',
     ];
 
     public function __construct(ManagerRegistry $registry)

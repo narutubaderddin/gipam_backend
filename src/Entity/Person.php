@@ -2,6 +2,7 @@
 
 namespace App\Entity;
 
+use App\Entity\Traits\TimestampableEntity;
 use App\Repository\PersonRepository;
 use Doctrine\ORM\Mapping as ORM;
 use JMS\Serializer\Annotation as JMS;
@@ -15,6 +16,8 @@ use Symfony\Component\Validator\Constraints as Assert;
  */
 class Person
 {
+    use TimestampableEntity;
+
     /**
      * @JMS\Groups("id")
      *
@@ -43,6 +46,13 @@ class Person
     private $firstName;
 
     /**
+     * @JMS\Groups("person")
+     *
+     * @Assert\Regex(
+     *     pattern="/^[+]*[(]{0,1}[0-9]{1,4}[)]{0,1}[-\s\.0-9]*$/",
+     *     message="This is not a valid phone number"
+     * )
+     *
      * @ORM\Column(name="telephone", type="string", length=255, nullable=true)
      */
     private $phone;

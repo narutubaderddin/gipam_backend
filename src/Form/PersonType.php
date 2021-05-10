@@ -2,8 +2,10 @@
 
 namespace App\Form;
 
+use App\Entity\Author;
 use App\Entity\Person;
 use App\Form\Type\BooleanType;
+use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
@@ -19,6 +21,10 @@ class PersonType extends AbstractType
             ->add('phone', TextType::class, ['required' => true])
             ->add('website', TextType::class)
             ->add('comment', TextType::class)
+            ->add('author', EntityType::class, [
+                'class' => Author::class,
+                'choice_label' => 'id',
+            ])
             ->add('active', BooleanType::class, ['required' => true]);
     }
 

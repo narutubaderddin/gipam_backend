@@ -51,6 +51,8 @@ class Author
     private $type;
 
     /**
+     * @JMS\Groups({"authors"})
+     *
      * @ORM\Column(name="actif", type="boolean", nullable=false)
      */
     private $active = true;
@@ -151,7 +153,7 @@ class Author
      * @return string|null
      * @JMS\VirtualProperty()
      * @JMS\SerializedName("label")
-     * @JMS\Groups("authors","furniture_author")
+     * @JMS\Groups("authors","furniture_author", "short")
      */
     public function getFullName(): ?string
     {

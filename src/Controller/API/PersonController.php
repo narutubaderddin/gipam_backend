@@ -146,9 +146,10 @@ class PersonController extends AbstractFOSRestController
      * @Rest\QueryParam(name="website",map=true, nullable=false, description="filter by website. example: website[eq]=value")
      * @Rest\QueryParam(name="phone",map=true, nullable=false, description="filter by phone. example: phone[eq]=value")
      * @Rest\QueryParam(name="email",map=true, nullable=false, description="filter by email. example: email[eq]=value")
+     * @Rest\QueryParam(name="author", nullable=false, description="filter by author id. example: author[eq]=value")
      * @Rest\QueryParam(name="search", map=false, nullable=true, description="search. example: search=text")
      *
-     * @Rest\View(serializerGroups={"person", "short", "response"})
+     * @Rest\View(serializerGroups={"id", "person", "short", "response"})
      *
      * @param ParamFetcherInterface $paramFetcher
      *
