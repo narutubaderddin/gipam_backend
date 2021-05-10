@@ -30,7 +30,7 @@ class Establishment
     private $id;
 
     /**
-     * @JMS\Groups("establishment", "short")
+     * @JMS\Groups("establishment", "short", "request_list", "request_details")
      *
      * @ORM\Column(name="libelle", type="string", length=255, nullable=true)
      */
@@ -94,11 +94,18 @@ class Establishment
      */
     private $type;
 
+    /**
+     * @JMS\Exclude()
+     * @ORM\OneToMany(targetEntity=Request::class, mappedBy="establishement")
+     */
+    private $requests;
+
     public function __construct()
     {
         $this->locations = new ArrayCollection();
         $this->correspondents = new ArrayCollection();
         $this->subDivisions = new ArrayCollection();
+        $this->requests = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -264,6 +271,36 @@ class Establishment
     public function setType(?EstablishmentType $type): self
     {
         $this->type = $type;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|Request[]
+     */
+    public function getRequests(): Collection
+    {
+        return $this->requests;
+    }
+
+    public function addRequest(Request $request): self
+    {
+        if (!$this->requests->contains($request)) {
+            $this->requests[] = $request;
+            $request->setEstablishement($this);
+        }
+
+        return $this;
+    }
+
+    public function removeRequest(Request $request): self
+    {
+        if ($this->requests->removeElement($request)) {
+            // set the owning side to null (unless already changed)
+            if ($request->getEstablishement() === $this) {
+                $request->setEstablishement(null);
+            }
+        }
 
         return $this;
     }

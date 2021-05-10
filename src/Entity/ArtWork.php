@@ -47,6 +47,11 @@ class ArtWork extends Furniture implements ObjectManagerAware
 
 
 
+    /**
+     * @ORM\ManyToOne(targetEntity=Request::class, inversedBy="artWorks")
+     */
+    private $request;
+
     public function getTotalLength(): ?float
     {
         return $this->totalLength;
@@ -106,5 +111,28 @@ class ArtWork extends Furniture implements ObjectManagerAware
     public function injectObjectManager(ObjectManager $objectManager, ClassMetadata $classMetadata)
     {
         $this->entityManager = $objectManager;
+    }
+
+    public function getRequest(): ?Request
+    {
+        return $this->request;
+    }
+
+    public function setRequest(?Request $request): self
+    {
+        $this->request = $request;
+
+        return $this;
+    }
+
+    /**
+     *
+     * @JMS\Groups("art_work_list","art_work_details")
+     * @JMS\VirtualProperty(name="isInRequest")
+     * @return boolean|null
+     */
+    public function isInRequest()
+    {
+        return $this->getRequest() !== null;
     }
 }
