@@ -1,0 +1,16 @@
+App\Entity\Depositor:
+  depositor_1:
+    name: <name()>
+    acronym: <name()>
+    mail: <email()>
+    phone: 55555
+    fax: 55555
+    address: <name()>
+    city: <name()>
+    department: <name()>
+    distrib: <name()>
+    comment: <name()>
+    contact: <name()>
+    depositType: '@depositType_*'
+    startDate: <date_create()>
+    endDate: <date_create()>

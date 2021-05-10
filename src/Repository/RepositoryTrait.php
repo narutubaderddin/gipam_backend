@@ -31,9 +31,9 @@ trait RepositoryTrait
         string $search = null
     )
     {
-
         $columns = $this->getClassMetadata()->getFieldNames();
-        if (defined('SEARCH_FIELDS')) {
+
+        if (defined(get_class() . '::SEARCH_FIELDS')) {
             $columns = array_merge($columns, self::SEARCH_FIELDS);
         }
         $qb = $this->createQueryBuilder('e');
