@@ -86,4 +86,15 @@ class ArtWork extends Furniture
 
         return $this;
     }
+
+    /**
+     *
+     * @JMS\Groups("art_work_list","art_work_details")
+     * @JMS\VirtualProperty(name="isInRequest")
+     * @return boolean|null
+     */
+    public function isInRequest()
+    {
+        return $this->getRequest() !== null;
+    }
 }

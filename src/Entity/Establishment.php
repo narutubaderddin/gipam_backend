@@ -27,7 +27,7 @@ class Establishment
     private $id;
 
     /**
-     * @JMS\Groups("establishment")
+     * @JMS\Groups("establishment","request_list","request_details")
      *
      * @ORM\Column(name="libelle", type="string", length=255, nullable=true)
      */
@@ -92,6 +92,7 @@ class Establishment
     private $type;
 
     /**
+     * @JMS\Exclude()
      * @ORM\OneToMany(targetEntity=Request::class, mappedBy="establishement")
      */
     private $requests;

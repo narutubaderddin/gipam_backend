@@ -5,9 +5,13 @@ namespace App\DataFixtures;
 use App\Entity\ArtWork;
 use App\Entity\Attachment;
 use App\Entity\Author;
+use App\Entity\Building;
 use App\Entity\Denomination;
 use App\Entity\Era;
+use App\Entity\Establishment;
 use App\Entity\Field;
+use App\Entity\Room;
+use App\Entity\SubDivision;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Persistence\ObjectManager;
 
@@ -175,6 +179,58 @@ class AppFixtures extends Fixture
         $manager->persist($attachement);
         $artWork->addAttachment($attachement);
         $manager->persist($artWork);
+
+
+        $establishement1 = new Establishment();
+        $establishement1->setLabel('Establishement1');
+        $establishement1->setAcronym('Acronym1');
+        $manager->persist($establishement1);
+        $subDivision1 = new SubDivision();
+        $subDivision1->setLabel('subDivision1');
+        $subDivision1->setEstablishment($establishement1);
+        $manager->persist($subDivision1);
+        $subDivision2 = new SubDivision();
+        $subDivision2->setLabel('subDivision1_1');
+        $subDivision2->setEstablishment($establishement1);
+        $manager->persist($subDivision2);
+
+
+        $establishement2 = new Establishment();
+        $establishement2->setLabel('Establishement2');
+        $establishement2->setAcronym('Acronym2');
+        $manager->persist($establishement2);
+        $subDivision3 = new SubDivision();
+        $subDivision3->setLabel('subDivision2');
+        $subDivision3->setEstablishment($establishement2);
+        $manager->persist($subDivision3);
+        $subDivision4 = new SubDivision();
+        $subDivision4->setLabel('subDivision2_2');
+        $subDivision4->setEstablishment($establishement2);
+        $manager->persist($subDivision4);
+
+        $building1 = new Building();
+        $building1->setName('building1');
+        $manager->persist($building1);
+        $room1= new Room();
+        $room1->setLevel('Level1');
+        $room1->setBuilding($building1);
+        $room1->setReference('ref 1');
+        $manager->persist($room1);
+
+        $room1_1= new Room();
+        $room1_1->setLevel('Level1');
+        $room1_1->setBuilding($building1);
+        $room1_1->setReference('ref 1__1');
+        $manager->persist($room1_1);
+
+        $building2 = new Building();
+        $building2->setName('building2');
+        $manager->persist($building2);
+        $room2= new Room();
+        $room2->setLevel('Level2');
+        $room2->setBuilding($building2);
+        $room2->setReference('ref 2');
+        $manager->persist($room2);
 
         $manager->flush();
     }

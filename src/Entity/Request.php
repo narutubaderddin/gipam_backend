@@ -7,6 +7,7 @@ use App\Repository\RequestRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use JMS\Serializer\Annotation as JMS;
 
 /**
  * @ORM\Entity(repositoryClass=RequestRepository::class)
@@ -18,67 +19,85 @@ class Request
     /**
      * @ORM\Id
      * @ORM\GeneratedValue
+     * @JMS\Groups("request_list","request_details")
      * @ORM\Column(type="integer")
      */
     private $id;
 
     /**
+     * @JMS\Groups("request_list","request_details")
      * @ORM\Column(name="numeroPiece",type="string", length=50, nullable=true)
      */
     private $pieceNumber;
 
     /**
+     * @JMS\Groups("request_list","request_details")
      * @ORM\Column(name="prenom", type="string", length=255, nullable=true)
      */
     private $firstName;
 
     /**
+     * @JMS\Groups("request_list","request_details")
      * @ORM\Column(name="nom", type="string", length=255, nullable=true)
      */
     private $lastName;
 
     /**
+     * @JMS\Groups("request_list","request_details")
      * @ORM\ManyToOne(targetEntity=SubDivision::class, inversedBy="requests")
      * @ORM\JoinColumn(name="sous_direction_id", referencedColumnName="id")
      */
     private $subDivision;
 
     /**
+     * @JMS\Groups("request_list","request_details")
      * @ORM\ManyToOne(targetEntity=Establishment::class, inversedBy="requests")
      * @ORM\JoinColumn(name="etablissement_id", referencedColumnName="id")
      */
     private $establishement;
 
     /**
+     * @JMS\Groups("request_list","request_details")
      * @ORM\Column(name="fonction",type="string", length=255, nullable=true)
      */
     private $function;
 
     /**
+     * @JMS\Groups("request_list","request_details")
      * @ORM\ManyToOne(targetEntity=Building::class, inversedBy="requests")
      * @ORM\JoinColumn(name="batiment_id", referencedColumnName="id")
      */
     private $building;
 
     /**
+     * @JMS\Groups("request_list","request_details")
      * @ORM\Column(name="commentaire", type="text", nullable=true)
      */
     private $comment;
 
     /**
+     * @JMS\Groups("request_list","request_details")
      * @ORM\Column(name="mail", type="string", length=255, nullable=true)
      */
     private $mail;
 
     /**
+     * @JMS\Groups("request_list","request_details")
      * @ORM\Column(name="telephone",type="string", length=255, nullable=true)
      */
     private $phone;
 
     /**
+     * @JMS\Groups("request_list","request_details")
      * @ORM\OneToMany(targetEntity=ArtWork::class, mappedBy="request")
      */
     private $artWorks;
+
+    /**
+     * @JMS\Groups("request_list","request_details")
+     * @ORM\Column(type="string", length=255, nullable=true)
+     */
+    private $level;
 
     public function __construct()
     {
@@ -238,6 +257,18 @@ class Request
                 $artWork->setRequest(null);
             }
         }
+
+        return $this;
+    }
+
+    public function getLevel(): ?string
+    {
+        return $this->level;
+    }
+
+    public function setLevel(?string $level): self
+    {
+        $this->level = $level;
 
         return $this;
     }

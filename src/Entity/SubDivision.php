@@ -27,7 +27,7 @@ class SubDivision
     private $id;
 
     /**
-     * @JMS\Groups("sub_division","short")
+     * @JMS\Groups("sub_division","short","request_list","request_details")
      *
      * @ORM\Column(name="libelle", type="string", length=255, nullable=true)
      */
@@ -84,6 +84,7 @@ class SubDivision
     private $establishment;
 
     /**
+     * @JMS\Exclude()
      * @ORM\OneToMany(targetEntity=Request::class, mappedBy="subDivision")
      */
     private $requests;

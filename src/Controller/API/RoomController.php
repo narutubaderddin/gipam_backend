@@ -194,7 +194,7 @@ class RoomController extends  AbstractFOSRestController
      *     description="batiment id"
      * )
      * @Rest\QueryParam(name="batiment", nullable=true, default="", description="commune id")
-     * @SWG\Tag(name="sites")
+     * @SWG\Tag(name="rooms")
      * @param ParamFetcherInterface $paramFetcher
      * @param RoomRepository $roomRepository
      * @return array
@@ -203,5 +203,40 @@ class RoomController extends  AbstractFOSRestController
     public function findRoomsLevelByCriteria(ParamFetcherInterface $paramFetcher,RoomRepository $roomRepository){
         $batiment =  $paramFetcher->get('batiment')??"[]";
         return $roomRepository->findRoomsLevelByCriteria($batiment);
+    }
+
+    /**
+     * @Rest\Get("/findRoomsRefByCriteria")
+     * @SWG\Response(
+     *     response=200,
+     *     description="Returns the list of sites filtred ",
+     *     @SWG\Schema(
+     *         @SWG\Items(ref=@Model(type=ApiResponse::class))
+     *     )
+     * )
+     * @SWG\Parameter(
+     *     name="batiment",
+     *     type="string",
+     *     in="query",
+     *     description="batiment id"
+     * )
+     * @SWG\Parameter(
+     *     name="level",
+     *     type="string",
+     *     in="query",
+     *     description="level"
+     * )
+     * @Rest\QueryParam(name="batiment", nullable=true, default="", description="commune id")
+     * @Rest\QueryParam(name="level", nullable=true, default="", description="level")
+     * @SWG\Tag(name="rooms")
+     * @param ParamFetcherInterface $paramFetcher
+     * @param RoomRepository $roomRepository
+     * @return array
+     * @Rest\View()
+     */
+    public function findRoomsRefByCriteria(ParamFetcherInterface $paramFetcher,RoomRepository $roomRepository){
+        $batiment =  $paramFetcher->get('batiment');
+        $level =  $paramFetcher->get('level');
+        return $roomRepository->findRoomsRefByCriteria($batiment,$level);
     }
 }

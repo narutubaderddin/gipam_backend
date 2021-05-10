@@ -28,7 +28,7 @@ class Building
     private $id;
 
     /**
-     * @JMS\Groups("building","short")
+     * @JMS\Groups("building","short","request_list","request_details")
      *
      * @Assert\NotBlank
      *
@@ -107,6 +107,7 @@ class Building
     private $cedex;
 
     /**
+     * @JMS\Exclude()
      * @ORM\OneToMany(targetEntity=Request::class, mappedBy="building")
      */
     private $requests;

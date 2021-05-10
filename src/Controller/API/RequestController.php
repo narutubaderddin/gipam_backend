@@ -2,7 +2,7 @@
 
 namespace App\Controller\API;
 
-use App\Entity\Field;
+use App\Entity\Request as Requests;
 use App\Exception\FormValidationException;
 use App\Form\FieldType;
 use App\Form\RequestType;
@@ -73,17 +73,17 @@ class RequestController extends AbstractFOSRestController
      *     description="The field used to sort type"
      * )
      *
-     * @SWG\Tag(name="fields")
+     * @SWG\Tag(name="requests")
      *
      * @Rest\QueryParam(name="page", requirements="\d+", default="1", description="page number.")
      * @Rest\QueryParam(name="limit", requirements="\d+", default="0", description="page size.")
      * @Rest\QueryParam(name="sort_by", nullable=true, default="id", description="order by")
      * @Rest\QueryParam(name="sort", requirements="(asc|desc)", nullable=true, default="asc", description="tri order asc|desc")
      * @Rest\QueryParam(name="label", map=true, nullable=false, description="filter by label. example: label[eq]=value")
-     * @Rest\QueryParam(name="active" ,map=true, nullable=false, description="filter by active. example: active[eq]=1")
+     * @Rest\QueryParam(name="mail" ,map=true, nullable=false, description="filter by active. example: active[eq]=1")
      * @Rest\QueryParam(name="search", map=false, nullable=true, description="search. example: search=text")
      *
-     * @Rest\View(serializerGroups={"response","field_list"})
+     * @Rest\View(serializerGroups={"response","request_list"})
      *
      * @param ParamFetcherInterface $paramFetcher
      *
@@ -91,7 +91,7 @@ class RequestController extends AbstractFOSRestController
      */
     public function listRequests(ParamFetcherInterface $paramFetcher)
     {
-        $records = $this->apiManager->findRecordsByEntityName(Field::class, $paramFetcher);
+        $records = $this->apiManager->findRecordsByEntityName(Requests::class, $paramFetcher);
         return $this->view($records, Response::HTTP_OK);
     }
 
@@ -117,7 +117,7 @@ class RequestController extends AbstractFOSRestController
      * )
      * @SWG\Tag(name="requests")
      *
-     * @Rest\View(serializerGroups={"request"})
+     * @Rest\View(serializerGroups={"request_details"})
      *
      * @param Request $request
      *
