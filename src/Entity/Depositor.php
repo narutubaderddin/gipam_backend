@@ -39,6 +39,9 @@ class Depositor
 
     /**
      * @JMS\Groups("depositor", "depositors")
+     *
+     * @Assert\NotBlank
+     *
      * @ORM\Column(name="nom", type="string", length=255, nullable=true)
      */
     private $name;
