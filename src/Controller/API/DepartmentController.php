@@ -171,12 +171,19 @@ class DepartmentController extends AbstractFOSRestController
      *      type="string",
      *     description="regions id"
      * )
+     * @SWG\Parameter(
+     *     name="search",
+     *      in="query",
+     *      type="string",
+     *     description="depatement name"
+     * )
      *
      * @SWG\Tag(name="departments")
      *
      * @Rest\QueryParam(name="page", requirements="\d+", default="1", description="page number.")
      * @Rest\QueryParam(name="limit", requirements="\d+", default="0", description="page size.")
      * @Rest\QueryParam(name="region", nullable=true, default="", description="region id")
+     * @Rest\QueryParam(name="search", nullable=true, default="", description="depatement Name")
      *
      * @Rest\View()
      *

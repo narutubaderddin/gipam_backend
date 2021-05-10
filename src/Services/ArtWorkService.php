@@ -7,6 +7,7 @@ namespace App\Services;
 
 use App\Entity\ArtWork;
 use App\Entity\Furniture;
+use App\Entity\PropertyStatus;
 use App\Model\ApiResponse;
 use App\Repository\FurnitureRepository;
 use Doctrine\ORM\EntityManager;
@@ -37,8 +38,9 @@ class ArtWorkService
         $limit = $paramFetcher->get('limit', true)?? 5;
         $sortBy = $paramFetcher->get('sort_by')?? 'id';
         $sort = $paramFetcher->get('sort')?? 'asc';
-        $result =$this->entityManager->getRepository(ArtWork::class)->getArtWorkList($filter,$advancedFilter,$headerFilters,$page,$limit);
-        $filtredQuantity =$this->entityManager->getRepository(ArtWork::class)->getArtWorkList($filter,$advancedFilter,$headerFilters,$page,$limit,true);
+        $result =$this->entityManager->getRepository(ArtWork::class)->getArtWorkList($filter,$advancedFilter,$headerFilters,$page,$limit,$sortBy,$sort);
+        $filtredQuantity =$this->entityManager->getRepository(ArtWork::class)->getArtWorkList($filter,$advancedFilter,$headerFilters,$page,$limit,$sortBy,$sort,true);
+
         return  new ApiResponse(
             $page,
             $limit,
@@ -49,18 +51,39 @@ class ArtWorkService
 
     }
 
-    public function findAutocompleteData($searchQuery){
-        $queryData = $this->entityManager->getRepository(ArtWork::class)->getDescriptionAutocompleteData($searchQuery);
+    public function findAutocompleteData($searchQuery,$type){
+
+        if($type!='description'){
+            $queryData = $this->entityManager->getRepository(ArtWork::class)->getTitleAutocompleteData($searchQuery);
+        }else{
+            $queryData = $this->entityManager->getRepository(PropertyStatus::class)->getDescriptionAutocompleteData($searchQuery);
+        }
+
         $result=[];
         foreach ($queryData as $query){
-            $options = explode(" ",$query['title']);
-            foreach ($options as $option){
-                if(strpos(strtolower($option),strtolower($searchQuery))!==false&&!in_array(strtolower($option),$result)){
-                    $result[]= strtolower($option);
+            if($type == 'description'){
+                $options = explode(" ",$query['descriptiveWords']);
+                foreach ($options as $option){
+                    $option = strtolower(preg_replace('/[^A-Za-z0-9\-]/', '', $option)); // Removes special chars.
+                    if(strpos($option,strtolower($searchQuery))!==false&&!in_array($option,$result)){
+                        $result[]= $option;
+                    }
+                }
+            }else{
+                $option = $query['title'];
+                if(strpos($option,strtolower($searchQuery))!==false&&!in_array($option,$result)){
+                    $result[]= $option;
                 }
             }
+
+
         }
         return $result;
+    }
+
+    public function getArtWorkLocationData(ArtWork $artWork, $dataType){
+        return $this->entityManager->getRepository('Main:ArtWork')
+            ->getLocationData($artWork,$dataType);
     }
 
 }

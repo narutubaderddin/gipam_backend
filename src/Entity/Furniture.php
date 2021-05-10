@@ -3,8 +3,11 @@
 namespace App\Entity;
 
 use App\Repository\FurnitureRepository;
+use App\Services\ArtWorkService;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
+use Doctrine\ORM\EntityManager;
+use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Mapping as ORM;
 use JMS\Serializer\Annotation as JMS;
 use Symfony\Component\Validator\Constraints as Assert;
@@ -219,6 +222,7 @@ abstract class Furniture
      * @ORM\Column(name="date_modification", type="datetime")
      */
     protected $updatedAt;
+
 
     public function __construct()
     {
@@ -735,4 +739,11 @@ abstract class Furniture
             }
         }
     }
+
+
+//    public function getBuildings(){
+//        $this->getBuildings();
+//    }
+
+
 }

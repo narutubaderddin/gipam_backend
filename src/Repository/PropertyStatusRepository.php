@@ -18,4 +18,12 @@ class PropertyStatusRepository extends ServiceEntityRepository
     {
         parent::__construct($registry, PropertyStatus::class);
     }
+
+    public function getDescriptionAutocompleteData(string $searchQuery){
+        $query = $this->createQueryBuilder('property_status')
+            ->where('LOWER(property_status.descriptiveWords) like :param')
+            ->setParameter('param',strtolower("%".$searchQuery."%"))
+            ->select('property_status.descriptiveWords');
+        return $query->getQuery()->getResult();
+    }
 }

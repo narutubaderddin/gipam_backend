@@ -19,7 +19,7 @@ class Correspondent
 {
     use TimestampableEntity;
     /**
-     * @JMS\Groups("id")
+     * @JMS\Groups("id","short")
      *
      * @ORM\Id
      * @ORM\GeneratedValue
@@ -301,5 +301,16 @@ class Correspondent
         $this->login = $login;
 
         return $this;
+    }
+
+    /**
+     * @return string|null
+     * @JMS\VirtualProperty()
+     * @JMS\SerializedName("label")
+     * @JMS\Groups("short")
+     */
+    public function getFullName(): ?string
+    {
+        return $this->firstName . ' ' . $this->lastName;
     }
 }

@@ -47,6 +47,7 @@ class SubDivisionRepository extends ServiceEntityRepository
                 $query->andWhere('establishment.id in (:establishments)')->setParameter('establishments',$establishment);
             }
         }
+
         if($count){
             $query->select('count(sub_division.id)');
             return $query->getQuery()->getSingleScalarResult();
@@ -54,9 +55,11 @@ class SubDivisionRepository extends ServiceEntityRepository
         if($page!=""){
             $query->setFirstResult(($page - 1) * $limit);
         }
-        if($limit && $limit!=""){
+
+        if($limit && $limit!="" ){
             $query->setMaxResults($limit);
         }
+
         return  $query->getQuery()->getResult();
     }
 }

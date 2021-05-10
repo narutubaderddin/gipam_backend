@@ -187,7 +187,12 @@ class BuildingController extends AbstractFOSRestController
      *     in="query",
      *     description="commune id"
      * )
-     *
+     * @SWG\Parameter(
+     *     name="search",
+     *     type="string",
+     *      in="query",
+     *     description="building name"
+     * )
      * @SWG\Tag(name="buildings")
      *
      * @Rest\QueryParam(name="page", requirements="\d+", default="1", description="page number.")
@@ -195,7 +200,7 @@ class BuildingController extends AbstractFOSRestController
      * @Rest\QueryParam(name="region", nullable=true, default="", description="region id")
      * @Rest\QueryParam(name="departement", nullable=true, default="", description="epartement id")
      * @Rest\QueryParam(name="commune", nullable=true, default="", description="commune id")
-     *
+     * @Rest\QueryParam(name="search", nullable=true, default="", description="building name")
      * @Rest\View()
      *
      * @param ParamFetcherInterface $paramFetcher
