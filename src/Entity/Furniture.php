@@ -3,8 +3,11 @@
 namespace App\Entity;
 
 use App\Repository\FurnitureRepository;
+use App\Services\ArtWorkService;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
+use Doctrine\ORM\EntityManager;
+use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Mapping as ORM;
 use JMS\Serializer\Annotation as JMS;
 use Symfony\Component\Validator\Constraints as Assert;
@@ -22,7 +25,7 @@ use Symfony\Component\Validator\Context\ExecutionContextInterface;
 abstract class Furniture
 {
     /**
-     * @JMS\Groups("artwork", "artwork_id","id","art_work_list","art_work_details")
+     * @JMS\Groups("artwork", "artwork_id","id","art_work_list","art_work_details","request_list","request_details","request_list")
      * @ORM\Id
      * @ORM\GeneratedValue
      * @ORM\Column(type="integer")
@@ -30,7 +33,7 @@ abstract class Furniture
     protected $id;
 
     /**
-     * @JMS\Groups({"art_work_list","artwork","art_work_details"})
+     * @JMS\Groups({"art_work_list","artwork","art_work_details","request_list","request_details","request_list"})
      * @ORM\Column(name="titre", type="string", length=255, nullable=true)
      */
     protected $title;
@@ -78,7 +81,7 @@ abstract class Furniture
     protected $numberOfUnit;
 
     /**
-     * @JMS\Groups("artwork", "artwork_author","furniture","furniture_author","art_work_list","art_work_details")
+     * @JMS\Groups("artwork", "artwork_author","furniture","furniture_author","art_work_list","art_work_details","request_list")
      * @JMS\MaxDepth(1)
      * @ORM\ManyToMany(targetEntity=Author::class, inversedBy="furniture")
      * @ORM\JoinTable(name="objet_mobilier_auteur",
@@ -219,6 +222,7 @@ abstract class Furniture
      * @ORM\Column(name="date_modification", type="datetime")
      */
     protected $updatedAt;
+
 
     public function __construct()
     {
@@ -735,4 +739,11 @@ abstract class Furniture
             }
         }
     }
+
+
+//    public function getBuildings(){
+//        $this->getBuildings();
+//    }
+
+
 }

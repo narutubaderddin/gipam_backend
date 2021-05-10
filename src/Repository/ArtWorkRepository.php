@@ -11,6 +11,7 @@ use Doctrine\ORM\NonUniqueResultException;
 use Doctrine\ORM\NoResultException;
 use Doctrine\ORM\QueryBuilder;
 use Doctrine\Persistence\ManagerRegistry;
+use phpDocumentor\Reflection\Types\Self_;
 
 /**
  * @method ArtWork|null find($id, $lockMode = null, $lockVersion = null)
@@ -53,6 +54,20 @@ class ArtWorkRepository extends ServiceEntityRepository
         'depth' => ['field' => 'depth', 'operator' => 'range', 'entity' => 'artWork'],
         'weight' => ['field' => 'weight', 'operator' => 'range', 'entity' => 'artWork'],
         'status' => ['field' => 'status', 'operator' => 'instance', 'entity' => 'status'],
+        'deposant' => ['field' => 'id', 'operator' => 'in', 'entity' => 'depositor'],
+        'categorie' => ['field' => 'id', 'operator' => 'in', 'entity' => 'category'],
+        'entryMode' => ['field' => 'id', 'operator' => 'in', 'entity' => 'entryMode'],
+        'arretNumber' => ['field' => 'stopNumber', 'operator' => 'equal', 'entity' => 'depositStatus'],
+        'region' => ['field' => 'id', 'operator' => 'in', 'entity' => 'region'],
+        'departement' => ['field' => 'id', 'operator' => 'in', 'entity' => 'department'],
+        'communes' => ['field' => 'id', 'operator' => 'in', 'entity' => 'commune'],
+        'batiment' => ['field' => 'id', 'operator' => 'in', 'entity' => 'building'],
+        'sites' => ['field' => 'id', 'operator' => 'in', 'entity' => 'site'],
+        'localType' => ['field' => 'id', 'operator' => 'in', 'entity' => 'location_type'],
+        'creationDate' => ['field' => 'createdAt', 'operator' => 'equalDate', 'entity' => 'artWork'],
+        'correspondant' => ['field' => 'id', 'operator' => 'equalDate', 'entity' => 'correspondents'],
+        'responsible' => ['field' => 'id', 'operator' => 'in', 'entity' => 'responsibles'],
+        'establishementType' => ['field' => 'id', 'operator' => 'in', 'entity' => 'establishement_type'],
     ];
 
     /**
@@ -66,7 +81,7 @@ class ArtWorkRepository extends ServiceEntityRepository
      * @throws NoResultException
      * @throws NonUniqueResultException
      */
-    public function getArtWorkList(array $filter, array $advancedFilter, array $headerFilters, $page, $limit,$count=false)
+    public function getArtWorkList(array $filter, array $advancedFilter, array $headerFilters, $page, $limit,$sortBy='id',$sort='desc',$count=false)
     {
         $query = $this->createQueryBuilder('artWork');
         $query->where($query->expr()->isInstanceOf('artWork', ArtWork::class));
@@ -77,6 +92,20 @@ class ArtWorkRepository extends ServiceEntityRepository
             ->leftJoin('artWork.era', 'era')
             ->leftJoin('artWork.style', 'style')
             ->leftJoin('artWork.movements','movements')
+            ->leftJoin('movements.correspondents','correspondents')
+            ->leftJoin('correspondents.establishment','establishment')
+            ->leftJoin('establishment.ministry','ministry')
+            ->leftJoin('establishment.type','establishement_type')
+            ->leftJoin('establishment.subDivisions','sub_divisions')
+            ->leftJoin('sub_divisions.locations','locations')
+            ->leftJoin('locations.type','location_type')
+            ->leftJoin('locations.room','room')
+            ->leftJoin('room.building','building')
+            ->leftJoin('building.site','site')
+            ->leftJoin('building.commune','commune')
+            ->leftJoin('building.responsibles','responsibles')
+            ->leftJoin('commune.department','department')
+            ->leftJoin('department.region','region')
             ->leftJoin('movements.type','movementType')
             ->leftJoin('movementType.movementActionTypes','movementActionTypes')
             ->leftJoin('artWork.reports','reports')
@@ -85,9 +114,13 @@ class ArtWorkRepository extends ServiceEntityRepository
             ->leftJoin('reports.actions','reportAction')
             ->leftJoin('reportAction.type','reportActionType')
             ->leftJoin('artWork.status','status')
-
+            ->leftJoin(DepositStatus::class,'depositStatus',\Doctrine\ORM\Query\Expr\Join::WITH,'depositStatus = status')
+            ->leftJoin(PropertyStatus::class,'propertyStatus',\Doctrine\ORM\Query\Expr\Join::WITH,'propertyStatus = status')
+            ->leftJoin('depositStatus.depositor','depositor')
+            ->leftJoin('propertyStatus.category','category')
+            ->leftJoin('propertyStatus.entryMode','entryMode')
+//                        ->leftJoin('sub_divisions.services','services')
         ;
-
         foreach ($filter as $key => $value) {
             if (array_key_exists($key, self::$columns)) {
                 if ($key == 'id' && is_array($filter['id'])) {
@@ -102,7 +135,11 @@ class ArtWorkRepository extends ServiceEntityRepository
             $query->select('count(artWork.id)');
             return  $query->getQuery()->getSingleScalarResult();
         }
-        $query->setFirstResult(($page - 1) * $limit)->setMaxResults($limit);
+        $query->setFirstResult(($page-1)*$limit)->setMaxResults($limit);
+        if(array_key_exists($sortBy,self::$columns)){
+            $sortDataKey=self::$columns[$sortBy]['entity'].'.'.self::$columns[$sortBy]['field'];
+            $query->orderBy($sortDataKey,$sort);
+        }
         return $query->getQuery()->getResult();
     }
 
@@ -217,12 +254,14 @@ class ArtWorkRepository extends ServiceEntityRepository
                         $subDqlString = $keyData['entity'] . '.' . $keyData['field'] . $dqlOperator . ' :' . $key . '';
                         break;
                     case 'range':
+                    case 'equalDate':
                         if ($operator != 'not') {
                             $subDqlString .= $keyData['entity'] . '.' . $keyData['field'] . ' between :value1 and :value2';
                         }else{
                             $subDqlString.= $keyData['entity']. '.' . $keyData['field'].' > :value1 and '.$keyData['entity']. '.' . $keyData['field'].' < :value2';
                         }
                         break;
+
                 }
                 $dqlString .= (strlen($subDqlString)>0)?  $keysOperator. "( " . $subDqlString . " )":"";
                 if ($i < count($advancedFilter) &&  strlen($subDqlString)>0) {
@@ -261,6 +300,16 @@ class ArtWorkRepository extends ServiceEntityRepository
                     case 'range':
                         $query->setParameter('value1', $value['value'][0]);
                         $query->setParameter('value2', $value['value'][1]);
+                        break;
+                    case 'equalDate':
+                        $startDate = new \DateTime();
+                        $startDate->setDate($value['value'],1,1);
+                        $startDate->setTime(0,0,0);
+                        $endDate = new \DateTime();
+                        $endDate->setDate($value['value'],12,31);
+                        $endDate->setTime(23,59,59);
+                        $query->setParameter('value1', $startDate);
+                        $query->setParameter('value2', $endDate);
                         break;
                 }
             }
@@ -303,7 +352,7 @@ class ArtWorkRepository extends ServiceEntityRepository
      */
     public function searchByMode(QueryBuilder $qb, $mode): QueryBuilder
     {
-        [$operation,$operationLength,$operationWidth] = $mode == "Portait" ? [">=","IS NOT","IS"] : ["<=","IS","IS NOT"];
+        [$operation,$operationLength,$operationWidth] = $mode == "Portrait" ? [">=","IS NOT","IS"] : ["<=","IS","IS NOT"];
         $qb->andWhere("((e.length $operation e.width) or (e.length $operationLength NULL and e.width $operationWidth NULL ))
          or 
          (((e.length IS NULL and e.width IS NULL) and (e.totalLength $operation e.totalWidth)) or (e.totalLength $operationLength NULL and e.totalWidth $operationWidth NULL ))");
@@ -398,12 +447,37 @@ class ArtWorkRepository extends ServiceEntityRepository
         return $qb;
     }
 
-    public function getDescriptionAutocompleteData(string $searchQuery)
+    public function getTitleAutocompleteData(string $searchQuery)
     {
         $query = $this->createQueryBuilder('artWork');
         $query->where('LOWER(artWork.title) like :param');
         $query->setParameter('param',strtolower("%".$searchQuery."%"));
         $query->select('artWork.title');
         return $query->getQuery()->getResult();
+    }
+    public function getLocationData(ArtWork $artWork,$dataType){
+        $query = $this->createQueryBuilder('artWork');
+        $query->leftJoin('artWork.movements','movements')
+            ->leftJoin('movements.correspondents','correspondents')
+            ->leftJoin('correspondents.establishment','establishment')
+            ->leftJoin('establishment.subDivisions','subDivisions')
+            ->leftJoin('subDivisions.locations','locations')
+            ->leftJoin('locations.room','room')
+            ->leftJoin('room.building','building')
+            ->leftJoin('building.commune','commune');
+        $query->where('artWork = :artWork')->setParameter('artWork',$artWork);
+        if($dataType =='commune'){
+            $query->select('commune.name')
+                ->andWhere('commune.name IS NOT null')
+                ->groupBy('commune.id')
+            ;
+        }elseif ($dataType == 'building'){
+            $query->select('building.name')
+                ->andWhere('building.name IS NOT null')
+                ->groupBy('building.id')
+            ;
+        }
+        return $query->getQuery()->getArrayResult();
+
     }
 }

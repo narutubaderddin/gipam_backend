@@ -179,7 +179,7 @@ class SiteController extends AbstractFOSRestController
      * @Rest\QueryParam(name="departement", nullable=true, default="", description="epartement id")
      * @Rest\QueryParam(name="commune", nullable=true, default="", description="commune id")
      * @Rest\QueryParam(name="batiment", nullable=true, default="", description="commune id")
-     *
+     * @Rest\QueryParam(name="search", nullable=true, default="", description="commune name")
      * @Rest\View()
      *
      * @param ParamFetcherInterface $paramFetcher
