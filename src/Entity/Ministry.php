@@ -18,7 +18,7 @@ class Ministry
 {
     use TimestampableEntity;
     /**
-     * @JMS\Groups("id", "ministry", "ministry_id")
+     * @JMS\Groups("id", "ministry", "ministry_id", "short")
      *
      * @ORM\Id
      * @ORM\GeneratedValue
@@ -27,7 +27,7 @@ class Ministry
     private $id;
 
     /**
-     * @JMS\Groups("ministry")
+     * @JMS\Groups("ministry", "short")
      *
      * @ORM\Column(name="nom", type="string", length=255, nullable=true)
      */

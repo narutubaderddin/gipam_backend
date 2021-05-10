@@ -7,7 +7,8 @@ use App\Repository\ResponsibleRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
-
+use JMS\Serializer\Annotation as JMS;
+use Symfony\Component\Validator\Constraints as Assert;
 /**
  * @ORM\Entity(repositoryClass=ResponsibleRepository::class)
  * @ORM\Table(name="responsable")
@@ -16,6 +17,7 @@ class Responsible
 {
     use TimestampableEntity;
     /**
+     * @JMS\Groups("id","short")
      * @ORM\Id
      * @ORM\GeneratedValue
      * @ORM\Column(type="integer")
@@ -23,41 +25,49 @@ class Responsible
     private $id;
 
     /**
-     * @ORM\Column(name="nom", type="string", length=255, nullable=true)
-     */
-    private $name;
-
-    /**
+     * @JMS\Groups("responsible")
      * @ORM\Column(name="prenom", type="string", length=255, nullable=true)
      */
     private $firstName;
 
     /**
+     * @JMS\Groups("responsible")
+     * @ORM\Column(name="nom", type="string", length=255, nullable=true)
+     */
+    private $lastName;
+
+    /**
+     * @JMS\Groups("responsible")
      * @ORM\Column(name="telephone", type="string", length=255, nullable=true)
      */
     private $phone;
 
     /**
+     * @JMS\Groups("responsible")
      * @ORM\Column(name="fax", type="string", length=255, nullable=true)
      */
     private $fax;
 
     /**
+     * @JMS\Groups("responsible")
      * @ORM\Column(name="mail", type="string", length=255, nullable=true)
      */
     private $mail;
 
     /**
+     * @JMS\Groups("responsible")
      * @ORM\Column(name="date_debut", type="datetime", nullable=true)
      */
     private $startDate;
 
     /**
+     * @JMS\Groups("responsible")
      * @ORM\Column(name="date_fin", type="datetime", nullable=true)
      */
     private $endDate;
 
     /**
+     * @JMS\Groups("responsible", "id")
      * @ORM\ManyToMany(targetEntity=Building::class, inversedBy="responsibles")
      * @ORM\JoinTable(name="responsable_batiment",
      *      joinColumns={@ORM\JoinColumn(name="responsable_id", referencedColumnName="id")},
@@ -65,6 +75,12 @@ class Responsible
      *      )
      */
     private $buildings;
+
+    /**
+     * @JMS\Groups("responsible")
+     * @ORM\Column(name="connexion", type="string", length=255, nullable=true)
+     */
+    private $login;
 
     public function __construct()
     {
@@ -76,14 +92,14 @@ class Responsible
         return $this->id;
     }
 
-    public function getName(): ?string
+    public function getLastName(): ?string
     {
-        return $this->name;
+        return $this->lastName;
     }
 
-    public function setName(?string $name): self
+    public function setLastName(?string $lastName): self
     {
-        $this->name = $name;
+        $this->lastName = $lastName;
 
         return $this;
     }
@@ -182,5 +198,28 @@ class Responsible
         $this->buildings->removeElement($building);
 
         return $this;
+    }
+
+    public function getLogin(): ?string
+    {
+        return $this->login;
+    }
+
+    public function setLogin(?string $login): self
+    {
+        $this->login = $login;
+
+        return $this;
+    }
+
+    /**
+     * @return string|null
+     * @JMS\VirtualProperty()
+     * @JMS\SerializedName("label")
+     * @JMS\Groups("short")
+     */
+    public function getFullName(): ?string
+    {
+        return $this->firstName . ' ' . $this->lastName;
     }
 }

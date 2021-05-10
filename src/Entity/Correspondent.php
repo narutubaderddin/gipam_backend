@@ -8,6 +8,8 @@ use DateTimeInterface;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use JMS\Serializer\Annotation as JMS;
+use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * @ORM\Entity(repositoryClass=CorrespondentRepository::class)
@@ -17,6 +19,8 @@ class Correspondent
 {
     use TimestampableEntity;
     /**
+     * @JMS\Groups("id","short")
+     *
      * @ORM\Id
      * @ORM\GeneratedValue
      * @ORM\Column(type="integer")
@@ -24,62 +28,97 @@ class Correspondent
     private $id;
 
     /**
+     * @JMS\Groups("correspondent")
+     *
      * @ORM\Column(name="prenom", type="string", length=255, nullable=true)
      */
     private $firstName;
 
     /**
+     * @JMS\Groups("correspondent")
+     *
      * @ORM\Column(name="nom", type="string", length=255, nullable=true)
      */
     private $lastName;
 
     /**
+     * @JMS\Groups("correspondent")
+     *
      * @ORM\Column(name="telephone", type="string", length=255, nullable=true)
      */
     private $phone;
 
     /**
+     * @JMS\Groups("correspondent")
+     *
      * @ORM\Column(name="fax", type="string", length=255, nullable=true)
      */
     private $fax;
 
     /**
+     * @JMS\Groups("correspondent")
+     *
      * @ORM\Column(name="mail", type="string", length=255, nullable=true)
      */
     private $mail;
 
     /**
+     * @JMS\Groups("correspondent")
+     *
      * @ORM\Column(name="date_debut", type="datetime", nullable=true)
      */
     private $startDate;
 
     /**
+     * @JMS\Groups("correspondent")
+     *
      * @ORM\Column(name="date_fin", type="datetime", nullable=true)
      */
     private $endDate;
 
     /**
+     * @JMS\Groups("correspondent")
+     *
      * @ORM\ManyToOne(targetEntity=Establishment::class, inversedBy="correspondents")
      * @ORM\JoinColumn(name="etablissement_id", referencedColumnName="id")
      */
     private $establishment;
 
     /**
+     * @JMS\Groups("correspondent")
+     *
      * @ORM\ManyToOne(targetEntity=SubDivision::class, inversedBy="correspondents")
      * @ORM\JoinColumn(name="sous_direction_id", referencedColumnName="id")
      */
     private $subDivision;
 
     /**
+     * @JMS\Groups("correspondent")
+     *
      * @ORM\ManyToOne(targetEntity=Service::class, inversedBy="correspondents")
      * @ORM\JoinColumn(name="service_id", referencedColumnName="id")
      */
     private $service;
 
     /**
+     * @JMS\Groups("correspondent")
+     *
      * @ORM\ManyToMany(targetEntity=Movement::class, mappedBy="correspondents")
      */
     private $movements;
+
+
+    /**
+     * @JMS\Groups("correspondent")
+     * @ORM\Column(name="fonction", type="string", length=255, nullable=true)
+     */
+    private $function;
+
+    /**
+     * @JMS\Groups("correspondent")
+     * @ORM\Column(name="connexion",type="string", length=255, nullable=true)
+     */
+    private $login;
 
     public function __construct()
     {
@@ -236,5 +275,42 @@ class Correspondent
         }
 
         return $this;
+    }
+
+
+
+    public function getFunction(): ?string
+    {
+        return $this->function;
+    }
+
+    public function setFunction(?string $function): self
+    {
+        $this->function = $function;
+
+        return $this;
+    }
+
+    public function getLogin(): ?string
+    {
+        return $this->login;
+    }
+
+    public function setLogin(?string $login): self
+    {
+        $this->login = $login;
+
+        return $this;
+    }
+
+    /**
+     * @return string|null
+     * @JMS\VirtualProperty()
+     * @JMS\SerializedName("label")
+     * @JMS\Groups("short")
+     */
+    public function getFullName(): ?string
+    {
+        return $this->firstName . ' ' . $this->lastName;
     }
 }

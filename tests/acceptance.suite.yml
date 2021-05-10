@@ -1,7 +1,7 @@
-actor: AcceptanceTester
-modules:
-    enabled:
-        - PhpBrowser:
-              url: http://localhost:8000
-        - \App\Tests\Helper\Acceptance
-
+#actor: AcceptanceTester
+#modules:
+#    enabled:
+#        - PhpBrowser:
+#              url: http://localhost:8000
+#        - \App\Tests\Helper\Acceptance
+#

@@ -114,16 +114,12 @@ class SiteController extends AbstractFOSRestController
      */
     public function listSites(ParamFetcherInterface $paramFetcher, Request $request)
     {
-        $serializerGroups = $request->get('serializer_group') ?? null;
-        if ($serializerGroups) {
-            $serializerGroups = json_decode($serializerGroups, true);
-            $context = new Context();
-            $context->setGroups($serializerGroups);
-            $records = $this->apiManager->findRecordsByEntityName(Site::class, $paramFetcher);
-            return $this->view($records, Response::HTTP_OK)->setContext($context);
-        }
+        $serializerGroups = $request->get('serializer_group', '["response", "site"]') ?? null;
+        $serializerGroups = json_decode($serializerGroups, true);
+        $context = new Context();
+        $context->setGroups($serializerGroups);
         $records = $this->apiManager->findRecordsByEntityName(Site::class, $paramFetcher);
-        return $this->view($records, Response::HTTP_OK);
+        return $this->view($records, Response::HTTP_OK)->setContext($context);
     }
     /**
      *
@@ -183,7 +179,7 @@ class SiteController extends AbstractFOSRestController
      * @Rest\QueryParam(name="departement", nullable=true, default="", description="epartement id")
      * @Rest\QueryParam(name="commune", nullable=true, default="", description="commune id")
      * @Rest\QueryParam(name="batiment", nullable=true, default="", description="commune id")
-     *
+     * @Rest\QueryParam(name="search", nullable=true, default="", description="commune name")
      * @Rest\View()
      *
      * @param ParamFetcherInterface $paramFetcher

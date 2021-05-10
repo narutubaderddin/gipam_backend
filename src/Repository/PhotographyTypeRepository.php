@@ -14,6 +14,10 @@ use Doctrine\Persistence\ManagerRegistry;
  */
 class PhotographyTypeRepository extends ServiceEntityRepository
 {
+    use RepositoryTrait;
+
+    public const SEARCH_FIELDS = ['type_param' => 'type'];
+
     public function __construct(ManagerRegistry $registry)
     {
         parent::__construct($registry, PhotographyType::class);

@@ -120,7 +120,8 @@ class BuildingController extends AbstractFOSRestController
      * @Rest\QueryParam(name="distrib", map=true, nullable=false, description="filter by distrib. example: distrib[eq]=value")
      * @Rest\QueryParam(name="cedex", map=true, nullable=false, description="filter by cedex. example: cedex[eq]=value")
      * @Rest\QueryParam(name="site", nullable=false, description="filter by site id. example: site[eq]=value")
-     * @Rest\QueryParam(name="commune", nullable=false, description="filter by commune id. example: commune[eq]=value")
+     * @Rest\QueryParam(name="commune_id", map=true, nullable=false, description="filter by commune id. example: commune_id[eq]=value")
+     * @Rest\QueryParam(name="commune_name", map=true, nullable=false, description="filter by commune name. example: commune_name[eq]=value")
      * @Rest\QueryParam(name="search", map=false, nullable=true, description="search. example: search=text")
      * @Rest\QueryParam(name="startDate",
      *      map=true, nullable=false,
@@ -186,7 +187,12 @@ class BuildingController extends AbstractFOSRestController
      *     in="query",
      *     description="commune id"
      * )
-     *
+     * @SWG\Parameter(
+     *     name="search",
+     *     type="string",
+     *      in="query",
+     *     description="building name"
+     * )
      * @SWG\Tag(name="buildings")
      *
      * @Rest\QueryParam(name="page", requirements="\d+", default="1", description="page number.")
@@ -194,7 +200,7 @@ class BuildingController extends AbstractFOSRestController
      * @Rest\QueryParam(name="region", nullable=true, default="", description="region id")
      * @Rest\QueryParam(name="departement", nullable=true, default="", description="epartement id")
      * @Rest\QueryParam(name="commune", nullable=true, default="", description="commune id")
-     *
+     * @Rest\QueryParam(name="search", nullable=true, default="", description="building name")
      * @Rest\View()
      *
      * @param ParamFetcherInterface $paramFetcher

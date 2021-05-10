@@ -112,6 +112,7 @@ class CommuneController extends AbstractFOSRestController
      * @Rest\QueryParam(name="page", requirements="\d+", default="1", description="page number.")
      * @Rest\QueryParam(name="limit", requirements="\d+", default="0", description="page size.")
      * @Rest\QueryParam(name="sort_by", nullable=true, default="id", description="order by")
+     * @Rest\QueryParam(name="department_name", map=true, nullable=false, description="filter by department name. example: department_name[eq]=value")
      * @Rest\QueryParam(name="search", map=false, nullable=true, description="search. example: search=text")
      * @Rest\QueryParam(
      *     name="sort", requirements="(asc|desc)",
@@ -187,7 +188,7 @@ class CommuneController extends AbstractFOSRestController
      *     description="regions id"
      * )
      * @SWG\Parameter(
-     *     name="name",
+     *     name="search",
      *     type="string",
      *      in="query",
      *     description="commune name"
@@ -199,7 +200,7 @@ class CommuneController extends AbstractFOSRestController
      * @Rest\QueryParam(name="limit", requirements="\d+", default="0", description="page size.")
      * @Rest\QueryParam(name="region", nullable=true, default="", description="region id")
      * @Rest\QueryParam(name="departement", nullable=true, default="", description="epartement id")
-     * @Rest\QueryParam(name="name", nullable=true, default="", description="commune name")
+     * @Rest\QueryParam(name="search", nullable=true, default="", description="commune name")
      *
      * @Rest\View()
      *

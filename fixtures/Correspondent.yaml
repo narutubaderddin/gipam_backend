@@ -1,0 +1,11 @@
+App\Entity\Correspondent:
+  correspondent_1:
+    firstName: <name()>
+    lastName: <name()>
+    fax: <name()>
+    phone: <name()>
+    mail: <name()>
+    startDate: <date_create()>
+    service: '@service*'
+    establishment: '@establishment*'
+    subDivision: '@subDivision*'

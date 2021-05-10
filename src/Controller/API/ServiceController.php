@@ -106,7 +106,7 @@ class ServiceController extends AbstractFOSRestController
      * @Rest\QueryParam(name="subDivision", map=true, nullable=false, description="filter by subDivision. example: subDivision[eq]=value")
      * @Rest\QueryParam(name="search", map=false, nullable=true, description="search. example: search=text")
      *
-     * @Rest\View()
+     * @Rest\View(serializerGroups={"response","service"})
      *
      * @param ParamFetcherInterface $paramFetcher
      *
@@ -117,7 +117,57 @@ class ServiceController extends AbstractFOSRestController
         $records = $this->apiManager->findRecordsByEntityName(Service::class, $paramFetcher);
         return $this->view($records, Response::HTTP_OK);
     }
+    /**
+     *
+     * @Rest\Get("/findByCriteria")
+     *
+     * @SWG\Response(
+     *     response=200,
+     *     description="Returns the list of an service filtred ",
+     *     @SWG\Schema(
+     *         @SWG\Items(ref=@Model(type=ApiResponse::class))
+     *     )
+     * )
+     *
+     * @SWG\Parameter(
+     *     name="page",
+     *     in="query",
+     *     type="integer",
+     *     description="The field used to page number"
+     * )
+     * @SWG\Parameter(
+     *     name="limit",
+     *     in="query",
+     *     type="integer",
+     *     description="The field used to page size"
+     * )
+     *
 
+     * @SWG\Parameter(
+     *     name="subDivision",
+     *      type="string",
+     *     in="query",
+     *     description="subDivisions id"
+     * )
+     *
+     * @SWG\Tag(name="services")
+     *
+     * @Rest\QueryParam(name="page", requirements="\d+", default="1", description="page number.")
+     * @Rest\QueryParam(name="limit", requirements="\d+", default="0", description="page size.")
+     * @Rest\QueryParam(name="subDivisions", nullable=true, default="", description="subDivision id")
+     * @Rest\QueryParam(name="establishments", nullable=true, default="", description="subDivision id")
+
+     *
+     * @Rest\View()
+     *
+     * @param ParamFetcherInterface $paramFetcher
+     * @param ApiManager $apiManager
+     * @return View
+     */
+    public function listServiceByCriteria(ParamFetcherInterface $paramFetcher,ApiManager $apiManager){
+        $records =$apiManager->findRecordsByEntityNameAndCriteria(Service::class,$paramFetcher);
+        return $this->view($records, Response::HTTP_OK);
+    }
     /**
      * @Rest\Post("/")
      *

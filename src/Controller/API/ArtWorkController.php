@@ -155,12 +155,14 @@ class ArtWorkController extends AbstractFOSRestController
      *     )
      * )
      * @Rest\QueryParam(name="query", nullable=true, default="", description="query to search")
+     * @Rest\QueryParam(name="type",nullable=true,default="title",description="title|description")
      * @Rest\View()
      * @return array
      */
     public function findDescriptionAutocompleteData(ParamFetcherInterface $paramFetcher,ArtWorkService $artWorkService){
-        return $artWorkService->findAutocompleteData($paramFetcher->get('query')??"");
+        return $artWorkService->findAutocompleteData($paramFetcher->get('query')??"", $paramFetcher->get('type')??'title');
     }
+
 
 
     /**
@@ -221,7 +223,7 @@ class ArtWorkController extends AbstractFOSRestController
      *
      * @param ParamFetcherInterface $paramFetcher
      *
-     * @return Response
+     * @return View
      */
     public function searchArtWorks(ParamFetcherInterface $paramFetcher)
     {

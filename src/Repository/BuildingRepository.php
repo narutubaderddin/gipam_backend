@@ -31,6 +31,7 @@ class BuildingRepository extends ServiceEntityRepository
 
     public function findRecordsByEntityNameAndCriteria(ParamFetcherInterface $paramFetcher, $count, $page = 1, $limit = 0)
     {
+        $name = $paramFetcher->get('search')??"";
         $departement = $paramFetcher->get('departement') ?? "";
         $region = $paramFetcher->get('region') ?? "";
         $commune = $paramFetcher->get('commune') ?? "";
@@ -38,6 +39,9 @@ class BuildingRepository extends ServiceEntityRepository
             ->leftJoin('building.commune', 'commune')
             ->leftJoin('commune.department', 'departement')
             ->leftJoin('departement.region', 'region');
+        if($name!=""){
+            $query = $this->andWhere($query,'name','contains','name',$name);
+        }
         $query = $this->addArrayCriteriaCondition($query, $departement, 'departement');
         $query = $this->addArrayCriteriaCondition($query, $region, 'region');
         $query = $this->addArrayCriteriaCondition($query, $commune, 'commune');
@@ -48,7 +52,7 @@ class BuildingRepository extends ServiceEntityRepository
         }
 
         if ($page != "") {
-            $query->setFirstResult(($page * $limit) + 1);
+            $query->setFirstResult(($page - 1) * $limit);
         }
         if ($limit && $limit != "") {
             $query->setMaxResults($limit);

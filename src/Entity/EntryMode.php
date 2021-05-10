@@ -8,14 +8,17 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use JMS\Serializer\Annotation as JMS;
+use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 
 /**
  * @ORM\Entity(repositoryClass=EntryModeRepository::class)
  * @ORM\Table(name="mode_entree")
+ * @UniqueEntity("label", repositoryMethod="iFindBy", message="Un mode d'entrée avec ce libellé existe déjà!")
  */
 class EntryMode
 {
     use TimestampableEntity;
+
     public const LABEL = [
         'inscriptionInventaire' => 'Inscription à l’inventaire',
         'don' => 'Don',
@@ -24,7 +27,7 @@ class EntryMode
         'artistique' => '1% artistique',
     ];
     /**
-     * @JMS\Groups("artwork","short")
+     * @JMS\Groups("artwork","short", "id")
      *
      * @ORM\Id
      * @ORM\GeneratedValue
@@ -33,17 +36,20 @@ class EntryMode
     private $id;
 
     /**
-     * @JMS\Groups("short")
+     * @JMS\Groups("short", "entrymode")
      * @ORM\Column(name="libelle", type="string", length=255, nullable=true)
      */
     private $label;
 
     /**
+     * @JMS\Exclude()
      * @ORM\OneToMany(targetEntity=PropertyStatus::class, mappedBy="entryMode")
      */
     private $propertyStatuses;
 
     /**
+     * @JMS\Groups("entrymode")
+     *
      * @ORM\Column(name="actif", type="boolean", nullable=false)
      */
     private $active = true;
