@@ -27,9 +27,10 @@ class ArtWorkRepository extends ServiceEntityRepository
     {
         parent::__construct($registry, ArtWork::class);
     }
-    private static $entityInstance=[
-        'depot'=>DepositStatus::class,
-        'propriete'=>PropertyStatus::class
+
+    private static $entityInstance = [
+        'depot' => DepositStatus::class,
+        'propriete' => PropertyStatus::class
     ];
     public static $columns = [
         'id' => ['field' => 'id', 'operator' => 'equal', 'entity' => 'artWork'],
@@ -68,6 +69,23 @@ class ArtWorkRepository extends ServiceEntityRepository
         'correspondant' => ['field' => 'id', 'operator' => 'equalDate', 'entity' => 'correspondents'],
         'responsible' => ['field' => 'id', 'operator' => 'in', 'entity' => 'responsibles'],
         'establishementType' => ['field' => 'id', 'operator' => 'in', 'entity' => 'establishement_type'],
+        'entryDate' => ['field' => 'depositDate', 'operator' => 'range', 'entity' => 'depositStatus'],
+        'depotDate' => ['field' => 'entryDate', 'operator' => 'range', 'entity' => 'propertyStatus'],
+    ];
+
+    public static $sortColumns = [
+        'id' => ['field' => 'id',  'entity' => 'artWork'] ,
+        'titre' => ['field' => 'title',  'entity' => 'artWork'],
+        'creationDate' => ['field' => 'createdAt',  'entity' => 'artWork'],
+        'field' => ['field' => 'label',  'entity' => 'field'],
+        'denomination' => ['field' => 'label',  'entity' => 'denomination'],
+        'materialTechnique' => ['field' => 'label',  'entity' => 'materialTechnique'],
+        'style' => ['field' => 'label',  'entity' => 'style'],
+        'authors' => ['field' => 'firstName',  'entity' => 'authors'],
+        'era' => ['field' => 'label',  'entity' => 'era'],
+        'depositor' => ['field' => 'name',  'entity' => 'depositor'],
+        'communes' => ['field' => 'name',  'entity' => 'commune'],
+        'buildings' => ['field' => 'name',  'entity' => 'building']
     ];
 
     /**
@@ -81,7 +99,7 @@ class ArtWorkRepository extends ServiceEntityRepository
      * @throws NoResultException
      * @throws NonUniqueResultException
      */
-    public function getArtWorkList(array $filter, array $advancedFilter, array $headerFilters, $page, $limit,$sortBy='id',$sort='desc',$count=false)
+    public function getArtWorkList(array $filter, array $advancedFilter, array $headerFilters, $page, $limit, $sortBy = 'id', $sort = 'desc', $count = false)
     {
         $query = $this->createQueryBuilder('artWork');
         $query->where($query->expr()->isInstanceOf('artWork', ArtWork::class));
@@ -91,35 +109,34 @@ class ArtWorkRepository extends ServiceEntityRepository
             ->leftJoin('artWork.authors', 'authors')
             ->leftJoin('artWork.era', 'era')
             ->leftJoin('artWork.style', 'style')
-            ->leftJoin('artWork.movements','movements')
-            ->leftJoin('movements.correspondents','correspondents')
-            ->leftJoin('correspondents.establishment','establishment')
-            ->leftJoin('establishment.ministry','ministry')
-            ->leftJoin('establishment.type','establishement_type')
-            ->leftJoin('establishment.subDivisions','sub_divisions')
-            ->leftJoin('sub_divisions.locations','locations')
-            ->leftJoin('locations.type','location_type')
-            ->leftJoin('locations.room','room')
-            ->leftJoin('room.building','building')
-            ->leftJoin('building.site','site')
-            ->leftJoin('building.commune','commune')
-            ->leftJoin('building.responsibles','responsibles')
-            ->leftJoin('commune.department','department')
-            ->leftJoin('department.region','region')
-            ->leftJoin('movements.type','movementType')
-            ->leftJoin('movementType.movementActionTypes','movementActionTypes')
-            ->leftJoin('artWork.reports','reports')
-            ->leftJoin('reports.reportSubType','reportSubType')
-            ->leftJoin('reportSubType.reportType','reportType')
-            ->leftJoin('reports.actions','reportAction')
-            ->leftJoin('reportAction.type','reportActionType')
-            ->leftJoin('artWork.status','status')
-            ->leftJoin(DepositStatus::class,'depositStatus',\Doctrine\ORM\Query\Expr\Join::WITH,'depositStatus = status')
-            ->leftJoin(PropertyStatus::class,'propertyStatus',\Doctrine\ORM\Query\Expr\Join::WITH,'propertyStatus = status')
-            ->leftJoin('depositStatus.depositor','depositor')
-            ->leftJoin('propertyStatus.category','category')
-            ->leftJoin('propertyStatus.entryMode','entryMode')
-//                        ->leftJoin('sub_divisions.services','services')
+            ->leftJoin('artWork.movements', 'movements')
+            ->leftJoin('movements.correspondents', 'correspondents')
+            ->leftJoin('correspondents.establishment', 'establishment')
+            ->leftJoin('establishment.ministry', 'ministry')
+            ->leftJoin('establishment.type', 'establishement_type')
+            ->leftJoin('establishment.subDivisions', 'sub_divisions')
+            ->leftJoin('sub_divisions.locations', 'locations')
+            ->leftJoin('locations.type', 'location_type')
+            ->leftJoin('locations.room', 'room')
+            ->leftJoin('room.building', 'building')
+            ->leftJoin('building.site', 'site')
+            ->leftJoin('building.commune', 'commune')
+            ->leftJoin('building.responsibles', 'responsibles')
+            ->leftJoin('commune.department', 'department')
+            ->leftJoin('department.region', 'region')
+            ->leftJoin('movements.type', 'movementType')
+            ->leftJoin('movementType.movementActionTypes', 'movementActionTypes')
+            ->leftJoin('artWork.reports', 'reports')
+            ->leftJoin('reports.reportSubType', 'reportSubType')
+            ->leftJoin('reportSubType.reportType', 'reportType')
+            ->leftJoin('reports.actions', 'reportAction')
+            ->leftJoin('reportAction.type', 'reportActionType')
+            ->leftJoin('artWork.status', 'status')
+            ->leftJoin(DepositStatus::class, 'depositStatus', \Doctrine\ORM\Query\Expr\Join::WITH, 'depositStatus = status')
+            ->leftJoin(PropertyStatus::class, 'propertyStatus', \Doctrine\ORM\Query\Expr\Join::WITH, 'propertyStatus = status')
+            ->leftJoin('depositStatus.depositor', 'depositor')
+            ->leftJoin('propertyStatus.category', 'category')
+            ->leftJoin('propertyStatus.entryMode', 'entryMode')//                        ->leftJoin('sub_divisions.services','services')
         ;
         foreach ($filter as $key => $value) {
             if (array_key_exists($key, self::$columns)) {
@@ -131,14 +148,15 @@ class ArtWorkRepository extends ServiceEntityRepository
             }
         }
         $query = $this->addAdvancedFilter($query, $advancedFilter, $headerFilters);
-        if($count){
+        if ($count) {
             $query->select('count(artWork.id)');
-            return  $query->getQuery()->getSingleScalarResult();
+            return $query->getQuery()->getSingleScalarResult();
         }
-        $query->setFirstResult(($page-1)*$limit)->setMaxResults($limit);
-        if(array_key_exists($sortBy,self::$columns)){
-            $sortDataKey=self::$columns[$sortBy]['entity'].'.'.self::$columns[$sortBy]['field'];
-            $query->orderBy($sortDataKey,$sort);
+        $query->setFirstResult(($page - 1) * $limit)->setMaxResults($limit);
+//        dd(array_key_exists($sortBy, self::$sortColumns));
+        if (array_key_exists($sortBy, self::$sortColumns)) {
+            $sortDataKey = self::$sortColumns[$sortBy]['entity'] . '.' . self::$sortColumns[$sortBy]['field'];
+            $query->orderBy($sortDataKey, $sort);
         }
         return $query->getQuery()->getResult();
     }
@@ -152,13 +170,13 @@ class ArtWorkRepository extends ServiceEntityRepository
                 case 'like':
                     $subDql = "";
                     if ($isColumnFilterExist) {
-                        $subDql .= 'LOWER('.$entity . '.' . $queryKey . ') like :' . $column;
+                        $subDql .= 'LOWER(' . $entity . '.' . $queryKey . ') like :' . $column;
                         if ($isColumnHeaderFilterExist) {
                             $subDql .= " and ";
                         }
                     }
                     if ($isColumnHeaderFilterExist) {
-                        $subDql .='LOWER('.$entity . '.' . $queryKey . ') like :header' . $column;
+                        $subDql .= 'LOWER(' . $entity . '.' . $queryKey . ') like :header' . $column;
                     }
 
                     $query->andWhere('(' . $subDql . ')');
@@ -182,32 +200,34 @@ class ArtWorkRepository extends ServiceEntityRepository
                 case 'in':
                     if (($isColumnFilterExist && count($filter[$column]) > 0) || ($isColumnHeaderFilterExist && count($headerFilters[$column]) > 0)) {
                         $data = [];
-                        $data = ($isColumnFilterExist&& is_array($filter[$column]) && count($filter[$column]) > 0) ? array_unique(array_merge($data, $filter[$column])) : $data;
-                        $data = ($isColumnHeaderFilterExist && is_array($headerFilters[$column]) &&count($headerFilters[$column]) > 0) ? array_unique(array_merge($data, $headerFilters[$column])) : $data;
+                        $data = ($isColumnFilterExist && is_array($filter[$column]) && count($filter[$column]) > 0) ? array_unique(array_merge($data, $filter[$column])) : $data;
+                        $data = ($isColumnHeaderFilterExist && is_array($headerFilters[$column]) && count($headerFilters[$column]) > 0) ? array_unique(array_merge($data, $headerFilters[$column])) : $data;
                         $query->andWhere($entity . '.' . $queryKey . ' in (:' . $column . ')');
                         $query->setParameter($column, $data, Connection::PARAM_STR_ARRAY);
                     }
                     break;
                 case 'instance':
-                    $data=[];
-                    $data = ($isColumnFilterExist&& is_array($filter[$column]) && count($filter[$column]) > 0) ? array_unique(array_merge($data, $filter[$column])) : $data;
-                    $data = ($isColumnHeaderFilterExist && is_array($headerFilters[$column]) &&count($headerFilters[$column]) > 0) ? array_unique(array_merge($data, $headerFilters[$column])) : $data;
-                    $subDql="";$i=0;
-                    foreach ($data as $entityData){
-                        if(array_key_exists($entityData,self::$entityInstance)){
+                    $data = [];
+                    $data = ($isColumnFilterExist && is_array($filter[$column]) && count($filter[$column]) > 0) ? array_unique(array_merge($data, $filter[$column])) : $data;
+                    $data = ($isColumnHeaderFilterExist && is_array($headerFilters[$column]) && count($headerFilters[$column]) > 0) ? array_unique(array_merge($data, $headerFilters[$column])) : $data;
+                    $subDql = "";
+                    $i = 0;
+                    foreach ($data as $entityData) {
+                        if (array_key_exists($entityData, self::$entityInstance)) {
                             $subDql .= "($entity INSTANCE of :entity_$i)";
-                            if($entityData !== end($data)) {
-                                $subDql.=' or ';
+                            if ($entityData !== end($data)) {
+                                $subDql .= ' or ';
                             }
                             $i++;
                         }
 
                     }
-                    if(count($data)>0 && strlen($subDql)>0){
-                        $query->andWhere("($subDql)");$i=0;
-                        foreach ($data as $entityData){
-                            if(array_key_exists($entityData,self::$entityInstance)){
-                                $query->setParameter("entity_$i",$this->getEntityManager()->getClassMetadata(self::$entityInstance[$entityData]));
+                    if (count($data) > 0 && strlen($subDql) > 0) {
+                        $query->andWhere("($subDql)");
+                        $i = 0;
+                        foreach ($data as $entityData) {
+                            if (array_key_exists($entityData, self::$entityInstance)) {
+                                $query->setParameter("entity_$i", $this->getEntityManager()->getClassMetadata(self::$entityInstance[$entityData]));
                                 $i++;
                             }
 
@@ -232,40 +252,40 @@ class ArtWorkRepository extends ServiceEntityRepository
         $dqlString = "( ";
         $hasAdvancedFilter = false;
         $i = 0;
-        $keysOperator ="";
-        $operator ='and';
+        $keysOperator = "";
+        $operator = 'and';
         foreach ($advancedFilter as $key => $value) {
             $subDqlString = "";
-            $isColumnAdvancedFilterExist =array_key_exists($key, self::$columns) && isset($advancedFilter[$key]) && $advancedFilter[$key]['value'] != "";
-            $isColumnHeaderFilterExist =array_key_exists($key, self::$columns) && isset($headerFilter[$key]) && $headerFilter[$key] != "";
+            $isColumnAdvancedFilterExist = array_key_exists($key, self::$columns) && isset($advancedFilter[$key]) && $advancedFilter[$key]['value'] != "";
+            $isColumnHeaderFilterExist = array_key_exists($key, self::$columns) && isset($headerFilter[$key]) && $headerFilter[$key] != "";
 
             if ($isColumnHeaderFilterExist || $isColumnAdvancedFilterExist) {
-                $dqlOperator="";
+                $dqlOperator = "";
                 $keyData = self::$columns[$key];
                 switch ($keyData['operator']) {
                     case'in':
-                        if(($isColumnAdvancedFilterExist &&count($value['value'])>0) || ($isColumnHeaderFilterExist&&count($headerFilter[$key])>0)){
-                            $dqlOperator = (is_array($value)&&$operator== 'not')  ? ' not in' : ' in';
+                        if (($isColumnAdvancedFilterExist && count($value['value']) > 0) || ($isColumnHeaderFilterExist && count($headerFilter[$key]) > 0)) {
+                            $dqlOperator = (is_array($value) && $operator == 'not') ? ' not in' : ' in';
                             $subDqlString = $keyData['entity'] . '.' . $keyData['field'] . $dqlOperator . ' (:' . $key . ')';
                         }
                         break;
                     case 'equal':
-                        $dqlOperator = (is_array($value)&&$operator== 'not') ? ' !=' : ' =';
+                        $dqlOperator = (is_array($value) && $operator == 'not') ? ' !=' : ' =';
                         $subDqlString = $keyData['entity'] . '.' . $keyData['field'] . $dqlOperator . ' :' . $key . '';
                         break;
                     case 'range':
                     case 'equalDate':
                         if ($operator != 'not') {
                             $subDqlString .= $keyData['entity'] . '.' . $keyData['field'] . ' between :value1 and :value2';
-                        }else{
-                            $subDqlString.= $keyData['entity']. '.' . $keyData['field'].' > :value1 and '.$keyData['entity']. '.' . $keyData['field'].' < :value2';
+                        } else {
+                            $subDqlString .= $keyData['entity'] . '.' . $keyData['field'] . ' > :value1 and ' . $keyData['entity'] . '.' . $keyData['field'] . ' < :value2';
                         }
                         break;
 
                 }
-                $dqlString .= (strlen($subDqlString)>0)?  $keysOperator. "( " . $subDqlString . " )":"";
-                if ($i < count($advancedFilter) &&  strlen($subDqlString)>0) {
-                    $keysOperator = (is_array($value)&&$operator== 'or')  ? 'or' : 'and';
+                $dqlString .= (strlen($subDqlString) > 0) ? $keysOperator . "( " . $subDqlString . " )" : "";
+                if ($i < count($advancedFilter) && strlen($subDqlString) > 0) {
+                    $keysOperator = (is_array($value) && $operator == 'or') ? 'or' : 'and';
                     $hasAdvancedFilter = true;
                 }
 
@@ -281,17 +301,17 @@ class ArtWorkRepository extends ServiceEntityRepository
         $query->andWhere($dqlString);
 
         foreach ($advancedFilter as $key => $value) {
-            $isColumnAdvancedFilterExist =array_key_exists($key, self::$columns) && isset($advancedFilter[$key]) && $advancedFilter[$key] ['value']!= "";
-            $isColumnHeaderFilterExist =array_key_exists($key, self::$columns) && isset($headerFilter[$key]) && $headerFilter[$key] != "";
+            $isColumnAdvancedFilterExist = array_key_exists($key, self::$columns) && isset($advancedFilter[$key]) && $advancedFilter[$key] ['value'] != "";
+            $isColumnHeaderFilterExist = array_key_exists($key, self::$columns) && isset($headerFilter[$key]) && $headerFilter[$key] != "";
             if ($isColumnHeaderFilterExist || $isColumnAdvancedFilterExist) {
                 $keyData = self::$columns[$key];
                 switch ($keyData['operator']) {
                     case 'in':
                         $data = [];
-                        $data = ($isColumnAdvancedFilterExist&& is_array($value['value']) && count($value['value']) > 0) ? array_unique(array_merge($data, $value['value'])) : $data;
-                        $data = ($isColumnHeaderFilterExist && is_array($headerFilter[$key]) &&count($headerFilter[$key]) > 0) ? array_unique(array_merge($data, $headerFilter[$key])) : $data;
-                        if(count($data)>0){
-                            $query->setParameter($key,$data);
+                        $data = ($isColumnAdvancedFilterExist && is_array($value['value']) && count($value['value']) > 0) ? array_unique(array_merge($data, $value['value'])) : $data;
+                        $data = ($isColumnHeaderFilterExist && is_array($headerFilter[$key]) && count($headerFilter[$key]) > 0) ? array_unique(array_merge($data, $headerFilter[$key])) : $data;
+                        if (count($data) > 0) {
+                            $query->setParameter($key, $data);
                         }
                         break;
                     case 'equal':
@@ -303,11 +323,11 @@ class ArtWorkRepository extends ServiceEntityRepository
                         break;
                     case 'equalDate':
                         $startDate = new \DateTime();
-                        $startDate->setDate($value['value'],1,1);
-                        $startDate->setTime(0,0,0);
+                        $startDate->setDate($value['value'], 1, 1);
+                        $startDate->setTime(0, 0, 0);
                         $endDate = new \DateTime();
-                        $endDate->setDate($value['value'],12,31);
-                        $endDate->setTime(23,59,59);
+                        $endDate->setDate($value['value'], 12, 31);
+                        $endDate->setTime(23, 59, 59);
                         $query->setParameter('value1', $startDate);
                         $query->setParameter('value2', $endDate);
                         break;
@@ -320,9 +340,9 @@ class ArtWorkRepository extends ServiceEntityRepository
 
     public function searchByCriteria(
         array $criteria = [],
-        int $offset= 0,
-        int $limit=20,
-        string $orderBy= "id",
+        int $offset = 0,
+        int $limit = 20,
+        string $orderBy = "id",
         string $order = "asc")
     {
 
@@ -352,47 +372,49 @@ class ArtWorkRepository extends ServiceEntityRepository
      */
     public function searchByMode(QueryBuilder $qb, $mode): QueryBuilder
     {
-        [$operation,$operationLength,$operationWidth] = $mode == "Portait" ? [">=","IS NOT","IS"] : ["<=","IS","IS NOT"];
+        [$operation, $operationLength, $operationWidth] = $mode == "Portait" ? [">=", "IS NOT", "IS"] : ["<=", "IS", "IS NOT"];
         $qb->andWhere("((e.length $operation e.width) or (e.length $operationLength NULL and e.width $operationWidth NULL ))
          or 
          (((e.length IS NULL and e.width IS NULL) and (e.totalLength $operation e.totalWidth)) or (e.totalLength $operationLength NULL and e.totalWidth $operationWidth NULL ))");
         return $qb;
     }
+
     /**
      * @param QueryBuilder $qb
      * @param array $criteria
      * @return QueryBuilder
      */
-    public function searchByOrCriteria(QueryBuilder $qb, array $criteria,$search): QueryBuilder
+    public function searchByOrCriteria(QueryBuilder $qb, array $criteria, $search): QueryBuilder
     {
         $orX = $qb->expr()->orX();
         $existCriteria = false;
         $criteriasAttr = ['title'];
-        foreach ($criteriasAttr as $crt){
-            $orX->add($qb->expr()->like("lower(e.$crt)", $qb->expr()->literal('%'.strtolower($search).'%')));
+        foreach ($criteriasAttr as $crt) {
+            $orX->add($qb->expr()->like("lower(e.$crt)", $qb->expr()->literal('%' . strtolower($search) . '%')));
         }
-        if($existCriteria){
+        if ($existCriteria) {
             $qb->andWhere($orX);
         }
         $qb->andWhere($orX);
         return $qb;
     }
-    public function searchByOrArray(QueryBuilder $qb,$criteria): QueryBuilder
+
+    public function searchByOrArray(QueryBuilder $qb, $criteria): QueryBuilder
     {
         $orX = $qb->expr()->orX();
 
-        if(isset($criteria['field']) && !empty($criteria['field'])) {
+        if (isset($criteria['field']) && !empty($criteria['field'])) {
             $search = $criteria['field'];
             unset($criteria['field']);
             foreach ($search as $key => $value) {
-                $orX->add($qb->expr()->in("e.field",json_decode($value)));
+                $orX->add($qb->expr()->in("e.field", json_decode($value)));
             }
         }
-        if(isset($criteria['denomination']) && !empty($criteria['denomination'])) {
+        if (isset($criteria['denomination']) && !empty($criteria['denomination'])) {
             $search = $criteria['denomination'];
             unset($criteria['denomination']);
             foreach ($search as $key => $value) {
-                $orX->add($qb->expr()->in("e.denomination",json_decode($value)));
+                $orX->add($qb->expr()->in("e.denomination", json_decode($value)));
             }
         }
         $qb->andWhere($orX);
@@ -406,7 +428,7 @@ class ArtWorkRepository extends ServiceEntityRepository
      * @throws \Doctrine\ORM\NonUniqueResultException
      * @throws \Doctrine\ORM\Query\QueryException
      */
-    public function countSearchByCriteria(array $criteria = []) : int
+    public function countSearchByCriteria(array $criteria = []): int
     {
         $qb = $this->createQueryBuilder('e');
         $qb->select('count(e.id)');
@@ -438,7 +460,7 @@ class ArtWorkRepository extends ServiceEntityRepository
                 $qb = $this->searchByMode($qb, $value);
             }
         }
-        if((isset($criteria['field']) && !empty($criteria['field']))||(isset($criteria['denomination']) && !empty($criteria['denomination']))){
+        if ((isset($criteria['field']) && !empty($criteria['field'])) || (isset($criteria['denomination']) && !empty($criteria['denomination']))) {
             $qb = $this->searchByOrArray($qb, $criteria);
             unset($criteria['field']);
             unset($criteria['denomination']);
@@ -451,31 +473,31 @@ class ArtWorkRepository extends ServiceEntityRepository
     {
         $query = $this->createQueryBuilder('artWork');
         $query->where('LOWER(artWork.title) like :param');
-        $query->setParameter('param',strtolower("%".$searchQuery."%"));
+        $query->setParameter('param', strtolower("%" . $searchQuery . "%"));
         $query->select('artWork.title');
         return $query->getQuery()->getResult();
     }
-    public function getLocationData(ArtWork $artWork,$dataType){
+
+    public function getLocationData(ArtWork $artWork, $dataType)
+    {
         $query = $this->createQueryBuilder('artWork');
-        $query->leftJoin('artWork.movements','movements')
-            ->leftJoin('movements.correspondents','correspondents')
-            ->leftJoin('correspondents.establishment','establishment')
-            ->leftJoin('establishment.subDivisions','subDivisions')
-            ->leftJoin('subDivisions.locations','locations')
-            ->leftJoin('locations.room','room')
-            ->leftJoin('room.building','building')
-            ->leftJoin('building.commune','commune');
-        $query->where('artWork = :artWork')->setParameter('artWork',$artWork);
-        if($dataType =='commune'){
+        $query->leftJoin('artWork.movements', 'movements')
+            ->leftJoin('movements.correspondents', 'correspondents')
+            ->leftJoin('correspondents.establishment', 'establishment')
+            ->leftJoin('establishment.subDivisions', 'subDivisions')
+            ->leftJoin('subDivisions.locations', 'locations')
+            ->leftJoin('locations.room', 'room')
+            ->leftJoin('room.building', 'building')
+            ->leftJoin('building.commune', 'commune');
+        $query->where('artWork = :artWork')->setParameter('artWork', $artWork);
+        if ($dataType == 'commune') {
             $query->select('commune.name')
                 ->andWhere('commune.name IS NOT null')
-                ->groupBy('commune.id')
-            ;
-        }elseif ($dataType == 'building'){
+                ->groupBy('commune.id');
+        } elseif ($dataType == 'building') {
             $query->select('building.name')
                 ->andWhere('building.name IS NOT null')
-                ->groupBy('building.id')
-            ;
+                ->groupBy('building.id');
         }
         return $query->getQuery()->getArrayResult();
 
