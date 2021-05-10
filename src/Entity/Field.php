@@ -17,7 +17,7 @@ class Field
 {
     use TimestampableEntity;
     /**
-     * @JMS\Groups("id", "field", "field_id", "artwork","field_list")
+     * @JMS\Groups("id", "field", "field_id", "artwork","field_list", "short")
      *
      * @ORM\Id
      * @ORM\GeneratedValue
@@ -26,7 +26,7 @@ class Field
     private $id;
 
     /**
-     * @JMS\Groups("field","field_furniture","field_list","art_work_list","art_work_details")
+     * @JMS\Groups("field","field_furniture","field_list","art_work_list","art_work_details", "short")
      *
      * @ORM\Column(name="libelle", type="string", length=255, nullable=true)
      */
@@ -52,10 +52,18 @@ class Field
      */
     private $furniture;
 
+    /**
+     * @JMS\Exclude()
+     *
+     * @ORM\ManyToMany(targetEntity=ReportModel::class, mappedBy="fields")
+     */
+    private $reportModels;
+
     public function __construct()
     {
         $this->denominations = new ArrayCollection();
         $this->furniture = new ArrayCollection();
+        $this->reportModels = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -150,6 +158,33 @@ class Field
     public function setActive(bool $active): self
     {
         $this->active = $active;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|ReportModel[]
+     */
+    public function getReportModels(): Collection
+    {
+        return $this->reportModels;
+    }
+
+    public function addReportModel(ReportModel $reportModel): self
+    {
+        if (!$this->reportModels->contains($reportModel)) {
+            $this->reportModels[] = $reportModel;
+            $reportModel->addField($this);
+        }
+
+        return $this;
+    }
+
+    public function removeReportModel(ReportModel $reportModel): self
+    {
+        if ($this->reportModels->removeElement($reportModel)) {
+            $reportModel->removeField($this);
+        }
 
         return $this;
     }

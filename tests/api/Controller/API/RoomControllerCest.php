@@ -7,9 +7,9 @@ namespace App\Tests\api\Controller\API;
 use App\Tests\ApiTester;
 use Codeception\Util\HttpCode;
 
-class EstablishmentControllerCest
+class RoomControllerCest
 {
-    protected const URL = 'api/establishments/';
+    protected const URL = 'api/rooms/';
 
     /**
      * @var ApiTester
@@ -21,31 +21,32 @@ class EstablishmentControllerCest
         $this->apiTester = $apiTester;
     }
 
-    public function getEstablishmentTest()
+    public function getRoomTest()
     {
-        $this->apiTester->wantTo('get Establishment By id');
+        $this->apiTester->wantTo('get Room By id');
         $this->apiTester->haveHttpHeader('Content-Type', 'application/json');
         $this->apiTester->sendGet(self::URL . "1");
         $this->apiTester->seeResponseCodeIs(200);
         $this->apiTester->seeResponseIsJson();
     }
 
-    public function getEstablishmentsListTest()
+    public function getRoomsListTest()
     {
-        $this->apiTester->wantTo('get Establishment List');
+        $this->apiTester->wantTo('get Room List');
         $this->apiTester->haveHttpHeader('Content-Type', 'application/json');
         $this->apiTester->sendGet(self::URL);
         $this->apiTester->seeResponseCodeIs(200);
     }
 
-    public function createEstablishmentTest()
+    public function createRoomTest()
     {
-        $this->apiTester->wantTo('create a Establishment');
+        $this->apiTester->wantTo('create a Room');
         $this->apiTester->haveHttpHeader('Content-Type', 'application/json');
         $this->apiTester->sendPOST(self::URL, [
-            "label" => "test Label",
-            "acronym" => "test Acronym",
+            "level" => "test Label",
+            "reference" => "test Acronym",
             "startDate" => "2021-04-23T15:00:00",
+            "building" => 1,
         ]);
         $this->apiTester->seeResponseCodeIs(HttpCode::CREATED);
         $this->apiTester->seeResponseIsJson();
@@ -53,39 +54,39 @@ class EstablishmentControllerCest
 
     public function createDepositorFailedTest()
     {
-        $this->apiTester->wantTo('create a Establishment Error');
+        $this->apiTester->wantTo('create a Room Error');
         $this->apiTester->haveHttpHeader('Content-Type', 'application/json');
         $this->apiTester->sendPOST(self::URL, [
-            "label" => "",
+            "level" => "",
             "startDate" => "2021-04-23T15:00:00",
         ]);
         $this->apiTester->seeResponseCodeIs(HttpCode::BAD_REQUEST);
         $this->apiTester->seeResponseIsJson();
     }
 
-    public function updateEstablishmentTest()
+    public function updateRoomTest()
     {
-        $this->apiTester->wantTo('update Establishment');
+        $this->apiTester->wantTo('update Room');
         $this->apiTester->haveHttpHeader('Content-Type', 'application/json');
         $this->apiTester->sendPut(self::URL . "1", [
-            "label" => "updated Label",
+            "level" => "updated Label",
         ]);
         $this->apiTester->seeResponseCodeIs(HttpCode::NO_CONTENT);
     }
 
-    public function updateEstablishmentFailedTest()
+    public function updateRoomFailedTest()
     {
-        $this->apiTester->wantTo('update Establishment error');
+        $this->apiTester->wantTo('update Room error');
         $this->apiTester->haveHttpHeader('Content-Type', 'application/json');
         $this->apiTester->sendPut(self::URL . "1", [
-            "label" => "",
+            "level" => "",
         ]);
         $this->apiTester->seeResponseCodeIs(HttpCode::BAD_REQUEST);
     }
 
-    public function deleteEstablishmentTest()
+    public function deleteRoomTest()
     {
-        $this->apiTester->wantTo('delete a Establishment');
+        $this->apiTester->wantTo('delete a Room');
         $this->apiTester->haveHttpHeader('Content-Type', 'application/json');
         $this->apiTester->sendDelete(self::URL . "1");
         $this->apiTester->seeResponseCodeIs(HttpCode::NO_CONTENT);

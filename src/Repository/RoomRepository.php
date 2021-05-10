@@ -16,6 +16,13 @@ use FOS\RestBundle\Request\ParamFetcherInterface;
 class RoomRepository extends ServiceEntityRepository
 {
     use RepositoryTrait;
+
+    public const SEARCH_FIELDS = [
+        'level_param' => 'level',
+        'reference_param' => 'reference',
+        'building_name_param' => 'building_name'
+    ];
+
     public function __construct(ManagerRegistry $registry)
     {
         parent::__construct($registry, Room::class);
