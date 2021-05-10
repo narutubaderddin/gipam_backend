@@ -8,10 +8,13 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use JMS\Serializer\Annotation as JMS;
+use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
+use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * @ORM\Entity(repositoryClass=AuthorRepository::class)
  * @ORM\Table(name="auteur")
+ * @UniqueEntity(fields={"firstName", "lastName"}, repositoryMethod="iFindBy", message="Un auteur avec ce nom et prénom existe déjà!")
  */
 class Author
 {
@@ -27,12 +30,18 @@ class Author
 
     /**
      * @JMS\Groups({"furniture_author","authors","request_list","art_work_list","art_work_details", "short"})
+     *
+     * @Assert\NotBlank
+     *
      * @ORM\Column(name="prenom", type="string", length=255, nullable=true)
      */
     private $firstName;
 
     /**
      * @JMS\Groups({"furniture_author","authors","request_list","art_work_list","art_work_details", "short"})
+     *
+     * @Assert\NotBlank
+     *
      * @ORM\Column(name="nom", type="string", length=255, nullable=true)
      */
     private $lastName;
@@ -44,6 +53,8 @@ class Author
     private $furniture;
 
     /**
+     * @JMS\Groups({"authors"})
+     *
      * @ORM\ManyToOne(targetEntity=AuthorType::class, inversedBy="authors")
      */
     private $type;
@@ -56,6 +67,8 @@ class Author
     private $active = true;
 
     /**
+     * @JMS\Exclude()
+     *
      * @ORM\OneToMany(targetEntity=Person::class, mappedBy="author")
      */
     private $people;
