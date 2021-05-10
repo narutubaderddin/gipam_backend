@@ -119,6 +119,8 @@ class Depositor
     private $startDate;
 
     /**
+     * @JMS\Groups("depositor")
+     *
      * @ORM\Column(name="date_fin", type="datetime", nullable=true)
      */
     private $endDate;

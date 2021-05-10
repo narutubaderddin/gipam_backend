@@ -115,6 +115,7 @@ class DepositorController extends AbstractFOSRestController
      * @Rest\QueryParam(name="comment",map=true, nullable=false, description="filter by comment. example: comment[eq]=value")
      * @Rest\QueryParam(name="contact",map=true, nullable=false, description="filter by contact. example: contact[eq]=value")
      * @Rest\QueryParam(name="phone",map=true, nullable=false, description="filter by phone. example: phone[eq]=value")
+     * @Rest\QueryParam(name="depositType",map=false, nullable=false, description="filter by type. example: depositType[eq]=value")
      * @Rest\QueryParam(name="search", map=false, nullable=true, description="search. example: search=text")
      * @Rest\View(serializerGroups={"depositors", "id", "response", "depositor", "short"})
      *
