@@ -18,7 +18,7 @@ class Author
     use TimestampableEntity;
 
     /**
-     * @JMS\Groups({"id","furniture_author","artwork"})
+     * @JMS\Groups({"id","furniture_author","artwork", "short"})
      * @ORM\Id
      * @ORM\GeneratedValue
      * @ORM\Column(type="integer")
@@ -26,16 +26,14 @@ class Author
     private $id;
 
     /**
-     * @JMS\Groups({"furniture_author","authors"})
+     * @JMS\Groups({"furniture_author","authors","request_list","art_work_list","art_work_details", "short"})
      * @ORM\Column(name="prenom", type="string", length=255, nullable=true)
-     * @JMS\Groups("art_work_list","art_work_details")
      */
     private $firstName;
 
     /**
-     * @JMS\Groups({"furniture_author","authors"})
+     * @JMS\Groups({"furniture_author","authors","request_list","art_work_list","art_work_details", "short"})
      * @ORM\Column(name="nom", type="string", length=255, nullable=true)
-     * @JMS\Groups("art_work_list","art_work_details")
      */
     private $lastName;
 
@@ -51,13 +49,21 @@ class Author
     private $type;
 
     /**
+     * @JMS\Groups({"authors"})
+     *
      * @ORM\Column(name="actif", type="boolean", nullable=false)
      */
     private $active = true;
 
+    /**
+     * @ORM\OneToMany(targetEntity=Person::class, mappedBy="author")
+     */
+    private $people;
+
     public function __construct()
     {
         $this->furniture = new ArrayCollection();
+        $this->people = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -145,10 +151,40 @@ class Author
      * @return string|null
      * @JMS\VirtualProperty()
      * @JMS\SerializedName("label")
-     * @JMS\Groups("authors","furniture_author")
+     * @JMS\Groups("authors","furniture_author", "short")
      */
     public function getFullName(): ?string
     {
         return $this->firstName . ' ' . $this->lastName;
+    }
+
+    /**
+     * @return Collection|Person[]
+     */
+    public function getPeople(): Collection
+    {
+        return $this->people;
+    }
+
+    public function addPerson(Person $person): self
+    {
+        if (!$this->people->contains($person)) {
+            $this->people[] = $person;
+            $person->setAuthor($this);
+        }
+
+        return $this;
+    }
+
+    public function removePerson(Person $person): self
+    {
+        if ($this->people->removeElement($person)) {
+            // set the owning side to null (unless already changed)
+            if ($person->getAuthor() === $this) {
+                $person->setAuthor(null);
+            }
+        }
+
+        return $this;
     }
 }

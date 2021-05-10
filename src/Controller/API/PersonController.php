@@ -1,40 +1,47 @@
 <?php
 
-
 namespace App\Controller\API;
 
-
-use App\Entity\Depositor;
+use App\Entity\Person;
 use App\Exception\FormValidationException;
-use App\Form\DepositorType;
-use FOS\RestBundle\Controller\AbstractFOSRestController;
+use App\Form\PersonType;
+use App\Model\ApiResponse;
 use App\Services\ApiManager;
+use FOS\RestBundle\Controller\AbstractFOSRestController;
 use FOS\RestBundle\Controller\Annotations as Rest;
+use FOS\RestBundle\Controller\Annotations\Route;
 use FOS\RestBundle\Request\ParamFetcherInterface;
 use FOS\RestBundle\View\View;
-use Swagger\Annotations as SWG;
-use App\Model\ApiResponse;
+use Nelmio\ApiDocBundle\Annotation\Model;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Nelmio\ApiDocBundle\Annotation\Model;
+use Swagger\Annotations as SWG;
+use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 /**
- * Class DepositorController
+ * Class PersonController
  * @package App\Controller\API
- * @Rest\Route("/depositors")
+ * @Route("/persons")
  */
-class DepositorController extends AbstractFOSRestController
+class PersonController extends AbstractFOSRestController
 {
     /**
      * @var ApiManager
      */
     protected $apiManager;
 
+    /**
+     * @var ValidatorInterface
+     */
+    protected $validator;
+
     public function __construct(
-        ApiManager $apiManager
+        ApiManager $apiManager,
+        ValidatorInterface $validator
     )
     {
         $this->apiManager = $apiManager;
+        $this->validator = $validator;
     }
 
     /**
@@ -42,31 +49,29 @@ class DepositorController extends AbstractFOSRestController
      *
      * @SWG\Response(
      *     response=200,
-     *     description="Returns a Depositor by id",
+     *     description="Returns a Person by id",
      *     @SWG\Schema(
-     *         ref=@Model(type=Depositor::class, groups={"depositor", "id"})
+     *         ref=@Model(type=Person::class, groups={"person", "id"})
      *     )
      * )
-     * @SWG\Tag(name="depositors")
-     * @Rest\View(serializerGroups={"depositor", "id"})
+     * @SWG\Tag(name="persons")
+     * @Rest\View(serializerGroups={"person", "id"})
      *
-     * @param Depositor $depositor
+     * @param Person $person
      *
      * @return View
      */
-    public function showDepositor(Depositor $depositor)
+    public function showPerson(Person $person)
     {
-        return $this->view($depositor, Response::HTTP_OK);
+        return $this->view($person, Response::HTTP_OK);
     }
 
     /**
-     *
      * @Rest\Get("/")
-     *
      *
      * @SWG\Response(
      *     response=200,
-     *     description="Returns the list of depositor",
+     *     description="Returns the list of Person",
      *     @SWG\Schema(
      *         @SWG\Items(ref=@Model(type=ApiResponse::class))
      *     )
@@ -95,37 +100,64 @@ class DepositorController extends AbstractFOSRestController
      *     type="string",
      *     description="The field used to sort type"
      * )
-     *
-     * @SWG\Tag(name="depositors")
+     * @SWG\Parameter(
+     *     name="lastName",
+     *     in="query",
+     *     type="string",
+     *     description="The field used to filter by lastName"
+     * )
+     * @SWG\Parameter(
+     *     name="firstName",
+     *     in="query",
+     *     type="string",
+     *     description="The field used to filter by firstName"
+     * )
+     * @SWG\Parameter(
+     *     name="website",
+     *     in="query",
+     *     type="string",
+     *     description="The field used to filter by website"
+     * )
+     * @SWG\Parameter(
+     *     name="phone",
+     *     in="query",
+     *     type="string",
+     *     description="The field used to filter by phone"
+     * )
+     * @SWG\Parameter(
+     *     name="email",
+     *     in="query",
+     *     type="string",
+     *     description="The field used to filter by email"
+     * )
+     * @SWG\Tag(name="persons")
      *
      * @Rest\QueryParam(name="page", requirements="\d+", default="1", description="page number.")
      * @Rest\QueryParam(name="limit", requirements="\d+", default="0", description="page size.")
      * @Rest\QueryParam(name="sort_by", nullable=true, default="id", description="order by")
-     * @Rest\QueryParam(name="sort", requirements="(asc|desc)", nullable=true, default="asc", description="tri order asc|desc")
-     * @Rest\QueryParam(name="name",map=true, nullable=false, description="filter by name. example: name[eq]=value")
-     * @Rest\QueryParam(name="acronym",map=true, nullable=false, description="filter by acronym. example: acronym[eq]=value")
-     * @Rest\QueryParam(name="address",map=true, nullable=false, description="filter by address. example: address[eq]=value")
-     * @Rest\QueryParam(name="city",map=true, nullable=false, description="filter by city. example: city[eq]=value")
-     * @Rest\QueryParam(name="department",map=true, nullable=false, description="filter by department. example: department[eq]=value")
-     * @Rest\QueryParam(name="distrib",map=true, nullable=false, description="filter by distrib. example: distrib[eq]=value")
-     * @Rest\QueryParam(name="fax",map=true, nullable=false, description="filter by fax. example: fax[eq]=value")
-     * @Rest\QueryParam(name="mail",map=true, nullable=false, description="filter by mail. example: mail[eq]=value")
-     * @Rest\QueryParam(name="startDate",map=true, nullable=false, description="filter by startDate. example: startDate[eq]=value")
-     * @Rest\QueryParam(name="endDate",map=true, nullable=false, description="filter by endDate. example: endDate[eq]=value")
-     * @Rest\QueryParam(name="comment",map=true, nullable=false, description="filter by comment. example: comment[eq]=value")
-     * @Rest\QueryParam(name="contact",map=true, nullable=false, description="filter by contact. example: contact[eq]=value")
-     * @Rest\QueryParam(name="phone",map=true, nullable=false, description="filter by phone. example: phone[eq]=value")
-     * @Rest\QueryParam(name="depositType",map=false, nullable=false, description="filter by type. example: depositType[eq]=value")
      * @Rest\QueryParam(name="search", map=false, nullable=true, description="search. example: search=text")
-     * @Rest\View(serializerGroups={"depositors", "id", "response", "depositor", "short"})
+     * @Rest\QueryParam(
+     *     name="sort", requirements="(asc|desc)",
+     *      nullable=true, default="asc",
+     *      description="sorting order asc|desc"
+     * )
+     * @Rest\QueryParam(name="lastName",map=true, nullable=false, description="filter by lastName. example: lastName[eq]=value")
+     * @Rest\QueryParam(name="firstName",map=true, nullable=false, description="filter by firstName. example: firstName[eq]=value")
+     * @Rest\QueryParam(name="website",map=true, nullable=false, description="filter by website. example: website[eq]=value")
+     * @Rest\QueryParam(name="phone",map=true, nullable=false, description="filter by phone. example: phone[eq]=value")
+     * @Rest\QueryParam(name="email",map=true, nullable=false, description="filter by email. example: email[eq]=value")
+     * @Rest\QueryParam(name="author", nullable=false, description="filter by author id. example: author[eq]=value")
+     * @Rest\QueryParam(name="search", map=false, nullable=true, description="search. example: search=text")
+     *
+     * @Rest\View(serializerGroups={"id", "person", "short", "response"})
      *
      * @param ParamFetcherInterface $paramFetcher
-     * @return View
      *
+     * @return View
      */
-    public function listDepositor(ParamFetcherInterface $paramFetcher)
+    public function listPersons(ParamFetcherInterface $paramFetcher)
     {
-        $records = $this->apiManager->findRecordsByEntityName(Depositor::class,$paramFetcher);
+        $records = $this->apiManager->findRecordsByEntityName(Person::class, $paramFetcher);
         return $this->view($records, Response::HTTP_OK);
     }
 
@@ -136,7 +168,7 @@ class DepositorController extends AbstractFOSRestController
      *     response=201,
      *     description="Returns created Attachment Type",
      *     @SWG\Schema(
-     *         ref=@Model(type=Depositor::class, groups={"depositor"})
+     *         ref=@Model(type=Person::class, groups={"person"})
      *     )
      * )
      * @SWG\Response(
@@ -146,23 +178,23 @@ class DepositorController extends AbstractFOSRestController
      * @SWG\Parameter(
      *     name="form",
      *     in="body",
-     *     description="Add Depositor",
-     *     @Model(type=Depositor::class, groups={"depositor"})
+     *     description="Add Person",
+     *     @Model(type=Person::class, groups={"person"})
      * )
-     * @SWG\Tag(name="depositors")
+     * @SWG\Tag(name="persons")
      *
-     * @Rest\View(serializerGroups={"depositor", "id"})
+     * @Rest\View(serializerGroups={"person", "id"})
      *
      * @param Request $request
      * @return View
      */
-    public function postDepositor(Request $request)
+    public function postPerson(Request $request)
     {
-        $form = $this->createForm(DepositorType::class);
+        $form = $this->createForm(PersonType::class);
         $form->submit($request->request->all());
         if ($form->isValid()) {
-            $depositor = $this->apiManager->save($form->getData());
-            return $this->view($depositor, Response::HTTP_CREATED);
+            $person = $this->apiManager->save($form->getData());
+            return $this->view($person, Response::HTTP_CREATED);
         }
         throw new FormValidationException($form);
     }
@@ -187,22 +219,22 @@ class DepositorController extends AbstractFOSRestController
      *     name="form",
      *     in="body",
      *     description="Update an Attachment Type",
-     *     @Model(type=Depositor::class, groups={"depositor"})
+     *     @Model(type=Person::class, groups={"person"})
      * )
-     * @SWG\Tag(name="depositors")
+     * @SWG\Tag(name="persons")
      *
      * @Rest\View()
      *
      * @param Request $request
-     * @param Depositor $depositor
+     * @param Person $person
      * @return View
      */
-    public function updateDepositor(Request $request, Depositor $depositor)
+    public function updatePerson(Request $request, Person $person)
     {
-        $form = $this->createForm(DepositorType::class, $depositor);
+        $form = $this->createForm(PersonType::class, $person);
         $form->submit($request->request->all(), false);
         if ($form->isValid()) {
-            $this->apiManager->save($depositor);
+            $this->apiManager->save($person);
             return $this->view(null, Response::HTTP_NO_CONTENT);
         }
         throw new FormValidationException($form);
@@ -221,18 +253,17 @@ class DepositorController extends AbstractFOSRestController
      *     description="Deleting errors"
      *     )
      * )
-     * @SWG\Tag(name="depositors")
+     * @SWG\Tag(name="persons")
      *
      * @Rest\View()
      *
-     * @param Depositor $depositor
+     * @param Person $person
      *
      * @return View
      */
-    public function removeDepositor(Depositor $depositor)
+    public function removePerson(Person $person)
     {
-        $this->apiManager->delete($depositor);
+        $this->apiManager->delete($person);
         return $this->view(null, Response::HTTP_NO_CONTENT);
     }
-
 }

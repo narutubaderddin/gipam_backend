@@ -77,4 +77,21 @@ class RoomRepository extends ServiceEntityRepository
       return $result;
 
     }
+
+    public function findRoomsRefByCriteria( $building, $level)
+    {
+        $query = $this->createQueryBuilder('room')
+            ->leftJoin('room.building','building');
+
+        $query->andWhere('building.id = :building')->setParameter('building',$building);
+        $query->andWhere('room.level = :level')->setParameter('level',$level);
+        $query->select('distinct(room.reference) as reference');
+        $result=[];
+        foreach ($query->getQuery()->getResult() as $referenceData){
+            $result[]= $referenceData['reference'];
+        }
+
+        return $result;
+
+    }
 }

@@ -1,0 +1,6 @@
+App\Entity\Person:
+  person_1:
+    firstName: <name()>
+    lastName: <name()>
+    phone: <name()>
+    email: <email()>
