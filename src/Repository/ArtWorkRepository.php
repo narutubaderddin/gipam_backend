@@ -11,6 +11,7 @@ use Doctrine\ORM\NonUniqueResultException;
 use Doctrine\ORM\NoResultException;
 use Doctrine\ORM\QueryBuilder;
 use Doctrine\Persistence\ManagerRegistry;
+use phpDocumentor\Reflection\Types\Self_;
 
 /**
  * @method ArtWork|null find($id, $lockMode = null, $lockVersion = null)
@@ -64,6 +65,9 @@ class ArtWorkRepository extends ServiceEntityRepository
         'sites' => ['field' => 'id', 'operator' => 'in', 'entity' => 'site'],
         'localType' => ['field' => 'id', 'operator' => 'in', 'entity' => 'location_type'],
         'creationDate' => ['field' => 'createdAt', 'operator' => 'equalDate', 'entity' => 'artWork'],
+        'correspondant' => ['field' => 'id', 'operator' => 'equalDate', 'entity' => 'correspondents'],
+        'responsible' => ['field' => 'id', 'operator' => 'in', 'entity' => 'responsibles'],
+        'establishementType' => ['field' => 'id', 'operator' => 'in', 'entity' => 'establishement_type'],
     ];
 
     /**
@@ -77,7 +81,7 @@ class ArtWorkRepository extends ServiceEntityRepository
      * @throws NoResultException
      * @throws NonUniqueResultException
      */
-    public function getArtWorkList(array $filter, array $advancedFilter, array $headerFilters, $page, $limit,$count=false)
+    public function getArtWorkList(array $filter, array $advancedFilter, array $headerFilters, $page, $limit,$sortBy='id',$sort='desc',$count=false)
     {
         $query = $this->createQueryBuilder('artWork');
         $query->where($query->expr()->isInstanceOf('artWork', ArtWork::class));
@@ -99,6 +103,7 @@ class ArtWorkRepository extends ServiceEntityRepository
             ->leftJoin('room.building','building')
             ->leftJoin('building.site','site')
             ->leftJoin('building.commune','commune')
+            ->leftJoin('building.responsibles','responsibles')
             ->leftJoin('commune.department','department')
             ->leftJoin('department.region','region')
             ->leftJoin('movements.type','movementType')
@@ -131,6 +136,10 @@ class ArtWorkRepository extends ServiceEntityRepository
             return  $query->getQuery()->getSingleScalarResult();
         }
         $query->setFirstResult(($page-1)*$limit)->setMaxResults($limit);
+        if(array_key_exists($sortBy,self::$columns)){
+            $sortDataKey=self::$columns[$sortBy]['entity'].'.'.self::$columns[$sortBy]['field'];
+            $query->orderBy($sortDataKey,$sort);
+        }
         return $query->getQuery()->getResult();
     }
 

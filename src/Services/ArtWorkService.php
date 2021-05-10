@@ -38,8 +38,8 @@ class ArtWorkService
         $limit = $paramFetcher->get('limit', true)?? 5;
         $sortBy = $paramFetcher->get('sort_by')?? 'id';
         $sort = $paramFetcher->get('sort')?? 'asc';
-        $result =$this->entityManager->getRepository(ArtWork::class)->getArtWorkList($filter,$advancedFilter,$headerFilters,$page,$limit);
-        $filtredQuantity =$this->entityManager->getRepository(ArtWork::class)->getArtWorkList($filter,$advancedFilter,$headerFilters,$page,$limit,true);
+        $result =$this->entityManager->getRepository(ArtWork::class)->getArtWorkList($filter,$advancedFilter,$headerFilters,$page,$limit,$sortBy,$sort);
+        $filtredQuantity =$this->entityManager->getRepository(ArtWork::class)->getArtWorkList($filter,$advancedFilter,$headerFilters,$page,$limit,$sortBy,$sort,true);
 
         return  new ApiResponse(
             $page,
