@@ -67,7 +67,9 @@ class Author
     private $active = true;
 
     /**
-     * @JMS\Exclude()
+     * @JMS\Groups({"authors"})
+     *
+     * @JMS\MaxDepth(depth=1)
      *
      * @ORM\OneToMany(targetEntity=Person::class, mappedBy="author")
      */

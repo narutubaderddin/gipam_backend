@@ -33,7 +33,7 @@ class Field
     private $label;
 
     /**
-     * @JMS\Groups("field")
+     * @JMS\Groups("field", "field_list")
      *
      * @ORM\Column(name="actif", type="boolean", nullable=false)
      */

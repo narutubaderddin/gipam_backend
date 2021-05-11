@@ -11,6 +11,7 @@ use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * @ORM\Entity(repositoryClass=ReportModelRepository::class)
+ * @ORM\Table(name="modele_constat")
  */
 class ReportModel
 {
@@ -52,6 +53,11 @@ class ReportModel
      * @JMS\Groups("report_model")
      *
      * @ORM\ManyToMany(targetEntity=Field::class, inversedBy="reportModels")
+     * @ORM\JoinTable(
+     *     name="modele_constat_domaine",
+     *     joinColumns={@ORM\JoinColumn(name="modele_constat_id", referencedColumnName="id")},
+     *     inverseJoinColumns={@ORM\JoinColumn(name="domaine_id", referencedColumnName="id")}
+     *     )
      */
     private $fields;
 
