@@ -7,6 +7,7 @@ use App\Exception\FormValidationException;
 use App\Form\FieldType;
 use App\Model\ApiResponse;
 use App\Services\ApiManager;
+use FOS\RestBundle\Context\Context;
 use FOS\RestBundle\Controller\AbstractFOSRestController;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use FOS\RestBundle\Controller\Annotations\Route;
@@ -103,16 +104,21 @@ class FieldController extends AbstractFOSRestController
      * @Rest\QueryParam(name="active" ,map=true, nullable=false, description="filter by active. example: active[eq]=1")
      * @Rest\QueryParam(name="search", map=false, nullable=true, description="search. example: search=text")
      *
-     * @Rest\View(serializerGroups={"response","field_list"})
+     * @Rest\View()
      *
      * @param ParamFetcherInterface $paramFetcher
      *
      * @return Response
      */
-    public function listFields(ParamFetcherInterface $paramFetcher)
+    public function listFields(ParamFetcherInterface $paramFetcher, Request $request)
     {
+        $serializerGroups = $request->get('serializer_group', '["field_list"]');
+        $serializerGroups = json_decode($serializerGroups, true);
+        $serializerGroups[] = "response";
+        $context = new Context();
+        $context->setGroups($serializerGroups);
         $records = $this->apiManager->findRecordsByEntityName(Field::class, $paramFetcher);
-        return $this->view($records, Response::HTTP_OK);
+        return $this->view($records, Response::HTTP_OK)->setContext($context);
     }
 
     /**
