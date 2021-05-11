@@ -7,6 +7,7 @@ use App\Exception\FormValidationException;
 use App\Form\PersonType;
 use App\Model\ApiResponse;
 use App\Services\ApiManager;
+use FOS\RestBundle\Context\Context;
 use FOS\RestBundle\Controller\AbstractFOSRestController;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use FOS\RestBundle\Controller\Annotations\Route;
@@ -146,19 +147,25 @@ class PersonController extends AbstractFOSRestController
      * @Rest\QueryParam(name="website",map=true, nullable=false, description="filter by website. example: website[eq]=value")
      * @Rest\QueryParam(name="phone",map=true, nullable=false, description="filter by phone. example: phone[eq]=value")
      * @Rest\QueryParam(name="email",map=true, nullable=false, description="filter by email. example: email[eq]=value")
+     * @Rest\QueryParam(name="active",map=true, nullable=false, description="filter by active. example: active[eq]=value")
      * @Rest\QueryParam(name="author", nullable=false, description="filter by author id. example: author[eq]=value")
      * @Rest\QueryParam(name="search", map=false, nullable=true, description="search. example: search=text")
      *
-     * @Rest\View(serializerGroups={"id", "person", "short", "response"})
+     * @Rest\View()
      *
      * @param ParamFetcherInterface $paramFetcher
-     *
+     * @param Request $request
      * @return View
      */
-    public function listPersons(ParamFetcherInterface $paramFetcher)
+    public function listPersons(ParamFetcherInterface $paramFetcher, Request $request)
     {
+        $serializerGroups = $request->get('serializer_group', '["id", "person", "short"]');
+        $serializerGroups = json_decode($serializerGroups, true);
+        $serializerGroups[] = "response";
+        $context = new Context();
+        $context->setGroups($serializerGroups);
         $records = $this->apiManager->findRecordsByEntityName(Person::class, $paramFetcher);
-        return $this->view($records, Response::HTTP_OK);
+        return $this->view($records, Response::HTTP_OK)->setContext($context);
     }
 
     /**
