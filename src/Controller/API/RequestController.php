@@ -16,6 +16,7 @@ use Nelmio\ApiDocBundle\Annotation\Model;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Swagger\Annotations as SWG;
+use Spipu\Html2Pdf\Html2Pdf;
 
 /**
  * Class FieldController
@@ -136,6 +137,67 @@ class RequestController extends AbstractFOSRestController
         } else {
             throw new FormValidationException($form);
         }
+    }
+    /**
+     * @Rest\Get("/exportRequest")
+     *
+     * @SWG\Response(
+     *     response=201,
+     *     description="Returns created Field",
+     *     @SWG\Schema(
+     *         ref=@Model(type=Field::class, groups={"field"})
+     *     )
+     * )
+     * @SWG\Response(
+     *     response=400,
+     *     description="Creation error"
+     * )
+     * @SWG\Parameter(
+     *     name="form",
+     *     in="body",
+     *     description="Add Request",
+     *     @Model(type=Request::class, groups={"request"})
+     * )
+     * @SWG\Tag(name="requests")
+     *
+     * @Rest\View(serializerGroups={"request_details"})
+     *
+     * @param Request $request
+     *
+     * @return Response
+     *
+     * @throws \Doctrine\ORM\ORMException
+     * @throws \Doctrine\ORM\OptimisticLockException
+     */
+    public function exportRequest(Request $request)
+    {
+        /*$html2pdf = new Html2Pdf();
+        $html2pdf->writeHTML('<h1>HelloWorld</h1>This is my first test');
+        $html2pdf->output('test.pdf');*/
+        /*$html2pdf = new Html2Pdf();
+        $content = $html2pdf->output('example.pdf', 'S');
+
+
+        //$content = $html2pdf->Output('test.pdf');
+        $response = new Response();
+        $response->setContent($content);
+        $response->headers->set('Content-Type', 'application/force-download');
+        $response->headers->set('Content-disposition', 'filename=my-document-name.pdf');
+        return $response;*/
+        $html2pdf = new Html2Pdf('P', 'A4', 'fr');
+        $html2pdf->setDefaultFont('Arial');
+        $html2pdf->writeHTML("<h1>_______________</h1>");
+
+        //$html2pdf->Output( 'example00.pdf', 'D');
+        return new Response(
+            $html2pdf->Output( 'example00.pdf', 'D'),
+            200,
+            array(
+                'Content-Type' => 'application/pdf',
+                'Content-Disposition' => 'attachment; filename="example00.pdf"',
+            )
+        );
+        //return $this->view(["test"=>"test"], Response::HTTP_CREATED);
     }
 
 }
