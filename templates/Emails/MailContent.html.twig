@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8"/>
+    {{ encore_entry_link_tags('app-css') }}
+</head>
+<body>
+<nav class="navbar navbar-light bg-light">
+    <img src="{{ asset('build/images/logo-minefi.png') }}" style="position: inherit; left:40%;width: 20%">
+</nav>
+
+<div class="container">
+    <div class="row">
+        <div class="col-lg-12">
+            <ul class="list-group">
+                <li class="list-group-item" style="font-family: 'Montserrat',sans-serif;">
+                    <strong>Subject:</strong>{{ subject }}</li>
+                <li class="list-group-item" style="font-family: 'Montserrat',sans-serif;">
+                    <strong>From: </strong>{{ from }}</li>
+                <li class="list-group-item" style="font-family: 'Montserrat',sans-serif;"><strong>To: </strong>{{ to }}
+                </li>
+                <li class="list-group-item" style="font-family: 'Montserrat',sans-serif;"><strong>Attachments :</strong>
+                    <ul>
+                        {% for file in files %}
+                            <li><a href='{{ file.fileLink }}'
+                                   style="font-family: 'Montserrat',sans-serif;">{{ file.fileName }}</a></li>
+                        {% endfor %}
+                    </ul>
+                </li>
+                <li class="list-group-item" style="font-family: 'Montserrat',sans-serif;"><strong>Cc: </strong>{{ cc }}
+                </li>
+                <li class="list-group-item" style="font-family: 'Montserrat',sans-serif;">
+                    <strong>Bcc:</strong> {{ bcc }}</li>
+                <li class="list-group-item" style="font-family: 'Montserrat',sans-serif;"><strong>Template
+                        :</strong> {{ template }}</li>
+                <li class="list-group-item" style="font-family: 'Montserrat',sans-serif;"><strong>Preview:</strong></li>
+                <li class="list-group-item" style="background: none!important;">
+                    <div>
+                        {{ templateContent |raw }}
+                    </div>
+                </li>
+            </ul>
+        </div>
+    </div>
+
+</div>
+
+</body>
+</html>
