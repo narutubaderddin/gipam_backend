@@ -171,33 +171,16 @@ class RequestController extends AbstractFOSRestController
      */
     public function exportRequest(Request $request)
     {
-        /*$html2pdf = new Html2Pdf();
-        $html2pdf->writeHTML('<h1>HelloWorld</h1>This is my first test');
-        $html2pdf->output('test.pdf');*/
-        /*$html2pdf = new Html2Pdf();
-        $content = $html2pdf->output('example.pdf', 'S');
+
+            $html2pdf = new Html2Pdf('P', 'A4', 'fr');
+            $html2pdf->setDefaultFont('Arial');
+            $html2pdf->writeHTML("<h1>_______________</h1>");
+            $path =  $this->getParameter('kernel.project_dir').DIRECTORY_SEPARATOR.'var' .DIRECTORY_SEPARATOR . 'file_xxxx.pdf';
+            $html2pdf->Output($path, 'F');
+            return $this->file($path,'file_xxxx.pdf')->deleteFileAfterSend();
 
 
-        //$content = $html2pdf->Output('test.pdf');
-        $response = new Response();
-        $response->setContent($content);
-        $response->headers->set('Content-Type', 'application/force-download');
-        $response->headers->set('Content-disposition', 'filename=my-document-name.pdf');
-        return $response;*/
-        $html2pdf = new Html2Pdf('P', 'A4', 'fr');
-        $html2pdf->setDefaultFont('Arial');
-        $html2pdf->writeHTML("<h1>_______________</h1>");
 
-        //$html2pdf->Output( 'example00.pdf', 'D');
-        return new Response(
-            $html2pdf->Output( 'example00.pdf', 'D'),
-            200,
-            array(
-                'Content-Type' => 'application/pdf',
-                'Content-Disposition' => 'attachment; filename="example00.pdf"',
-            )
-        );
-        //return $this->view(["test"=>"test"], Response::HTTP_CREATED);
     }
 
 }
