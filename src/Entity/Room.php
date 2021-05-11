@@ -8,15 +8,20 @@ use DateTimeInterface;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use JMS\Serializer\Annotation as JMS;
 use JMS\Serializer\Annotation as Serializer;
+use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
+use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * @ORM\Entity(repositoryClass=RoomRepository::class)
  * @ORM\Table(name="piece")
+ * @UniqueEntity("reference", repositoryMethod="iFindBy", message="Une pièce avec cette référence existe déjà!")
  */
 class Room
 {
     use TimestampableEntity;
+
     /**
      * @ORM\Id
      * @ORM\GeneratedValue
@@ -27,32 +32,49 @@ class Room
 
     /**
      * @ORM\Column(name="reference", type="string", length=255, nullable=true)
-     * @Serializer\Groups("short")
+     *
+     * @Assert\NotBlank
+     *
+     * @Serializer\Groups("short", "room")
      */
     private $reference;
 
     /**
      * @ORM\Column(name="niveau", type="string", length=255, nullable=true)
+     *
+     * @Assert\NotBlank
+     *
+     * @Serializer\Groups("room")
      */
     private $level;
 
     /**
      * @ORM\Column(name="date_debut", type="datetime", nullable=true)
+     *
+     * @Assert\NotBlank
+     *
+     * @Serializer\Groups("room")
      */
     private $startDate;
 
     /**
      * @ORM\Column(name="date_fin", type="datetime", nullable=true)
+     *
+     * @Serializer\Groups("room")
      */
     private $endDate;
 
     /**
      * @ORM\ManyToOne(targetEntity=Building::class, inversedBy="rooms")
      * @ORM\JoinColumn(name="batiment_id", referencedColumnName="id")
+     *
+     * @Serializer\Groups("room")
      */
     private $building;
 
     /**
+     * @JMS\Exclude()
+     *
      * @ORM\OneToMany(targetEntity=Location::class, mappedBy="room")
      */
     private $locations;

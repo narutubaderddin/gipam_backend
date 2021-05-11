@@ -4,28 +4,28 @@
 namespace App\Controller\API;
 
 
-use App\Entity\Author;
+use App\Entity\ReportModel;
 use App\Exception\FormValidationException;
-use App\Form\AuthorType;
+use App\Form\ReportModelType;
+use App\Model\ApiResponse;
 use App\Services\ApiManager;
 use FOS\RestBundle\Controller\AbstractFOSRestController;
 use FOS\RestBundle\Controller\Annotations as Rest;
+use FOS\RestBundle\Controller\Annotations\Route;
 use FOS\RestBundle\Request\ParamFetcherInterface;
-use FOS\RestBundle\View\View;
-use Swagger\Annotations as SWG;
-use App\Model\ApiResponse;
+use Nelmio\ApiDocBundle\Annotation\Model;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Nelmio\ApiDocBundle\Annotation\Model;
+use Swagger\Annotations as SWG;
+use FOS\RestBundle\View\View;
 
 /**
- * Class AuthorController
+ * Class FieldController
  * @package App\Controller\API
- * @Rest\Route("/authors")
+ * @Route("/reportModels")
  */
-class AuthorController extends  AbstractFOSRestController
+class ReportModelController extends  AbstractFOSRestController
 {
-
     /**
      * @var ApiManager
      */
@@ -37,37 +37,33 @@ class AuthorController extends  AbstractFOSRestController
     {
         $this->apiManager = $apiManager;
     }
-
     /**
      * @Rest\Get("/{id}", requirements={"id"="\d+"})
      *
      * @SWG\Response(
      *     response=200,
-     *     description="Returns an Author by id",
+     *     description="Returns Report model by id",
      *     @SWG\Schema(
-     *         ref=@Model(type=Author::class, groups={"authors"})
+     *         ref=@Model(type=ReportModel::class, groups={"report_model", "id"})
      *     )
      * )
-     * @SWG\Tag(name="authors")
-     * @Rest\View(serializerGroups={"authors", "short"})
+     * @SWG\Tag(name="ReportModels")
+     * @Rest\View(serializerGroups={"report_model", "id"})
      *
-     * @param Author $author
+     * @param ReportModel $reportModel
      *
      * @return View
      */
-    public function showAuthor(Author $author)
+    public function showReportModel(ReportModel $reportModel)
     {
-        return $this->view($author, Response::HTTP_OK);
+        return $this->view($reportModel, Response::HTTP_OK);
     }
-
     /**
-     *
      * @Rest\Get("/")
-     *
      *
      * @SWG\Response(
      *     response=200,
-     *     description="Returns the list of authors",
+     *     description="Returns the list of report models",
      *     @SWG\Schema(
      *         @SWG\Items(ref=@Model(type=ApiResponse::class))
      *     )
@@ -97,37 +93,35 @@ class AuthorController extends  AbstractFOSRestController
      *     description="The field used to sort type"
      * )
      *
-     * @SWG\Tag(name="authors")
+     * @SWG\Tag(name="ReportModels")
      *
      * @Rest\QueryParam(name="page", requirements="\d+", default="1", description="page number.")
      * @Rest\QueryParam(name="limit", requirements="\d+", default="0", description="page size.")
      * @Rest\QueryParam(name="sort_by", nullable=true, default="id", description="order by")
      * @Rest\QueryParam(name="sort", requirements="(asc|desc)", nullable=true, default="asc", description="tri order asc|desc")
-     * @Rest\QueryParam(name="firstName" ,map=true, nullable=false, description="filter by firstName. example: firstName[eq]=1")
-     * @Rest\QueryParam(name="lastName" ,map=true, nullable=false, description="filter by lastName. example: lastName[eq]=1")
+     * @Rest\QueryParam(name="name", map=true, nullable=false, description="filter by name. example: name[eq]=value")
      * @Rest\QueryParam(name="active" ,map=true, nullable=false, description="filter by active. example: active[eq]=1")
-     * @Rest\QueryParam(name="type" , nullable=false, description="filter by type id. example: type[eq]=1")
      * @Rest\QueryParam(name="search", map=false, nullable=true, description="search. example: search=text")
-     * @Rest\View(serializerGroups={"authors", "id", "response", "short"})
+     * 
+     * @Rest\View(serializerGroups={"response", "short", "report_model"})
      *
      * @param ParamFetcherInterface $paramFetcher
-     *@return View
      *
+     * @return View
      */
-    public function listAuthors(ParamFetcherInterface $paramFetcher)
+    public function ListReportModel(ParamFetcherInterface $paramFetcher)
     {
-       $records = $this->apiManager->findRecordsByEntityName(Author::class,$paramFetcher);
-       return $this->view($records, Response::HTTP_OK);
+        $records = $this->apiManager->findRecordsByEntityName(ReportModel::class, $paramFetcher);
+        return $this->view($records, Response::HTTP_OK);
     }
-
     /**
      * @Rest\Post("/")
      *
      * @SWG\Response(
      *     response=201,
-     *     description="Returns created Author",
+     *     description="Returns created Report model",
      *     @SWG\Schema(
-     *         ref=@Model(type=Author::class, groups={"authors"})
+     *         ref=@Model(type=ReportModel::class, groups={"report_model", "id"})
      *     )
      * )
      * @SWG\Response(
@@ -137,97 +131,91 @@ class AuthorController extends  AbstractFOSRestController
      * @SWG\Parameter(
      *     name="form",
      *     in="body",
-     *     description="Add Author",
-     *     @Model(type=Author::class, groups={"authors"})
+     *     description="Add Report model",
+     *     @Model(type=ReportModel::class, groups={"report_model"})
      * )
-     * @SWG\Tag(name="authors")
+     * @SWG\Tag(name="ReportModels")
      *
-     * @Rest\View(serializerGroups={"authors", "short"})
+     * @Rest\View(serializerGroups={"report_model", "id"})
      *
      * @param Request $request
-     *
      * @return View
-     *
-     * @throws \Doctrine\ORM\ORMException
-     * @throws \Doctrine\ORM\OptimisticLockException
      */
-    public function postAuthor(Request $request)
+    public function postReportModel(Request $request)
     {
-        $form = $this->createForm(AuthorType::class);
+        $form = $this->createForm(ReportModelType::class);
         $form->submit($request->request->all());
         if ($form->isValid()) {
-            $author = $this->apiManager->save($form->getData());
-            return $this->view($author, Response::HTTP_CREATED);
-        } else {
-            throw new FormValidationException($form);
+            $reportModel = $this->apiManager->save($form->getData());
+            return $this->view($reportModel, Response::HTTP_CREATED);
         }
+        throw new FormValidationException($form);
     }
-
     /**
      * @Rest\Put("/{id}", requirements={"id"="\d+"})
      *
      * @SWG\Response(
      *     response=204,
-     *     description="Author is updated"
+     *     description="Report model is updated"
      *     )
      * )
      * @SWG\Response(
      *     response=400,
      *     description="Update error"
      * )
+     * @SWG\Response(
+     *     response=404,
+     *     description="Report model not found"
+     * )
      * @SWG\Parameter(
      *     name="form",
      *     in="body",
-     *     description="Update an Author",
-     *     @Model(type=Author::class, groups={"authors"})
+     *     description="Update an Report model",
+     *     @Model(type=ReportModel::class, groups={"report_model"})
      * )
-     * @SWG\Tag(name="authors")
+     * @SWG\Tag(name="ReportModels")
      *
      * @Rest\View()
      *
      * @param Request $request
-     * @param Author $author
-     *
+     * @param ReportModel $reportModel
      * @return View
-     *
-     * @throws \Doctrine\ORM\ORMException
-     * @throws \Doctrine\ORM\OptimisticLockException
      */
-    public function updateAuthor(Request $request, Author $author)
+    public function updateReportModel(Request $request, ReportModel $reportModel)
     {
-        $form = $this->createForm(AuthorType::class, $author);
+        $form = $this->createForm(ReportModelType::class, $reportModel);
         $form->submit($request->request->all(), false);
-
         if ($form->isValid()) {
-            $this->apiManager->save($author);
+            $this->apiManager->save($reportModel);
             return $this->view(null, Response::HTTP_NO_CONTENT);
-        } else {
-            throw new FormValidationException($form);
         }
+        throw new FormValidationException($form);
     }
-
     /**
      * @Rest\Delete("/{id}", requirements={"id"="\d+"})
      *
      * @SWG\Response(
      *     response=204,
-     *     description="Author is removed"
+     *     description="Report model is removed"
      *     )
      * )
-     * @SWG\Tag(name="authors")
+     * @SWG\Response(
+     *     response=400,
+     *     description="Deleting errors"
+     *     )
+     * )
+     * @SWG\Tag(name="ReportModels")
      *
      * @Rest\View()
      *
-     * @param Author $author
+     * @param ReportModel $reportModel
      *
      * @return View
      */
-    public function removeAuthor(Author $author)
+    public function removeReportModel(ReportModel $reportModel)
     {
-        $this->apiManager->delete($author);
+        $this->apiManager->delete($reportModel);
         return $this->view(null, Response::HTTP_NO_CONTENT);
     }
-
-
 
 }
