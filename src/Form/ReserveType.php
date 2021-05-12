@@ -2,7 +2,7 @@
 
 namespace App\Form;
 
-use App\Entity\Building;
+use App\Entity\Reserve;
 use App\Entity\Room;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
@@ -11,17 +11,16 @@ use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
-class RoomType extends AbstractType
+class ReserveType extends AbstractType
 {
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $builder
-            ->add('level', TextType::class, ['required' => true])
-            ->add('reference', TextType::class, ['required' => true])
+            ->add('label',TextType::class, ['required'=>true])
             ->add('startDate', DateTimeType::class, ['widget' => 'single_text', 'required' => true])
             ->add('endDate', DateTimeType::class, ['widget' => 'single_text'])
-            ->add('building', EntityType::class, [
-                    'class' => Building::class,
+            ->add('room', EntityType::class, [
+                    'class' => Room::class,
                     'choice_label' => 'id',
                     'required' => true
                 ]
@@ -32,7 +31,7 @@ class RoomType extends AbstractType
     {
         $resolver->setDefaults([
             'csrf_protection' => false,
-            'data_class' => Room::class,
+            'data_class' => Reserve::class,
         ]);
     }
 }
