@@ -17,6 +17,8 @@ load_deps:
     - gipam
   script: 
     - composer install
+    - yarn install
+    - yarn encore production
   only:
     - develop
 update_schema:

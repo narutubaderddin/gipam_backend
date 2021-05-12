@@ -4,6 +4,7 @@ namespace App\Repository;
 
 use App\Entity\ArtWork;
 use App\Entity\DepositStatus;
+use App\Entity\Movement;
 use App\Entity\PropertyStatus;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\DBAL\Connection;
@@ -12,6 +13,7 @@ use Doctrine\ORM\NoResultException;
 use Doctrine\ORM\QueryBuilder;
 use Doctrine\Persistence\ManagerRegistry;
 use phpDocumentor\Reflection\Types\Self_;
+use function PHPUnit\Framework\isNan;
 
 /**
  * @method ArtWork|null find($id, $lockMode = null, $lockVersion = null)
@@ -73,33 +75,37 @@ class ArtWorkRepository extends ServiceEntityRepository
         'depotDate' => ['field' => 'entryDate', 'operator' => 'range', 'entity' => 'propertyStatus'],
     ];
 
-    public static $sortColumns = [
-        'id' => ['field' => 'id',  'entity' => 'artWork'] ,
-        'titre' => ['field' => 'title',  'entity' => 'artWork'],
-        'creationDate' => ['field' => 'createdAt',  'entity' => 'artWork'],
-        'field' => ['field' => 'label',  'entity' => 'field'],
-        'denomination' => ['field' => 'label',  'entity' => 'denomination'],
-        'materialTechnique' => ['field' => 'label',  'entity' => 'materialTechnique'],
-        'style' => ['field' => 'label',  'entity' => 'style'],
-        'authors' => ['field' => 'firstName',  'entity' => 'authors'],
-        'era' => ['field' => 'label',  'entity' => 'era'],
-        'depositor' => ['field' => 'name',  'entity' => 'depositor'],
-        'communes' => ['field' => 'name',  'entity' => 'commune'],
-        'buildings' => ['field' => 'name',  'entity' => 'building']
+    public static $tableColumns = [
+        'id' => ['field' => 'id',  'entity' => 'artWork','operator'=>'in','search'=>false] ,
+        'titre' => ['field' => 'title',  'entity' => 'artWork','operator'=>'like','search'=>true],
+        'creationDate' => ['field' => 'createdAt',  'entity' => 'artWork','operator'=>'like','search'=>false],
+        'field' => ['field' => 'label',  'entity' => 'field','operator'=>'like','search'=>true],
+        'denomination' => ['field' => 'label',  'entity' => 'denomination','operator'=>'like','search'=>true],
+        'materialTechnique' => ['field' => 'label',  'entity' => 'materialTechnique','operator'=>'like','search'=>true],
+        'style' => ['field' => 'label',  'entity' => 'style','operator'=>'like','search'=>true],
+        'authors' => ['field' => 'firstName',  'entity' => 'authors','operator'=>'like','search'=>true],
+        'era' => ['field' => 'label',  'entity' => 'era','operator'=>'like','search'=>true],
+        'depositor' => ['field' => 'name',  'entity' => 'depositor','operator'=>'like','search'=>true],
+        'communes' => ['field' => 'name',  'entity' => 'commune','operator'=>'like','search'=>true],
+        'buildings' => ['field' => 'name',  'entity' => 'building','operator'=>'like','search'=>true]
     ];
 
     /**
      * @param array $filter
      * @param array $advancedFilter
      * @param array $headerFilters
+     * @param $searchQuery
+     * @param $globalSearchQuery
      * @param $page
      * @param $limit
+     * @param string $sortBy
+     * @param string $sort
      * @param bool $count
      * @return int|mixed|string
      * @throws NoResultException
      * @throws NonUniqueResultException
      */
-    public function getArtWorkList(array $filter, array $advancedFilter, array $headerFilters, $page, $limit, $sortBy = 'id', $sort = 'desc', $count = false)
+    public function getArtWorkList(array $filter, array $advancedFilter, array $headerFilters,$searchQuery,$globalSearchQuery, $page, $limit, $sortBy = 'id', $sort = 'desc', $count = false)
     {
         $query = $this->createQueryBuilder('artWork');
         $query->where($query->expr()->isInstanceOf('artWork', ArtWork::class));
@@ -109,7 +115,8 @@ class ArtWorkRepository extends ServiceEntityRepository
             ->leftJoin('artWork.authors', 'authors')
             ->leftJoin('artWork.era', 'era')
             ->leftJoin('artWork.style', 'style')
-            ->leftJoin('artWork.movements', 'movements')
+            ->leftJoin('artWork.movements', 'movements',\Doctrine\ORM\Query\Expr\Join::WITH,
+                "movements.date =( select MAX(movements2.date) from Main:Movement movements2 where movements2.furniture = artWork) ")
             ->leftJoin('movements.correspondents', 'correspondents')
             ->leftJoin('correspondents.establishment', 'establishment')
             ->leftJoin('establishment.ministry', 'ministry')
@@ -136,8 +143,10 @@ class ArtWorkRepository extends ServiceEntityRepository
             ->leftJoin(PropertyStatus::class, 'propertyStatus', \Doctrine\ORM\Query\Expr\Join::WITH, 'propertyStatus = status')
             ->leftJoin('depositStatus.depositor', 'depositor')
             ->leftJoin('propertyStatus.category', 'category')
-            ->leftJoin('propertyStatus.entryMode', 'entryMode')//                        ->leftJoin('sub_divisions.services','services')
+            ->leftJoin('propertyStatus.entryMode', 'entryMode')
+            //                        ->leftJoin('sub_divisions.services','services')
         ;
+
         foreach ($filter as $key => $value) {
             if (array_key_exists($key, self::$columns)) {
                 if ($key == 'id' && is_array($filter['id'])) {
@@ -147,15 +156,21 @@ class ArtWorkRepository extends ServiceEntityRepository
                 }
             }
         }
+        if(strlen($globalSearchQuery)>0){
+            $query = $this->addGlobalQueryFilter($query,$globalSearchQuery);
+        }
+
+        if(strlen($searchQuery)>0){
+            $query= $this->addQueryFilter($query,$searchQuery);
+        }
         $query = $this->addAdvancedFilter($query, $advancedFilter, $headerFilters);
         if ($count) {
             $query->select('count(artWork.id)');
             return $query->getQuery()->getSingleScalarResult();
         }
         $query->setFirstResult(($page - 1) * $limit)->setMaxResults($limit);
-//        dd(array_key_exists($sortBy, self::$sortColumns));
-        if (array_key_exists($sortBy, self::$sortColumns)) {
-            $sortDataKey = self::$sortColumns[$sortBy]['entity'] . '.' . self::$sortColumns[$sortBy]['field'];
+        if (array_key_exists($sortBy, self::$tableColumns)) {
+            $sortDataKey = self::$tableColumns[$sortBy]['entity'] . '.' . self::$tableColumns[$sortBy]['field'];
             $query->orderBy($sortDataKey, $sort);
         }
         return $query->getQuery()->getResult();
@@ -501,5 +516,51 @@ class ArtWorkRepository extends ServiceEntityRepository
         }
         return $query->getQuery()->getArrayResult();
 
+    }
+
+    private function addQueryFilter(QueryBuilder $query, string $searchQuery)
+    {
+        $subDql='';
+        if(strlen($searchQuery)>0){
+            foreach (self::$tableColumns as $key=>$columnData){
+                if($columnData['search']){
+                    $subDql.='LOWER('.$columnData['entity'].'.'.$columnData['field'].') like :searchQuery or ';
+                }
+            }
+            $subDql =substr_replace($subDql,'', strrpos($subDql, 'or'), 2);
+        }
+        if(strlen($subDql)>0){
+            $query->andWhere("($subDql)");
+            $query->setParameter('searchQuery',strtolower('%' . strtolower($searchQuery) . '%'));
+        }
+        return $query;
+    }
+
+    private function addGlobalQueryFilter(QueryBuilder $query, $globalSearchQuery)
+    {
+        $dqlString ='';
+        $dqlString.= "LOWER(artWork.title) like :searchString" ;
+        $searchInt= intval($globalSearchQuery);
+        if($searchInt>0){
+            $dqlString .=" or artWork.id = :search";
+            $dqlString .=" or artWork.length = :search";
+            $dqlString .=" or artWork.width = :search";
+            $dqlString .=" or artWork.height = :search";
+            $dqlString .=" or artWork.depth = :search";
+            $dqlString .=" or artWork.length = :search";
+            $dqlString .=" or artWork.diameter = :search";
+            $dqlString .=" or artWork.numberOfUnit = :search";
+            $dqlString .=" or artWork.totalLength = :search";
+            $dqlString .=" or artWork.totalWidth = :search";
+            $dqlString .=" or artWork.totalHeight = :search";
+        }
+        if(strlen($dqlString)>0){
+            $query->andWhere($dqlString)->setParameter('searchString','%' . strtolower($globalSearchQuery) . '%');
+            if($searchInt>0){
+                $query->setParameter('search',$searchInt);
+            }
+        }
+
+       return $query;
     }
 }
