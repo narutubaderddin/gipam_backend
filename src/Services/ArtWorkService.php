@@ -30,6 +30,7 @@ class ArtWorkService
      * @param $filter
      * @param $advancedFilter
      * @param $headerFilters
+     * @param $query
      * @return ApiResponse
      */
     public function findArtWorkRecord(ParamFetcherInterface $paramFetcher, $filter, $advancedFilter, $headerFilters): ApiResponse
@@ -38,8 +39,10 @@ class ArtWorkService
         $limit = $paramFetcher->get('limit', true) ?? 5;
         $sortBy = $paramFetcher->get('sort_by') ?? 'id';
         $sort = $paramFetcher->get('sort') ?? 'asc';
-        $result = $this->entityManager->getRepository(ArtWork::class)->getArtWorkList($filter, $advancedFilter, $headerFilters, $page, $limit, $sortBy, $sort);
-        $filtredQuantity = $this->entityManager->getRepository(ArtWork::class)->getArtWorkList($filter, $advancedFilter, $headerFilters, $page, $limit, $sortBy, $sort, true);
+        $query= $paramFetcher->get('search')??'';
+        $globalQuery= $paramFetcher->get('globalSearch')??'';
+        $result = $this->entityManager->getRepository(ArtWork::class)->getArtWorkList($filter, $advancedFilter, $headerFilters,$query,$globalQuery, $page, $limit, $sortBy, $sort);
+        $filtredQuantity = $this->entityManager->getRepository(ArtWork::class)->getArtWorkList($filter, $advancedFilter, $headerFilters,$query,$globalQuery, $page, $limit, $sortBy, $sort, true);
 
         return new ApiResponse(
             $page,
