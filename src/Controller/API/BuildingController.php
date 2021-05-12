@@ -122,6 +122,7 @@ class BuildingController extends AbstractFOSRestController
      * @Rest\QueryParam(name="site", nullable=false, description="filter by site id. example: site[eq]=value")
      * @Rest\QueryParam(name="commune_id", map=true, nullable=false, description="filter by commune id. example: commune_id[eq]=value")
      * @Rest\QueryParam(name="commune_name", map=true, nullable=false, description="filter by commune name. example: commune_name[eq]=value")
+     * @Rest\QueryParam(name="commune", map=true, nullable=false, description="filter by commune id. example: commune[eq]=value")
      * @Rest\QueryParam(name="search", map=false, nullable=true, description="search. example: search=text")
      * @Rest\QueryParam(name="startDate",
      *      map=true, nullable=false,

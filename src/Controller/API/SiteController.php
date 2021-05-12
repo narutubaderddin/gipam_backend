@@ -114,8 +114,9 @@ class SiteController extends AbstractFOSRestController
      */
     public function listSites(ParamFetcherInterface $paramFetcher, Request $request)
     {
-        $serializerGroups = $request->get('serializer_group', '["response", "site"]') ?? null;
+        $serializerGroups = $request->get('serializer_group', '["response", "site"]');
         $serializerGroups = json_decode($serializerGroups, true);
+        $serializerGroups[] = "response";
         $context = new Context();
         $context->setGroups($serializerGroups);
         $records = $this->apiManager->findRecordsByEntityName(Site::class, $paramFetcher);

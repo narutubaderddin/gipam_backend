@@ -113,6 +113,7 @@ class CommuneController extends AbstractFOSRestController
      * @Rest\QueryParam(name="limit", requirements="\d+", default="0", description="page size.")
      * @Rest\QueryParam(name="sort_by", nullable=true, default="id", description="order by")
      * @Rest\QueryParam(name="department_name", map=true, nullable=false, description="filter by department name. example: department_name[eq]=value")
+     * @Rest\QueryParam(name="department", map=true, nullable=false, description="filter by department id. example: department[eq]=value")
      * @Rest\QueryParam(name="search", map=false, nullable=true, description="search. example: search=text")
      * @Rest\QueryParam(
      *     name="sort", requirements="(asc|desc)",
@@ -139,16 +140,13 @@ class CommuneController extends AbstractFOSRestController
      */
     public function listCommune(ParamFetcherInterface $paramFetcher, Request $request)
     {
-        $serializerGroups = $request->get('serializer_group') ?? null;
-        if ($serializerGroups) {
-            $serializerGroups = json_decode($serializerGroups, true);
-            $context = new Context();
-            $context->setGroups($serializerGroups);
-            $records = $this->apiManager->findRecordsByEntityName(Commune::class, $paramFetcher);
-            return $this->view($records, Response::HTTP_OK)->setContext($context);
-        }
+        $serializerGroups = $request->get('serializer_group', '');
+        $serializerGroups = json_decode($serializerGroups, true);
+        $serializerGroups[] = "response";
+        $context = new Context();
+        $context->setGroups($serializerGroups);
         $records = $this->apiManager->findRecordsByEntityName(Commune::class, $paramFetcher);
-        return $this->view($records, Response::HTTP_OK);
+        return $this->view($records, Response::HTTP_OK)->setContext($context);
     }
     /**
      *
