@@ -40,7 +40,7 @@ class ReportModel
      *
      * @ORM\Column(name="texte", type="text")
      */
-    private $text;
+    private $text = 'default';
 
     /**
      * @JMS\Groups("report_model")
