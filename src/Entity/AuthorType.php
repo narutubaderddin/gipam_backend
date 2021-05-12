@@ -30,7 +30,7 @@ class AuthorType
         'fabricant' => 'fabricant',
     ];
     /**
-     * @JMS\Groups("id")
+     * @JMS\Groups({"id", "short"})
      *
      * @ORM\Id
      * @ORM\GeneratedValue
@@ -39,7 +39,7 @@ class AuthorType
     private $id;
 
     /**
-     * @JMS\Groups({"authorType"})
+     * @JMS\Groups({"authorType", "short"})
      *
      * @ORM\Column(name="libelle", type="string", length=255, nullable=true)
      */

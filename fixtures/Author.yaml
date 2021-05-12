@@ -1,0 +1,6 @@
+App\Entity\Author:
+  author_1:
+    firstName: <name()>
+    lastName: <name()>
+    type: '@authorType_*'
+    active: true

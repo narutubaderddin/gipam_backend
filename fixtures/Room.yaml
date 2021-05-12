@@ -1,0 +1,7 @@
+App\Entity\Room:
+  room_1:
+    level: 1
+    reference: 2
+    building: '@building_*'
+    startDate: <date_create()>
+    endDate: <date_create()>

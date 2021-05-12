@@ -15,6 +15,13 @@ use Doctrine\Persistence\ManagerRegistry;
 class AuthorRepository extends ServiceEntityRepository
 {
     use RepositoryTrait;
+
+    public const SEARCH_FIELDS = [
+        'lastName_param' => 'lastName',
+        'firstName_param' => 'firstName',
+        'type_label_param' => 'type_label',
+    ];
+
     public function __construct(ManagerRegistry $registry)
     {
         parent::__construct($registry, Author::class);

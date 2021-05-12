@@ -3,13 +3,12 @@
 
 namespace App\Tests\api\Controller\API;
 
-
 use App\Tests\ApiTester;
 use Codeception\Util\HttpCode;
 
-class EstablishmentControllerCest
+class AuthorControllerCest
 {
-    protected const URL = 'api/establishments/';
+    protected const URL = 'api/authors/';
 
     /**
      * @var ApiTester
@@ -19,73 +18,84 @@ class EstablishmentControllerCest
     public function _before(ApiTester $apiTester)
     {
         $this->apiTester = $apiTester;
+//        $this->apiTester->connectApi();
     }
 
-    public function getEstablishmentTest()
+    public function getAuthorByIdTest()
     {
-        $this->apiTester->wantTo('get Establishment By id');
+
+        $this->apiTester->wantTo('get author By id');
         $this->apiTester->haveHttpHeader('Content-Type', 'application/json');
         $this->apiTester->sendGet(self::URL . "1");
         $this->apiTester->seeResponseCodeIs(200);
         $this->apiTester->seeResponseIsJson();
+
     }
 
-    public function getEstablishmentsListTest()
+    public function getAuthorByIdNotFoundTest()
     {
-        $this->apiTester->wantTo('get Establishment List');
+        $this->apiTester->wantTo('get author By id Not Found');
+        $this->apiTester->haveHttpHeader('Content-Type', 'application/json');
+        $this->apiTester->sendGet(self::URL . "2");
+        $this->apiTester->seeResponseCodeIs(HttpCode::NOT_FOUND);
+    }
+
+    public function getAuthorsList()
+    {
+        $this->apiTester->wantTo('get authors List');
         $this->apiTester->haveHttpHeader('Content-Type', 'application/json');
         $this->apiTester->sendGet(self::URL);
         $this->apiTester->seeResponseCodeIs(200);
     }
 
-    public function createEstablishmentTest()
+    public function createAuthorsSuccessTest()
     {
-        $this->apiTester->wantTo('create a Establishment');
+        $this->apiTester->wantTo('create author OK,expected Code to be ' . HttpCode::CREATED);
         $this->apiTester->haveHttpHeader('Content-Type', 'application/json');
         $this->apiTester->sendPOST(self::URL, [
-            "label" => "test Label",
-            "acronym" => "test Acronym",
-            "startDate" => "2021-04-23T15:00:00",
+            "firstName" => "test name",
+            "lastName" => "test name",
+            "type" => 1,
+            "active" => true,
         ]);
         $this->apiTester->seeResponseCodeIs(HttpCode::CREATED);
         $this->apiTester->seeResponseIsJson();
     }
 
-    public function createDepositorFailedTest()
+    public function createAuthorsFailedTest()
     {
-        $this->apiTester->wantTo('create a Establishment Error');
+        $this->apiTester->wantTo('create author Failed,expected Code to be ' . HttpCode::BAD_REQUEST);
         $this->apiTester->haveHttpHeader('Content-Type', 'application/json');
         $this->apiTester->sendPOST(self::URL, [
-            "label" => "",
-            "startDate" => "2021-04-23T15:00:00",
+            "firstName" => "",
         ]);
         $this->apiTester->seeResponseCodeIs(HttpCode::BAD_REQUEST);
         $this->apiTester->seeResponseIsJson();
     }
 
-    public function updateEstablishmentTest()
+    public function updateAuthorsSuccessTest()
     {
-        $this->apiTester->wantTo('update Establishment');
+        $this->apiTester->wantTo('Update author ok,expected Code to be ' . HttpCode::CREATED);
         $this->apiTester->haveHttpHeader('Content-Type', 'application/json');
         $this->apiTester->sendPut(self::URL . "1", [
-            "label" => "updated Label",
+            "firstName" => "updated name",
         ]);
         $this->apiTester->seeResponseCodeIs(HttpCode::NO_CONTENT);
     }
 
-    public function updateEstablishmentFailedTest()
+    public function updateAuthorsFailedTest()
     {
-        $this->apiTester->wantTo('update Establishment error');
+        $this->apiTester->wantTo('Update author Failed,expected Code to be ' . HttpCode::CREATED);
         $this->apiTester->haveHttpHeader('Content-Type', 'application/json');
         $this->apiTester->sendPut(self::URL . "1", [
-            "label" => "",
+            "firstName" => "",
         ]);
         $this->apiTester->seeResponseCodeIs(HttpCode::BAD_REQUEST);
     }
 
-    public function deleteEstablishmentTest()
+    public function deleteAuthors()
     {
-        $this->apiTester->wantTo('delete a Establishment');
+        $this->apiTester->wantTo('Delete an author By id');
         $this->apiTester->haveHttpHeader('Content-Type', 'application/json');
         $this->apiTester->sendDelete(self::URL . "1");
         $this->apiTester->seeResponseCodeIs(HttpCode::NO_CONTENT);
