@@ -123,6 +123,8 @@ class ArtWorkController extends AbstractFOSRestController
      * @Rest\QueryParam(name="limit", requirements="\d+", default="20", description="page size.")
      * @Rest\QueryParam(name="sort_by", nullable=true, default="id", description="order by")
      * @Rest\QueryParam(name="sort", requirements="(asc|desc)", nullable=true, default="asc", description="tri order asc|desc")
+     * @Rest\QueryParam(name="search", nullable=true, default="", description="search")
+     * @Rest\QueryParam(name="globalSearch", nullable=true, default="", description="Golbal search")
      * @Rest\QueryParam(
      *     name="sort", requirements="(asc|desc)",
      *      nullable=true, default="asc",
