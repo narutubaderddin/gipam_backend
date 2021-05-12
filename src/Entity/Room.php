@@ -9,7 +9,6 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use JMS\Serializer\Annotation as JMS;
-use JMS\Serializer\Annotation as Serializer;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Validator\Constraints as Assert;
 
@@ -26,7 +25,7 @@ class Room
      * @ORM\Id
      * @ORM\GeneratedValue
      * @ORM\Column(type="integer")
-     * @Serializer\Groups("id","short")
+     * @JMS\Groups("id","short")
      */
     private $id;
 
@@ -35,7 +34,7 @@ class Room
      *
      * @Assert\NotBlank
      *
-     * @Serializer\Groups("short", "room")
+     * @JMS\Groups("short", "room")
      */
     private $reference;
 
@@ -44,7 +43,7 @@ class Room
      *
      * @Assert\NotBlank
      *
-     * @Serializer\Groups("room")
+     * @JMS\Groups("room")
      */
     private $level;
 
@@ -53,14 +52,14 @@ class Room
      *
      * @Assert\NotBlank
      *
-     * @Serializer\Groups("room")
+     * @JMS\Groups("room")
      */
     private $startDate;
 
     /**
      * @ORM\Column(name="date_fin", type="datetime", nullable=true)
      *
-     * @Serializer\Groups("room")
+     * @JMS\Groups("room")
      */
     private $endDate;
 
@@ -68,7 +67,7 @@ class Room
      * @ORM\ManyToOne(targetEntity=Building::class, inversedBy="rooms")
      * @ORM\JoinColumn(name="batiment_id", referencedColumnName="id")
      *
-     * @Serializer\Groups("room")
+     * @JMS\Groups("room")
      */
     private $building;
 
@@ -79,9 +78,17 @@ class Room
      */
     private $locations;
 
+    /**
+     * @JMS\Exclude()
+     *
+     * @ORM\OneToMany(targetEntity=Reserve::class, mappedBy="room", orphanRemoval=true)
+     */
+    private $reserves;
+
     public function __construct()
     {
         $this->locations = new ArrayCollection();
+        $this->reserves = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -173,6 +180,36 @@ class Room
             // set the owning side to null (unless already changed)
             if ($location->getRoom() === $this) {
                 $location->setRoom(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|Reserve[]
+     */
+    public function getReserves(): Collection
+    {
+        return $this->reserves;
+    }
+
+    public function addReserf(Reserve $reserf): self
+    {
+        if (!$this->reserves->contains($reserf)) {
+            $this->reserves[] = $reserf;
+            $reserf->setRoom($this);
+        }
+
+        return $this;
+    }
+
+    public function removeReserf(Reserve $reserf): self
+    {
+        if ($this->reserves->removeElement($reserf)) {
+            // set the owning side to null (unless already changed)
+            if ($reserf->getRoom() === $this) {
+                $reserf->setRoom(null);
             }
         }
 

@@ -7,11 +7,13 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use JMS\Serializer\Annotation as JMS;
+use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * @ORM\Entity(repositoryClass=ReportModelRepository::class)
  * @ORM\Table(name="modele_constat")
+ * @UniqueEntity("name", repositoryMethod="iFindBy", message="Un modèle avec ce nom existe déjà!")
  */
 class ReportModel
 {
@@ -34,13 +36,11 @@ class ReportModel
     private $name;
 
     /**
-     * @JMS\Groups("report_model")
-     *
-     * @Assert\NotBlank
+     * @JMS\Exclude
      *
      * @ORM\Column(name="texte", type="text")
      */
-    private $text;
+    private $text = 'default';
 
     /**
      * @JMS\Groups("report_model")

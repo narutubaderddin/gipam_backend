@@ -1,28 +1,30 @@
 <?php
 
+
 namespace App\Controller\API;
 
-use App\Entity\Field;
+
+use App\Entity\Reserve;
 use App\Exception\FormValidationException;
-use App\Form\FieldType;
-use App\Model\ApiResponse;
+use App\Form\ReserveType;
 use App\Services\ApiManager;
-use FOS\RestBundle\Context\Context;
 use FOS\RestBundle\Controller\AbstractFOSRestController;
 use FOS\RestBundle\Controller\Annotations as Rest;
-use FOS\RestBundle\Controller\Annotations\Route;
 use FOS\RestBundle\Request\ParamFetcherInterface;
-use Nelmio\ApiDocBundle\Annotation\Model;
+use FOS\RestBundle\View\View;
+use Swagger\Annotations as SWG;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Swagger\Annotations as SWG;
+use App\Model\ApiResponse;
+use Nelmio\ApiDocBundle\Annotation\Model;
+
 
 /**
- * Class FieldController
+ * Class ReserveController
  * @package App\Controller\API
- * @Route("/fields")
+ * @Rest\Route("/reserves")
  */
-class FieldController extends AbstractFOSRestController
+class ReserveController extends AbstractFOSRestController
 {
 
     /**
@@ -42,21 +44,21 @@ class FieldController extends AbstractFOSRestController
      *
      * @SWG\Response(
      *     response=200,
-     *     description="Returns Field by id",
+     *     description="Returns Reserve by id",
      *     @SWG\Schema(
-     *         ref=@Model(type=Field::class, groups={"field"})
+     *         ref=@Model(type=Reserve::class, groups={"reserve"})
      *     )
      * )
-     * @SWG\Tag(name="fields")
-     * @Rest\View(serializerGroups={"field"})
+     * @SWG\Tag(name="reserves")
+     * @Rest\View(serializerGroups={"reserve", "short"})
      *
-     * @param Field $field
+     * @param Reserve $reserve
      *
-     * @return Response
+     * @return View
      */
-    public function showField(Field $field)
+    public function showReserve(Reserve $reserve)
     {
-        return $this->view($field, Response::HTTP_OK);
+        return $this->view($reserve, Response::HTTP_OK);
     }
 
     /**
@@ -64,7 +66,7 @@ class FieldController extends AbstractFOSRestController
      *
      * @SWG\Response(
      *     response=200,
-     *     description="Returns the list of an Field",
+     *     description="Returns the list of reserves",
      *     @SWG\Schema(
      *         @SWG\Items(ref=@Model(type=ApiResponse::class))
      *     )
@@ -93,32 +95,34 @@ class FieldController extends AbstractFOSRestController
      *     type="string",
      *     description="The field used to sort type"
      * )
-     *
-     * @SWG\Tag(name="fields")
+     * @SWG\Tag(name="reserves")
      *
      * @Rest\QueryParam(name="page", requirements="\d+", default="1", description="page number.")
      * @Rest\QueryParam(name="limit", requirements="\d+", default="0", description="page size.")
      * @Rest\QueryParam(name="sort_by", nullable=true, default="id", description="order by")
-     * @Rest\QueryParam(name="sort", requirements="(asc|desc)", nullable=true, default="asc", description="tri order asc|desc")
-     * @Rest\QueryParam(name="label", map=true, nullable=false, description="filter by label. example: label[eq]=value")
-     * @Rest\QueryParam(name="active" ,map=true, nullable=false, description="filter by active. example: active[eq]=1")
      * @Rest\QueryParam(name="search", map=false, nullable=true, description="search. example: search=text")
+     * @Rest\QueryParam(
+     *     name="sort", requirements="(asc|desc)",
+     *      nullable=true, default="asc",
+     *      description="sorting order asc|desc"
+     * )
      *
-     * @Rest\View()
+     * @Rest\QueryParam(name="label", map=true, nullable=false, description="filter by label. example: label[eq]=value")
+     * @Rest\QueryParam(name="startDate", map=true, nullable=false, description="filter by startDate. example: startDate[lt]=value")
+     * @Rest\QueryParam(name="endDate", map=true, nullable=false, description="filter by endDate. example: endDate[lt]=value")
+     * @Rest\QueryParam(name="room", nullable=false, description="filter by room id. example: room[eq]=value")
+     * @Rest\QueryParam(name="room_reference", nullable=false, description="filter by room reference. example: room_reference[eq]=value")
+     *
+     * @Rest\View(serializerGroups={"reserve", "response", "short"})
      *
      * @param ParamFetcherInterface $paramFetcher
      *
-     * @return Response
+     * @return View
      */
-    public function listFields(ParamFetcherInterface $paramFetcher, Request $request)
+    public function listOfReserves(ParamFetcherInterface $paramFetcher)
     {
-        $serializerGroups = $request->get('serializer_group', '["field_list"]');
-        $serializerGroups = json_decode($serializerGroups, true);
-        $serializerGroups[] = "response";
-        $context = new Context();
-        $context->setGroups($serializerGroups);
-        $records = $this->apiManager->findRecordsByEntityName(Field::class, $paramFetcher);
-        return $this->view($records, Response::HTTP_OK)->setContext($context);
+        $records = $this->apiManager->findRecordsByEntityName(Reserve::class, $paramFetcher);
+        return $this->view($records, Response::HTTP_OK);
     }
 
     /**
@@ -126,9 +130,9 @@ class FieldController extends AbstractFOSRestController
      *
      * @SWG\Response(
      *     response=201,
-     *     description="Returns created Field",
+     *     description="Returns created Reserve",
      *     @SWG\Schema(
-     *         ref=@Model(type=Field::class, groups={"field"})
+     *         ref=@Model(type=Reserve::class, groups={"reserve"})
      *     )
      * )
      * @SWG\Response(
@@ -138,30 +142,29 @@ class FieldController extends AbstractFOSRestController
      * @SWG\Parameter(
      *     name="form",
      *     in="body",
-     *     description="Add Field",
-     *     @Model(type=Field::class, groups={"field"})
+     *     description="Add Reserve",
+     *     @Model(type=Reserve::class, groups={"reserve"})
      * )
-     * @SWG\Tag(name="fields")
+     * @SWG\Tag(name="reserves")
      *
-     * @Rest\View(serializerGroups={"field"})
+     * @Rest\View(serializerGroups={"reserve", "short"})
      *
      * @param Request $request
      *
-     * @return Response
+     * @return View
      *
      * @throws \Doctrine\ORM\ORMException
      * @throws \Doctrine\ORM\OptimisticLockException
      */
-    public function postField(Request $request)
+    public function postReserve(Request $request)
     {
-        $form = $this->createForm(FieldType::class);
+        $form = $this->createForm(ReserveType::class);
         $form->submit($request->request->all());
         if ($form->isValid()) {
-            $field = $this->apiManager->save($form->getData());
-            return $this->view($field, Response::HTTP_CREATED);
-        } else {
-            throw new FormValidationException($form);
+            $reserve = $this->apiManager->save($form->getData());
+            return $this->view($reserve, Response::HTTP_CREATED);
         }
+        throw new FormValidationException($form);
     }
 
     /**
@@ -169,7 +172,7 @@ class FieldController extends AbstractFOSRestController
      *
      * @SWG\Response(
      *     response=204,
-     *     description="Field is updated"
+     *     description="Reserve is updated"
      *     )
      * )
      * @SWG\Response(
@@ -179,32 +182,31 @@ class FieldController extends AbstractFOSRestController
      * @SWG\Parameter(
      *     name="form",
      *     in="body",
-     *     description="Update a Field",
-     *     @Model(type=Field::class, groups={"field"})
+     *     description="Update a Reserve",
+     *     @Model(type=Reserve::class, groups={"reserve"})
      * )
-     * @SWG\Tag(name="fields")
+     * @SWG\Tag(name="reserves")
      *
      * @Rest\View()
      *
      * @param Request $request
-     * @param Field $field
+     * @param Reserve $reserve
      *
-     * @return Response
+     * @return View
      *
      * @throws \Doctrine\ORM\ORMException
      * @throws \Doctrine\ORM\OptimisticLockException
      */
-    public function updateField(Request $request, Field $field)
+    public function updateReserve(Request $request, Reserve $reserve)
     {
-        $form = $this->createForm(FieldType::class, $field);
+        $form = $this->createForm(ReserveType::class, $reserve);
         $form->submit($request->request->all(), false);
 
         if ($form->isValid()) {
-            $this->apiManager->save($field);
+            $this->apiManager->save($reserve);
             return $this->view(null, Response::HTTP_NO_CONTENT);
-        } else {
-            throw new FormValidationException($form);
         }
+        throw new FormValidationException($form);
     }
 
     /**
@@ -212,20 +214,21 @@ class FieldController extends AbstractFOSRestController
      *
      * @SWG\Response(
      *     response=204,
-     *     description="Field is removed"
+     *     description="Reserve is removed"
      *     )
      * )
-     * @SWG\Tag(name="fields")
+     * @SWG\Tag(name="reserves")
      *
      * @Rest\View()
      *
-     * @param Field $field
+     * @param Reserve $reserve
      *
-     * @return Response
+     * @return View
      */
-    public function removeField(Field $field)
+    public function removeReserve(Reserve $reserve)
     {
-        $this->apiManager->delete($field);
+        $this->apiManager->delete($reserve);
         return $this->view(null, Response::HTTP_NO_CONTENT);
     }
+
 }

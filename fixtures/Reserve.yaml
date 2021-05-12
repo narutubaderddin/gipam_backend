@@ -1,0 +1,6 @@
+App\Entity\Reserve:
+  reserve_1:
+    label: <word()>
+    startDate: <date_create()>
+    endDate: <date_create()>
+    room: '@room_*'
