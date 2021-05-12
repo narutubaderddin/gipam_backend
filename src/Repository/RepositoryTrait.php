@@ -230,7 +230,7 @@ trait RepositoryTrait
                 $queryBuilder->andWhere("LOWER($field) LIKE :$parameter")->setParameter($parameter,
                     '%' . strtolower($value));
                 break;
-            case 'active':
+            case 'gtOrNull':
                 $queryBuilder->andWhere("$field > :$parameter OR $field IS NULL")->setParameter($parameter, $value);
                 break;
             default:
@@ -256,7 +256,7 @@ trait RepositoryTrait
      */
     public static function getOperators(): array
     {
-        return ['eq', 'gt', 'lt', 'gte', 'lte', 'neq', 'contains', 'startsWith', 'endsWith','in', 'active'];
+        return ['eq', 'gt', 'lt', 'gte', 'lte', 'neq', 'contains', 'startsWith', 'endsWith','in', 'gtOrNull'];
     }
 
     public function findRecordsByEntityNameAndCriteria($count, $page = 1, $limit = 0)
