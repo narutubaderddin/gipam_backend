@@ -114,7 +114,7 @@ class SiteController extends AbstractFOSRestController
      */
     public function listSites(ParamFetcherInterface $paramFetcher, Request $request)
     {
-        $serializerGroups = $request->get('serializer_group', '["response", "site"]');
+        $serializerGroups = $request->get('serializer_group', '["site"]');
         $serializerGroups = json_decode($serializerGroups, true);
         $serializerGroups[] = "response";
         $context = new Context();
