@@ -106,14 +106,6 @@ abstract class Furniture
     protected $style;
 
     /**
-     * @JMS\Groups("artwork","materialTechnique_furniture","art_work_details")
-     * @JMS\MaxDepth(1)
-     * @ORM\ManyToOne(targetEntity=MaterialTechnique::class, inversedBy="furniture")
-     * @ORM\JoinColumn(name="matiere_technique_id", referencedColumnName="id")
-     */
-    protected $materialTechnique;
-
-    /**
      * @JMS\Groups("artwork","denomination_furniture","art_work_details")
      * @JMS\MaxDepth(1)
      * @ORM\ManyToOne(targetEntity=Denomination::class, inversedBy="furniture")
@@ -220,6 +212,11 @@ abstract class Furniture
      */
     protected $updatedAt;
 
+    /**
+     * @ORM\ManyToMany(targetEntity=MaterialTechnique::class, inversedBy="furniture")
+     */
+    private $materialTechnique;
+
     public function __construct()
     {
         $this->authors = new ArrayCollection();
@@ -230,6 +227,7 @@ abstract class Furniture
         $this->hyperlinks = new ArrayCollection();
         $this->photographies = new ArrayCollection();
         $this->children = new ArrayCollection();
+        $this->materialTechnique = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -377,18 +375,6 @@ abstract class Furniture
     public function setStyle(?Style $style): self
     {
         $this->style = $style;
-
-        return $this;
-    }
-
-    public function getMaterialTechnique(): ?MaterialTechnique
-    {
-        return $this->materialTechnique;
-    }
-
-    public function setMaterialTechnique(?MaterialTechnique $materialTechnique): self
-    {
-        $this->materialTechnique = $materialTechnique;
 
         return $this;
     }
@@ -734,5 +720,29 @@ abstract class Furniture
                     ->addViolation();
             }
         }
+    }
+
+    /**
+     * @return Collection|MaterialTechnique[]
+     */
+    public function getMaterialTechnique(): Collection
+    {
+        return $this->materialTechnique;
+    }
+
+    public function addMaterialTechnique(MaterialTechnique $materialTechnique): self
+    {
+        if (!$this->materialTechnique->contains($materialTechnique)) {
+            $this->materialTechnique[] = $materialTechnique;
+        }
+
+        return $this;
+    }
+
+    public function removeMaterialTechnique(MaterialTechnique $materialTechnique): self
+    {
+        $this->materialTechnique->removeElement($materialTechnique);
+
+        return $this;
     }
 }

@@ -47,18 +47,16 @@ class MaterialTechnique
     private $denominations;
 
     /**
-     * @JMS\Exclude()
-     *
-     * @ORM\OneToMany(targetEntity=Furniture::class, mappedBy="materialTechnique")
-     */
-    private $furniture;
-
-    /**
      * @JMS\Groups("material_technique")
      *
      * @ORM\Column(name="actif", type="boolean", nullable=false)
      */
     private $active = true;
+
+    /**
+     * @ORM\ManyToMany(targetEntity=Furniture::class, mappedBy="materialTechnique")
+     */
+    private $furniture;
 
     public function __construct()
     {
@@ -135,6 +133,18 @@ class MaterialTechnique
         return $this;
     }
 
+    public function removeFurniture(Furniture $furniture): self
+    {
+        if ($this->furniture->removeElement($furniture)) {
+            // set the owning side to null (unless already changed)
+            if ($furniture->getMaterialTechnique() === $this) {
+                $furniture->setMaterialTechnique(null);
+            }
+        }
+
+        return $this;
+    }
+
     /**
      * @return Collection|Furniture[]
      */
@@ -147,19 +157,7 @@ class MaterialTechnique
     {
         if (!$this->furniture->contains($furniture)) {
             $this->furniture[] = $furniture;
-            $furniture->setMaterialTechnique($this);
-        }
-
-        return $this;
-    }
-
-    public function removeFurniture(Furniture $furniture): self
-    {
-        if ($this->furniture->removeElement($furniture)) {
-            // set the owning side to null (unless already changed)
-            if ($furniture->getMaterialTechnique() === $this) {
-                $furniture->setMaterialTechnique(null);
-            }
+            $furniture->addMaterialTechnique($this);
         }
 
         return $this;
