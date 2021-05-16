@@ -34,13 +34,29 @@ class CorrespondentType extends AbstractType
                 'class' => Establishment::class,
                 'choice_label' => 'id',
             ])
-            ->add('subDivision', EntityType::class, [
-                'class' => SubDivision::class,
-                'choice_label' => 'id',
+            ->add('subDivisions', CollectionType::class, [
+                'entry_type' => EntityType::class,
+                'entry_options' => [
+                    'class' => SubDivision::class,
+                    'label' => false,
+                    'choice_label' => 'id',
+                ],
+                'allow_delete' => true,
+                'allow_add' => true,
+                'prototype' => true,
+                'by_reference' => false,
             ])
-            ->add('service', EntityType::class, [
-                'class' => Service::class,
-                'choice_label' => 'id',
+            ->add('services', CollectionType::class, [
+                'entry_type' => EntityType::class,
+                'entry_options' => [
+                    'class' => Service::class,
+                    'label' => false,
+                    'choice_label' => 'id',
+                ],
+                'allow_delete' => true,
+                'allow_add' => true,
+                'prototype' => true,
+                'by_reference' => false,
             ])
             ->add('movements', CollectionType::class, [
                 'entry_type' => EntityType::class,
