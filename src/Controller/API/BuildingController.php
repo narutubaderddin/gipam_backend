@@ -143,7 +143,7 @@ class BuildingController extends AbstractFOSRestController
      */
     public function listBuilding(ParamFetcherInterface $paramFetcher, Request $request)
     {
-        $serializerGroups = $request->get('serializer_group', '[]');
+        $serializerGroups = $request->get('serializer_group', '["building", "id", "short"]');
         $serializerGroups = json_decode($serializerGroups, true);
         $serializerGroups[] = "response";
         $context = new Context();

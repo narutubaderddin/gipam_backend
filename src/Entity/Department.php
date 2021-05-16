@@ -71,6 +71,8 @@ class Department
     private $communes;
 
     /**
+     * @JMS\Exclude()
+     *
      * @ORM\ManyToMany(targetEntity=Responsible::class, mappedBy="departments")
      */
     private $responsibles;

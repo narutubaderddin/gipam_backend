@@ -93,7 +93,7 @@ class Building
     private $rooms;
 
     /**
-     * @JMS\Groups("building")
+     * @JMS\Exclude()
      *
      * @ORM\ManyToMany(targetEntity=Responsible::class, mappedBy="buildings")
      */

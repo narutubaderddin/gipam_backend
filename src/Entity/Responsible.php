@@ -8,14 +8,18 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use JMS\Serializer\Annotation as JMS;
+use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
+use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * @ORM\Entity(repositoryClass=ResponsibleRepository::class)
  * @ORM\Table(name="responsable")
+ * @UniqueEntity("mail", repositoryMethod="iFindBy", message="Un responsable avec ce courriel existe déjà!")
  */
 class Responsible
 {
     use TimestampableEntity;
+
     /**
      * @JMS\Groups("id","short")
      * @ORM\Id
@@ -26,12 +30,18 @@ class Responsible
 
     /**
      * @JMS\Groups("responsible")
+     *
+     * @Assert\NotBlank
+     *
      * @ORM\Column(name="prenom", type="string", length=255, nullable=true)
      */
     private $firstName;
 
     /**
      * @JMS\Groups("responsible")
+     *
+     * @Assert\NotBlank
+     *
      * @ORM\Column(name="nom", type="string", length=255, nullable=true)
      */
     private $lastName;
@@ -68,6 +78,7 @@ class Responsible
 
     /**
      * @JMS\Groups("responsible", "id")
+     *
      * @ORM\ManyToMany(targetEntity=Building::class, inversedBy="responsibles")
      * @ORM\JoinTable(name="responsable_batiment",
      *      joinColumns={@ORM\JoinColumn(name="responsable_id", referencedColumnName="id")},
@@ -78,11 +89,14 @@ class Responsible
 
     /**
      * @JMS\Groups("responsible")
+     *
      * @ORM\Column(name="connexion", type="string", length=255, nullable=true)
      */
     private $login;
 
     /**
+     * @JMS\Groups("responsible")
+     *
      * @ORM\ManyToMany(targetEntity=Department::class, inversedBy="responsibles")
      * @ORM\JoinTable(name="responsable_departement",
      *      joinColumns={@ORM\JoinColumn(name="responsable_id", referencedColumnName="id")},
