@@ -3,6 +3,7 @@
 namespace App\Form;
 
 use App\Entity\Building;
+use App\Entity\Department;
 use App\Entity\Responsible;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
@@ -30,6 +31,17 @@ class ResponsibleType extends AbstractType
                 'entry_type' => EntityType::class,
                 'entry_options' => [
                     'class' => Building::class,
+                    'label' => false,
+                    'choice_label' => 'id',
+                ],
+                'allow_delete' => true,
+                'allow_add' => true,
+                'prototype' => true,
+                'by_reference' => false,
+            ])->add('departments', CollectionType::class, [
+                'entry_type' => EntityType::class,
+                'entry_options' => [
+                    'class' => Department::class,
                     'label' => false,
                     'choice_label' => 'id',
                 ],

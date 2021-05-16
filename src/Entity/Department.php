@@ -70,9 +70,15 @@ class Department
      */
     private $communes;
 
+    /**
+     * @ORM\ManyToMany(targetEntity=Responsible::class, mappedBy="departments")
+     */
+    private $responsibles;
+
     public function __construct()
     {
         $this->communes = new ArrayCollection();
+        $this->responsibles = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -153,6 +159,33 @@ class Department
             if ($commune->getDepartment() === $this) {
                 $commune->setDepartment(null);
             }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|Responsible[]
+     */
+    public function getResponsibles(): Collection
+    {
+        return $this->responsibles;
+    }
+
+    public function addResponsible(Responsible $responsible): self
+    {
+        if (!$this->responsibles->contains($responsible)) {
+            $this->responsibles[] = $responsible;
+            $responsible->addDepartment($this);
+        }
+
+        return $this;
+    }
+
+    public function removeResponsible(Responsible $responsible): self
+    {
+        if ($this->responsibles->removeElement($responsible)) {
+            $responsible->removeDepartment($this);
         }
 
         return $this;

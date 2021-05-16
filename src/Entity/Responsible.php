@@ -8,7 +8,7 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use JMS\Serializer\Annotation as JMS;
-use Symfony\Component\Validator\Constraints as Assert;
+
 /**
  * @ORM\Entity(repositoryClass=ResponsibleRepository::class)
  * @ORM\Table(name="responsable")
@@ -82,9 +82,19 @@ class Responsible
      */
     private $login;
 
+    /**
+     * @ORM\ManyToMany(targetEntity=Department::class, inversedBy="responsibles")
+     * @ORM\JoinTable(name="responsable_departement",
+     *      joinColumns={@ORM\JoinColumn(name="responsable_id", referencedColumnName="id")},
+     *      inverseJoinColumns={@ORM\JoinColumn(name="departement_id", referencedColumnName="id")}
+     *      )
+     */
+    private $departments;
+
     public function __construct()
     {
         $this->buildings = new ArrayCollection();
+        $this->departments = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -221,5 +231,29 @@ class Responsible
     public function getFullName(): ?string
     {
         return $this->firstName . ' ' . $this->lastName;
+    }
+
+    /**
+     * @return Collection|Department[]
+     */
+    public function getDepartments(): Collection
+    {
+        return $this->departments;
+    }
+
+    public function addDepartment(Department $department): self
+    {
+        if (!$this->departments->contains($department)) {
+            $this->departments[] = $department;
+        }
+
+        return $this;
+    }
+
+    public function removeDepartment(Department $department): self
+    {
+        $this->departments->removeElement($department);
+
+        return $this;
     }
 }
