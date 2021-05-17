@@ -44,30 +44,9 @@ class Request
 
     /**
      * @JMS\Groups("request_list","request_details")
-     * @ORM\ManyToOne(targetEntity=SubDivision::class, inversedBy="requests")
-     * @ORM\JoinColumn(name="sous_direction_id", referencedColumnName="id")
-     */
-    private $subDivision;
-
-    /**
-     * @JMS\Groups("request_list","request_details")
-     * @ORM\ManyToOne(targetEntity=Establishment::class, inversedBy="requests")
-     * @ORM\JoinColumn(name="etablissement_id", referencedColumnName="id")
-     */
-    private $establishement;
-
-    /**
-     * @JMS\Groups("request_list","request_details")
      * @ORM\Column(name="fonction",type="string", length=255, nullable=true)
      */
     private $function;
-
-    /**
-     * @JMS\Groups("request_list","request_details")
-     * @ORM\ManyToOne(targetEntity=Building::class, inversedBy="requests")
-     * @ORM\JoinColumn(name="batiment_id", referencedColumnName="id")
-     */
-    private $building;
 
     /**
      * @JMS\Groups("request_list","request_details")
@@ -98,6 +77,48 @@ class Request
      * @ORM\Column(type="string", length=255, nullable=true)
      */
     private $level;
+
+    /**
+     * @JMS\Groups("request_list","request_details")
+     * @ORM\Column(name="status_demande",type="string", length=50, nullable=true)
+     */
+    private $requestStatus;
+
+    /**
+     * @JMS\Groups("request_list","request_details")
+     * @ORM\Column(type="string", length=255, nullable=true)
+     */
+    private $subDivision;
+
+    /**
+     * @JMS\Groups("request_list","request_details")
+     * @ORM\Column(type="string", length=255, nullable=true)
+     */
+    private $establishement;
+
+    /**
+     * @JMS\Groups("request_list","request_details")
+     * @ORM\Column(type="string", length=255, nullable=true)
+     */
+    private $building;
+
+    /**
+     * @JMS\Groups("request_list","request_details")
+     * @ORM\Column(type="string", length=255, nullable=true)
+     */
+    private $phoneApplicant;
+
+    /**
+     * @JMS\Groups("request_list","request_details")
+     * @ORM\Column(type="string", length=255, nullable=true)
+     */
+    private $firstNameApplicant;
+
+    /**
+     * @JMS\Groups("request_list","request_details")
+     * @ORM\Column(type="string", length=255, nullable=true)
+     */
+    private $lastNameApplicant;
 
     public function __construct()
     {
@@ -147,29 +168,8 @@ class Request
         return $this;
     }
 
-    public function getSubDivision(): ?SubDivision
-    {
-        return $this->subDivision;
-    }
 
-    public function setSubDivision(?SubDivision $subDivision): self
-    {
-        $this->subDivision = $subDivision;
 
-        return $this;
-    }
-
-    public function getEstablishement(): ?Establishment
-    {
-        return $this->establishement;
-    }
-
-    public function setEstablishement(?Establishment $establishement): self
-    {
-        $this->establishement = $establishement;
-
-        return $this;
-    }
 
     public function getFunction(): ?string
     {
@@ -179,18 +179,6 @@ class Request
     public function setFunction(?string $function): self
     {
         $this->function = $function;
-
-        return $this;
-    }
-
-    public function getBuilding(): ?Building
-    {
-        return $this->building;
-    }
-
-    public function setBuilding(?Building $building): self
-    {
-        $this->building = $building;
 
         return $this;
     }
@@ -269,6 +257,90 @@ class Request
     public function setLevel(?string $level): self
     {
         $this->level = $level;
+
+        return $this;
+    }
+
+    public function getRequestStatus(): ?string
+    {
+        return $this->requestStatus;
+    }
+
+    public function setRequestStatus(?string $requestStatus): self
+    {
+        $this->requestStatus = $requestStatus;
+
+        return $this;
+    }
+
+    public function getSubDivision(): ?string
+    {
+        return $this->subDivision;
+    }
+
+    public function setSubDivision(?string $subDivision): self
+    {
+        $this->subDivision = $subDivision;
+
+        return $this;
+    }
+
+    public function getEstablishement(): ?string
+    {
+        return $this->establishement;
+    }
+
+    public function setEstablishement(?string $establishement): self
+    {
+        $this->establishement = $establishement;
+
+        return $this;
+    }
+
+    public function getBuilding(): ?string
+    {
+        return $this->building;
+    }
+
+    public function setBuilding(?string $building): self
+    {
+        $this->building = $building;
+
+        return $this;
+    }
+
+    public function getPhoneApplicant(): ?string
+    {
+        return $this->phoneApplicant;
+    }
+
+    public function setPhoneApplicant(?string $phoneApplicant): self
+    {
+        $this->phoneApplicant = $phoneApplicant;
+
+        return $this;
+    }
+
+    public function getFirstNameApplicant(): ?string
+    {
+        return $this->firstNameApplicant;
+    }
+
+    public function setFirstNameApplicant(?string $firstNameApplicant): self
+    {
+        $this->firstNameApplicant = $firstNameApplicant;
+
+        return $this;
+    }
+
+    public function getLastNameApplicant(): ?string
+    {
+        return $this->lastNameApplicant;
+    }
+
+    public function setLastNameApplicant(?string $lastNameApplicant): self
+    {
+        $this->lastNameApplicant = $lastNameApplicant;
 
         return $this;
     }

@@ -18,13 +18,16 @@ class ResponsibleRepository extends ServiceEntityRepository
 
     public const SEARCH_FIELDS = [
         'firstName_param' => 'firstName',
-        'lastName_param'=>'lastName',
-        'function_param'=>'function',
-        'login_param'=>'login',
+        'lastName_param' => 'lastName',
+        'login_param' => 'login',
         'phone_param' => 'phone',
         'fax_param' => 'fax',
-        'mail_param' => 'mail'
+        'mail_param' => 'mail',
+        'region_name_param' => 'region_name',
+        'departments_name_param' => 'departments_name',
+        'buildings_name_param' => 'buildings_name',
     ];
+
     public function __construct(ManagerRegistry $registry)
     {
         parent::__construct($registry, Responsible::class);

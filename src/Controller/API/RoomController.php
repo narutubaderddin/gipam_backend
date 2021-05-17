@@ -9,6 +9,7 @@ use App\Exception\FormValidationException;
 use App\Form\RoomType;
 use App\Repository\RoomRepository;
 use App\Services\ApiManager;
+use FOS\RestBundle\Context\Context;
 use FOS\RestBundle\Controller\AbstractFOSRestController;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use FOS\RestBundle\Request\ParamFetcherInterface;
@@ -116,16 +117,21 @@ class RoomController extends  AbstractFOSRestController
      * @Rest\QueryParam(name="building", map=true, nullable=false, description="filter by building id. example: building[eq]=value")
      * @Rest\QueryParam(name="building_name", map=true, nullable=false, description="filter by building name. example: building_name[eq]=value")
      *
-     * @Rest\View(serializerGroups={"room", "response", "short"})
+     * @Rest\View()
      *
      * @param ParamFetcherInterface $paramFetcher
      *
      * @return View
      */
-    public function listOfRooms(ParamFetcherInterface $paramFetcher)
+    public function listOfRooms(ParamFetcherInterface $paramFetcher, Request $request)
     {
+        $serializerGroups = $request->get('serializer_group', '["room", "short"]');
+        $serializerGroups = json_decode($serializerGroups, true);
+        $serializerGroups[] = "response";
+        $context = new Context();
+        $context->setGroups($serializerGroups);
         $records = $this->apiManager->findRecordsByEntityName(Room::class, $paramFetcher);
-        return $this->view($records, Response::HTTP_OK);
+        return $this->view($records, Response::HTTP_OK)->setContext($context);
     }
     /**
      *
