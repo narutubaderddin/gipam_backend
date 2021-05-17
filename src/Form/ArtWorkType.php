@@ -167,7 +167,7 @@ class ArtWorkType extends AbstractType
             if (in_array('materialTechnique', $this->attributes)) {
                 $form->add('materialTechnique', CollectionType::class, array(
                     'entry_type' => EntityType::class,
-                    'entry_options' => array(   'class'=> MaterialTechnique::class,
+                    'entry_options' => array( 'class'=> MaterialTechnique::class,
                         'label'=>false,
                         'choice_label'=>'id',
                     ),
