@@ -16,8 +16,8 @@ class HyperlinkType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $builder
-            ->add('name',TextType::class, ['required'=>true])
-            ->add('url', UrlType::class, ['required'=>true])
+            ->add('name',TextType::class, ['required'=>true,'empty_data'=>''])
+            ->add('url', UrlType::class, ['required'=>true,'empty_data'=>''])
             ->add('furniture',EntityType::class,['class'=>Furniture::class, 'choice_label' => 'id','required'=>false])
         ;
     }

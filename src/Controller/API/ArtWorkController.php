@@ -67,7 +67,7 @@ class ArtWorkController extends AbstractFOSRestController
      *     )
      * )
      * @SWG\Tag(name="ArtWorks")
-     * @Rest\View(serializerGroups={"art_work_list", "id", "art_work_details"},serializerEnableMaxDepthChecks=true)
+     * @Rest\View(serializerGroups={"art_work_list","hyperLink_furniture", "id", "art_work_details"},serializerEnableMaxDepthChecks=true)
      *
      * @param ArtWork $artWork
      * @return View

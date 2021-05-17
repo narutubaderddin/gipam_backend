@@ -139,7 +139,6 @@ class NoticeController extends AbstractFOSRestController
         $form->submit($this->apiManager->getPostDataFromRequest($request));
         if($form->isValid()){
             $artWork = $this->apiManager->save($form->getData());
-
             return $this->view($artWork,Response::HTTP_OK);
         }
         throw new FormValidationException($form);
@@ -152,9 +151,8 @@ class NoticeController extends AbstractFOSRestController
      */
     private function createArtWorkForm($status,$data=null)
     {
-        return $this->createForm(ArtWorkType::class,$data,[
-            'status'=>$status
-        ]);
+
+        return $this->createForm(ArtWorkType::class,$data);
 
     }
 
