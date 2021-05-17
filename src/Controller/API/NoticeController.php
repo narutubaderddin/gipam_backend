@@ -3,6 +3,7 @@
 namespace App\Controller\API;
 
 use App\Entity\ArtWork;
+use App\Entity\DepositStatus;
 use App\Exception\FormValidationException;
 use App\Form\ArtWorkType;
 use App\Services\ApiManager;
@@ -11,7 +12,9 @@ use FOS\RestBundle\Controller\AbstractFOSRestController;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use FOS\RestBundle\Controller\Annotations\Route;
 use FOS\RestBundle\Request\ParamFetcherInterface;
+use FOS\RestBundle\View\View;
 use Nelmio\ApiDocBundle\Annotation\Model;
+use Symfony\Component\Form\FormInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Swagger\Annotations as SWG;
@@ -52,7 +55,7 @@ class NoticeController extends AbstractFOSRestController
      * @param ParamFetcherInterface $paramFetcher
      * @param FurnitureService $furnitureService
      *
-     * @return Response
+     * @return View
      */
     public function getAttributes(ParamFetcherInterface $paramFetcher, FurnitureService $furnitureService)
     {
@@ -90,16 +93,12 @@ class NoticeController extends AbstractFOSRestController
      *
      * @param Request $request
      *
-     * @return Response
+     * @return View
      *
-     * @throws \Doctrine\ORM\ORMException
-     * @throws \Doctrine\ORM\OptimisticLockException
      */
     public function createDepositNotice(Request $request)
     {
-        $form = $this->createForm(ArtWorkType::class, null, [
-            'status' => ArtWorkType::DEPOSIT_STATUS]
-        );
+        $form = $this->createArtWorkForm(['status' => ArtWorkType::DEPOSIT_STATUS]);
         $form->submit($this->apiManager->getPostDataFromRequest($request));
 
         if ($form->isSubmitted() && $form->isValid()) {
@@ -108,6 +107,53 @@ class NoticeController extends AbstractFOSRestController
         } else {
             throw new FormValidationException($form);
         }
+    }
+
+    /**
+     * @param ArtWork $artWork
+     * @param Request $request
+     * @Rest\Patch("/{id}",requirements={"id"="\d+"})
+     * @SWG\Response(
+     *     response=200,
+     *     description="Returns updated Art Work",
+     *     @SWG\Schema(
+     *         ref=@Model(type=ArtWork::class, groups={"artwork", "id"})
+     *     )
+     * )
+     * @SWG\Response(
+     *     response="400",
+     *     description="update error"
+     * )
+     * @SWG\Parameter(
+     *     name="form",
+     *     in="body",
+     *     @Model(type=ArtWork::class, groups={""}),
+     *     description="update Art Work")
+     * @SWG\Tag(name="notices")
+     * @Rest\View(serializerGroups={"artwork"},serializerEnableMaxDepthChecks=true)
+     * @return View
+     */
+    public function updateArtWork(ArtWork $artWork,Request $request){
+        $status = ($artWork->getStatus() instanceof  DepositStatus)?ArtWorkType::DEPOSIT_STATUS:ArtWorkType::PROPERTY_STATUS;
+        $form = $this->createArtWorkForm($status,$artWork);
+        $form->submit($this->apiManager->getPostDataFromRequest($request));
+        if($form->isValid()){
+            $artWork = $this->apiManager->save($form->getData());
+            return $this->view($artWork,Response::HTTP_OK);
+        }
+        throw new FormValidationException($form);
+    }
+
+    /**
+     * @param $status
+     * @param null $data
+     * @return FormInterface
+     */
+    private function createArtWorkForm($status,$data=null)
+    {
+
+        return $this->createForm(ArtWorkType::class,$data, $status);
+
     }
 
     /**
@@ -137,21 +183,28 @@ class NoticeController extends AbstractFOSRestController
      *
      * @param Request $request
      *
-     * @return Response
+     * @return View
      *
-     * @throws \Doctrine\ORM\ORMException
-     * @throws \Doctrine\ORM\OptimisticLockException
      */
-    public function createPropertyNotice(Request $request)
+    public function createPropertyNotice(Request $request, FurnitureService $furnitureService)
     {
-        $form = $this->createForm(ArtWorkType::class, null, [
-                'status' => ArtWorkType::PROPERTY_STATUS]
-        );
+        $form =  $form = $this->createArtWorkForm( ['status' => ArtWorkType::PROPERTY_STATUS]);
         $form->submit($this->apiManager->getPostDataFromRequest($request));
 
         if ($form->isSubmitted() && $form->isValid()) {
-            $artWork = $this->apiManager->save($form->getData());
-            return $this->view($artWork, Response::HTTP_CREATED);
+            if (!$form->getData()->getField() || !$form->getData()->getDenomination() || !$form->getData()->getTitle()) {
+                $formattedResult = ['msg' => 'Notice enregistrée en mode brouillon avec succès', 'res' => $this->apiManager->save($form->getData())];
+                return $this->view($formattedResult, Response::HTTP_CREATED);
+            } else {
+                $attribues = $furnitureService->getAttributesByDenominationIdAndFieldId($form->getData()->getDenomination()->getId(), $form->getData()->getField()->getId());
+                if ((in_array('materialTechnique', $attribues) && !$form->getData()->getMaterialTechnique()) || (in_array('numberOfUnit', $attribues) && !$form->getData()->getNumberOfUnit())) {
+                    $formattedResult = ['msg' => 'Notice enregistrée en mode brouillon avec succès', 'res' => $this->apiManager->save($form->getData())];
+                    return $this->view($formattedResult, Response::HTTP_CREATED);
+                } else {
+                    $formattedResult = ['msg' => 'Notice enregistrée avec succès', 'res' => $this->apiManager->save($form->getData())];
+                    return $this->view($formattedResult, Response::HTTP_CREATED);
+                }
+            }
         } else {
             throw new FormValidationException($form);
         }
