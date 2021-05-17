@@ -3,8 +3,6 @@
 namespace App\Controller\WEB;
 
 
-use App\Entity\ArtWork;
-use App\Form\ArtWorkType;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
 use Symfony\Component\Filesystem\Filesystem;
@@ -87,7 +85,6 @@ class MailController extends AbstractController
      */
     public function mailDashboard(ParameterBagInterface $params)
     {
-
         if (!($params->get('email_debug_enabled'))) {
             throw new AccessDeniedException();
         }
