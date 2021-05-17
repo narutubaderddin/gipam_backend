@@ -28,6 +28,9 @@ class RequestType extends AbstractType
                 ->add('mail', TextType::class, ['required' => true])
                 ->add('phone', TextType::class, ['required' => true])
                 ->add('level', TextType::class, ['required' => true])
+                ->add('subDivision', TextType::class, ['required' => true])
+                ->add('establishement', TextType::class, ['required' => true])
+                ->add('building', TextType::class, ['required' => true])
                 ->add('requestStatus', TextType::class)
                 ->add('comment', TextType::class)
                 ->add('artWorks', CollectionType::class, array(
@@ -41,24 +44,6 @@ class RequestType extends AbstractType
                     'prototype' => true,
                     'by_reference' => false,
                 ))
-                ->add('subDivision', EntityType::class, [
-                        'class' => SubDivision::class,
-                        'choice_label' => 'id',
-                        'constraints' => [ new Assert\NotBlank()],
-                    ]
-                    )
-                ->add('building', EntityType::class, [
-                        'class' => Building::class,
-                        'choice_label' => 'id',
-                        'constraints' => [ new Assert\NotBlank()],
-                    ]
-                )
-                ->add('establishement', EntityType::class, [
-                        'class' => Establishment::class,
-                        'choice_label' => 'id',
-                        'constraints' => [ new Assert\NotBlank()],
-                    ]
-                )
         ;
     }
 

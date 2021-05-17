@@ -285,9 +285,7 @@ class ArtWorkController extends AbstractFOSRestController
             $html2pdf->writeHTML($html);
             $path =  $this->getParameter('kernel.project_dir').DIRECTORY_SEPARATOR.'var' .DIRECTORY_SEPARATOR . 'file_xxxx.pdf';
             $html2pdf->Output($path, 'F');
-            return $this->file($path,'file_xxxx.pdf')->deleteFileAfterSend();
-
-
+            return $this->file($path,'Oeuvres_Graphiques.pdf')->deleteFileAfterSend();
 
     }
 }

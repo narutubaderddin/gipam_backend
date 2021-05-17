@@ -10,7 +10,7 @@
         margin: 25px;
     }
     .info-block{
-        margin-top: 5%;
+        margin-top: 15%;
     }
     div.block{
 
@@ -33,24 +33,25 @@
                             <div class="more-details-content">
 
                                     <div class="info info-block">
-
+                                           Titre: <strong>{{ artWork.title }}</strong>
+                                        <p>
                                             Domaine:
                                             <strong>
                                                 {% if artWork.field %}
                                                     {{ artWork.field.label }}
                                                 {% endif %}
                                             </strong>
+                                        </p>
 
-                                        <p>
                                             Dénomination:
                                             <strong>
                                                 {% if artWork.denomination %}
                                                     {{ artWork.denomination.label }}
                                                 {% endif %}
                                             </strong>
-                                        </p>
 
-                                            Titre: <strong>{{ artWork.title }}</strong>
+
+
 
                                         <p>
                                             Auteurs
@@ -70,15 +71,16 @@
                                                 {% endif %}
                                             </strong>
                                         </p>
-
+                                        Poids: <strong>{{ artWork.weight }}</strong>
+                                        <p>
                                             Matière:
                                             <strong>
                                                 {% if artWork.materialTechnique %}
                                                     {{ artWork.materialTechnique.label }}
                                                 {% endif %}
                                             </strong>
+                                        </p>
 
-                                        <p>
                                             Dimensions
                                             {% if artWork.length %}
                                                 <strong>{{ artWork.length }} CM</strong>
@@ -95,235 +97,18 @@
                                             {% if artWork.height %}
                                                 <strong>{{ artWork.height }} CM</strong>
                                             {% endif %}
-                                        </p>
+                                        <p>
 
                                             Nombre: <strong>{{ artWork.numberOfUnit }}</strong>
+                                        </p>
 
-                                        <p>
                                             Référence portée sur l'oeuvre: <strong>{{ artWork.id }}</strong>
+                                        <p>
+                                        Mots descriptifs : <strong></strong>
                                         </p>
                                     </div>
                             </div>
                         </div>
-                    <div class="block">
-                        <h4 style="text-align: center">Status</h4>
-                        <div class="block-content">
-                            <table>
-                                <tr>
-                                    <td>
-                                        <p>
-                                            Propriété:
-                                            <strong>
-                                                Ministères Économiques et Financiers
-                                            </strong>
-                                        </p>
-                                    </td>
-                                </tr>
-                            </table>
-                            <table>
-                                <tr>
-                                    <td><div style="width:200px">
-                                            <p>
-                                                Référence :
-                                                <strong>
-                                                    sans référence
-                                                </strong>
-                                            </p>
-                                        </div></td>
-                                    <td><div style="width:90px"></div></td>
-                                    <td><div style="width:310px;float: right">
-
-                                            <p>
-                                                Oeuvre entrant dans le cadre du 1% artistique :
-                                                <strong>
-                                                    Non
-                                                </strong>
-                                            </p>
-                                        </div></td>
-                                </tr>
-                            </table>
-                            <table>
-                                <tr>
-                                    <td><div style="width:200px">
-                                            <p>
-                                                N° de dépôt :
-                                                <strong>
-                                                    {% if artWork.status %}
-                                                        {{ artWork.status.id }}
-                                                    {% endif %}
-                                                </strong>
-                                            </p>
-                                        </div></td>
-                                    <td><div style="width:200px;">
-
-                                            <p>
-                                                Date de dépôt :
-                                                <strong>
-                                                    {% if artWork.status %}
-                                                        {{ artWork.status.startDate }}
-                                                    {% endif %}
-                                                </strong>
-                                            </p>
-                                        </div></td>
-                                    <td><div style="width:200px;">
-
-                                            <p>
-                                                Date d'expiration :
-                                                <strong>
-                                                    {% if artWork.status %}
-                                                        {{ artWork.status.endDate }}
-                                                    {% endif %}
-                                                </strong>
-                                            </p>
-                                        </div></td>
-                                </tr>
-                                {#<tr>
-                                    <td><div style="width:200px">YOUR CONTENT2</div></td>
-                                    <td><div style="width:200px">YOUR CONTENT</div></td>
-                                    <td><div style="width:200px">YOUR CONTENT</div></td>
-                                    <td><div style="width:200px">YOUR CONTENT</div></td>
-                                </tr>#}
-                            </table>
-                        </div>
-                    </div>
-                    <div class="block">
-                        <h4 style="text-align: center">Localisation</h4>
-                        <div class="block-content">
-                            <table>
-                                <tr>
-                                    <td>
-                                        <p>
-                                            Ministère :
-                                            <strong>
-                                                MINISTÈRES ÉCONOMIQUES ET FINANCIERS
-                                            </strong>
-                                        </p>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td>
-                                        <p>
-                                            Étab. / Dir. :
-                                            <strong>
-                                                Secrétariat Général des Ministères Économique et Financier
-                                            </strong>
-                                        </p>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td>
-                                        <p>
-                                            Service :
-                                            <strong>
-                                                Service de l'Environnement Professionnel 2B
-                                            </strong>
-                                        </p>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td>
-                                        <p>
-                                            Œuvre gérée par un service déconcentré :
-                                            <strong>
-                                                Non
-                                            </strong>
-                                        </p>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td>
-                                        <p>
-                                            Pièce :
-                                            <strong>
-                                                réserve
-                                            </strong>
-                                        </p>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td>
-                                        <p>
-                                            Adresse :
-                                            <strong>
-                                                139 , rue de Bercy 75012 Paris -
-                                            </strong>
-                                        </p>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td>
-                                        <p>
-                                            Correspondant(es) :
-                                            <strong>
-                                                SOA, Service des Œuvres d'Art - tél.: 0153182080
-                                            </strong>
-                                        </p>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td>
-                                        <p>
-                                            Commentaires sur la localisation :
-                                            <strong>
-                                            </strong>
-                                        </p>
-                                    </td>
-                                </tr>
-                            </table>
-                        </div>
-                    </div>
-                    <div class="block">
-                        <h4 style="text-align: center">Action</h4>
-                        <div class="block-content">
-                            <table>
-                                <tr>
-                                    <td style="width: 300px">
-                                        <p>
-                                            Date de la dernière action :
-                                            <strong>
-                                                07/07/2020
-                                            </strong>
-                                        </p>
-                                    </td>
-                                    <td>
-                                        <p>
-                                            Type d'action :
-                                            <strong>
-                                                Mis en réserve (disponible)
-                                            </strong>
-                                        </p>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td style="width: 300px">
-                                        <p>
-                                            Constat :
-                                            <strong>
-                                                VU
-                                            </strong>
-                                        </p>
-                                    </td>
-                                    <td>
-                                        <p>
-                                            État de conservation :
-                                            <strong>
-                                                Bon
-                                            </strong>
-                                        </p>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td>
-                                        <p>
-                                            Commentaires sur l'état de conservation :
-                                            <strong>
-                                            </strong>
-                                        </p>
-                                    </td>
-                                </tr>
-                            </table>
-                        </div>
-                    </div>
                 </div>
             </div>
         </page>
