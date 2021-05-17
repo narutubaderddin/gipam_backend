@@ -10,15 +10,19 @@ use App\Repository\ArtWorkRepository;
 use App\Repository\FurnitureRepository;
 use App\Services\ApiManager;
 use App\Services\ArtWorkService;
+use Doctrine\ORM\EntityManagerInterface;
 use FOS\RestBundle\Controller\AbstractFOSRestController;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use FOS\RestBundle\Request\ParamFetcherInterface;
 use FOS\RestBundle\View\View;
+use Spipu\Html2Pdf\Html2Pdf;
 use Swagger\Annotations as SWG;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 use Nelmio\ApiDocBundle\Annotation\Model;
+use Symfony\Component\Routing\Annotation\Route;
+
 /**
  * Class ArtWorkController
  * @package App\Controller\API
@@ -40,20 +44,28 @@ class ArtWorkController extends AbstractFOSRestController
     protected $artWorkService;
 
     /**
+     * @var EntityManagerInterface
+     */
+    protected $em;
+
+    /**
      * ArtWorkController constructor.
      * @param ApiManager $apiManager
      * @param ValidatorInterface $validator
      * @param ArtWorkService $artWorkService
+     * @param EntityManagerInterface $em
      */
     public function __construct(
         ApiManager $apiManager,
         ValidatorInterface $validator,
-        ArtWorkService $artWorkService
+        ArtWorkService $artWorkService,
+        EntityManagerInterface $em
     )
     {
         $this->apiManager = $apiManager;
         $this->validator = $validator;
         $this->artWorkService = $artWorkService;
+        $this->em = $em;
     }
 
     /**
@@ -232,5 +244,153 @@ class ArtWorkController extends AbstractFOSRestController
     {
         $records = $this->apiManager->searchByEntityName(ArtWork::class, $paramFetcher);
         return $this->view($records, Response::HTTP_OK);
+    }
+
+    /**
+     * @Rest\Get("/exportListArtWorks")
+     *
+     * @SWG\Response(
+     *     response=201,
+     *     description="Returns created Field",
+     *     @SWG\Schema(
+     *         ref=@Model(type=Field::class, groups={"field"})
+     *     )
+     * )
+     * @SWG\Response(
+     *     response=400,
+     *     description="Creation error"
+     * )
+     * @SWG\Parameter(
+     *     name="form",
+     *     in="body",
+     *     description="Add Request",
+     *     @Model(type=Request::class, groups={"request"})
+     * )
+     * @SWG\Tag(name="ArtWorks")
+     *
+     * @Rest\QueryParam(name="title", nullable=true, description="filter by title. example: title[eq]=text")
+     * @Rest\QueryParam(name="width", nullable=true, description="filter by width. example: width[eq]=text")
+     * @Rest\QueryParam(name="height", nullable=true, description="filter by height. example: height[eq]=text")
+     * @Rest\QueryParam(name="depth", nullable=true, description="filter by depth. example: depth[eq]=text")
+     * @Rest\QueryParam(name="diameter", nullable=true, description="filter by diameter. example: diameter[eq]=text")
+     * @Rest\QueryParam(name="weight", nullable=true, description="filter by weight. example: weight[eq]=text")
+     * @Rest\QueryParam(name="stopNumber", nullable=true, description="filter by stopNumber. example: weight[eq]=text")
+     * @Rest\QueryParam(name="numberOfUnit", nullable=true, description="filter by number Of Unit. weight[eq]=1")
+     * @Rest\QueryParam(name="description", nullable=false, description="filter by description. example: description[eq]=text")
+     * @Rest\QueryParam(name="creationDate", map=true, nullable=false, description="filter by creationDate. example: creationDate[lt]=value")
+     * @Rest\QueryParam(name="depositDate", map=true, nullable=false, description="filter by depositDate. example: depositDate[lt]=value")
+     * @Rest\QueryParam(name="insuranceValueDate", map=true, nullable=false, description="filter by insuranceValueDate. example: insuranceValueDate[lt]=value")
+     * @Rest\QueryParam(name="totalLength", nullable=false, description="filter by totalLength. example: totalLength[eq]=1")
+     * @Rest\QueryParam(name="totalLength", nullable=false, description="filter by totalLength. example: totalLength[eq]=1")
+     * @Rest\QueryParam(name="totalLength", nullable=false, description="filter by totalLength. example: totalLength[eq]=1")
+     * @Rest\QueryParam(name="totalWidth", nullable=false, description="filter by totalWidth. example: totalWidth[eq]=1")
+     * @Rest\QueryParam(name="totalHeight", nullable=false, description="filter by totalHeight. example: totalHeight[eq]=1")
+     * @Rest\QueryParam(name="registrationSignature", nullable=false, description="filter by registrationSignature. example: registrationSignature[eq]=text")
+     * @Rest\QueryParam(name="descriptiveWords", nullable=false, description="filter by descriptiveWords. example: descriptiveWords[eq]=text")
+     * @Rest\QueryParam(name="insuranceValue", nullable=false, description="filter by insuranceValue. example: insuranceValue[eq]=1")
+     * @Rest\QueryParam(name="denomination", map=true, nullable=true, description="filter by denomination. example: denomination[eq]=value")
+     * @Rest\QueryParam(name="field", map=true, nullable=true, description="filter by field. example: field[eq]=value")
+     * @Rest\QueryParam(name="searchArt", nullable=false, description="filter by search. example: search[eq]=1")
+     * @Rest\QueryParam(name="mode", nullable=false, description="filter by mode. example: mode[eq]=1")
+     * @Rest\QueryParam(name="limit", requirements="\d+", default="20", description="page size.")
+     * @Rest\QueryParam(name="page", requirements="\d+", default="1", description="page number.")
+     * @Rest\QueryParam(name="sort_by", nullable=true, default="id", description="order by")
+     * @Rest\QueryParam(name="sort", requirements="(asc|desc)", nullable=true, default="asc", description="tri order asc|desc")
+     * @Rest\View(serializerGroups={"request_details"})
+     *
+     * @param Request $request
+     *
+     * @return Response
+     *
+     * @throws \Doctrine\ORM\ORMException
+     * @throws \Doctrine\ORM\OptimisticLockException
+     */
+    public function exportListArtWorks(ParamFetcherInterface $paramFetcher)
+    {
+        $records = $this->apiManager->searchByEntityName(ArtWork::class, $paramFetcher);
+        $artWorks = $records->getResults();
+        $html2pdf = new Html2Pdf('P', 'A4', 'fr');
+        $html2pdf->setDefaultFont('Arial');
+        $html = $this->renderView('artWorks/list-pdf.html.twig', array(
+            'artWorks'  => $artWorks
+        ));
+        $html2pdf->writeHTML($html);
+        $path =  $this->getParameter('kernel.project_dir').DIRECTORY_SEPARATOR.'var' .DIRECTORY_SEPARATOR . 'file_xxxx.pdf';
+        $html2pdf->Output($path, 'F');
+        return $this->file($path,'Oeuvres_Graphiques.pdf')->deleteFileAfterSend();
+
+    }
+
+    /**
+     * @Rest\Get("/export/{exportType}")
+     *
+     * @SWG\Response(
+     *     response=201,
+     *     description="Returns created Field",
+     *     @SWG\Schema()
+     * )
+     * @SWG\Response(
+     *     response=400,
+     *     description="Creation error"
+     * )
+     * @SWG\Parameter(
+     *     name="artWorks",
+     *     in="query",
+     *     type="string",
+     *     description="artWorks id to be generated in PDF"
+     * )
+     * @SWG\Parameter(
+     *     name="sort",
+     *     in="query",
+     *     type="string",
+     *     description="sort method asc or desc"
+     * )
+     * @SWG\Parameter(
+     *     name="sort_by",
+     *     in="query",
+     *     type="string",
+     *     description="sort_by column"
+     * )
+     * @SWG\Tag(name="artWork_export_pdf")
+     *
+     * @Rest\QueryParam(name="artWorks", nullable=false, description="artworkers ids")
+     * @Rest\QueryParam(name="sort_by", nullable=true, default="id", description="sort field")
+     * @Rest\QueryParam(name="sort", nullable=true, default="asc", description="sort order")
+     * @param Request $request
+     * @param $exportType
+     * @return Response
+     * @throws \Spipu\Html2Pdf\Exception\Html2PdfException
+     */
+    public function exportArtWorks(Request $request, $exportType){
+
+        //Get Request parameters.
+        $artWorksIds = $request->get('artWorks');
+        $sortBy = $request->get('sort_by');
+        $sort = $request->get('sort');
+
+        //Get requested art works.
+        $artWorks = $this->artWorkService->getArtWorksByIds($artWorksIds, $sortBy, $sort);
+
+        switch ($exportType){
+            case "techniques":
+                $view = "techniques";
+                break;
+            case "complete":
+                $view = "complete";
+                break;
+            default:
+                $view =  "artWorks/catalogue_pdf.html.twig";
+                break;
+        }
+
+        $content = $this->render($view, ['artWorks'=>$artWorks]);
+
+        //Create a PDF File.
+        $html2pdf = new Html2Pdf('P', 'A4', 'fr');
+        $html2pdf->setDefaultFont('Arial');
+        $html2pdf->writeHTML($content);
+        $path =  $this->getParameter('kernel.project_dir').DIRECTORY_SEPARATOR.'var' .DIRECTORY_SEPARATOR . 'file_xxxx.pdf';
+        $html2pdf->Output($path, 'F');
+        return $this->file($path,'file_xxxx.pdf')->deleteFileAfterSend();
     }
 }

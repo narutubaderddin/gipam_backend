@@ -133,7 +133,7 @@ class Reserve
      */
     public function getBuilding(): ?Building
     {
-        return $this->getRoom()->getBuilding();
+        return $this->getRoom() ? $this->getRoom()->getBuilding() : null;
     }
 
     /**
@@ -144,7 +144,7 @@ class Reserve
      */
     public function getSite(): ?Site
     {
-        return $this->getBuilding()->getSite();
+        return $this->getBuilding() ? $this->getBuilding()->getSite() : null;
     }
 
     /**
@@ -155,7 +155,7 @@ class Reserve
      */
     public function getCommune(): ?Commune
     {
-        return $this->getBuilding()->getCommune();
+        return $this->getBuilding() ? $this->getBuilding()->getCommune() : null;
     }
 
     /**
@@ -166,7 +166,7 @@ class Reserve
      */
     public function getDepartment(): ?Department
     {
-        return $this->getCommune()->getDepartment();
+        return $this->getCommune() ? $this->getCommune()->getDepartment() : null;
     }
 
     /**
@@ -177,6 +177,6 @@ class Reserve
      */
     public function getRegion(): ?Region
     {
-        return $this->getDepartment()->getRegion();
+        return $this->getDepartment() ? $this->getDepartment()->getRegion() : null;
     }
 }

@@ -1,0 +1,194 @@
+<style>
+    .pdf-page-content {
+        margin-top: 35px;
+    }
+
+    table {
+        border-collapse: collapse;
+    }
+
+    .borders {
+        border: 1px solid;
+    }
+
+    .element-component {
+        margin-top: 5px;
+        margin-bottom: 5px;
+    }
+
+    .pdf-component {
+        margin-top: 20px;
+        margin-bottom: 20px;
+    }
+
+    table {
+        text-align: center;
+    }
+
+    tr {
+        border: 1px solid;
+    }
+
+    .text-center {
+        text-align: center;
+    }
+
+    .smal-container {
+        width: 600px;
+        margin-left: 80px;
+    }
+
+    .inline-component {
+        display: inline-flex;
+    }
+
+    .decomposant-col {
+        width: 480px;
+    }
+
+    .margin-let-2 {
+        margin-left: 20px;
+    }
+
+    td {
+        min-height: 20px;
+    }
+
+</style>
+<body>
+
+{% for index, notice in artWorks %}
+    {% if index > 0 %}
+        <page>
+    {% endif %}
+    <div class="pdf-page-content">
+        {#<div class="row pdf-page-header pdf-component">
+        <div class="borders text-center">
+            <h3>MAQUETTES DES NOTICES</h3>
+            <h3>PROJET GIPAM</h3>
+        </div>
+    </div>#}
+
+        <div class="pdf-component">
+            <div class="smal-container borders inline-component">
+                <div class="col-md-6">
+                    décomposant
+                </div>
+                <div class="col-md-6">
+                    <span>{{ notice.id }}</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="pdf-component ">
+            <div class="smal-container borders" style="{% if notice.attachments|length == 0 %}height: 250px{% endif %}">
+                {% if notice.attachments|length %}
+                    {% for attachment in notice.attachments %}
+                        {% if attachment.attachmentType.isActive %}
+                            <img src="{{ asset(attachment.link) }}"  alt="{{ attachment.comment }}" />
+                        {% endif %}
+
+                    {% endfor %}
+                {% else %}
+                    <p style="text-align: center">images</p>
+                {% endif %}
+            </div>
+        </div>
+
+        <div class="pdf-component">
+            <div class="smal-container borders">
+                <!--notice title-->
+                <div class="element-component">
+                    <div class="margin-let-2">
+                        Titre : {{ notice.title }}
+                    </div>
+                </div>
+                <!--notice Author-->
+                <div class="element-component">
+                    <div class="margin-let-2">
+                        Auteur
+                        : {% for author in notice.authors %} {{ author.firstName }}  {{ author.lastName }}, {% endfor %}
+                    </div>
+                </div>
+                <!--notice Domaine -->
+                <div class="element-component">
+                    <div class="margin-let-2">
+                        Domaine : {% if notice.field is not null %} {{ notice.field.label }} {% else %} - {% endif %}
+                    </div>
+                </div>
+                <!--notice Dénomination-->
+                <div class="element-component">
+                    <div class="margin-let-2">
+                        Dénomination
+                        : {% if notice.denomination is not null %} {{ notice.denomination.label }} {% else %} - {% endif %}
+                    </div>
+                </div>
+                <!--notice Matière / Technique -->
+                <div class="element-component">
+                    <div class="margin-let-2">
+                        Matière / Technique : {% if notice.materialTechnique is not null and notice.materialTechnique | length > 0%}
+                            {% for notice_materialTechnique_index, notice_materialTechnique in notice.materialTechnique %}
+                                {% if notice_materialTechnique_index %}
+                                    /
+                                {% endif %}
+                                {{ notice_materialTechnique.label }}
+                            {% endfor %}
+                        {% else %} - {% endif %}
+                    </div>
+                </div>
+                <!--notice Epoque  -->
+                <div class="element-component">
+                    <div class="margin-let-2">
+                        Epoque : {% if notice.era is not null %} {{ notice.era.label }} {% else %} - {% endif %}
+                    </div>
+                </div>
+                <!--notice Style  -->
+                <div class="element-component">
+                    <div class="margin-let-2">
+                        Style : {% if notice.style is not null %} {{ notice.style.label }} {% else %} - {% endif %}
+                    </div>
+                </div>
+                <!--notice date de création  -->
+                <div class="element-component">
+                    <div class="margin-let-2">
+                        Style : {{ notice.createdAt | date("m/d/Y") }}
+                    </div>
+                </div>
+                <!--notice Dimensions totales  -->
+                <div class="element-component">
+                    <div class="margin-let-2">
+                        Dimensions totales :
+                    </div>
+                </div>
+                <div class="element-component">
+                    <table border="1" align="center">
+                        <tr>
+                            <th border="1" style="width:180px">Hauteur tot</th>
+                            <th border="1" style="width:180px">Largeur tot</th>
+                            <th border="1" style="width:180px">Hauteur tot</th>
+                        </tr>
+                        <tr>
+                            <td border="1"><br/>
+                                {{ notice.totalLength }}</td>
+                            <td border="1">{{ notice.totalWidth }}</td>
+                            <td border="1">{{ notice.totalHeight }}</td>
+                        </tr>
+                    </table>
+                </div>
+
+            </div>
+        </div>
+
+        <div class="pdf-component">
+            <div class="smal-container borders">
+                MEF / Secrétariat Général / Service des Œuvres d’Art<br/>
+                courriel : soa@finances.gouv.fr tel : 01 53 18 20 80
+            </div>
+        </div>
+    </div>
+    {% if index > 0 %}
+        </page>
+    {% endif %}
+{% endfor %}
+
+</body>

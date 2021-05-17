@@ -1,0 +1,124 @@
+<style>
+    .title-page{
+        background: maroon;
+        color: white;
+        text-align: center;
+        text-transform: uppercase;
+        padding: -10px 0 -10px 0;
+    }
+    .page-content{
+        margin: 25px;
+    }
+    .info-block{
+        margin-top: 15%;
+    }
+    div.block{
+
+    }
+    div.block-content{
+        border: 1px solid;
+        padding: -5px 5px 5px 5px;
+    }
+</style>
+
+
+    {% for artWork in artWorks %}
+        <page>
+            <div class="page-content">
+                <div class="title-page">
+                    <h4>NOTICE DE L'ŒUVRE :  {{ artWork.id }}</h4>{#{{ loop.index }}#}
+                </div>
+                <div class="content">
+                    <div class="more-details pocket">
+                            <div class="more-details-content">
+
+                                    <div class="info info-block">
+                                           Titre: <strong>{{ artWork.title }}</strong>
+                                        <p>
+                                            Domaine:
+                                            <strong>
+                                                {% if artWork.field %}
+                                                    {% if  artWork.field.label is defined %}
+                                                        {{  artWork.field.label }}
+                                                    {% endif %}
+                                                {% endif %}
+                                            </strong>
+                                        </p>
+
+                                            Dénomination:
+                                            <strong>
+                                                {% if artWork.denomination %}
+                                                    {% if artWork.denomination.label is defined %}
+                                                        {{ artWork.denomination.label }}
+                                                    {% endif %}
+                                                {% endif %}
+                                            </strong>
+
+
+
+
+                                        <p>
+                                            Auteurs
+                                            {% for author in artWork.authors %}
+                                                <strong>
+                                                    {{ author.firstName }} {{ author.lastName }}
+                                                </strong>
+                                            {% endfor %}
+
+                                        </p>
+                                        Epoque: <strong></strong>
+                                        <p>
+                                            Style:
+                                            <strong>
+                                                {% if artWork.style %}
+                                                    {% if artWork.style.label is defined %}
+                                                        {{ artWork.style.label }}
+                                                    {% endif %}
+                                                {% endif %}
+                                            </strong>
+                                        </p>
+                                        Poids: <strong>{{ artWork.weight }}</strong>
+                                        <p>
+                                            Matière:
+                                            <strong>
+                                                {% if artWork.materialTechnique %}
+                                                    {% if artWork.materialTechnique.label is defined %}
+                                                    {{ artWork.materialTechnique.label }}
+                                                    {% endif %}
+                                                {% endif %}
+                                            </strong>
+                                        </p>
+
+                                            Dimensions
+                                            {% if artWork.length %}
+                                                <strong>{{ artWork.length }} CM</strong>
+                                            {% endif %}
+                                            {% if artWork.length and (artWork.width or artWork.height) %}
+                                                <strong>X</strong>
+                                            {% endif %}
+                                            {% if artWork.width %}
+                                                <strong>{{ artWork.width }} CM</strong>
+                                            {% endif %}
+                                            {% if artWork.width and artWork.height %}
+                                                <strong>X</strong>
+                                            {% endif %}
+                                            {% if artWork.height %}
+                                                <strong>{{ artWork.height }} CM</strong>
+                                            {% endif %}
+                                        <p>
+
+                                            Nombre: <strong>{{ artWork.numberOfUnit }}</strong>
+                                        </p>
+
+                                            Référence portée sur l'oeuvre: <strong>{{ artWork.id }}</strong>
+                                        <p>
+                                        Mots descriptifs : <strong></strong>
+                                        </p>
+                                    </div>
+                            </div>
+                        </div>
+                </div>
+            </div>
+        </page>
+    {% endfor %}
+

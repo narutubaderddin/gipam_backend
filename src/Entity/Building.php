@@ -28,7 +28,7 @@ class Building
     private $id;
 
     /**
-     * @JMS\Groups("building","short","request_list","request_details")
+     * @JMS\Groups("building","short")
      *
      * @Assert\NotBlank
      *
@@ -93,7 +93,7 @@ class Building
     private $rooms;
 
     /**
-     * @JMS\Groups("building")
+     * @JMS\Exclude()
      *
      * @ORM\ManyToMany(targetEntity=Responsible::class, mappedBy="buildings")
      */
@@ -106,17 +106,11 @@ class Building
      */
     private $cedex;
 
-    /**
-     * @JMS\Exclude()
-     * @ORM\OneToMany(targetEntity=Request::class, mappedBy="building")
-     */
-    private $requests;
 
     public function __construct()
     {
         $this->rooms = new ArrayCollection();
         $this->responsibles = new ArrayCollection();
-        $this->requests = new ArrayCollection();
     }
 
 
@@ -278,33 +272,4 @@ class Building
         return $this;
     }
 
-    /**
-     * @return Collection|Request[]
-     */
-    public function getRequests(): Collection
-    {
-        return $this->requests;
-    }
-
-    public function addRequest(Request $request): self
-    {
-        if (!$this->requests->contains($request)) {
-            $this->requests[] = $request;
-            $request->setBuilding($this);
-        }
-
-        return $this;
-    }
-
-    public function removeRequest(Request $request): self
-    {
-        if ($this->requests->removeElement($request)) {
-            // set the owning side to null (unless already changed)
-            if ($request->getBuilding() === $this) {
-                $request->setBuilding(null);
-            }
-        }
-
-        return $this;
-    }
 }
