@@ -102,6 +102,24 @@ class Request
      */
     private $building;
 
+    /**
+     * @JMS\Groups("request_list","request_details")
+     * @ORM\Column(type="string", length=255, nullable=true)
+     */
+    private $phoneApplicant;
+
+    /**
+     * @JMS\Groups("request_list","request_details")
+     * @ORM\Column(type="string", length=255, nullable=true)
+     */
+    private $firstNameApplicant;
+
+    /**
+     * @JMS\Groups("request_list","request_details")
+     * @ORM\Column(type="string", length=255, nullable=true)
+     */
+    private $lastNameApplicant;
+
     public function __construct()
     {
         $this->artWorks = new ArrayCollection();
@@ -287,6 +305,42 @@ class Request
     public function setBuilding(?string $building): self
     {
         $this->building = $building;
+
+        return $this;
+    }
+
+    public function getPhoneApplicant(): ?string
+    {
+        return $this->phoneApplicant;
+    }
+
+    public function setPhoneApplicant(?string $phoneApplicant): self
+    {
+        $this->phoneApplicant = $phoneApplicant;
+
+        return $this;
+    }
+
+    public function getFirstNameApplicant(): ?string
+    {
+        return $this->firstNameApplicant;
+    }
+
+    public function setFirstNameApplicant(?string $firstNameApplicant): self
+    {
+        $this->firstNameApplicant = $firstNameApplicant;
+
+        return $this;
+    }
+
+    public function getLastNameApplicant(): ?string
+    {
+        return $this->lastNameApplicant;
+    }
+
+    public function setLastNameApplicant(?string $lastNameApplicant): self
+    {
+        $this->lastNameApplicant = $lastNameApplicant;
 
         return $this;
     }

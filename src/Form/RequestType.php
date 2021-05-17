@@ -32,6 +32,9 @@ class RequestType extends AbstractType
                 ->add('establishement', TextType::class, ['required' => true])
                 ->add('building', TextType::class, ['required' => true])
                 ->add('requestStatus', TextType::class)
+                ->add('phoneApplicant', TextType::class)
+                ->add('firstNameApplicant', TextType::class)
+                ->add('lastNameApplicant', TextType::class)
                 ->add('comment', TextType::class)
                 ->add('artWorks', CollectionType::class, array(
                     'entry_type' => EntityType::class,
