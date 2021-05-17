@@ -17,6 +17,7 @@ use App\Services\FurnitureService;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\CollectionType;
+use Symfony\Component\Form\Extension\Core\Type\DateTimeType;
 use Symfony\Component\Form\Extension\Core\Type\IntegerType;
 use Symfony\Component\Form\Extension\Core\Type\NumberType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
@@ -57,20 +58,15 @@ class ArtWorkType extends AbstractType
             $this->statusType = self::STATUS[$options['status']];
         }
         $builder
-            ->add('title',TextType::class, [
-                'constraints' => [ new Assert\NotBlank()],
-                ]
-            )
+            ->add('title',TextType::class)
             ->add('denomination', EntityType::class, [
                     'class' => Denomination::class,
                     'choice_label' => 'id',
-                    'constraints' => [ new Assert\NotBlank()],
                 ]
             )
             ->add('field', EntityType::class, [
                     'class' => Field::class,
                     'choice_label' => 'id',
-                    'constraints' => [ new Assert\NotBlank()],
                 ]
             );
         $builder->addEventListener(FormEvents::PRE_SUBMIT, function (FormEvent $event) {
@@ -121,11 +117,15 @@ class ArtWorkType extends AbstractType
                 $event->setData($artWork);
             }
             if (in_array('numberOfUnit', $this->attributes)) {
-                $form->add('numberOfUnit',IntegerType::class, [
-                    'constraints' => [ new Assert\NotBlank()],
-                ]);
+                $form->add('numberOfUnit',IntegerType::class);
             } else {
                 unset($artWork['numberOfUnit']);
+                $event->setData($artWork);
+            }
+            if (in_array('creationDate', $this->attributes)) {
+                $form->add('creationDate', DateTimeType::class, ['widget' => 'single_text']);
+            } else {
+                unset($artWork['creationDate']);
                 $event->setData($artWork);
             }
             if (in_array('authors', $this->attributes)) {
@@ -165,12 +165,17 @@ class ArtWorkType extends AbstractType
                 $event->setData($artWork);
             }
             if (in_array('materialTechnique', $this->attributes)) {
-                $form->add('materialTechnique', EntityType::class, [
-                        'class' => MaterialTechnique::class,
-                        'choice_label' => 'id',
-                        'constraints' => [ new Assert\NotBlank()],
-                    ]
-                );
+                $form->add('materialTechnique', CollectionType::class, array(
+                    'entry_type' => EntityType::class,
+                    'entry_options' => array(   'class'=> MaterialTechnique::class,
+                        'label'=>false,
+                        'choice_label'=>'id',
+                    ),
+                    'allow_delete' =>true,
+                    'allow_add' => true,
+                    'prototype' => true,
+                    'by_reference' => false,
+                ));
             } else {
                 unset($artWork['materialTechnique']);
                 $event->setData($artWork);
@@ -260,6 +265,7 @@ class ArtWorkType extends AbstractType
             'csrf_protection' => false,
             'data_class' => ArtWork::class,
             'status' => self::DEPOSIT_STATUS,
+            'allow_extra_fields' => true
         ]);
     }
 }

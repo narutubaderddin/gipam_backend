@@ -16,7 +16,6 @@ class PropertyStatus extends Status
 {
     /**
      * @JMS\Groups("artwork")
-     * @Assert\NotBlank()
      *
      * @ORM\Column(name="date_entree", type="datetime", nullable=true)
      */
@@ -31,7 +30,6 @@ class PropertyStatus extends Status
 
     /**
      * @JMS\Groups("artwork")
-     * @Assert\NotBlank()
      *
      * @ORM\ManyToOne(targetEntity=EntryMode::class, inversedBy="propertyStatuses")
      * @ORM\JoinColumn(name="mode_entree_id", referencedColumnName="id")
@@ -40,7 +38,6 @@ class PropertyStatus extends Status
 
     /**
      * @JMS\Groups("artwork")
-     * @Assert\NotBlank()
      *
      * @ORM\ManyToOne(targetEntity=PropertyStatusCategory::class, inversedBy="propertyStatuses")
      * @ORM\JoinColumn(name="categorie_id", referencedColumnName="id")
@@ -197,7 +194,7 @@ class PropertyStatus extends Status
         return $this->insuranceValueDate;
     }
 
-    public function setInsuranceValueDate(DateTimeInterface $insuranceValueDate): self
+    public function setInsuranceValueDate(?DateTimeInterface $insuranceValueDate): self
     {
         $this->insuranceValueDate = $insuranceValueDate;
 

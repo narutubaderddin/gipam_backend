@@ -41,11 +41,14 @@ class ArtWork extends Furniture implements ObjectManagerAware
     private $totalHeight;
 
     /**
+     * @ORM\Column(name="date_creation_oeuvre", type="datetime", nullable=true)
+     */
+    private $creationDate;
+
+    /**
      * @var EntityManager
      */
     private $entityManager;
-
-
 
     /**
      * @ORM\ManyToOne(targetEntity=Request::class, inversedBy="artWorks")
@@ -84,6 +87,18 @@ class ArtWork extends Furniture implements ObjectManagerAware
     public function setTotalHeight(?float $totalHeight): self
     {
         $this->totalHeight = $totalHeight;
+
+        return $this;
+    }
+
+    public function getCreationDate(): ?\DateTimeInterface
+    {
+        return $this->creationDate;
+    }
+
+    public function setCreationDate(?\DateTimeInterface $creationDate): self
+    {
+        $this->creationDate = $creationDate;
 
         return $this;
     }

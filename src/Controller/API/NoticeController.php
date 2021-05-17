@@ -188,14 +188,25 @@ class NoticeController extends AbstractFOSRestController
      * @return View
      *
      */
-    public function createPropertyNotice(Request $request)
+    public function createPropertyNotice(Request $request, FurnitureService $furnitureService)
     {
         $form =  $form = $this->createArtWorkForm(ArtWorkType::PROPERTY_STATUS);
         $form->submit($this->apiManager->getPostDataFromRequest($request));
 
         if ($form->isSubmitted() && $form->isValid()) {
-            $artWork = $this->apiManager->save($form->getData());
-            return $this->view($artWork, Response::HTTP_CREATED);
+            if (!$form->getData()->getField() || !$form->getData()->getDenomination() || !$form->getData()->getTitle()) {
+                $formattedResult = ['msg' => 'Notice enregistrée en mode brouillon avec succès', 'res' => $this->apiManager->save($form->getData())];
+                return $this->view($formattedResult, Response::HTTP_CREATED);
+            } else {
+                $attribues = $furnitureService->getAttributesByDenominationIdAndFieldId($form->getData()->getDenomination()->getId(), $form->getData()->getField()->getId());
+                if ((in_array('materialTechnique', $attribues) && !$form->getData()->getMaterialTechnique()) || (in_array('numberOfUnit', $attribues) && !$form->getData()->getNumberOfUnit())) {
+                    $formattedResult = ['msg' => 'Notice enregistrée en mode brouillon avec succès', 'res' => $this->apiManager->save($form->getData())];
+                    return $this->view($formattedResult, Response::HTTP_CREATED);
+                } else {
+                    $formattedResult = ['msg' => 'Notice enregistrée avec succès', 'res' => $this->apiManager->save($form->getData())];
+                    return $this->view($formattedResult, Response::HTTP_CREATED);
+                }
+            }
         } else {
             throw new FormValidationException($form);
         }

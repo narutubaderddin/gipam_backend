@@ -45,7 +45,7 @@ class PhotographyType
     /**
      * @JMS\Groups("photography_type")
      *
-     * @ORM\Column(name="actif", type="boolean", nullable=false)
+     * @ORM\Column(name="actif", type="boolean", nullable=true)
      */
     private $active = true;
 
