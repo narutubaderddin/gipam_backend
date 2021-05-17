@@ -98,7 +98,7 @@ class NoticeController extends AbstractFOSRestController
      */
     public function createDepositNotice(Request $request)
     {
-        $form = $this->createArtWorkForm(ArtWorkType::DEPOSIT_STATUS);
+        $form = $this->createArtWorkForm(['status' => ArtWorkType::DEPOSIT_STATUS]);
         $form->submit($this->apiManager->getPostDataFromRequest($request));
 
         if ($form->isSubmitted() && $form->isValid()) {
@@ -152,7 +152,7 @@ class NoticeController extends AbstractFOSRestController
     private function createArtWorkForm($status,$data=null)
     {
 
-        return $this->createForm(ArtWorkType::class,$data);
+        return $this->createForm(ArtWorkType::class,$data, $status);
 
     }
 
@@ -188,7 +188,7 @@ class NoticeController extends AbstractFOSRestController
      */
     public function createPropertyNotice(Request $request, FurnitureService $furnitureService)
     {
-        $form =  $form = $this->createArtWorkForm(ArtWorkType::PROPERTY_STATUS);
+        $form =  $form = $this->createArtWorkForm( ['status' => ArtWorkType::PROPERTY_STATUS]);
         $form->submit($this->apiManager->getPostDataFromRequest($request));
 
         if ($form->isSubmitted() && $form->isValid()) {
