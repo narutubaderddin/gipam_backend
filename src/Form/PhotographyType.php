@@ -22,7 +22,7 @@ class PhotographyType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $builder
-            ->add('imagePreview', FileType::class,['data_class'=>null,'required'=>false])
+            ->add('imagePreview', FileType::class,['data_class'=>null,'required'=>false,'empty_data'=>''])
             ->add('date',DateTimeType::class, ['widget' => 'single_text', 'required'=>true])
             ->add('photographyType', EntityType::class, [
                 'class' => Type::class,
