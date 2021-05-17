@@ -184,7 +184,7 @@ class NoticeController extends AbstractFOSRestController
      * @Rest\View(serializerGroups={"artwork"}, serializerEnableMaxDepthChecks=true)
      *
      * @param Request $request
-     * 
+     *
      * @return View
      *
      */
