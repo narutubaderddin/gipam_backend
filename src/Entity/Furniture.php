@@ -765,4 +765,11 @@ abstract class Furniture
         return  null;
     }
 
+    /**
+     * @return \DateTime
+     */
+    public function getCreatedAt(){
+        return $this->createdAt;
+    }
+
 }
