@@ -218,10 +218,11 @@ class ArtWorkType extends AbstractType
             if (in_array('hyperlinks', $this->attributes)) {
                 $form->add('hyperlinks', CollectionType::class, array(
                     'entry_type' => HyperlinkType::class,
-                    'allow_delete' =>false,
+                    'required'=>false,
+                    'allow_delete' =>true,
                     'allow_add' => true,
                     'prototype' => true,
-                    'by_reference' => false,
+                    'by_reference' => true,
                 ));
             } else {
                 unset($artWork['hyperlinks']);
@@ -230,10 +231,11 @@ class ArtWorkType extends AbstractType
             if (in_array('attachments', $this->attributes)) {
                 $form->add('attachments', CollectionType::class, array(
                     'entry_type' => AttachmentType::class,
-                    'allow_delete' =>false,
+                    'required'=>false,
+                    'allow_delete' =>true,
                     'allow_add' => true,
                     'prototype' => true,
-                    'by_reference' => false,
+                    'by_reference' => true,
                 ));
             } else {
                 unset($artWork['attachments']);
@@ -243,9 +245,10 @@ class ArtWorkType extends AbstractType
                 $form->add('photographies', CollectionType::class, array(
                     'entry_type' => PhotographyType::class,
                     'allow_delete' =>true,
+                    'required'=>false,
                     'allow_add' => true,
                     'prototype' => true,
-                    'by_reference' => false,
+                    'by_reference' => true,
                 ));
             } else {
                 unset($artWork['photographies']);
