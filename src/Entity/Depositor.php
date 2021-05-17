@@ -9,6 +9,7 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use JMS\Serializer\Annotation as JMS;
+use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * @ORM\Entity(repositoryClass=DepositorRepository::class)
@@ -17,6 +18,7 @@ use JMS\Serializer\Annotation as JMS;
 class Depositor
 {
     use TimestampableEntity;
+
     /**
      * @JMS\Groups("id")
      * @ORM\Id
@@ -27,78 +29,131 @@ class Depositor
     private $id;
 
     /**
+     * @JMS\Groups("depositor")
+     *
+     * @Assert\NotBlank
+     *
      * @ORM\Column(name="sigle", type="string", length=255, nullable=true)
      */
     private $acronym;
 
     /**
-     * @JMS\Groups("depositors")
+     * @JMS\Groups("depositor", "depositors")
+     *
+     * @Assert\NotBlank
+     *
      * @ORM\Column(name="nom", type="string", length=255, nullable=true)
      */
     private $name;
 
     /**
+     * @JMS\Groups("depositor")
+     *
+     * @Assert\NotBlank
+     *
      * @ORM\Column(name="adresse", type="string", length=255, nullable=true)
      */
     private $address;
 
     /**
+     * @JMS\Groups("depositor")
+     *
+     * @Assert\NotBlank
+     *
      * @ORM\Column(name="ville", type="string", length=255, nullable=true)
      */
     private $city;
 
     /**
+     * @JMS\Groups("depositor")
+     *
+     * @Assert\NotBlank
+     *
      * @ORM\Column(name="departement", type="string", length=255, nullable=true)
      */
     private $department;
 
     /**
+     * @JMS\Groups("depositor")
+     *
+     * @Assert\NotBlank
+     *
      * @ORM\Column(name="distrib", type="string", length=255, nullable=true)
      */
     private $distrib;
 
     /**
+     * @JMS\Groups("depositor")
+     *
+     * @Assert\NotBlank
+     *
      * @ORM\Column(name="tel", type="string", length=255, nullable=true)
      */
     private $phone;
 
     /**
+     * @JMS\Groups("depositor")
+     *
+     * @Assert\NotBlank
+     *
      * @ORM\Column(name="fax", type="string", length=255, nullable=true)
      */
     private $fax;
 
     /**
+     * @JMS\Groups("depositor")
+     *
+     * @Assert\NotBlank
+     *
      * @ORM\Column(name="mail", type="string", length=255, nullable=true)
      */
     private $mail;
 
     /**
+     * @JMS\Groups("depositor")
+     *
+     * @Assert\NotBlank
+     *
      * @ORM\Column(name="date_debut", type="datetime", nullable=true)
      */
     private $startDate;
 
     /**
+     * @JMS\Groups("depositor")
+     *
      * @ORM\Column(name="date_fin", type="datetime", nullable=true)
      */
     private $endDate;
 
     /**
+     * @JMS\Groups("depositor")
+     *
+     * @Assert\NotBlank
+     *
      * @ORM\Column(name="contact", type="string", length=255, nullable=true)
      */
     private $contact;
 
     /**
+     * @JMS\Groups("depositor")
+     *
      * @ORM\ManyToOne(targetEntity=DepositType::class, inversedBy="depositors")
      * @ORM\JoinColumn(name="type_deposant_id", referencedColumnName="id")
      */
     private $depositType;
 
     /**
+     * @JMS\Exclude
+     *
      * @ORM\OneToMany(targetEntity=DepositStatus::class, mappedBy="depositor")
      */
     private $depositStatuses;
 
     /**
+     * @JMS\Groups("depositor")
+     *
+     * @Assert\NotBlank
+     *
      * @ORM\Column(name="commentaire", type="text", nullable=true)
      */
     private $comment;

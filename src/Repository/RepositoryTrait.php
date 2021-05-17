@@ -31,9 +31,9 @@ trait RepositoryTrait
         string $search = null
     )
     {
-
         $columns = $this->getClassMetadata()->getFieldNames();
-        if (defined('SEARCH_FIELDS')) {
+
+        if (defined(get_class() . '::SEARCH_FIELDS')) {
             $columns = array_merge($columns, self::SEARCH_FIELDS);
         }
         $qb = $this->createQueryBuilder('e');
@@ -230,6 +230,9 @@ trait RepositoryTrait
                 $queryBuilder->andWhere("LOWER($field) LIKE :$parameter")->setParameter($parameter,
                     '%' . strtolower($value));
                 break;
+            case 'gtOrNull':
+                $queryBuilder->andWhere("$field > :$parameter OR $field IS NULL")->setParameter($parameter, $value);
+                break;
             default:
                 throw new \RuntimeException('Unknown comparison operator: ' . $operator);
         }
@@ -253,7 +256,7 @@ trait RepositoryTrait
      */
     public static function getOperators(): array
     {
-        return ['eq', 'gt', 'lt', 'gte', 'lte', 'neq', 'contains', 'startsWith', 'endsWith','in'];
+        return ['eq', 'gt', 'lt', 'gte', 'lte', 'neq', 'contains', 'startsWith', 'endsWith','in', 'gtOrNull'];
     }
 
     public function findRecordsByEntityNameAndCriteria($count, $page = 1, $limit = 0)

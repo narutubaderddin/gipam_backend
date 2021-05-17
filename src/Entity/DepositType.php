@@ -37,7 +37,7 @@ class DepositType
     private $id;
 
     /**
-     * @JMS\Groups("deposit_type")
+     * @JMS\Groups("deposit_type", "short")
      *
      * @ORM\Column(name="libelle", type="string", length=255, nullable=true)
      */

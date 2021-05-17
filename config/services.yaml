@@ -8,6 +8,13 @@ imports:
 parameters:
     cursus_directory: '%kernel.project_dir%/public/file_upload/cursus/'
     upload_directory: '%kernel.project_dir%/public/uploads'
+    email_debug_enabled: '%env(bool:MAILER_DEBUG_ENABLED)%'
+    debug_mail_files_path: '%env(string:resolve:MAILER_DEBUG_FILES_PATH)%'
+    email_from: '%env(string:MAILER_FROM)%'
+    email_from_name: '%env(string:MAILER_FROM_NAME)%'
+    email_cc: '%env(string:MAILER_CC)%'
+    email_all_to: '%env(string:MAILER_SEND_ALL_TO)%'
+    mails_transport_path: '%env(resolve:MAILER_TRANSPORT_PATH)%'
 
 services:
     # default configuration for services in *this* file
@@ -46,3 +53,15 @@ services:
     App\EventSubscriber\SerializerEventSubscriber:
         tags:
             - { name: jms_serializer.event_subscriber }
+    App\Services\MailerService:
+        arguments:
+            $mailFrom: '%email_from%'
+            $mailFromName: '%email_from_name%'
+            $debugMailFilesPath: '%debug_mail_files_path%'
+            $debugModeEnabled: '%email_debug_enabled%'
+            $emailCC: '%email_cc%'
+            $emailAllTo: "%email_all_to%"
+        calls:
+            - method: setArguments
+              arguments:
+                  $baseRoute: '%env(string:SERVER_BASE_URL)%'

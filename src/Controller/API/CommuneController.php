@@ -188,7 +188,7 @@ class CommuneController extends AbstractFOSRestController
      *     description="regions id"
      * )
      * @SWG\Parameter(
-     *     name="name",
+     *     name="search",
      *     type="string",
      *      in="query",
      *     description="commune name"
@@ -200,7 +200,7 @@ class CommuneController extends AbstractFOSRestController
      * @Rest\QueryParam(name="limit", requirements="\d+", default="0", description="page size.")
      * @Rest\QueryParam(name="region", nullable=true, default="", description="region id")
      * @Rest\QueryParam(name="departement", nullable=true, default="", description="epartement id")
-     * @Rest\QueryParam(name="name", nullable=true, default="", description="commune name")
+     * @Rest\QueryParam(name="search", nullable=true, default="", description="commune name")
      *
      * @Rest\View()
      *

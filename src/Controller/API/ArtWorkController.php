@@ -122,6 +122,9 @@ class ArtWorkController extends AbstractFOSRestController
      * @Rest\QueryParam(name="page", requirements="\d+", default="1", description="page number.")
      * @Rest\QueryParam(name="limit", requirements="\d+", default="20", description="page size.")
      * @Rest\QueryParam(name="sort_by", nullable=true, default="id", description="order by")
+     * @Rest\QueryParam(name="sort", requirements="(asc|desc)", nullable=true, default="asc", description="tri order asc|desc")
+     * @Rest\QueryParam(name="search", nullable=true, default="", description="search")
+     * @Rest\QueryParam(name="globalSearch", nullable=true, default="", description="Golbal search")
      * @Rest\QueryParam(
      *     name="sort", requirements="(asc|desc)",
      *      nullable=true, default="asc",
@@ -155,12 +158,14 @@ class ArtWorkController extends AbstractFOSRestController
      *     )
      * )
      * @Rest\QueryParam(name="query", nullable=true, default="", description="query to search")
+     * @Rest\QueryParam(name="type",nullable=true,default="title",description="title|description")
      * @Rest\View()
      * @return array
      */
     public function findDescriptionAutocompleteData(ParamFetcherInterface $paramFetcher,ArtWorkService $artWorkService){
-        return $artWorkService->findAutocompleteData($paramFetcher->get('query')??"");
+        return $artWorkService->findAutocompleteData($paramFetcher->get('query')??"", $paramFetcher->get('type')??'title');
     }
+
 
 
     /**
@@ -221,7 +226,7 @@ class ArtWorkController extends AbstractFOSRestController
      *
      * @param ParamFetcherInterface $paramFetcher
      *
-     * @return Response
+     * @return View
      */
     public function searchArtWorks(ParamFetcherInterface $paramFetcher)
     {

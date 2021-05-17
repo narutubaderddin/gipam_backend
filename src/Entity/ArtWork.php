@@ -3,14 +3,20 @@
 namespace App\Entity;
 
 use App\Repository\ArtWorkRepository;
+use App\Services\ArtWorkService;
+use Doctrine\Common\Persistence\ObjectManagerAware;
+use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\Mapping as ORM;
+use Doctrine\Persistence\Mapping\ClassMetadata;
+use Doctrine\Persistence\ObjectManager;
 use JMS\Serializer\Annotation as JMS;
 
 /**
  * @ORM\Entity(repositoryClass=ArtWorkRepository::class)
  * @ORM\Table(name="oeuvre_art")
+ * @ORM\HasLifecycleCallbacks()
  */
-class ArtWork extends Furniture
+class ArtWork extends Furniture implements ObjectManagerAware
 {
 
     /**
@@ -38,6 +44,16 @@ class ArtWork extends Furniture
      * @ORM\Column(name="date_creation_oeuvre", type="datetime", nullable=true)
      */
     private $creationDate;
+
+    /**
+     * @var EntityManager
+     */
+    private $entityManager;
+
+    /**
+     * @ORM\ManyToOne(targetEntity=Request::class, inversedBy="artWorks")
+     */
+    private $request;
 
     public function getTotalLength(): ?float
     {
@@ -85,5 +101,53 @@ class ArtWork extends Furniture
         $this->creationDate = $creationDate;
 
         return $this;
+    }
+    /**
+     * @JMS\VirtualProperty()
+     * @JMS\SerializedName("communes")
+     * @JMS\Groups("art_work_list")
+     */
+    public function getCommunesData(){
+        $results = $this->entityManager->getRepository(ArtWork::class)
+            ->getLocationData($this,'commune');
+        return is_array($results)? $results:null;
+    }
+    /**
+     * @JMS\VirtualProperty()
+     * @JMS\SerializedName("buildings")
+     * @JMS\Groups("art_work_list")
+     */
+    public function getbuildingsData(){
+        $results = $this->entityManager->getRepository(ArtWork::class)
+            ->getLocationData($this,'building');
+        return is_array($results)? $results:null;
+    }
+
+    public function injectObjectManager(ObjectManager $objectManager, ClassMetadata $classMetadata)
+    {
+        $this->entityManager = $objectManager;
+    }
+
+    public function getRequest(): ?Request
+    {
+        return $this->request;
+    }
+
+    public function setRequest(?Request $request): self
+    {
+        $this->request = $request;
+
+        return $this;
+    }
+
+    /**
+     *
+     * @JMS\Groups("art_work_list","art_work_details")
+     * @JMS\VirtualProperty(name="isInRequest")
+     * @return boolean|null
+     */
+    public function isInRequest()
+    {
+        return $this->getRequest() !== null;
     }
 }

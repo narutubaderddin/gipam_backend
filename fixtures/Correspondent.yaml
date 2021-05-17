@@ -7,5 +7,5 @@ App\Entity\Correspondent:
     mail: <name()>
     startDate: <date_create()>
     service: '@service*'
-    establishment: '@establishment*'
+    establishment: '@establishment_*'
     subDivision: '@subDivision*'

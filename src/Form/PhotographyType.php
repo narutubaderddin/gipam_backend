@@ -30,11 +30,12 @@ class PhotographyType extends AbstractType
             ->addEventListener(FormEvents::POST_SUBMIT, function (FormEvent $event){
                 $entity = $event->getData();
                 $form = $event->getForm();
+                $lastFile = $entity->getImagePreview();
                 if (!$entity) {
                     return;
                 }
-                if (isset($form['imagePreview']) && ($form['imagePreview']->getData() instanceof UploadedFile)){
-                    $entity->setImageName($form['imagePreview']->getData()->getClientOriginalName());
+                if ($lastFile){
+                    $entity->setImageName($lastFile);
                     $event->setData($entity);
                 }
             })

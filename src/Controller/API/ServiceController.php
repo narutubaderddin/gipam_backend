@@ -106,7 +106,7 @@ class ServiceController extends AbstractFOSRestController
      * @Rest\QueryParam(name="subDivision", map=true, nullable=false, description="filter by subDivision. example: subDivision[eq]=value")
      * @Rest\QueryParam(name="search", map=false, nullable=true, description="search. example: search=text")
      *
-     * @Rest\View()
+     * @Rest\View(serializerGroups={"response","service"})
      *
      * @param ParamFetcherInterface $paramFetcher
      *

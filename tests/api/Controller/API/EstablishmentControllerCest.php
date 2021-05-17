@@ -51,6 +51,18 @@ class EstablishmentControllerCest
         $this->apiTester->seeResponseIsJson();
     }
 
+    public function createDepositorFailedTest()
+    {
+        $this->apiTester->wantTo('create a Establishment Error');
+        $this->apiTester->haveHttpHeader('Content-Type', 'application/json');
+        $this->apiTester->sendPOST(self::URL, [
+            "label" => "",
+            "startDate" => "2021-04-23T15:00:00",
+        ]);
+        $this->apiTester->seeResponseCodeIs(HttpCode::BAD_REQUEST);
+        $this->apiTester->seeResponseIsJson();
+    }
+
     public function updateEstablishmentTest()
     {
         $this->apiTester->wantTo('update Establishment');
@@ -59,6 +71,16 @@ class EstablishmentControllerCest
             "label" => "updated Label",
         ]);
         $this->apiTester->seeResponseCodeIs(HttpCode::NO_CONTENT);
+    }
+
+    public function updateEstablishmentFailedTest()
+    {
+        $this->apiTester->wantTo('update Establishment error');
+        $this->apiTester->haveHttpHeader('Content-Type', 'application/json');
+        $this->apiTester->sendPut(self::URL . "1", [
+            "label" => "",
+        ]);
+        $this->apiTester->seeResponseCodeIs(HttpCode::BAD_REQUEST);
     }
 
     public function deleteEstablishmentTest()
