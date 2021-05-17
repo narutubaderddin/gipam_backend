@@ -105,6 +105,14 @@ class Responsible
      */
     private $departments;
 
+    /**
+     * @JMS\Groups("responsible")
+     *
+     * @ORM\ManyToOne(targetEntity=Region::class, inversedBy="responsibles")
+     * @ORM\JoinColumn(name="region_id", referencedColumnName="id")
+     */
+    private $region;
+
     public function __construct()
     {
         $this->buildings = new ArrayCollection();
@@ -267,6 +275,18 @@ class Responsible
     public function removeDepartment(Department $department): self
     {
         $this->departments->removeElement($department);
+
+        return $this;
+    }
+
+    public function getRegion(): ?Region
+    {
+        return $this->region;
+    }
+
+    public function setRegion(?Region $region): self
+    {
+        $this->region = $region;
 
         return $this;
     }

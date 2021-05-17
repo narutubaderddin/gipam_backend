@@ -4,6 +4,7 @@ namespace App\Form;
 
 use App\Entity\Building;
 use App\Entity\Department;
+use App\Entity\Region;
 use App\Entity\Responsible;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
@@ -20,11 +21,11 @@ class ResponsibleType extends AbstractType
     {
         $builder
             ->add('firstName', TextType::class, ['required' => true])
-            ->add('lastName',TextType::class, ['required' => true])
-            ->add('phone',TextType::class)
-            ->add('fax',TextType::class)
-            ->add('mail',EmailType::class)
-            ->add('login',TextType::class)
+            ->add('lastName', TextType::class, ['required' => true])
+            ->add('phone', TextType::class)
+            ->add('fax', TextType::class)
+            ->add('mail', EmailType::class)
+            ->add('login', TextType::class)
             ->add('startDate', DateTimeType::class, ['required' => true, 'widget' => 'single_text'])
             ->add('endDate', DateTimeType::class, ['widget' => 'single_text'])
             ->add('buildings', CollectionType::class, [
@@ -49,6 +50,9 @@ class ResponsibleType extends AbstractType
                 'allow_add' => true,
                 'prototype' => true,
                 'by_reference' => false,
+            ])->add('region', EntityType::class, [
+                'class' => Region::class,
+                'choice_label' => 'id',
             ]);
     }
 

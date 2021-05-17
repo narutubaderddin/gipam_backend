@@ -140,7 +140,7 @@ class CommuneController extends AbstractFOSRestController
      */
     public function listCommune(ParamFetcherInterface $paramFetcher, Request $request)
     {
-        $serializerGroups = $request->get('serializer_group', '');
+        $serializerGroups = $request->get('serializer_group', '["commune", "id", "short"]');
         $serializerGroups = json_decode($serializerGroups, true);
         $serializerGroups[] = "response";
         $context = new Context();

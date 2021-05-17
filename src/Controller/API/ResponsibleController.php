@@ -112,6 +112,7 @@ class ResponsibleController extends AbstractFOSRestController
      * @Rest\QueryParam(name="fax", map=true, nullable=true, description="filter by fax. example: fax[eq]=value")
      * @Rest\QueryParam(name="mail", map=true, nullable=true, description="filter by mail. example: mail[eq]=value")
      * @Rest\QueryParam(name="login", map=true, nullable=true, description="filter by login. example: login[eq]=value")
+     * @Rest\QueryParam(name="region", nullable=true, description="filter by region id. example: region[eq]=value")
      * @Rest\QueryParam(name="buildings_id", nullable=true, description="filter by buildings id. example: buildings_id[eq]=value")
      * @Rest\QueryParam(name="departments_id", nullable=true, description="filter by batiment id. example: department_id[eq]=value")
      *
