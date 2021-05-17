@@ -38,7 +38,7 @@ class ExceptionSubscriber implements EventSubscriberInterface
             return;
         }
         if ($exception instanceof \Exception){
-            $this->setResponse($exception->getMessage());
+            $this->setResponse($exception->getMessage(), 500);
 
             return;
         }

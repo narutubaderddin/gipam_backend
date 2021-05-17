@@ -79,7 +79,7 @@ class ArtWorkController extends AbstractFOSRestController
      *     )
      * )
      * @SWG\Tag(name="ArtWorks")
-     * @Rest\View(serializerGroups={"art_work_list", "id", "art_work_details"})
+     * @Rest\View(serializerGroups={"art_work_list","hyperLink_furniture", "id", "art_work_details"},serializerEnableMaxDepthChecks=true)
      *
      * @param ArtWork $artWork
      * @return View
@@ -134,6 +134,9 @@ class ArtWorkController extends AbstractFOSRestController
      * @Rest\QueryParam(name="page", requirements="\d+", default="1", description="page number.")
      * @Rest\QueryParam(name="limit", requirements="\d+", default="20", description="page size.")
      * @Rest\QueryParam(name="sort_by", nullable=true, default="id", description="order by")
+     * @Rest\QueryParam(name="sort", requirements="(asc|desc)", nullable=true, default="asc", description="tri order asc|desc")
+     * @Rest\QueryParam(name="search", nullable=true, default="", description="search")
+     * @Rest\QueryParam(name="globalSearch", nullable=true, default="", description="Golbal search")
      * @Rest\QueryParam(
      *     name="sort", requirements="(asc|desc)",
      *      nullable=true, default="asc",

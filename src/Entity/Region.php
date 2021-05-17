@@ -19,8 +19,9 @@ use Symfony\Component\Validator\Constraints as Assert;
 class Region
 {
     use TimestampableEntity;
+
     /**
-     * @JMS\Groups("id")
+     * @JMS\Groups("id", "short")
      *
      * @ORM\Id
      * @ORM\GeneratedValue
@@ -29,7 +30,7 @@ class Region
     private $id;
 
     /**
-     * @JMS\Groups("region")
+     * @JMS\Groups("region", "short")
      *
      * @Assert\NotBlank
      *

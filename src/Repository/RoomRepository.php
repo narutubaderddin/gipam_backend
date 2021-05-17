@@ -16,6 +16,13 @@ use FOS\RestBundle\Request\ParamFetcherInterface;
 class RoomRepository extends ServiceEntityRepository
 {
     use RepositoryTrait;
+
+    public const SEARCH_FIELDS = [
+        'level_param' => 'level',
+        'reference_param' => 'reference',
+        'building_name_param' => 'building_name'
+    ];
+
     public function __construct(ManagerRegistry $registry)
     {
         parent::__construct($registry, Room::class);
@@ -80,11 +87,13 @@ class RoomRepository extends ServiceEntityRepository
 
     public function findRoomsRefByCriteria( $building, $level)
     {
+       $level = explode(',',$level);
+       $building = explode(',',$building);
         $query = $this->createQueryBuilder('room')
             ->leftJoin('room.building','building');
 
-        $query->andWhere('building.id = :building')->setParameter('building',$building);
-        $query->andWhere('room.level = :level')->setParameter('level',$level);
+        $query->andWhere('building.id in (:building)')->setParameter('building',$building);
+        $query->andWhere('room.level in (:level)')->setParameter('level',$level);
         $query->select('distinct(room.reference) as reference');
         $result=[];
         foreach ($query->getQuery()->getResult() as $referenceData){

@@ -167,7 +167,7 @@ class PhotographyTypeController extends AbstractFOSRestController
             $photographyType = $this->apiManager->save($form->getData());
             return $this->view($photographyType, Response::HTTP_CREATED);
         }
-        throw new FormValidationException($form);
+
     }
 
     /**
