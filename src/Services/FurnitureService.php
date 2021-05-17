@@ -69,4 +69,5 @@ class FurnitureService
     {
         return $this->attributes['default'];
     }
+
 }

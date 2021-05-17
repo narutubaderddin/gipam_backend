@@ -10,6 +10,7 @@ use App\Entity\Era;
 use App\Entity\Field;
 use App\Entity\Furniture;
 use App\Entity\MaterialTechnique;
+use App\Entity\Photography;
 use App\Entity\Status;
 use App\Entity\Style;
 use App\Form\Type\BooleanType;
@@ -68,7 +69,15 @@ class ArtWorkType extends AbstractType
                     'class' => Field::class,
                     'choice_label' => 'id',
                 ]
-            );
+            )
+            ->add('photographies', CollectionType::class, array(
+                'entry_type' => PhotographyType::class,
+                'allow_delete' =>true,
+                'allow_add' => true,
+                'prototype' => true,
+                'by_reference' => false,
+            ))
+            ->add('isCreated', BooleanType::class);
         $builder->addEventListener(FormEvents::PRE_SUBMIT, function (FormEvent $event) {
             $artWork = $event->getData();
             $form = $event->getForm();
@@ -246,19 +255,19 @@ class ArtWorkType extends AbstractType
                 unset($artWork['attachments']);
                 $event->setData($artWork);
             }
-            if (in_array('photographies', $this->attributes)) {
-                $form->add('photographies', CollectionType::class, array(
-                    'entry_type' => PhotographyType::class,
-                    'allow_delete' =>true,
-                    'required'=>false,
-                    'allow_add' => true,
-                    'prototype' => true,
-                    'by_reference' => true,
-                ));
-            } else {
-                unset($artWork['photographies']);
-                $event->setData($artWork);
-            }
+//            if (in_array('photographies', $this->attributes)) {
+//                $form->add('photographies', CollectionType::class, array(
+//                    'entry_type' => PhotographyType::class,
+//                    'allow_delete' =>true,
+//                    'allow_add' => true,
+//                    'prototype' => true,
+//                    'by_reference' => true,
+//                ));
+//
+//            } else {
+//                unset($artWork['photographies']);
+//                $event->setData($artWork);
+//            }
         });
     }
 

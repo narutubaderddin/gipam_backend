@@ -44,8 +44,6 @@ class Photography
     /**
      * @JMS\Groups("artwork","photography", "art_work")
      *
-     * @Assert\NotBlank()
-     *
      * @ORM\Column(name="date",type="datetime")
      */
     private $date;

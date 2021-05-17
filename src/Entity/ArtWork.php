@@ -55,6 +55,12 @@ class ArtWork extends Furniture implements ObjectManagerAware
      */
     private $request;
 
+    /**
+     * @JMS\Groups("artwork")
+     * @ORM\Column(type="boolean", nullable=true)
+     */
+    private $isCreated;
+
     public function getTotalLength(): ?float
     {
         return $this->totalLength;
@@ -149,5 +155,17 @@ class ArtWork extends Furniture implements ObjectManagerAware
     public function isInRequest()
     {
         return $this->getRequest() !== null;
+    }
+
+    public function getIsCreated(): ?bool
+    {
+        return $this->isCreated;
+    }
+
+    public function setIsCreated(?bool $isCreated = false): self
+    {
+        $this->isCreated = $isCreated;
+
+        return $this;
     }
 }

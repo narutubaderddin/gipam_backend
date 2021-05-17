@@ -3,6 +3,8 @@
 namespace App\Controller\WEB;
 
 
+use App\Entity\ArtWork;
+use App\Form\ArtWorkType;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
 use Symfony\Component\Filesystem\Filesystem;
@@ -85,6 +87,8 @@ class MailController extends AbstractController
      */
     public function mailDashboard(ParameterBagInterface $params)
     {
+
+        $form = $this->createForm(ArtWorkType::class, new ArtWork(), ['status' => ArtWorkType::PROPERTY_STATUS]);
         if (!($params->get('email_debug_enabled'))) {
             throw new AccessDeniedException();
         }
@@ -105,6 +109,6 @@ class MailController extends AbstractController
                 'delete' => $this->generateUrl('delete_file', ["file" => base64_encode($file->getRealPath())])
             ];
         }
-        return $this->render('Emails/dashboard.html.twig', ['files' => $content]);
+        return $this->render('Emails/dashboard.html.twig', ['files' => $content, 'form' => $form->createView()]);
     }
 }
