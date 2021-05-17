@@ -7,6 +7,7 @@ use App\Exception\FormValidationException;
 use App\Form\DepartmentType;
 use App\Model\ApiResponse;
 use App\Services\ApiManager;
+use FOS\RestBundle\Context\Context;
 use FOS\RestBundle\Controller\AbstractFOSRestController;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use FOS\RestBundle\Controller\Annotations\Route;
@@ -132,13 +133,18 @@ class DepartmentController extends AbstractFOSRestController
      * @Rest\View()
      *
      * @param ParamFetcherInterface $paramFetcher
-     *
+     * @param Request $request
      * @return View
      */
-    public function listDepartment(ParamFetcherInterface $paramFetcher)
+    public function listDepartment(ParamFetcherInterface $paramFetcher, Request $request)
     {
+        $serializerGroups = $request->get('serializer_group', '[]');
+        $serializerGroups = json_decode($serializerGroups, true);
+        $serializerGroups[] = "response";
+        $context = new Context();
+        $context->setGroups($serializerGroups);
         $records = $this->apiManager->findRecordsByEntityName(Department::class, $paramFetcher);
-        return $this->view($records, Response::HTTP_OK);
+        return $this->view($records, Response::HTTP_OK)->setContext($context);
     }
     /**
      *
