@@ -245,8 +245,9 @@ class ArtWorkController extends AbstractFOSRestController
         $records = $this->apiManager->searchByEntityName(ArtWork::class, $paramFetcher);
         return $this->view($records, Response::HTTP_OK);
     }
+
     /**
-     * @Rest\Get("/exportRequest")
+     * @Rest\Get("/exportListArtWorks")
      *
      * @SWG\Response(
      *     response=201,
@@ -265,8 +266,36 @@ class ArtWorkController extends AbstractFOSRestController
      *     description="Add Request",
      *     @Model(type=Request::class, groups={"request"})
      * )
-     * @SWG\Tag(name="requests")
+     * @SWG\Tag(name="ArtWorks")
      *
+     * @Rest\QueryParam(name="title", nullable=true, description="filter by title. example: title[eq]=text")
+     * @Rest\QueryParam(name="width", nullable=true, description="filter by width. example: width[eq]=text")
+     * @Rest\QueryParam(name="height", nullable=true, description="filter by height. example: height[eq]=text")
+     * @Rest\QueryParam(name="depth", nullable=true, description="filter by depth. example: depth[eq]=text")
+     * @Rest\QueryParam(name="diameter", nullable=true, description="filter by diameter. example: diameter[eq]=text")
+     * @Rest\QueryParam(name="weight", nullable=true, description="filter by weight. example: weight[eq]=text")
+     * @Rest\QueryParam(name="stopNumber", nullable=true, description="filter by stopNumber. example: weight[eq]=text")
+     * @Rest\QueryParam(name="numberOfUnit", nullable=true, description="filter by number Of Unit. weight[eq]=1")
+     * @Rest\QueryParam(name="description", nullable=false, description="filter by description. example: description[eq]=text")
+     * @Rest\QueryParam(name="creationDate", map=true, nullable=false, description="filter by creationDate. example: creationDate[lt]=value")
+     * @Rest\QueryParam(name="depositDate", map=true, nullable=false, description="filter by depositDate. example: depositDate[lt]=value")
+     * @Rest\QueryParam(name="insuranceValueDate", map=true, nullable=false, description="filter by insuranceValueDate. example: insuranceValueDate[lt]=value")
+     * @Rest\QueryParam(name="totalLength", nullable=false, description="filter by totalLength. example: totalLength[eq]=1")
+     * @Rest\QueryParam(name="totalLength", nullable=false, description="filter by totalLength. example: totalLength[eq]=1")
+     * @Rest\QueryParam(name="totalLength", nullable=false, description="filter by totalLength. example: totalLength[eq]=1")
+     * @Rest\QueryParam(name="totalWidth", nullable=false, description="filter by totalWidth. example: totalWidth[eq]=1")
+     * @Rest\QueryParam(name="totalHeight", nullable=false, description="filter by totalHeight. example: totalHeight[eq]=1")
+     * @Rest\QueryParam(name="registrationSignature", nullable=false, description="filter by registrationSignature. example: registrationSignature[eq]=text")
+     * @Rest\QueryParam(name="descriptiveWords", nullable=false, description="filter by descriptiveWords. example: descriptiveWords[eq]=text")
+     * @Rest\QueryParam(name="insuranceValue", nullable=false, description="filter by insuranceValue. example: insuranceValue[eq]=1")
+     * @Rest\QueryParam(name="denomination", map=true, nullable=true, description="filter by denomination. example: denomination[eq]=value")
+     * @Rest\QueryParam(name="field", map=true, nullable=true, description="filter by field. example: field[eq]=value")
+     * @Rest\QueryParam(name="searchArt", nullable=false, description="filter by search. example: search[eq]=1")
+     * @Rest\QueryParam(name="mode", nullable=false, description="filter by mode. example: mode[eq]=1")
+     * @Rest\QueryParam(name="limit", requirements="\d+", default="20", description="page size.")
+     * @Rest\QueryParam(name="page", requirements="\d+", default="1", description="page number.")
+     * @Rest\QueryParam(name="sort_by", nullable=true, default="id", description="order by")
+     * @Rest\QueryParam(name="sort", requirements="(asc|desc)", nullable=true, default="asc", description="tri order asc|desc")
      * @Rest\View(serializerGroups={"request_details"})
      *
      * @param Request $request
@@ -276,19 +305,19 @@ class ArtWorkController extends AbstractFOSRestController
      * @throws \Doctrine\ORM\ORMException
      * @throws \Doctrine\ORM\OptimisticLockException
      */
-    public function exportRequest(Request $request)
+    public function exportListArtWorks(ParamFetcherInterface $paramFetcher)
     {
-
-            $artWorks = $this->em->getRepository(ArtWork::class)->findAll();
-            $html2pdf = new Html2Pdf('P', 'A4', 'fr');
-            $html2pdf->setDefaultFont('Arial');
-            $html = $this->renderView('artWorks/list-pdf.html.twig', array(
-                'artWorks'  => $artWorks
-            ));
-            $html2pdf->writeHTML($html);
-            $path =  $this->getParameter('kernel.project_dir').DIRECTORY_SEPARATOR.'var' .DIRECTORY_SEPARATOR . 'file_xxxx.pdf';
-            $html2pdf->Output($path, 'F');
-            return $this->file($path,'Oeuvres_Graphiques.pdf')->deleteFileAfterSend();
+        $records = $this->apiManager->searchByEntityName(ArtWork::class, $paramFetcher);
+        $artWorks = $records->getResults();
+        $html2pdf = new Html2Pdf('P', 'A4', 'fr');
+        $html2pdf->setDefaultFont('Arial');
+        $html = $this->renderView('artWorks/list-pdf.html.twig', array(
+            'artWorks'  => $artWorks
+        ));
+        $html2pdf->writeHTML($html);
+        $path =  $this->getParameter('kernel.project_dir').DIRECTORY_SEPARATOR.'var' .DIRECTORY_SEPARATOR . 'file_xxxx.pdf';
+        $html2pdf->Output($path, 'F');
+        return $this->file($path,'Oeuvres_Graphiques.pdf')->deleteFileAfterSend();
 
     }
 }
