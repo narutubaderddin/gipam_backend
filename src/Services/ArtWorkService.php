@@ -85,4 +85,17 @@ class ArtWorkService
             ->getLocationData($artWork, $dataType);
     }
 
+    /**
+     * Return list of artWorks by ids and sorted.
+     * @param $artWorks
+     * @param string $sortBy
+     * @param string $sort
+     * @return mixed
+     */
+    public function getArtWorksByIds($artWorks, $sortBy = "id", $sort="asc"){
+
+        return $this->entityManager->getRepository(ArtWork::class)
+            ->getArtworksByIds($artWorks, $sortBy, $sort);
+    }
+
 }

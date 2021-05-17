@@ -563,4 +563,20 @@ class ArtWorkRepository extends ServiceEntityRepository
 
        return $query;
     }
+
+    /**
+     * Return list of artworks by theire ids
+     * @param $artWorksIds
+     * @param string $sortBy
+     * @param string $sort
+     * @return int|mixed|string
+     */
+    public function getArtworksByIds($artWorksIds, $sortBy = "id", $sort="asc"){
+        $query = $this->createQueryBuilder('artWork');
+        $query->where('artWork.id IN (:artWorkIds)')
+            ->orderBy("artWork.$sortBy", $sort)
+            ->setParameter('artWorkIds',$artWorksIds);
+
+        return $query->getQuery()->getResult();
+    }
 }

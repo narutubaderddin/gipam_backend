@@ -320,4 +320,77 @@ class ArtWorkController extends AbstractFOSRestController
         return $this->file($path,'Oeuvres_Graphiques.pdf')->deleteFileAfterSend();
 
     }
+
+    /**
+     * @Rest\Get("/export/{exportType}")
+     *
+     * @SWG\Response(
+     *     response=201,
+     *     description="Returns created Field",
+     *     @SWG\Schema()
+     * )
+     * @SWG\Response(
+     *     response=400,
+     *     description="Creation error"
+     * )
+     * @SWG\Parameter(
+     *     name="artWorks",
+     *     in="query",
+     *     type="string",
+     *     description="artWorks id to be generated in PDF"
+     * )
+     * @SWG\Parameter(
+     *     name="sort",
+     *     in="query",
+     *     type="string",
+     *     description="sort method asc or desc"
+     * )
+     * @SWG\Parameter(
+     *     name="sort_by",
+     *     in="query",
+     *     type="string",
+     *     description="sort_by column"
+     * )
+     * @SWG\Tag(name="artWork_export_pdf")
+     *
+     * @Rest\QueryParam(name="artWorks", nullable=false, description="artworkers ids")
+     * @Rest\QueryParam(name="sort_by", nullable=true, default="id", description="sort field")
+     * @Rest\QueryParam(name="sort", nullable=true, default="asc", description="sort order")
+     * @param Request $request
+     * @param $exportType
+     * @return Response
+     * @throws \Spipu\Html2Pdf\Exception\Html2PdfException
+     */
+    public function exportArtWorks(Request $request, $exportType){
+
+        //Get Request parameters.
+        $artWorksIds = $request->get('artWorks');
+        $sortBy = $request->get('sort_by');
+        $sort = $request->get('sort');
+
+        //Get requested art works.
+        $artWorks = $this->artWorkService->getArtWorksByIds($artWorksIds, $sortBy, $sort);
+
+        switch ($exportType){
+            case "techniques":
+                $view = "techniques";
+                break;
+            case "complete":
+                $view = "complete";
+                break;
+            default:
+                $view =  "artWorks/catalogue_pdf.html.twig";
+                break;
+        }
+
+        $content = $this->render($view, ['artWorks'=>$artWorks]);
+
+        //Create a PDF File.
+        $html2pdf = new Html2Pdf('P', 'A4', 'fr');
+        $html2pdf->setDefaultFont('Arial');
+        $html2pdf->writeHTML($content);
+        $path =  $this->getParameter('kernel.project_dir').DIRECTORY_SEPARATOR.'var' .DIRECTORY_SEPARATOR . 'file_xxxx.pdf';
+        $html2pdf->Output($path, 'F');
+        return $this->file($path,'file_xxxx.pdf')->deleteFileAfterSend();
+    }
 }
