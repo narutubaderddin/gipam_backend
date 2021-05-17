@@ -16,7 +16,6 @@ use Nelmio\ApiDocBundle\Annotation\Model;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Swagger\Annotations as SWG;
-use Spipu\Html2Pdf\Html2Pdf;
 
 /**
  * Class FieldController
@@ -137,50 +136,6 @@ class RequestController extends AbstractFOSRestController
         } else {
             throw new FormValidationException($form);
         }
-    }
-    /**
-     * @Rest\Get("/exportRequest")
-     *
-     * @SWG\Response(
-     *     response=201,
-     *     description="Returns created Field",
-     *     @SWG\Schema(
-     *         ref=@Model(type=Field::class, groups={"field"})
-     *     )
-     * )
-     * @SWG\Response(
-     *     response=400,
-     *     description="Creation error"
-     * )
-     * @SWG\Parameter(
-     *     name="form",
-     *     in="body",
-     *     description="Add Request",
-     *     @Model(type=Request::class, groups={"request"})
-     * )
-     * @SWG\Tag(name="requests")
-     *
-     * @Rest\View(serializerGroups={"request_details"})
-     *
-     * @param Request $request
-     *
-     * @return Response
-     *
-     * @throws \Doctrine\ORM\ORMException
-     * @throws \Doctrine\ORM\OptimisticLockException
-     */
-    public function exportRequest(Request $request)
-    {
-
-            $html2pdf = new Html2Pdf('P', 'A4', 'fr');
-            $html2pdf->setDefaultFont('Arial');
-            $html2pdf->writeHTML("<h1>_______________</h1>");
-            $path =  $this->getParameter('kernel.project_dir').DIRECTORY_SEPARATOR.'var' .DIRECTORY_SEPARATOR . 'file_xxxx.pdf';
-            $html2pdf->Output($path, 'F');
-            return $this->file($path,'file_xxxx.pdf')->deleteFileAfterSend();
-
-
-
     }
 
 }

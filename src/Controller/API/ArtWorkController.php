@@ -10,15 +10,19 @@ use App\Repository\ArtWorkRepository;
 use App\Repository\FurnitureRepository;
 use App\Services\ApiManager;
 use App\Services\ArtWorkService;
+use Doctrine\ORM\EntityManagerInterface;
 use FOS\RestBundle\Controller\AbstractFOSRestController;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use FOS\RestBundle\Request\ParamFetcherInterface;
 use FOS\RestBundle\View\View;
+use Spipu\Html2Pdf\Html2Pdf;
 use Swagger\Annotations as SWG;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 use Nelmio\ApiDocBundle\Annotation\Model;
+use Symfony\Component\Routing\Annotation\Route;
+
 /**
  * Class ArtWorkController
  * @package App\Controller\API
@@ -40,20 +44,28 @@ class ArtWorkController extends AbstractFOSRestController
     protected $artWorkService;
 
     /**
+     * @var EntityManagerInterface
+     */
+    protected $em;
+
+    /**
      * ArtWorkController constructor.
      * @param ApiManager $apiManager
      * @param ValidatorInterface $validator
      * @param ArtWorkService $artWorkService
+     * @param EntityManagerInterface $em
      */
     public function __construct(
         ApiManager $apiManager,
         ValidatorInterface $validator,
-        ArtWorkService $artWorkService
+        ArtWorkService $artWorkService,
+        EntityManagerInterface $em
     )
     {
         $this->apiManager = $apiManager;
         $this->validator = $validator;
         $this->artWorkService = $artWorkService;
+        $this->em = $em;
     }
 
     /**
@@ -229,5 +241,53 @@ class ArtWorkController extends AbstractFOSRestController
     {
         $records = $this->apiManager->searchByEntityName(ArtWork::class, $paramFetcher);
         return $this->view($records, Response::HTTP_OK);
+    }
+    /**
+     * @Rest\Get("/exportRequest")
+     *
+     * @SWG\Response(
+     *     response=201,
+     *     description="Returns created Field",
+     *     @SWG\Schema(
+     *         ref=@Model(type=Field::class, groups={"field"})
+     *     )
+     * )
+     * @SWG\Response(
+     *     response=400,
+     *     description="Creation error"
+     * )
+     * @SWG\Parameter(
+     *     name="form",
+     *     in="body",
+     *     description="Add Request",
+     *     @Model(type=Request::class, groups={"request"})
+     * )
+     * @SWG\Tag(name="requests")
+     *
+     * @Rest\View(serializerGroups={"request_details"})
+     *
+     * @param Request $request
+     *
+     * @return Response
+     *
+     * @throws \Doctrine\ORM\ORMException
+     * @throws \Doctrine\ORM\OptimisticLockException
+     */
+    public function exportRequest(Request $request)
+    {
+
+            $artWorks = $this->em->getRepository(ArtWork::class)->findAll();
+            $html2pdf = new Html2Pdf('P', 'A4', 'fr');
+            $html2pdf->setDefaultFont('Arial');
+            $html = $this->renderView('artWorks/list-pdf.html.twig', array(
+                'artWorks'  => $artWorks
+            ));
+            $html2pdf->writeHTML($html);
+            $path =  $this->getParameter('kernel.project_dir').DIRECTORY_SEPARATOR.'var' .DIRECTORY_SEPARATOR . 'file_xxxx.pdf';
+            $html2pdf->Output($path, 'F');
+            return $this->file($path,'file_xxxx.pdf')->deleteFileAfterSend();
+
+
+
     }
 }

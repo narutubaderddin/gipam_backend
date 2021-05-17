@@ -28,18 +28,19 @@ class RequestType extends AbstractType
                 ->add('mail', TextType::class, ['required' => true])
                 ->add('phone', TextType::class, ['required' => true])
                 ->add('level', TextType::class, ['required' => true])
+                ->add('requestStatus', TextType::class)
                 ->add('comment', TextType::class)
-            ->add('artWorks', CollectionType::class, array(
-                'entry_type' => EntityType::class,
-                'entry_options' => array(   'class'=> ArtWork::class,
-                    'label'=>false,
-                    'choice_label'=>'id',
-                ),
-                'allow_delete' =>true,
-                'allow_add' => true,
-                'prototype' => true,
-                'by_reference' => false,
-            ))
+                ->add('artWorks', CollectionType::class, array(
+                    'entry_type' => EntityType::class,
+                    'entry_options' => array(   'class'=> ArtWork::class,
+                        'label'=>false,
+                        'choice_label'=>'id',
+                    ),
+                    'allow_delete' =>true,
+                    'allow_add' => true,
+                    'prototype' => true,
+                    'by_reference' => false,
+                ))
                 ->add('subDivision', EntityType::class, [
                         'class' => SubDivision::class,
                         'choice_label' => 'id',

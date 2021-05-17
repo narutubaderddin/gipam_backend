@@ -99,6 +99,11 @@ class Request
      */
     private $level;
 
+    /**
+     * @ORM\Column(name="status_demande",type="string", length=50, nullable=true)
+     */
+    private $requestStatus;
+
     public function __construct()
     {
         $this->artWorks = new ArrayCollection();
@@ -269,6 +274,18 @@ class Request
     public function setLevel(?string $level): self
     {
         $this->level = $level;
+
+        return $this;
+    }
+
+    public function getRequestStatus(): ?string
+    {
+        return $this->requestStatus;
+    }
+
+    public function setRequestStatus(?string $requestStatus): self
+    {
+        $this->requestStatus = $requestStatus;
 
         return $this;
     }
