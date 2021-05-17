@@ -70,13 +70,6 @@ class ArtWorkType extends AbstractType
                     'choice_label' => 'id',
                 ]
             )
-            ->add('photographies', CollectionType::class, array(
-                'entry_type' => PhotographyType::class,
-                'allow_delete' =>true,
-                'allow_add' => true,
-                'prototype' => true,
-                'by_reference' => false,
-            ))
             ->add('isCreated', BooleanType::class);
         $builder->addEventListener(FormEvents::PRE_SUBMIT, function (FormEvent $event) {
             $artWork = $event->getData();
@@ -255,19 +248,19 @@ class ArtWorkType extends AbstractType
                 unset($artWork['attachments']);
                 $event->setData($artWork);
             }
-//            if (in_array('photographies', $this->attributes)) {
-//                $form->add('photographies', CollectionType::class, array(
-//                    'entry_type' => PhotographyType::class,
-//                    'allow_delete' =>true,
-//                    'allow_add' => true,
-//                    'prototype' => true,
-//                    'by_reference' => true,
-//                ));
-//
-//            } else {
-//                unset($artWork['photographies']);
-//                $event->setData($artWork);
-//            }
+            if (in_array('photographies', $this->attributes)) {
+                $form->add('photographies', CollectionType::class, array(
+                    'entry_type' => PhotographyType::class,
+                    'allow_delete' =>true,
+                    'allow_add' => true,
+                    'prototype' => true,
+                    'by_reference' => true,
+                ));
+
+            } else {
+                unset($artWork['photographies']);
+                $event->setData($artWork);
+            }
         });
     }
 
