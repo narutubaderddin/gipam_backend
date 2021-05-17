@@ -87,18 +87,11 @@ class SubDivision
      */
     private $establishment;
 
-    /**
-     * @JMS\Exclude()
-     * @ORM\OneToMany(targetEntity=Request::class, mappedBy="subDivision")
-     */
-    private $requests;
-
     public function __construct()
     {
         $this->locations = new ArrayCollection();
         $this->correspondents = new ArrayCollection();
         $this->services = new ArrayCollection();
-        $this->requests = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -256,33 +249,4 @@ class SubDivision
         return $this;
     }
 
-    /**
-     * @return Collection|Request[]
-     */
-    public function getRequests(): Collection
-    {
-        return $this->requests;
-    }
-
-    public function addRequest(Request $request): self
-    {
-        if (!$this->requests->contains($request)) {
-            $this->requests[] = $request;
-            $request->setSubDivision($this);
-        }
-
-        return $this;
-    }
-
-    public function removeRequest(Request $request): self
-    {
-        if ($this->requests->removeElement($request)) {
-            // set the owning side to null (unless already changed)
-            if ($request->getSubDivision() === $this) {
-                $request->setSubDivision(null);
-            }
-        }
-
-        return $this;
-    }
 }
