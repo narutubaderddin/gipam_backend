@@ -5,10 +5,12 @@ namespace App\Form;
 use App\Entity\ArtWork;
 use App\Entity\Author;
 use App\Entity\Denomination;
+use App\Entity\DepositStatus;
 use App\Entity\Era;
 use App\Entity\Field;
 use App\Entity\Furniture;
 use App\Entity\MaterialTechnique;
+use App\Entity\Status;
 use App\Entity\Style;
 use App\Form\Type\BooleanType;
 use App\Services\FurnitureService;
@@ -213,7 +215,7 @@ class ArtWorkType extends AbstractType
                 $event->setData($artWork);
             }
             if (in_array('status', $this->attributes)) {
-                $form->add('status',$this->statusType);
+                    $form->add('status',$this->statusType);
             } else {
                 unset($artWork['status']);
                 $event->setData($artWork);
@@ -221,7 +223,7 @@ class ArtWorkType extends AbstractType
             if (in_array('hyperlinks', $this->attributes)) {
                 $form->add('hyperlinks', CollectionType::class, array(
                     'entry_type' => HyperlinkType::class,
-                    'allow_delete' =>true,
+                    'allow_delete' =>false,
                     'allow_add' => true,
                     'prototype' => true,
                     'by_reference' => false,
@@ -233,7 +235,7 @@ class ArtWorkType extends AbstractType
             if (in_array('attachments', $this->attributes)) {
                 $form->add('attachments', CollectionType::class, array(
                     'entry_type' => AttachmentType::class,
-                    'allow_delete' =>true,
+                    'allow_delete' =>false,
                     'allow_add' => true,
                     'prototype' => true,
                     'by_reference' => false,

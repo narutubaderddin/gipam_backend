@@ -750,8 +750,19 @@ abstract class Furniture
         return $this;
     }
 
-//    public function getBuildings(){
-//        $this->getBuildings();
-//    }
+    /**
+     *
+     * @JMS\Groups("art_work_list","art_work_details")
+     * @JMS\VirtualProperty(name="principalPhoto")
+     * @return string|null
+     */
+    public function getPrincipalPhoto(){
+        foreach ($this->photographies as $photography){
+            if($photography->getPhotographyType()->getType()==PhotographyType::TYPE['principle']){
+                return $photography;
+            }
+        }
+        return  null;
+    }
 
 }
