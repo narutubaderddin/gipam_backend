@@ -587,7 +587,8 @@ class ArtWorkRepository extends ServiceEntityRepository
      */
     public function getInProgressArtWorks($page = 2, $limit = 40) {
         $query = $this->createQueryBuilder('artWork');
-        $query->where('artWork.isCreated = false');
+        $query->where('artWork.isCreated = false')
+            ->orderBy('artWork.id', 'DESC');
         $totalQuantity = count($query->getQuery()->getResult());
         if($page!=""){
             $query->setFirstResult(($page-1) * $limit);
