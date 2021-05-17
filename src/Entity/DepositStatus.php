@@ -30,7 +30,7 @@ class DepositStatus extends Status
     private $depositor;
 
     /**
-     * @JMS\Groups("artwork")
+     * @JMS\Groups("artwork", "short")
      *
      * @ORM\Column(name="date_depot", type="datetime", nullable=true)
      */

@@ -182,7 +182,7 @@ class NoticeController extends AbstractFOSRestController
      * )
      *
      *
-     * @Rest\View(serializerGroups={"artwork"}, serializerEnableMaxDepthChecks=true)
+     * @Rest\View(serializerGroups={"artwork", "art_work_details"}, serializerEnableMaxDepthChecks=true)
      *
      * @param Request $request
      *
@@ -229,12 +229,14 @@ class NoticeController extends AbstractFOSRestController
      * @Rest\QueryParam(name="page", requirements="\d+", default="1", description="page number.")
      * @Rest\QueryParam(name="limit", requirements="\d+", default="20", description="page size.")
      * @SWG\Tag(name="art_works_in_progress")
-     * @Rest\View(serializerGroups={"artwork"},serializerEnableMaxDepthChecks=true)
+     * @Rest\View(serializerGroups={"short"},serializerEnableMaxDepthChecks=true)
      * @param ArtWorkRepository $artWorkRepository
      * @return View
      */
-    public function getInProgressArtWorks(ArtWorkRepository $artWorkRepository) {
-        $records = $artWorkRepository->getInProgressArtWorks();
+    public function getInProgressArtWorks(ArtWorkRepository $artWorkRepository, ParamFetcherInterface $paramFetcher) {
+        $page = $paramFetcher->get('page');
+        $limit = $paramFetcher->get('limit');
+        $records = $artWorkRepository->getInProgressArtWorks($page, $limit);
         return $this->view($records, Response::HTTP_OK);
     }
 }

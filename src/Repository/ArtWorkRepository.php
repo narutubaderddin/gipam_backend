@@ -569,15 +569,16 @@ class ArtWorkRepository extends ServiceEntityRepository
      * @param $limit
      * @return mixed
      */
-    public function getInProgressArtWorks($page = 1, $limit = 40) {
+    public function getInProgressArtWorks($page = 2, $limit = 40) {
         $query = $this->createQueryBuilder('artWork');
         $query->where('artWork.isCreated = false');
+        $totalQuantity = count($query->getQuery()->getResult());
         if($page!=""){
             $query->setFirstResult(($page-1) * $limit);
         }
         if($limit && $limit!= ""){
             $query->setMaxResults($limit);
         }
-        return $query->getQuery()->getResult();
+        return ['result' => $query->getQuery()->getResult(), 'totalQuantity' => $totalQuantity];
     }
 }

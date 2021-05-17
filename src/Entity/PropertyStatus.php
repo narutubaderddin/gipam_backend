@@ -15,7 +15,7 @@ use Symfony\Component\Validator\Constraints as Assert;
 class PropertyStatus extends Status
 {
     /**
-     * @JMS\Groups("artwork")
+     * @JMS\Groups("artwork", "short")
      *
      * @ORM\Column(name="date_entree", type="datetime", nullable=true)
      */
