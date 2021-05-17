@@ -38,7 +38,9 @@
                                             Domaine:
                                             <strong>
                                                 {% if artWork.field %}
-                                                    {{ artWork.field.label }}
+                                                    {% if  artWork.field.label is defined %}
+                                                        {{  artWork.field.label }}
+                                                    {% endif %}
                                                 {% endif %}
                                             </strong>
                                         </p>
@@ -46,7 +48,9 @@
                                             Dénomination:
                                             <strong>
                                                 {% if artWork.denomination %}
-                                                    {{ artWork.denomination.label }}
+                                                    {% if artWork.denomination.label is defined %}
+                                                        {{ artWork.denomination.label }}
+                                                    {% endif %}
                                                 {% endif %}
                                             </strong>
 
@@ -67,7 +71,9 @@
                                             Style:
                                             <strong>
                                                 {% if artWork.style %}
-                                                    {{ artWork.style.label }}
+                                                    {% if artWork.style.label is defined %}
+                                                        {{ artWork.style.label }}
+                                                    {% endif %}
                                                 {% endif %}
                                             </strong>
                                         </p>
@@ -76,7 +82,9 @@
                                             Matière:
                                             <strong>
                                                 {% if artWork.materialTechnique %}
+                                                    {% if artWork.materialTechnique.label is defined %}
                                                     {{ artWork.materialTechnique.label }}
+                                                    {% endif %}
                                                 {% endif %}
                                             </strong>
                                         </p>
