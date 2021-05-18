@@ -226,7 +226,6 @@ class ArtWorkType extends AbstractType
                 $form->add('hyperlinks', CollectionType::class, array(
                     'entry_type' => HyperlinkType::class,
                     'required'=>false,
-                    'allow_delete' =>true,
                     'allow_add' => true,
                     'prototype' => true,
                     'by_reference' => true,
@@ -239,7 +238,6 @@ class ArtWorkType extends AbstractType
                 $form->add('attachments', CollectionType::class, array(
                     'entry_type' => AttachmentType::class,
                     'required'=>false,
-                    'allow_delete' =>true,
                     'allow_add' => true,
                     'prototype' => true,
                     'by_reference' => true,
