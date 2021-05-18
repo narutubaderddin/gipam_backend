@@ -217,6 +217,10 @@ abstract class Furniture
 
     /**
      * @ORM\ManyToMany(targetEntity=MaterialTechnique::class, inversedBy="furniture")
+     * @ORM\JoinTable(name="objet_mobilier_matiere_technique",
+     *      joinColumns={@ORM\JoinColumn(name="objet_mobilier_id", referencedColumnName="id")},
+     *      inverseJoinColumns={@ORM\JoinColumn(name="matiere_technique_id", referencedColumnName="id")}
+     *      )
      */
     private $materialTechnique;
 
