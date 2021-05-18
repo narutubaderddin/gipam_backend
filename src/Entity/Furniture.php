@@ -183,6 +183,7 @@ abstract class Furniture
     protected $visible = true;
 
     /**
+     * @JMS\Groups("art_work_details")
      * @JMS\Exclude()
      * @JMS\MaxDepth(1)
      * @ORM\OneToMany(targetEntity=Furniture::class, mappedBy="parent")
@@ -190,7 +191,7 @@ abstract class Furniture
     protected $children;
 
     /**
-     * @JMS\Groups("artwork")
+     * @JMS\Groups("artwork", "art_work_details")
      * @JMS\MaxDepth(1)
      * @ORM\ManyToOne(targetEntity=Furniture::class, inversedBy="children")
      * @ORM\JoinColumn(name="parent_id", referencedColumnName="id")

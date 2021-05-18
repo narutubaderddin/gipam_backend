@@ -51,7 +51,7 @@ class Attachment
     private $furniture;
 
     /**
-     * @JMS\Groups("artwork")
+     * @JMS\Groups("artwork","art_work_details")
      *
      * @Assert\Valid()
      *
