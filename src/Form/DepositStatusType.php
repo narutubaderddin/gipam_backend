@@ -31,12 +31,10 @@ class DepositStatusType extends AbstractType
             ->add('depositDate',DateTimeType::class, [
                 'widget' => 'single_text',
                 'required'=>true,
-                'constraints' => [ new Assert\NotBlank()],
                 ]
             )
             ->add('stopNumber',IntegerType::class, [
                 'required'=>true,
-                'constraints' => [ new Assert\NotBlank()],
                 ]
             )
         ;
