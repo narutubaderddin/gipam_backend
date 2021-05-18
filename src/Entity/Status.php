@@ -31,7 +31,7 @@ abstract class Status
     protected $id;
 
     /**
-     * @JMS\Groups("artwork")
+     * @JMS\Groups("artwork", "art_work_details")
      *
      * @ORM\Column(name="type", type="string", length=255, nullable=true)
      */
@@ -154,7 +154,7 @@ abstract class Status
     /**
      * @JMS\VirtualProperty()
      * @JMS\SerializedName("statusType")
-     * @JMS\Groups("status_furniture")
+     * @JMS\Groups("status_furniture", "art_work_details")
      */
     public function getStatusType(){
         return $this instanceof DepositStatus ?'DepositStatus':'PropertyStatus';
@@ -163,7 +163,7 @@ abstract class Status
     /**
      * @JMS\VirtualProperty()
      * @JMS\SerializedName("depsitorName")
-     * @JMS\Groups("status_furniture")
+     * @JMS\Groups("status_furniture", "art_work_details")
      */
     public function getDepositorName(){
         if($this instanceof  DepositStatus){

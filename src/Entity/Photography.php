@@ -42,7 +42,7 @@ class Photography
     private $imagePreview;
 
     /**
-     * @JMS\Groups("artwork","photography", "art_work")
+     * @JMS\Groups("artwork","photography", "art_work", "art_work_details")
      *
      * @Assert\NotBlank()
      *
@@ -51,7 +51,7 @@ class Photography
     private $date;
 
     /**
-     * @JMS\Groups("artwork", "art_work","photography")
+     * @JMS\Groups("artwork", "art_work","photography", "art_work_details")
      *
      * @Assert\Valid()
      *
