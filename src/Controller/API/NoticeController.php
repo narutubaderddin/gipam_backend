@@ -149,7 +149,8 @@ class NoticeController extends AbstractFOSRestController
     public function updateArtWork(ArtWork $artWork,Request $request){
         $status = ($artWork->getStatus() instanceof  DepositStatus)?ArtWorkType::DEPOSIT_STATUS:ArtWorkType::PROPERTY_STATUS;
         $form = $this->createArtWorkForm($status,$artWork);
-        $form->submit($this->apiManager->getPostDataFromRequest($request));
+        $data = $this->apiManager->getPostDataFromRequest($request);
+        $form->submit($this->apiManager->getPostDataFromRequest($request),false);
         if($form->isValid()){
             $artWork = $this->apiManager->save($form->getData());
             return $this->view($artWork,Response::HTTP_OK);
