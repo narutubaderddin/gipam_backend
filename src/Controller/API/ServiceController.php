@@ -7,6 +7,7 @@ use App\Exception\FormValidationException;
 use App\Form\ServiceType;
 use App\Model\ApiResponse;
 use App\Services\ApiManager;
+use FOS\RestBundle\Context\Context;
 use FOS\RestBundle\Controller\AbstractFOSRestController;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use FOS\RestBundle\Controller\Annotations\Route;
@@ -156,7 +157,7 @@ class ServiceController extends AbstractFOSRestController
      * @Rest\QueryParam(name="limit", requirements="\d+", default="0", description="page size.")
      * @Rest\QueryParam(name="subDivisions", nullable=true, default="", description="subDivision id")
      * @Rest\QueryParam(name="establishments", nullable=true, default="", description="subDivision id")
-
+     * @Rest\QueryParam(name="disappearanceDate", map=true, nullable=false, description="filter by disappearanceDate. example: disappearanceDate[lt]=value")
      *
      * @Rest\View()
      *
@@ -164,7 +165,16 @@ class ServiceController extends AbstractFOSRestController
      * @param ApiManager $apiManager
      * @return View
      */
-    public function listServiceByCriteria(ParamFetcherInterface $paramFetcher,ApiManager $apiManager){
+    public function listServiceByCriteria(ParamFetcherInterface $paramFetcher,ApiManager $apiManager, Request $request)
+    {
+        $serializerGroups = $request->get('serializer_group') ?? null;
+        if ($serializerGroups) {
+            $serializerGroups = json_decode($serializerGroups, true);
+            $context = new Context();
+            $context->setGroups($serializerGroups);
+            $records = $this->apiManager->findRecordsByEntityNameAndCriteria(Service::class, $paramFetcher);
+            return $this->view($records, Response::HTTP_OK)->setContext($context);
+        }
         $records =$apiManager->findRecordsByEntityNameAndCriteria(Service::class,$paramFetcher);
         return $this->view($records, Response::HTTP_OK);
     }

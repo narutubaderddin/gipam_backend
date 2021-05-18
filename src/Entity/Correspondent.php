@@ -9,11 +9,13 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use JMS\Serializer\Annotation as JMS;
+use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * @ORM\Entity(repositoryClass=CorrespondentRepository::class)
  * @ORM\Table(name="correspondant")
+ * @UniqueEntity("mail", repositoryMethod="iFindBy", message="Un correspondant avec ce courriel existe déjà!")
  */
 class Correspondent
 {
@@ -38,12 +40,16 @@ class Correspondent
     /**
      * @JMS\Groups("correspondent")
      *
+     * @Assert\NotBlank
+     *
      * @ORM\Column(name="nom", type="string", length=255, nullable=true)
      */
     private $lastName;
 
     /**
      * @JMS\Groups("correspondent")
+     *
+     * @Assert\NotBlank
      *
      * @ORM\Column(name="telephone", type="string", length=255, nullable=true)
      */
@@ -58,6 +64,8 @@ class Correspondent
 
     /**
      * @JMS\Groups("correspondent")
+     *
+     * @Assert\NotBlank
      *
      * @ORM\Column(name="mail", type="string", length=255, nullable=true)
      */

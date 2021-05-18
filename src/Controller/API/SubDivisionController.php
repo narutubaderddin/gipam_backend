@@ -165,6 +165,7 @@ class SubDivisionController extends AbstractFOSRestController
      * @Rest\QueryParam(name="ministries", nullable=true, default="", description="ministries ids ,ministries=[1,2]")
      * @Rest\QueryParam(name="establishments", nullable=true, default="", description="establishement ids")
      * @Rest\QueryParam(name="search", map=false, nullable=true, description="search. example: search=text")
+     * @Rest\QueryParam(name="endDate", map=true, nullable=false, description="filter by endDate. example: endDate[lt]=value")
      *
      * @Rest\View()
      *
@@ -173,7 +174,7 @@ class SubDivisionController extends AbstractFOSRestController
      * @param ApiManager $apiManager
      * @return View
      */
-    public function listSubDivisionsByCriteria(ParamFetcherInterface $paramFetcher,ApiManager $apiManager,Request $request)
+    public function listSubDivisionsByCriteria(ParamFetcherInterface $paramFetcher,ApiManager $apiManager, Request $request)
     {
         $serializerGroups = $request->get('serializer_group') ?? null;
         if ($serializerGroups) {
