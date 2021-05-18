@@ -6,6 +6,7 @@ use App\Entity\ArtWork;
 use App\Entity\DepositStatus;
 use App\Exception\FormValidationException;
 use App\Form\ArtWorkType;
+use App\Repository\ArtWorkRepository;
 use App\Services\ApiManager;
 use App\Services\FurnitureService;
 use FOS\RestBundle\Controller\AbstractFOSRestController;
@@ -98,7 +99,7 @@ class NoticeController extends AbstractFOSRestController
      */
     public function createDepositNotice(Request $request)
     {
-        $form = $this->createArtWorkForm(ArtWorkType::DEPOSIT_STATUS);
+        $form = $this->createArtWorkForm(['status' => ArtWorkType::DEPOSIT_STATUS]);
         $form->submit($this->apiManager->getPostDataFromRequest($request));
 
         if ($form->isSubmitted() && $form->isValid()) {
@@ -152,7 +153,9 @@ class NoticeController extends AbstractFOSRestController
     private function createArtWorkForm($status,$data=null)
     {
 
-        return $this->createForm(ArtWorkType::class,$data);
+        return $this->createForm(ArtWorkType::class,$data,[
+            'status'=>$status
+        ]);
 
     }
 
@@ -188,9 +191,11 @@ class NoticeController extends AbstractFOSRestController
      */
     public function createPropertyNotice(Request $request, FurnitureService $furnitureService)
     {
-        $form =  $form = $this->createArtWorkForm(ArtWorkType::PROPERTY_STATUS);
-        $form->submit($this->apiManager->getPostDataFromRequest($request));
+        $artWork = new ArtWork();
+        $form =  $form = $this->createArtWorkForm( ArtWorkType::PROPERTY_STATUS, $artWork);
+        $data =$this->apiManager->getPostDataFromRequest($request);
 
+        $form->submit($data);
         if ($form->isSubmitted() && $form->isValid()) {
             if (!$form->getData()->getField() || !$form->getData()->getDenomination() || !$form->getData()->getTitle()) {
                 $formattedResult = ['msg' => 'Notice enregistrée en mode brouillon avec succès', 'res' => $this->apiManager->save($form->getData())];
@@ -201,6 +206,7 @@ class NoticeController extends AbstractFOSRestController
                     $formattedResult = ['msg' => 'Notice enregistrée en mode brouillon avec succès', 'res' => $this->apiManager->save($form->getData())];
                     return $this->view($formattedResult, Response::HTTP_CREATED);
                 } else {
+                    $form->getData()->setIsCreated(true);
                     $formattedResult = ['msg' => 'Notice enregistrée avec succès', 'res' => $this->apiManager->save($form->getData())];
                     return $this->view($formattedResult, Response::HTTP_CREATED);
                 }
@@ -208,5 +214,27 @@ class NoticeController extends AbstractFOSRestController
         } else {
             throw new FormValidationException($form);
         }
+    }
+
+    /**
+     * @Rest\Get("/get-art-works-in-progress")
+     *
+     * @SWG\Response(
+     *     response=200,
+     *     description="Returns the list of an ArtWork in progress",
+     *     @SWG\Schema(
+     *         @SWG\Items(ref=@Model(type=ApiResponse::class))
+     *     )
+     * )
+     * @Rest\QueryParam(name="page", requirements="\d+", default="1", description="page number.")
+     * @Rest\QueryParam(name="limit", requirements="\d+", default="20", description="page size.")
+     * @SWG\Tag(name="art_works_in_progress")
+     * @Rest\View(serializerGroups={"artwork"},serializerEnableMaxDepthChecks=true)
+     * @param ArtWorkRepository $artWorkRepository
+     * @return View
+     */
+    public function getInProgressArtWorks(ArtWorkRepository $artWorkRepository) {
+        $records = $artWorkRepository->getInProgressArtWorks();
+        return $this->view($records, Response::HTTP_OK);
     }
 }

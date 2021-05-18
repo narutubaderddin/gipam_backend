@@ -63,9 +63,17 @@ class Region
      */
     private $departments;
 
+    /**
+     * @JMS\Exclude()
+     *
+     * @ORM\OneToMany(targetEntity=Responsible::class, mappedBy="region")
+     */
+    private $responsibles;
+
     public function __construct()
     {
         $this->departments = new ArrayCollection();
+        $this->responsibles = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -133,6 +141,36 @@ class Region
             // set the owning side to null (unless already changed)
             if ($department->getRegion() === $this) {
                 $department->setRegion(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|Responsible[]
+     */
+    public function getResponsibles(): Collection
+    {
+        return $this->responsibles;
+    }
+
+    public function addResponsible(Responsible $responsible): self
+    {
+        if (!$this->responsibles->contains($responsible)) {
+            $this->responsibles[] = $responsible;
+            $responsible->setRegion($this);
+        }
+
+        return $this;
+    }
+
+    public function removeResponsible(Responsible $responsible): self
+    {
+        if ($this->responsibles->removeElement($responsible)) {
+            // set the owning side to null (unless already changed)
+            if ($responsible->getRegion() === $this) {
+                $responsible->setRegion(null);
             }
         }
 

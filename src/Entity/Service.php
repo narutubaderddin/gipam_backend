@@ -58,17 +58,17 @@ class Service
     private $disappearanceDate;
 
     /**
-     * @ORM\OneToMany(targetEntity=Correspondent::class, mappedBy="service")
-     */
-    private $correspondents;
-
-    /**
      * @JMS\Groups("service", "sub_division_id")
      *
      * @ORM\ManyToOne(targetEntity=SubDivision::class, inversedBy="services")
      * @ORM\JoinColumn(name="sous_direction_id", referencedColumnName="id")
      */
     private $subDivision;
+
+    /**
+     * @ORM\ManyToMany(targetEntity=Correspondent::class, mappedBy="services")
+     */
+    private $correspondents;
 
     public function __construct()
     {
@@ -144,6 +144,18 @@ class Service
         return $this->id;
     }
 
+    public function getSubDivision(): ?SubDivision
+    {
+        return $this->subDivision;
+    }
+
+    public function setSubDivision(?SubDivision $subDivision): self
+    {
+        $this->subDivision = $subDivision;
+
+        return $this;
+    }
+
     /**
      * @return Collection|Correspondent[]
      */
@@ -156,7 +168,7 @@ class Service
     {
         if (!$this->correspondents->contains($correspondent)) {
             $this->correspondents[] = $correspondent;
-            $correspondent->setService($this);
+            $correspondent->addService($this);
         }
 
         return $this;
@@ -165,23 +177,8 @@ class Service
     public function removeCorrespondent(Correspondent $correspondent): self
     {
         if ($this->correspondents->removeElement($correspondent)) {
-            // set the owning side to null (unless already changed)
-            if ($correspondent->getService() === $this) {
-                $correspondent->setService(null);
-            }
+            $correspondent->removeService($this);
         }
-
-        return $this;
-    }
-
-    public function getSubDivision(): ?SubDivision
-    {
-        return $this->subDivision;
-    }
-
-    public function setSubDivision(?SubDivision $subDivision): self
-    {
-        $this->subDivision = $subDivision;
 
         return $this;
     }
