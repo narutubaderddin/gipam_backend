@@ -15,7 +15,7 @@ use Doctrine\Persistence\ManagerRegistry;
 class DenominationRepository extends ServiceEntityRepository
 {
     use RepositoryTrait;
-    const SEARCH_FIELDS = ['label_param' => 'label'];
+    const SEARCH_FIELDS = ['label_param' => 'label', 'field_label_param' => 'field_label'];
     public function __construct(ManagerRegistry $registry)
     {
         parent::__construct($registry, Denomination::class);
