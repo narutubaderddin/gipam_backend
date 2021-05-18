@@ -15,7 +15,7 @@ use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 class DepositStatus extends Status
 {
     /**
-     * @JMS\Groups("artwork")
+     * @JMS\Groups("artwork", "short")
      *
      * @ORM\Column(name="numero_inventaire", type="string", length=255, nullable=true)
      */
@@ -30,14 +30,14 @@ class DepositStatus extends Status
     private $depositor;
 
     /**
-     * @JMS\Groups("artwork")
+     * @JMS\Groups("artwork", "short")
      *
      * @ORM\Column(name="date_depot", type="datetime", nullable=true)
      */
     private $depositDate;
 
     /**
-     * @JMS\Groups("artwork")
+     * @JMS\Groups("artwork", "short")
      *
      * @ORM\Column(name="numero_arret", type="integer", nullable=true)
      */
