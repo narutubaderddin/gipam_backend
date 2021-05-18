@@ -15,6 +15,7 @@ use FOS\RestBundle\View\View;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Nelmio\ApiDocBundle\Annotation\Model;
+
 /**
  * Class AttachmentController
  * @package App\Controller\API

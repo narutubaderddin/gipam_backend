@@ -21,7 +21,7 @@ abstract class Status
 {
     use TimestampableEntity;
     /**
-     * @JMS\Groups("artwork")
+     * @JMS\Groups("artwork", "short")
      *
      * @ORM\Id
      * @ORM\GeneratedValue
@@ -31,21 +31,21 @@ abstract class Status
     protected $id;
 
     /**
-     * @JMS\Groups("artwork")
+     * @JMS\Groups("artwork", "art_work_details", "short")
      *
      * @ORM\Column(name="type", type="string", length=255, nullable=true)
      */
     protected $type;
 
     /**
-     * @JMS\Groups("artwork")
+     * @JMS\Groups("artwork", "short")
      *
      * @ORM\Column(name="date_debut", type="datetime", nullable=true)
      */
     protected $startDate;
 
     /**
-     * @JMS\Groups("artwork")
+     * @JMS\Groups("artwork", "short")
      *
      * @ORM\Column(name="date_fin", type="datetime", nullable=true)
      */
@@ -154,7 +154,7 @@ abstract class Status
     /**
      * @JMS\VirtualProperty()
      * @JMS\SerializedName("statusType")
-     * @JMS\Groups("status_furniture")
+     * @JMS\Groups("status_furniture", "art_work_details", "short")
      */
     public function getStatusType(){
         return $this instanceof DepositStatus ?'DepositStatus':'PropertyStatus';
@@ -163,7 +163,7 @@ abstract class Status
     /**
      * @JMS\VirtualProperty()
      * @JMS\SerializedName("depsitorName")
-     * @JMS\Groups("status_furniture")
+     * @JMS\Groups("status_furniture", "art_work_details")
      */
     public function getDepositorName(){
         if($this instanceof  DepositStatus){

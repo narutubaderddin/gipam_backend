@@ -30,7 +30,7 @@ class AttachmentType
     private $id;
 
     /**
-     * @JMS\Groups("artwork", "attachment_type")
+     * @JMS\Groups("artwork", "attachment_type","art_work_details")
      *
      * @Assert\NotBlank()
      *

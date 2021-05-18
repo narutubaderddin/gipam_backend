@@ -41,6 +41,7 @@ class ArtWork extends Furniture implements ObjectManagerAware
     private $totalHeight;
 
     /**
+     * @JMS\Groups("artwork", "short")
      * @ORM\Column(name="date_creation_oeuvre", type="datetime", nullable=true)
      */
     private $creationDate;

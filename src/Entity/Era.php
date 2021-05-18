@@ -17,7 +17,7 @@ class Era
 {
     use TimestampableEntity;
     /**
-     * @JMS\Groups("id", "era", "artwork")
+     * @JMS\Groups("id", "era", "artwork", "short")
      *
      * @ORM\Id
      * @ORM\GeneratedValue
@@ -26,7 +26,7 @@ class Era
     private $id;
 
     /**
-     * @JMS\Groups({"era","era_furniture","art_work_details"})
+     * @JMS\Groups({"era","era_furniture","art_work_details", "short"})
      * @ORM\Column(name="libelle", type="string", length=255, nullable=true)
      */
     private $label;
