@@ -237,6 +237,7 @@ class NoticeController extends AbstractFOSRestController
         $page = $paramFetcher->get('page');
         $limit = $paramFetcher->get('limit');
         $records = $artWorkRepository->getInProgressArtWorks($page, $limit);
+
         return $this->view($records, Response::HTTP_OK);
     }
 }

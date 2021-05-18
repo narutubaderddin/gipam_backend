@@ -22,14 +22,14 @@ class PropertyStatus extends Status
     private $entryDate;
 
     /**
-     * @JMS\Groups("artwork")
+     * @JMS\Groups("artwork", "short")
      *
      * @ORM\Column(name="marquage", type="string", length=255, nullable=true)
      */
     private $marking;
 
     /**
-     * @JMS\Groups("artwork")
+     * @JMS\Groups("artwork", "short")
      *
      * @ORM\ManyToOne(targetEntity=EntryMode::class, inversedBy="propertyStatuses")
      * @ORM\JoinColumn(name="mode_entree_id", referencedColumnName="id")
@@ -37,7 +37,7 @@ class PropertyStatus extends Status
     private $entryMode;
 
     /**
-     * @JMS\Groups("artwork")
+     * @JMS\Groups("artwork", "short")
      *
      * @ORM\ManyToOne(targetEntity=PropertyStatusCategory::class, inversedBy="propertyStatuses")
      * @ORM\JoinColumn(name="categorie_id", referencedColumnName="id")
