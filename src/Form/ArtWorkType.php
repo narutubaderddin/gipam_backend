@@ -251,7 +251,6 @@ class ArtWorkType extends AbstractType
             if (in_array('photographies', $this->attributes)) {
                 $form->add('photographies', CollectionType::class, array(
                     'entry_type' => PhotographyType::class,
-                    'allow_delete' =>true,
                     'allow_add' => true,
                     'prototype' => true,
                     'by_reference' => false,

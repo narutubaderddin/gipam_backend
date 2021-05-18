@@ -17,7 +17,7 @@ class AttachmentType extends AbstractType
     {
         $builder
             ->add('comment',TextType::class, ['required'=>true])
-            ->add('link', FileType::class)
+            ->add('link', FileType::class , ['data_class' => null])
             ->add('attachmentType', EntityType::class, [
                 'class' => Type::class,
                 'choice_label' => 'id',
