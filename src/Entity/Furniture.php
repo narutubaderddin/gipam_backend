@@ -25,7 +25,7 @@ use Symfony\Component\Validator\Context\ExecutionContextInterface;
 abstract class Furniture
 {
     /**
-     * @JMS\Groups("artwork", "artwork_id","id","art_work_list","art_work_details","request_list","request_details","request_list")
+     * @JMS\Groups("artwork", "artwork_id","id","art_work_list","art_work_details","request_list","request_details","request_list", "short")
      * @ORM\Id
      * @ORM\GeneratedValue
      * @ORM\Column(type="integer")
@@ -33,7 +33,7 @@ abstract class Furniture
     protected $id;
 
     /**
-     * @JMS\Groups({"art_work_list","artwork","art_work_details","request_list","request_details","request_list"})
+     * @JMS\Groups({"art_work_list","artwork","art_work_details","request_list","request_details","request_list", "short"})
      * @ORM\Column(name="titre", type="string", length=255, nullable=true)
      */
     protected $title;
@@ -75,7 +75,7 @@ abstract class Furniture
     protected $weight;
 
     /**
-     * @JMS\Groups("artwork","art_work_details")
+     * @JMS\Groups("artwork","art_work_details", "short")
      * @ORM\Column(name="nombre_unite", type="integer", nullable=true)
      */
     protected $numberOfUnit;
@@ -93,7 +93,7 @@ abstract class Furniture
     protected $authors;
 
     /**
-     * @JMS\Groups("artwork","era_furniture","art_work_details")
+     * @JMS\Groups("artwork","era_furniture","art_work_details", "short")
      * @JMS\MaxDepth(1)
      * @ORM\ManyToOne(targetEntity=Era::class, inversedBy="furniture")
      * @ORM\JoinColumn(name="epoque_id", referencedColumnName="id")
@@ -101,7 +101,7 @@ abstract class Furniture
     protected $era;
 
     /**
-     * @JMS\Groups("artwork","style_furniture","art_work_details")
+     * @JMS\Groups("artwork","style_furniture","art_work_details", "short")
      * @JMS\MaxDepth(1)
      * @ORM\ManyToOne(targetEntity=Style::class, inversedBy="furniture")
      * @ORM\JoinColumn(name="style_id", referencedColumnName="id")
@@ -109,7 +109,7 @@ abstract class Furniture
     protected $style;
 
     /**
-     * @JMS\Groups("artwork","denomination_furniture","art_work_details")
+     * @JMS\Groups("artwork","denomination_furniture","art_work_details", "short")
      * @JMS\MaxDepth(1)
      * @ORM\ManyToOne(targetEntity=Denomination::class, inversedBy="furniture")
      * @ORM\JoinColumn(name="denomination_id", referencedColumnName="id")
@@ -117,7 +117,7 @@ abstract class Furniture
     protected $denomination;
 
     /**
-     * @JMS\Groups("artwork","field_furniture","art_work_details","art_work_list")
+     * @JMS\Groups("artwork","field_furniture","art_work_details","art_work_list", "short")
      * @JMS\MaxDepth(1)
      * @ORM\ManyToOne(targetEntity=Field::class, inversedBy="furniture")
      * @ORM\JoinColumn(name="domaine_id", referencedColumnName="id")
@@ -152,7 +152,7 @@ abstract class Furniture
     protected $attachments;
 
     /**
-     * @JMS\Groups("artwork","status_furniture","art_work_details")
+     * @JMS\Groups("artwork","status_furniture","art_work_details", "short")
      * @Assert\Valid()
      * @ORM\ManyToOne(targetEntity=Status::class, inversedBy="furniture", cascade={"persist", "remove"})
      * @JMS\MaxDepth(1)
@@ -200,7 +200,7 @@ abstract class Furniture
 
     /**
      * @var \DateTime
-     * @JMS\Groups("artwork","art_work_list")
+     * @JMS\Groups("artwork","art_work_list", "short")
      * @Gedmo\Timestampable(on="create")
      * @JMS\Type("DateTime<'Y-m-d'>")
      * @JMS\SerializedName("creationDate")
@@ -217,6 +217,7 @@ abstract class Furniture
     protected $updatedAt;
 
     /**
+     * @JMS\Groups("artwork","material_technique","art_work_details","art_work_list", "short")
      * @ORM\ManyToMany(targetEntity=MaterialTechnique::class, inversedBy="furniture")
      */
     private $materialTechnique;

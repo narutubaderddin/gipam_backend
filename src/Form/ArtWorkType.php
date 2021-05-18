@@ -254,7 +254,7 @@ class ArtWorkType extends AbstractType
                     'allow_delete' =>true,
                     'allow_add' => true,
                     'prototype' => true,
-                    'by_reference' => true,
+                    'by_reference' => false,
                 ));
 
             } else {

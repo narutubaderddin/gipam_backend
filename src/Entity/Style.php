@@ -17,7 +17,7 @@ class Style
 {
     use TimestampableEntity;
     /**
-     * @JMS\Groups("id", "style", "artwork")
+     * @JMS\Groups("id", "style", "artwork", "short")
      *
      * @ORM\Id
      * @ORM\GeneratedValue
@@ -26,7 +26,7 @@ class Style
     private $id;
 
     /**
-     * @JMS\Groups("style","style_furniture","art_work_details")
+     * @JMS\Groups("style","style_furniture","art_work_details", "short")
      *
      * @ORM\Column(name="libelle", type="string", length=255, nullable=true)
      */
