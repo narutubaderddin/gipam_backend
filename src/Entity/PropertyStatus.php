@@ -15,21 +15,21 @@ use Symfony\Component\Validator\Constraints as Assert;
 class PropertyStatus extends Status
 {
     /**
-     * @JMS\Groups("artwork")
+     * @JMS\Groups("artwork", "art_work_details", "short")
      *
      * @ORM\Column(name="date_entree", type="datetime", nullable=true)
      */
     private $entryDate;
 
     /**
-     * @JMS\Groups("artwork")
+     * @JMS\Groups("artwork", "art_work_details", "short")
      *
      * @ORM\Column(name="marquage", type="string", length=255, nullable=true)
      */
     private $marking;
 
     /**
-     * @JMS\Groups("artwork")
+     * @JMS\Groups("artwork", "art_work_details", "short")
      *
      * @ORM\ManyToOne(targetEntity=EntryMode::class, inversedBy="propertyStatuses")
      * @ORM\JoinColumn(name="mode_entree_id", referencedColumnName="id")
@@ -37,7 +37,7 @@ class PropertyStatus extends Status
     private $entryMode;
 
     /**
-     * @JMS\Groups("artwork")
+     * @JMS\Groups("artwork", "art_work_details", "short")
      *
      * @ORM\ManyToOne(targetEntity=PropertyStatusCategory::class, inversedBy="propertyStatuses")
      * @ORM\JoinColumn(name="categorie_id", referencedColumnName="id")
@@ -52,28 +52,28 @@ class PropertyStatus extends Status
     private $propOnePercent;
 
     /**
-     * @JMS\Groups("artwork")
+     * @JMS\Groups("artwork", "art_work_details")
      *
      * @ORM\Column(name="signature_inscription", type="string", length=255, nullable=true)
      */
     private $registrationSignature;
 
     /**
-     * @JMS\Groups("artwork")
+     * @JMS\Groups("artwork", "art_work_details")
      *
      * @ORM\Column(name="mots_descriptifs", type="string", length=255, nullable=true)
      */
     private $descriptiveWords;
 
     /**
-     * @JMS\Groups("artwork")
+     * @JMS\Groups("artwork", "art_work_details")
      *
      * @ORM\Column(name="valeur_assurance", type="integer", nullable=true)
      */
     private $insuranceValue;
 
     /**
-     * @JMS\Groups("artwork")
+     * @JMS\Groups("artwork", "art_work_details")
      *
      * @ORM\Column(name="date_valeur_assurance", type="datetime", nullable=true)
      */

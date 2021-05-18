@@ -251,7 +251,7 @@ class ArtWorkType extends AbstractType
                     'entry_type' => PhotographyType::class,
                     'allow_add' => true,
                     'prototype' => true,
-                    'by_reference' => true,
+                    'by_reference' => false,
                 ));
 
             } else {
