@@ -14,13 +14,25 @@ use Symfony\Component\Form\FormEvent;
 use Symfony\Component\Form\FormEvents;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\OptionsResolver\OptionsResolver;
+use Symfony\Component\Validator\Constraints\File;
+use Symfony\Component\Validator\Constraints\Image;
+use Symfony\Component\Validator\Constraints\NotNull;
 
 class PhotographyType extends AbstractType
 {
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $builder
-            ->add('imagePreview', FileType::class,['data_class'=>null,'required'=>false,'empty_data'=>''])
+            ->add('imagePreview', FileType::class,['data_class'=>null,
+                'required'=>false,
+                'empty_data'=>'',
+                'constraints'=>[
+                    new Image([
+                        'maxSize'=>"25M",
+                        'maxSizeMessage'=>'File should not be heavier than 25 M'
+                    ])
+                ]
+            ])
             ->add('date',DateTimeType::class, ['widget' => 'single_text', 'required'=>false])
             ->add('photographyType', EntityType::class, [
                 'class' => Type::class,
@@ -37,6 +49,8 @@ class PhotographyType extends AbstractType
                 if (isset($form['imagePreview']) && ($form['imagePreview']->getData() instanceof UploadedFile)){
                     $entity->setImageName($form['imagePreview']->getData()->getClientOriginalName());
                     $event->setData($entity);
+                }elseif(isset($form['imagePreview']) && is_null($entity->getImageName())){
+                    throw new \Exception('imagePreview should be file');
                 }
             })
         ;
