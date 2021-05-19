@@ -2,6 +2,7 @@
 
 namespace App\EventSubscriber;
 
+use App\Entity\Attachment;
 use App\Entity\Furniture;
 use App\Entity\Photography;
 use Doctrine\ORM\EntityManagerInterface;
@@ -36,7 +37,15 @@ class SerializerEventSubscriber implements EventSubscriberInterface
         $path = preg_replace('/\\\\/', "/", $path);
         $photography->setImagePreview($path);
     }
-
+    public function onPreSerializeAttachment(ObjectEvent $event){
+        $attachment = $event->getObject();
+        if(!$attachment instanceof Attachment){
+            return;
+        }
+        $path = $this->baseUrl.DIRECTORY_SEPARATOR.$attachment->getLink();
+        $path = preg_replace('/\\\\/', "/", $path);
+        $attachment->setLink($path);
+    }
 
 
     public static function getSubscribedEvents()
@@ -46,6 +55,13 @@ class SerializerEventSubscriber implements EventSubscriberInterface
                 'event' => Events::PRE_SERIALIZE,
                 'method' => 'onPreSerializePhotography',
                 'class' => 'App\Entity\Photography',
+                'format' => 'json',
+                'priority' => 0,
+            ),
+            array(
+                'event' => Events::PRE_SERIALIZE,
+                'method' => 'onPreSerializeAttachment',
+                'class' => 'App\Entity\Attachment',
                 'format' => 'json',
                 'priority' => 0,
             )

@@ -138,7 +138,7 @@ class DepartmentController extends AbstractFOSRestController
      */
     public function listDepartment(ParamFetcherInterface $paramFetcher, Request $request)
     {
-        $serializerGroups = $request->get('serializer_group', '[]');
+        $serializerGroups = $request->get('serializer_group', '["response", "department", "short"]');
         $serializerGroups = json_decode($serializerGroups, true);
         $serializerGroups[] = "response";
         $context = new Context();

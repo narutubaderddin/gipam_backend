@@ -100,7 +100,7 @@ class NoticeController extends AbstractFOSRestController
     {
         $artWork = new ArtWork();
         $form = $this->createArtWorkForm(ArtWorkType::DEPOSIT_STATUS, $artWork);
-        $form->submit($this->apiManager->getPostDataFromRequest($request));
+        $form->submit($this->apiManager->getPostDataFromRequest($request, true));
 
         if ($form->isSubmitted() && $form->isValid()) {
             if (!$form->getData()->getField() || !$form->getData()->getDenomination() || !$form->getData()->getTitle()) {
@@ -125,7 +125,7 @@ class NoticeController extends AbstractFOSRestController
     /**
      * @param ArtWork $artWork
      * @param Request $request
-     * @Rest\Patch("/{id}",requirements={"id"="\d+"})
+     ** @Rest\Patch("/{id}",requirements={"id"="\d+"})
      * @SWG\Response(
      *     response=200,
      *     description="Returns updated Art Work",
@@ -149,7 +149,6 @@ class NoticeController extends AbstractFOSRestController
     public function updateArtWork(ArtWork $artWork,Request $request){
         $status = ($artWork->getStatus() instanceof  DepositStatus)?ArtWorkType::DEPOSIT_STATUS:ArtWorkType::PROPERTY_STATUS;
         $form = $this->createArtWorkForm($status,$artWork);
-        $data = $this->apiManager->getPostDataFromRequest($request);
         $form->submit($this->apiManager->getPostDataFromRequest($request),false);
         if($form->isValid()){
             $artWork = $this->apiManager->save($form->getData());
@@ -206,11 +205,11 @@ class NoticeController extends AbstractFOSRestController
     {
         $artWork = new ArtWork();
         $form =  $form = $this->createArtWorkForm( ArtWorkType::PROPERTY_STATUS, $artWork);
-        $data =$this->apiManager->getPostDataFromRequest($request);
+        $data =$this->apiManager->getPostDataFromRequest($request, true);
 
         $form->submit($data);
         if ($form->isSubmitted() && $form->isValid()) {
-            if (!$form->getData()->getField() || !$form->getData()->getDenomination() || !$form->getData()->getTitle()) {
+            if (!$form->getData()->getField() || !$form->getData()->getDenomination() || !$form->getData()->getTitle() || !$form->getData()->getStatus()->getEntryMode() || !$form->getData()->getStatus()->getEntryDate() || !$form->getData()->getStatus()->getCategory()) {
                 $formattedResult = ['msg' => 'Notice enregistrée en mode brouillon avec succès', 'res' => $this->apiManager->save($form->getData())];
                 return $this->view($formattedResult, Response::HTTP_CREATED);
             } else {

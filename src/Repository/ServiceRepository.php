@@ -28,7 +28,8 @@ class ServiceRepository extends ServiceEntityRepository
         $establishment =$paramFetcher->get('establishments')??"";
         $subDivision=$paramFetcher->get('subDivisions')??"";
         $query = $this->createQueryBuilder('service')
-            ->leftJoin('service.subDivision','subDivision');
+            ->leftJoin('service.subDivision','subDivision')
+            ->leftJoin('subDivision.establishment','establishment');
 
         if($subDivision != ""){
             $subDivision = json_decode($subDivision, true);

@@ -77,8 +77,8 @@ class ArtWorkType extends AbstractType
             if (!$artWork) {
                 return;
             }
-            $denominationId = $artWork['denomination']?? null;
-            $fieldId = $artWork['field']?? null;
+            $denominationId = intval(json_decode($artWork['denomination']))?? null;
+            $fieldId = intval(json_decode($artWork['field']))?? null;
             $this->attributes = $this->furnitureService
                 ->getAttributesByDenominationIdAndFieldId($denominationId, $fieldId);
 
@@ -125,7 +125,7 @@ class ArtWorkType extends AbstractType
                 $event->setData($artWork);
             }
             if (in_array('creationDate', $this->attributes)) {
-                $form->add('creationDate', DateTimeType::class, ['widget' => 'single_text']);
+                $form->add('creationDate', DateTimeType::class, ['widget' => 'single_text','format' => 'yyyy']);
             } else {
                 unset($artWork['creationDate']);
                 $event->setData($artWork);
@@ -228,7 +228,7 @@ class ArtWorkType extends AbstractType
                     'required'=>false,
                     'allow_add' => true,
                     'prototype' => true,
-                    'by_reference' => true,
+                    'by_reference' => false,
                 ));
             } else {
                 unset($artWork['hyperlinks']);

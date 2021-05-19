@@ -8,10 +8,13 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use JMS\Serializer\Annotation as JMS;
+use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
+use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * @ORM\Entity(repositoryClass=StyleRepository::class)
  * @ORM\Table(name="style")
+ * @UniqueEntity("label", repositoryMethod="iFindBy", message="Un style avec ce libellé existe déjà!")
  */
 class Style
 {
@@ -27,6 +30,8 @@ class Style
 
     /**
      * @JMS\Groups("style","style_furniture","art_work_details", "short")
+     *
+     * @Assert\NotBlank
      *
      * @ORM\Column(name="libelle", type="string", length=255, nullable=true)
      */

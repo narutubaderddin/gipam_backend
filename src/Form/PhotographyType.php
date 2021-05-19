@@ -33,7 +33,7 @@ class PhotographyType extends AbstractType
                     ])
                 ]
             ])
-            ->add('date',DateTimeType::class, ['widget' => 'single_text', 'required'=>false])
+            ->add('date',DateTimeType::class, ['widget' => 'single_text', 'required'=>false, 'format' => 'yyyy-MM-dd'])
             ->add('photographyType', EntityType::class, [
                 'class' => Type::class,
                 'choice_label' => 'id',
