@@ -15,6 +15,12 @@ use Doctrine\Persistence\ManagerRegistry;
 class RequestRepository extends ServiceEntityRepository
 {
     use RepositoryTrait;
+    public const SEARCH_FIELDS = [
+        'firstName' => 'firstName',
+        'lastName'=>'lastName',
+        'firstNameApplicant'=>'firstNameApplicant',
+        'lastNameApplicant'=>'lastNameApplicant'
+    ];
     public function __construct(ManagerRegistry $registry)
     {
         parent::__construct($registry, Request::class);
