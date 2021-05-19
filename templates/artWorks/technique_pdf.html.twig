@@ -1,0 +1,453 @@
+<meta charset="UTF-8">
+<style>
+
+    .pdf-page-content {
+        margin-top: 35px;
+    }
+
+    .denomination-table{
+        text-align: left;
+        border-bottom: 1px dotted;
+    }
+    .text-font{
+        font-size: 13px;
+    }
+
+    .borders {
+        border: 1px dotted;
+    }
+
+    .element-component {
+        margin-top: 5px;
+        margin-bottom: 5px;
+    }
+
+    .pdf-component {
+        margin-top: 20px;
+        margin-bottom: 20px;
+    }
+
+    table {
+    }
+
+    tr {
+        border: 1px solid;
+    }
+    .no-border{
+        border: none !important;
+    }
+
+    .title-page{
+        background: maroon;
+        color: white;
+        text-align: center;
+        text-transform: uppercase;
+        padding: -10px 0 -10px 0;
+    }
+
+    .smal-container {
+        width: 650px;
+        margin-left: 50px;
+    }
+
+    .margin-let-2 {
+        margin-left: 20px;
+    }
+
+    .demension td{
+        text-align: center;
+    }
+
+    .demension-table td{
+
+        /*text-align: center;*/
+    }
+    .border-bottom {
+        border-bottom: 1px dotted black;
+    }
+
+    .border-left {
+        border-left: 1px dotted black;
+    }
+
+    .demension-table-first-col{
+        width: 200px;
+    }
+    .demension-table-second-col{
+        width: 470px;
+    }
+
+
+    .status-table-first-col{
+        width: 335px;
+    }
+    .status-table-second-col{
+        width: 335px;
+    }
+
+    .owner-table-first-col{
+        width: 335px;
+    }
+    .owner-table-second-col{
+        width: 335px;
+    }
+
+    .direction-table-col{
+        width: 167px;
+    }
+
+    .last-action-table-first-col{
+        width: 375px;
+    }
+    .last-action-table-second-col{
+        width: 295px;
+    }
+
+    .last-action-sub-table td{
+        width: 125px;
+    }
+
+</style>
+<body>
+
+{% for index, notice in artWorks %}
+    {% if index > 0 %}
+        <page>
+    {% endif %}
+    <div class="pdf-page-content">
+
+        <div class="pdf-component">
+            <div class="smal-container title-page">
+                <h4>NOTICE TECHNIQUE n° {{notice.id}}</h4>
+            </div>
+        </div>
+
+        <!--block 1 Dénomination-->
+        <div class="pdf-component">
+            <div class="smal-container borders">
+                <table class="denomination-table">
+                    <tr class="border-bottom">
+                        <td style="width: 280px">
+                            <!--notice title-->
+                            <div class="element-component">
+                                <div class="margin-let-2 text-font">
+                                    Titre: {{ notice.title }}
+                                </div>
+                            </div>
+                            <!--notice Author-->
+                            <div class="element-component">
+                                <div class="margin-let-2 text-font">
+                                    Auteur(s): {% for author in notice.authors %} {{ author.firstName }}  {{ author.lastName }} {% endfor %}
+                                </div>
+                            </div>
+                            <!--notice Domaine -->
+                            <div class="element-component">
+                                <div class="margin-let-2 text-font">
+                                    Domaine: {% if notice.field is  not null %}{{ PDFValues(notice.field.label) }}{% else %}-{% endif %}
+                                </div>
+                            </div>
+                            <!--notice Dénomination-->
+                            <div class="element-component">
+                                <div class="margin-let-2 text-font">
+                                    Dénomination: {{ PDFValues(notice.denomination.label) }}
+                                </div>
+                            </div>
+                            <!--notice Style  -->
+                            <div class="element-component">
+                                <div class="margin-let-2 text-font">
+                                    Style: {% if notice.style is not null %}{{ PDFValues(notice.style.label) }}{% else %}-{% endif %}
+                                </div>
+                            </div>
+                            <!--notice Epoque  -->
+                            <div class="element-component">
+                                <div class="margin-let-2 text-font">
+                                    Epoque: {% if notice.era is not null %}{{ PDFValues(notice.era.label) }}{% else %}-{% endif %}
+                                </div>
+                            </div>
+                            <!--notice date de création  -->
+                            <div class="element-component">
+                                <div class="margin-let-2 text-font">
+                                    Date de création: {{ notice.createdAt | date("m/d/Y") }}
+                                </div>
+                            </div>
+                            <!--notice Matière / Technique -->
+                            <div class="element-component">
+                                <div class="margin-let-2 text-font">
+                                    Matière / Technique: {% if notice.materialTechnique is not null and notice.materialTechnique | length > 0%}
+                                        {% for notice_materialTechnique_index, notice_materialTechnique in notice.materialTechnique %}
+                                            {% if notice_materialTechnique_index %}
+                                                /
+                                            {% endif %}
+                                            {{ notice_materialTechnique.label }}
+                                        {% endfor %}
+                                    {% else %} - {% endif %}
+                                </div>
+                            </div>
+                            <!--notice Nombre  -->
+                            <div class="element-component">
+                                <div class="margin-let-2 text-font">
+                                    Nombre: {{ notice.numberOfUnit }}
+                                </div>
+                            </div>
+                            <!--notice Marquage sur l'œuvre  -->
+                            <div class="element-component">
+                                <div class="margin-let-2 text-font">
+                                    Marquage sur l'œuvre: {% if notice.status.marking is defined and notice.status.marking is not null %}{{ notice.status.marking  }}{% else %}-{% endif %}
+                                </div>
+                            </div>
+                        </td>
+                        <td class="border-left"  style="width: 390px;">
+                            {% if notice.getPrincipalPhoto is not null %}
+                                <img src="{{ notice.getPrincipalPhoto | notice_image }}" alt="images"/>
+                            {% else %}
+                                <p style="text-align: center">image</p>
+                            {% endif %}
+                        </td>
+                    </tr>
+
+                </table>
+                <table class="demension-table">
+                    <tr>
+                        <td class="border-bottom demension-table-first-col">
+                            Dimensions:
+                        </td>
+                        <td class="border-bottom border-left demension-table-second-col">
+                            <table class="demension">
+                                <tr>
+                                    <td style="width: 150px">
+                                        Longueur<br/>
+                                        {{ PDFValues(notice.length) }}<br/>
+                                        Profondeur<br/>
+                                        {{ PDFValues(notice.depth) }}<br/>
+                                    </td>
+                                    <td style="width: 150px">
+                                        Largeur<br/>
+                                        {{ PDFValues(notice.width) }}<br/>
+                                        Diamètre<br/>
+                                        {{ PDFValues(notice.diameter) }}<br/>
+                                    </td>
+                                    <td style="width: 150px">
+                                        Hauteur<br/>
+                                        {{ PDFValues(notice.height) }}<br/>
+                                        Poids<br/>
+                                        {{ PDFValues(notice.weight) }}<br/>
+                                    </td>
+
+                                </tr>
+                            </table>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="border-bottom demension-table-first-col">
+                            Dimensions Total:
+                        </td>
+                        <td class="border-bottom border-left demension-table-second-col">
+                            <table class="demension">
+                                <tr>
+                                    <td style="width: 150px">
+                                        Longueur Total<br/>
+                                        {{ PDFValues(notice.totalLength) }}<br/>
+                                    </td>
+                                    <td style="width: 150px">
+                                        Largeur Total<br/>
+                                        {{ PDFValues(notice.totalWidth) }}<br/>
+                                    </td>
+                                    <td style="width: 150px">
+                                        Hauteur Total<br/>
+                                        {{ PDFValues(notice.totalHeight) }}<br/>
+                                    </td>
+
+                                </tr>
+                            </table>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="border-bottom" colspan="2">Mots descriptifs:
+                            {% if instanceOfPropertyStatus(notice.status) %}{{ PDFValues(notice.status.descriptiveWords) }}{% else %}-{% endif%} </td>
+                    </tr>
+                    <tr>
+                        <td colspan="2">Description et commentaires:
+                            {% if instanceOfPropertyStatus(notice.status) %}{{ PDFValues(notice.status.description) }}{% else %}-{% endif%}
+                        </td>
+                    </tr>
+                    <tr>
+                        <td colspan="2">
+                        </td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+
+        {% if not instanceOfPropertyStatus(notice.status) %}
+        <!--block 2 Status-->
+        <div class="pdf-component">
+            <div class="smal-container borders">
+                <table class="status-table">
+                    <tr>
+                        <td class="border-bottom status-table-first-col">
+                            Status: {{ PDFValues(notice.status.type) }}<br/>
+                            Déposant: {{ PDFValues(notice.status.DepositorName) }}<br/>
+                            Valeur d’assurance: {% if instanceOfPropertyStatus(notice.status) %}{{ PDFValues(notice.status.insuranceValue) }}{% else %}-{% endif %}<br/>
+                            À la date du: {% if instanceOfPropertyStatus(notice.status) %}{{ notice.status.insuranceValueDate | date("m/d/Y") }}{% else %}-{% endif %}<br/>
+                        </td>
+                        <td class="border-bottom border-left status-table-second-col">
+                            Date de dépôt: {{ notice.status.depositDate | date("m/d/Y") }}<br/>
+                            N° de dépôt: {{ PDFValues(notice.status.stopNumber) }}<br/><br/>
+                            N° d’inventaire: {{ PDFValues(notice.status.inventoryNumber) }}<br/>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td colspan="2">Commentaires<br/>{{ PDFValues(notice.status.comment) }}</td>
+                    </tr>
+                    <tr>
+                        <td colspan="2">
+                        </td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+        {% else %}
+            <!--block 3 Owner-->
+            <div class="pdf-component">
+                <div class="smal-container borders">
+                    <table class="owner-table">
+                        <tr>
+                            <td class="border-bottom owner-table-first-col">
+                                Propriété: {{ PDFValues(notice.status.category) }}<br/>
+                                Catégorie: {% if notice.status.category is not null %}{{ PDFValues(notice.status.category.label) }}{% else %}-{% endif %}<br/>
+                            </td>
+                            <td class="border-bottom border-left owner-table-second-col">
+                                Mode d’entrée: {{ PDFValues(notice.status.entryMode) }}<br/>
+                                À la date du: {{ notice.status.entryMode | date("m/d/Y") }}<br/>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td colspan="2">Commentaires
+                            </td>
+                        </tr>
+                        <tr>
+                            <td colspan="2">
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+        {% endif %}
+
+        <!--block 4 Direction-->
+        {% set lastMovement = getLastMovement(notice.movements) %}
+        <div class="pdf-component">
+            <div class="smal-container borders">
+                <table class="direction-table">
+                    <tr>
+                        <td class="border-bottom direction-table-col">
+                            Ministère: {{ lastMovementMemeber(lastMovement, "ministry_name") }}
+                        </td>
+                        <td class="border-bottom border-left direction-table-col">
+                            Etablissement / Direction: {{ lastMovementMemeber(lastMovement, "establishment_label") }}
+                        </td>
+                        <td class="border-bottom border-left direction-table-col">
+                            Sous-direction: {{ lastMovementMemeber(lastMovement, "subDivision_label") }}
+                        </td>
+                        <td class="border-bottom border-left direction-table-col">
+                            Services : {{ lastMovementMemeber(lastMovement, "subDivision_services") }}
+                        </td>
+                    </tr>
+                    <tr>
+                        <td colspan="4" class="border-bottom">
+                            Correspondant(es) administratif(s):<br/>
+                            {% if lastMovement is not null  %}
+                                {% for correspondent in lastMovement.location.establishment.correspondents%}
+                                    {{ correspondent.firstName }} {{ correspondent.lastName }}<br/>
+                                {% endfor %}
+                            {% else %}
+                                -
+                            {% endif %}
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="border-bottom direction-table-col">
+                            Site: {{ lastMovementMemeber(lastMovement, "site_label") }}
+                        </td>
+                        <td class="border-bottom border-left direction-table-col">
+                            Bâtiment: {{ lastMovementMemeber(lastMovement, "building_label") }}
+                        </td>
+                        <td class="border-bottom border-left direction-table-col">
+                            N° Pièce : Bâtiment: {{ lastMovementMemeber(lastMovement, "room_id") }}
+                        </td>
+                        <td class="border-bottom border-left direction-table-col">
+                            Pièce : {{ lastMovementMemeber(lastMovement, "room_reference") }}
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="border-bottom direction-table-col">
+                            Commune: {{ lastMovementMemeber(lastMovement, "commune_name") }}
+                        </td>
+                        <td class="border-bottom border-left direction-table-col">
+                            Département:{{ lastMovementMemeber(lastMovement, "department_name") }}
+                        </td>
+                        <td class="border-bottom border-left direction-table-col">
+                            Région:{{ lastMovementMemeber(lastMovement, "commune_label") }}
+                        </td>
+                        <td class="border-bottom border-left direction-table-col">
+                        </td>
+                    </tr>
+                    <tr>
+                        <td colspan="4">
+                            Correspondant(es) géographique(s):
+                            {% if lastMovement is not null  %}
+                                {% for responsible in lastMovement.location.room.building.responsibles %}
+                                    {{ responsible.firstName }} {{ responsible.lastName }}<br/>
+                                {% endfor %}
+                            {% endif %}
+
+                        </td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+
+        <!--block 5 Dernière action-->
+        {% set lastAction = getLastAction(lastMovement) %}
+        <div class="pdf-component">
+            <div class="smal-container borders">
+                <table class="last-action-table">
+                    <tr>
+                        <td class="last-action-table-first-col">
+                            Type d'action: {{ lastActionMemeber(lastAction, "action_type") }}
+                        </td>
+                        <td class="border-left last-action-table-second-col">
+                            Date dernière action  {% if lastAction is not null %} {{ lastAction.ceatedAt |date("m/d/Y") }} {% else %}-{% endif %}
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="border-bottom last-action-table-first-col">
+                            <table class="last-action-sub-table">
+                                <tr>
+                                    <td>Constat</td>
+                                    <td>Vu</td>
+                                    <td>Non Vu</td>
+                                </tr>
+                            </table>
+                        </td>
+                        <td class="border-bottom border-left last-action-table-second-col">
+                            Services :
+                        </td>
+                    </tr>
+                    <tr>
+                        <td colspan="2">
+                            Commentaires sur l’état de conservation
+                        </td>
+                    </tr>
+
+                </table>
+            </div>
+        </div>
+
+    </div>
+    {% if index > 0 %}
+        </page>
+    {% endif %}
+{% endfor %}
+
+</body>
