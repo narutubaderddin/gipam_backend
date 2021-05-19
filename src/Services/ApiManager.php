@@ -143,9 +143,9 @@ class ApiManager
                         if (in_array($key, ['date', 'creationDate','entryDate', 'insuranceValueDate'])) {
                             $result[$key] = date($value);
                         }  elseif (in_array($key, ['materialTechnique', 'authors'])) {
-                            $array = ['['.json_decode($value).']'];
+                            $array = ['['.$value.']'];
                             $result[$key] = json_decode($array[0]);
-                        }  elseif (in_array($key, ['url','descriptiveWords', 'title'])) {
+                        }  elseif (in_array($key, ['url','descriptiveWords', 'title', 'marking', 'registrationSignature','insuranceValue', 'otherRegistrations', 'description_commentaire'])) {
                             $result[$key] = $value;
                         }else{
                             $result[$key] = (int)json_decode($value);
