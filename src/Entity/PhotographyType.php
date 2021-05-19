@@ -34,7 +34,7 @@ class PhotographyType
     private $id;
 
     /**
-     * @JMS\Groups("artwork", "photography_type")
+     * @JMS\Groups("artwork", "photography_type", "art_work_details")
      *
      * @Assert\NotBlank()
      *

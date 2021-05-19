@@ -22,7 +22,7 @@ class DepositStatus extends Status
     private $inventoryNumber;
 
     /**
-     * @JMS\Groups("artwork")
+     * @JMS\Groups("artwork", "art_work_details")
      *
      * @ORM\ManyToOne(targetEntity=Depositor::class, inversedBy="depositStatuses")
      * @ORM\JoinColumn(name="deposant_id", referencedColumnName="id")
@@ -30,14 +30,14 @@ class DepositStatus extends Status
     private $depositor;
 
     /**
-     * @JMS\Groups("artwork", "short")
+     * @JMS\Groups("artwork", "art_work_details", "short")
      *
      * @ORM\Column(name="date_depot", type="datetime", nullable=true)
      */
     private $depositDate;
 
     /**
-     * @JMS\Groups("artwork", "short")
+     * @JMS\Groups("artwork", "art_work_details", "short")
      *
      * @ORM\Column(name="numero_arret", type="integer", nullable=true)
      */

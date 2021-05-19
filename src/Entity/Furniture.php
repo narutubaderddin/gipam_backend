@@ -183,6 +183,7 @@ abstract class Furniture
     protected $visible = true;
 
     /**
+     * @JMS\Groups("art_work_details")
      * @JMS\Exclude()
      * @JMS\MaxDepth(1)
      * @ORM\OneToMany(targetEntity=Furniture::class, mappedBy="parent")
@@ -190,7 +191,7 @@ abstract class Furniture
     protected $children;
 
     /**
-     * @JMS\Groups("artwork")
+     * @JMS\Groups("artwork", "art_work_details")
      * @JMS\MaxDepth(1)
      * @ORM\ManyToOne(targetEntity=Furniture::class, inversedBy="children")
      * @ORM\JoinColumn(name="parent_id", referencedColumnName="id")
@@ -218,6 +219,10 @@ abstract class Furniture
     /**
      * @JMS\Groups("artwork","material_technique","art_work_details","art_work_list", "short")
      * @ORM\ManyToMany(targetEntity=MaterialTechnique::class, inversedBy="furniture")
+     * @ORM\JoinTable(name="objet_mobilier_matiere_technique",
+     *      joinColumns={@ORM\JoinColumn(name="objet_mobilier_id", referencedColumnName="id")},
+     *      inverseJoinColumns={@ORM\JoinColumn(name="matiere_technique_id", referencedColumnName="id")}
+     *      )
      */
     private $materialTechnique;
 

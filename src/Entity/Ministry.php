@@ -9,10 +9,13 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use JMS\Serializer\Annotation as JMS;
+use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 
 /**
  * @ORM\Entity(repositoryClass=MinistryRepository::class)
  * @ORM\Table(name="ministere")
+ * @UniqueEntity("name", repositoryMethod="iFindBy", message="Un ministère avec ce nom existe déjà!")
+ * @UniqueEntity("acronym", repositoryMethod="iFindBy", message="Un ministère avec ce sigle existe déjà!")
  */
 class Ministry
 {
