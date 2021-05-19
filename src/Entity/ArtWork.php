@@ -42,7 +42,7 @@ class ArtWork extends Furniture implements ObjectManagerAware
 
     /**
      * @JMS\Groups("artwork", "short")
-     * @ORM\Column(name="date_creation_oeuvre", type="datetime", nullable=true)
+     * @ORM\Column(name="date_creation_oeuvre", type="datetime")
      */
     private $creationDate;
 
