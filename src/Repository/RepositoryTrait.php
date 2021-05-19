@@ -63,6 +63,8 @@ trait RepositoryTrait
             $field =  $this->getField($qb, $orderBy);
             $qb->orderBy($field, $order);
         }
+        dump($qb->getQuery());
+        //die();
 
         return $qb->getQuery()->getResult();
     }

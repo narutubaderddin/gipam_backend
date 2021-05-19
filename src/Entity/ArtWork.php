@@ -55,6 +55,12 @@ class ArtWork extends Furniture implements ObjectManagerAware
      */
     private $request;
 
+    /**
+     * @JMS\Groups("request_list","request_details")
+     * @ORM\Column(type="string", length=255, nullable=true)
+     */
+    private $requestStatus;
+
     public function getTotalLength(): ?float
     {
         return $this->totalLength;
@@ -149,5 +155,17 @@ class ArtWork extends Furniture implements ObjectManagerAware
     public function isInRequest()
     {
         return $this->getRequest() !== null;
+    }
+
+    public function getRequestStatus(): ?string
+    {
+        return $this->requestStatus;
+    }
+
+    public function setRequestStatus(?string $requestStatus): self
+    {
+        $this->requestStatus = $requestStatus;
+
+        return $this;
     }
 }
