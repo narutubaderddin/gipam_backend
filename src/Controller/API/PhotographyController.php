@@ -143,5 +143,25 @@ class PhotographyController extends AbstractFOSRestController
         throw new FormValidationException($form);
     }
 
+    /**
+     * @param Photography $photography
+     * @Rest\Delete("/{id}", requirements={"id"="\d+"})
+     *
+     * @SWG\Response(
+     *     response=204,
+     *     description="Photographie is removed"
+     *     )
+     * )
+     * @SWG\Tag(name="photography")
+     * @Rest\View()
+     * @return View
+     */
+    public function removePhotographie(Photography $photography){
+        $furniture = $photography->getFurniture();
+        $furniture->removePhotography($photography);
+        $this->apiManager->delete($photography);
+        return $this->view(null,Response::HTTP_NO_CONTENT);
+    }
+
 
 }

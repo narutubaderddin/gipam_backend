@@ -108,7 +108,7 @@ class AuthorController extends  AbstractFOSRestController
      * @Rest\QueryParam(name="active" ,map=true, nullable=false, description="filter by active. example: active[eq]=1")
      * @Rest\QueryParam(name="type" , nullable=false, description="filter by type id. example: type[eq]=1")
      * @Rest\QueryParam(name="search", map=false, nullable=true, description="search. example: search=text")
-     * @Rest\View(serializerGroups={"authors", "id", "response", "short"})
+     * @Rest\View(serializerGroups={"id", "response", "short"})
      *
      * @param ParamFetcherInterface $paramFetcher
      *@return View

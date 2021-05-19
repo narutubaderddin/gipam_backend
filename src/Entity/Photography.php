@@ -34,8 +34,6 @@ class Photography
     /**
      * @JMS\Groups("artwork", "art_work_list","art_work","photography", "art_work_details")
      *
-     * @Assert\Image(maxSize="25M")
-
      *
      * @ORM\Column(name="apercu_image",type="string", length=255)
      */

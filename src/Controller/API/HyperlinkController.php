@@ -123,12 +123,32 @@ class HyperlinkController extends AbstractFOSRestController
     {
         $form = $this->createForm(HyperlinkType::class,$hyperlink);
         $data = $this->apiManager->getPostDataFromRequest($request);
-        $form->submit($data);
+        $form->submit($data,false);
         if($form->isValid()){
             $hyperLink = $this->apiManager->save($form->getData());
             return $this->view($hyperLink, Response::HTTP_OK);
         }
         throw new FormValidationException($form);
+    }
+
+    /**
+     * @param Hyperlink $hyperlink
+     * @Rest\Delete("/{id}", requirements={"id"="\d+"})
+     *
+     * @SWG\Response(
+     *     response=204,
+     *     description="HyperLink is removed"
+     *     )
+     * )
+     * @SWG\Tag(name="hyperLink")
+     * @Rest\View()
+     * @return View
+     */
+    public function removeHyperLink(Hyperlink $hyperlink){
+        $furniture = $hyperlink->getFurniture();
+        $furniture->removeHyperlink($hyperlink);
+        $this->apiManager->delete($hyperlink);
+        return  $this->view(null,Response::HTTP_NO_CONTENT);
     }
 
 }

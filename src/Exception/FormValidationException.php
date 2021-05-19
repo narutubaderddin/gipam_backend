@@ -51,7 +51,6 @@ class FormValidationException extends HttpException
     protected function getErrors(FormInterface $form) :array
     {
         $errors = [];
-
         foreach ($form->all() as $field) {
             $fieldKey = $field->getName();
             if (1 < count($field->all())){

@@ -11,6 +11,7 @@ use App\Repository\FurnitureRepository;
 use App\Services\ApiManager;
 use App\Services\ArtWorkService;
 use Doctrine\ORM\EntityManagerInterface;
+use FOS\RestBundle\Context\Context;
 use FOS\RestBundle\Controller\AbstractFOSRestController;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use FOS\RestBundle\Request\ParamFetcherInterface;
@@ -79,13 +80,20 @@ class ArtWorkController extends AbstractFOSRestController
      *     )
      * )
      * @SWG\Tag(name="ArtWorks")
-     * @Rest\View(serializerGroups={"art_work_list","hyperLink_furniture", "id", "art_work_details"},serializerEnableMaxDepthChecks=true)
+     * @Rest\View(serializerEnableMaxDepthChecks=true)
      *
      * @param ArtWork $artWork
+     * @param Request $request
      * @return View
      */
-    public function showArtWork(ArtWork $artWork){
-        return $this->view($artWork, Response::HTTP_OK);
+    public function showArtWork(ArtWork $artWork, Request $request){
+        $serializerGroups = $request->get('serializer_group', '["art_work_list"]');
+
+        $serializerGroups = json_decode($serializerGroups, true);
+        $context = new Context();
+        $context->setGroups($serializerGroups);
+
+        return $this->view($artWork, Response::HTTP_OK)->setContext($context);
     }
 
     /**
