@@ -100,7 +100,7 @@ class NoticeController extends AbstractFOSRestController
     {
         $artWork = new ArtWork();
         $form = $this->createArtWorkForm(ArtWorkType::DEPOSIT_STATUS, $artWork);
-        $form->submit($this->apiManager->getPostDataFromRequest($request));
+        $form->submit($this->apiManager->getPostDataFromRequest($request, true));
 
         if ($form->isSubmitted() && $form->isValid()) {
             if (!$form->getData()->getField() || !$form->getData()->getDenomination() || !$form->getData()->getTitle()) {
@@ -205,11 +205,11 @@ class NoticeController extends AbstractFOSRestController
     {
         $artWork = new ArtWork();
         $form =  $form = $this->createArtWorkForm( ArtWorkType::PROPERTY_STATUS, $artWork);
-        $data =$this->apiManager->getPostDataFromRequest($request);
+        $data =$this->apiManager->getPostDataFromRequest($request, true);
 
         $form->submit($data);
         if ($form->isSubmitted() && $form->isValid()) {
-            if (!$form->getData()->getField() || !$form->getData()->getDenomination() || !$form->getData()->getTitle()) {
+            if (!$form->getData()->getField() || !$form->getData()->getDenomination() || !$form->getData()->getTitle() || !$form->getData()->getStatus()->getEntryMode() || !$form->getData()->getStatus()->getEntryDate() || !$form->getData()->getStatus()->getCategory()) {
                 $formattedResult = ['msg' => 'Notice enregistrée en mode brouillon avec succès', 'res' => $this->apiManager->save($form->getData())];
                 return $this->view($formattedResult, Response::HTTP_CREATED);
             } else {

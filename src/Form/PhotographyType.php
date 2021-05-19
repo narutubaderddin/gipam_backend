@@ -21,7 +21,8 @@ class PhotographyType extends AbstractType
     {
         $builder
             ->add('imagePreview', FileType::class,['data_class'=>null,'required'=>false,'empty_data'=>''])
-            ->add('date',DateTimeType::class, ['widget' => 'single_text', 'required'=>false])
+            ->add('date',DateTimeType::class, ['widget' => 'single_text', 'required'=>false, 'format' => 'yyyy-MM-dd'
+            ])
             ->add('photographyType', EntityType::class, [
                 'class' => Type::class,
                 'choice_label' => 'id',
