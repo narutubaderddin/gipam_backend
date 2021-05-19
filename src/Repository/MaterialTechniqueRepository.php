@@ -20,7 +20,11 @@ class MaterialTechniqueRepository extends ServiceEntityRepository
 {
     use RepositoryTrait;
 
-    public const SEARCH_FIELDS = ['label_param' => 'label'];
+    public const SEARCH_FIELDS = [
+        'label_param' => 'label',
+        'type_param' => 'type',
+        'denominations_label_param' => 'denominations_label',
+        ];
 
     public function __construct(ManagerRegistry $registry)
     {

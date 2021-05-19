@@ -107,6 +107,7 @@ class MaterialTechniqueController extends AbstractFOSRestController
      * @Rest\QueryParam(name="type",map=true, nullable=false, description="filter by type. example: type[eq]=value")
      * @Rest\QueryParam(name="active" ,map=true, nullable=false, description="filter by active. example: active[eq]=1")
      * @Rest\QueryParam(name="denominations", map=true, nullable=false, description="filter by denomination. denominations: field[eq]=1")
+     * @Rest\QueryParam(name="denominations_id", map=true, nullable=false, description="filter by denominations id. denominations_id[eq]=1")
      * @Rest\QueryParam(name="search", map=false, nullable=true, description="search. example: search=text")
      *
      * @Rest\View()

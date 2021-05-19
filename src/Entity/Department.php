@@ -9,11 +9,13 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use JMS\Serializer\Annotation as JMS;
+use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * @ORM\Entity(repositoryClass=DepartmentRepository::class)
  * @ORM\Table(name="departement")
+ * @UniqueEntity("name", repositoryMethod="iFindBy", message="Un département avec ce nom existe déjà!")
  */
 class Department
 {
