@@ -193,17 +193,20 @@ class NoticeController extends AbstractFOSRestController
      *     @Model(type=ArtWork::class, groups={"artwork"})
      * )
      *
-     *
+     * @Rest\QueryParam(name="id", requirements="\d+", default="null", description="id of notice if exists")
      * @Rest\View(serializerGroups={"artwork", "art_work_details"}, serializerEnableMaxDepthChecks=true)
      *
      * @param Request $request
      *
+     * @param FurnitureService $furnitureService
+     * @param ParamFetcherInterface $paramFetcher
      * @return View
-     *
      */
-    public function createPropertyNotice(Request $request, FurnitureService $furnitureService)
+    public function createPropertyNotice(Request $request, FurnitureService $furnitureService, ParamFetcherInterface $paramFetcher, ArtWorkRepository $artWorkRepository)
     {
-        $artWork = new ArtWork();
+        $id = $paramFetcher->get('id');
+        $id != "null" ? $artWork = $artWorkRepository->findOneBy(['id' => $id]) : $artWork = new ArtWork();
+        
         $form =  $form = $this->createArtWorkForm( ArtWorkType::PROPERTY_STATUS, $artWork);
         $data =$this->apiManager->getPostDataFromRequest($request, true);
 
