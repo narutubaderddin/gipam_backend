@@ -125,7 +125,7 @@ class ArtWorkType extends AbstractType
                 $event->setData($artWork);
             }
             if (in_array('creationDate', $this->attributes)) {
-                $form->add('creationDate', DateTimeType::class, ['widget' => 'single_text']);
+                $form->add('creationDate', DateTimeType::class, ['widget' => 'single_text','format' => 'yyyy']);
             } else {
                 unset($artWork['creationDate']);
                 $event->setData($artWork);
