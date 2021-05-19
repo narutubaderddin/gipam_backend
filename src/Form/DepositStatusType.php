@@ -30,11 +30,11 @@ class DepositStatusType extends AbstractType
             )
             ->add('depositDate',DateTimeType::class, [
                 'widget' => 'single_text',
-                'required'=>true,
+                'required'=>false, 'format' => 'yyyy-MM-dd'
                 ]
             )
             ->add('stopNumber',IntegerType::class, [
-                'required'=>true,
+                'required'=>false,
                 ]
             )
         ;
