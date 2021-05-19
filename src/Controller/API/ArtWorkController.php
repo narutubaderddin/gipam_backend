@@ -381,7 +381,7 @@ class ArtWorkController extends AbstractFOSRestController
 
         switch ($exportType){
             case "techniques":
-                $view = "techniques";
+                $view = "artWorks/technique_pdf.html.twig";
                 break;
             case "complete":
                 $view = "complete";
