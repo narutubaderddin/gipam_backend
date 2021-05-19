@@ -42,16 +42,14 @@ class Photography
     private $imagePreview;
 
     /**
-     * @JMS\Groups("artwork","photography", "art_work")
-     *
-     * @Assert\NotBlank()
+     * @JMS\Groups("artwork","photography", "art_work", "art_work_details")
      *
      * @ORM\Column(name="date",type="datetime")
      */
     private $date;
 
     /**
-     * @JMS\Groups("artwork", "art_work","photography")
+     * @JMS\Groups("artwork", "art_work","photography", "art_work_details")
      *
      * @Assert\Valid()
      *
