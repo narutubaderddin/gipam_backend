@@ -34,10 +34,6 @@ class Attachment
 
     /**
      * @JMS\Groups("artwork","art_work_list","art_work_details")
-     *
-     * @Assert\NotBlank()
-     * @Assert\File(maxSize="25M")
-     *
      * @ORM\Column(name="lien", type="string", length=255)
      */
     private $link;
