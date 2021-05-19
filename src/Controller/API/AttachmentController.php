@@ -79,7 +79,7 @@ class AttachmentController extends  AbstractFOSRestController
     public function postAttachment(Request $request){
         $form = $this->createForm(AttachmentType::class);
         $data = $this->apiManager->getPostDataFromRequest($request);
-        $form->submit($data);
+        $form->submit($data,false);
         if($form->isValid()){
             $attachment = $this->apiManager->save($form->getData());
             return  $this->view($attachment,Response::HTTP_CREATED);
@@ -114,12 +114,32 @@ class AttachmentController extends  AbstractFOSRestController
     public function updateAttachement(Attachment $attachment ,Request $request){
         $form = $this->createForm(AttachmentType::class,$attachment);
         $data = $this->apiManager->getPostDataFromRequest($request);
-        $form->submit($data);
+        $form->submit($data,false);
         if($form->isValid()){
             $attachment = $this->apiManager->save($form->getData());
             return  $this->view($attachment,Response::HTTP_CREATED);
         }
         throw new FormValidationException($form);
+    }
+
+    /**
+     * @param Attachment $attachment
+     * @Rest\Delete("/{id}", requirements={"id"="\d+"})
+     *
+     * @SWG\Response(
+     *     response=204,
+     *     description="Attachment is removed"
+     *     )
+     * )
+     * @SWG\Tag(name="attachment")
+     * @Rest\View()
+     * @return View
+     */
+    public function removeAttachement(Attachment $attachment){
+        $furniture = $attachment->getFurniture();
+        $furniture->removeAttachment($attachment);
+        $this->apiManager->delete($attachment);
+        return $this->view(null,Response::HTTP_NO_CONTENT);
     }
 
 }

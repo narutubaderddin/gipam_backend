@@ -125,7 +125,7 @@ class NoticeController extends AbstractFOSRestController
     /**
      * @param ArtWork $artWork
      * @param Request $request
-     * @Rest\Patch("/{id}",requirements={"id"="\d+"})
+     ** @Rest\Patch("/{id}",requirements={"id"="\d+"})
      * @SWG\Response(
      *     response=200,
      *     description="Returns updated Art Work",
@@ -149,7 +149,6 @@ class NoticeController extends AbstractFOSRestController
     public function updateArtWork(ArtWork $artWork,Request $request){
         $status = ($artWork->getStatus() instanceof  DepositStatus)?ArtWorkType::DEPOSIT_STATUS:ArtWorkType::PROPERTY_STATUS;
         $form = $this->createArtWorkForm($status,$artWork);
-        $data = $this->apiManager->getPostDataFromRequest($request);
         $form->submit($this->apiManager->getPostDataFromRequest($request),false);
         if($form->isValid()){
             $artWork = $this->apiManager->save($form->getData());
