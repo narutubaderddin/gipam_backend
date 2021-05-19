@@ -7,6 +7,7 @@ use App\Exception\FormValidationException;
 use App\Form\CorrespondentType;
 use App\Model\ApiResponse;
 use App\Services\ApiManager;
+use FOS\RestBundle\Context\Context;
 use FOS\RestBundle\Controller\AbstractFOSRestController;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use FOS\RestBundle\Controller\Annotations\Route;
@@ -63,6 +64,7 @@ class CorrespondentController extends AbstractFOSRestController
     {
         return $this->view($correspondent, Response::HTTP_OK);
     }
+
     /**
      * @Rest\Get("/")
      *
@@ -97,7 +99,6 @@ class CorrespondentController extends AbstractFOSRestController
      *     type="string",
      *     description="The field used to sort type"
      * )
-
      * @SWG\Tag(name="correspondents")
      *
      * @Rest\QueryParam(name="page", requirements="\d+", default="1", description="page number.")
@@ -115,13 +116,12 @@ class CorrespondentController extends AbstractFOSRestController
      * @Rest\QueryParam(name="fax", map=true, nullable=true, description="filter by fax. example: fax[eq]=value")
      * @Rest\QueryParam(name="mail", map=true, nullable=false, description="filter by mail. example: mail[eq]=value")
      * @Rest\QueryParam(name="login", map=true, nullable=false, description="filter by login. example: login[eq]=value")
-
      * @Rest\QueryParam(name="establishment", nullable=true, description="filter by establishment id. example: establishment[eq]=value")
-     * @Rest\QueryParam(name="subDivision", nullable=true, description="filter by subDivision id. example: subDivision[eq]=value")
-     * @Rest\QueryParam(name="service", nullable=true, description="filter by service id. example: service[eq]=value")
+     * @Rest\QueryParam(name="subDivisions_id", nullable=true, description="filter by subDivision id. example: subDivisions_id[eq]=value")
+     * @Rest\QueryParam(name="services_id", nullable=true, description="filter by service id. example: services_id[eq]=value")
      * @Rest\QueryParam(name="establishment_label", map=true, nullable=false, description="filter by establishment label. example: establishment_label[eq]=value")
-     * @Rest\QueryParam(name="subDivision_label", map=true, nullable=false, description="filter by subDivision label. example: subDivision_label[eq]=value")
-     * @Rest\QueryParam(name="service_label", map=true, nullable=false, description="filter by service label. example: service_label[eq]=value")
+     * @Rest\QueryParam(name="subDivisions_label", map=true, nullable=false, description="filter by subDivision label. example: subDivisions_label[eq]=value")
+     * @Rest\QueryParam(name="services_label", map=true, nullable=false, description="filter by service label. example: services_label[eq]=value")
      *
      * @Rest\QueryParam(name="startDate",
      *      map=true, nullable=false,
@@ -136,11 +136,19 @@ class CorrespondentController extends AbstractFOSRestController
      * @Rest\View()
      *
      * @param ParamFetcherInterface $paramFetcher
-     *
+     * @param Request $request
      * @return View
      */
-    public function listCorrespondent(ParamFetcherInterface $paramFetcher)
+    public function listCorrespondent(ParamFetcherInterface $paramFetcher, Request $request)
     {
+        $serializerGroups = $request->get('serializer_group') ?? null;
+        if ($serializerGroups) {
+            $serializerGroups = json_decode($serializerGroups, true);
+            $context = new Context();
+            $context->setGroups($serializerGroups);
+            $records = $this->apiManager->findRecordsByEntityName(Correspondent::class, $paramFetcher);
+            return $this->view($records, Response::HTTP_OK)->setContext($context);
+        }
         $records = $this->apiManager->findRecordsByEntityName(Correspondent::class, $paramFetcher);
         return $this->view($records, Response::HTTP_OK);
     }

@@ -9,15 +9,18 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use JMS\Serializer\Annotation as JMS;
+use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * @ORM\Entity(repositoryClass=CorrespondentRepository::class)
  * @ORM\Table(name="correspondant")
+ * @UniqueEntity("mail", repositoryMethod="iFindBy", message="Un correspondant avec ce courriel existe déjà!")
  */
 class Correspondent
 {
     use TimestampableEntity;
+
     /**
      * @JMS\Groups("id","short")
      *
@@ -37,12 +40,16 @@ class Correspondent
     /**
      * @JMS\Groups("correspondent")
      *
+     * @Assert\NotBlank
+     *
      * @ORM\Column(name="nom", type="string", length=255, nullable=true)
      */
     private $lastName;
 
     /**
      * @JMS\Groups("correspondent")
+     *
+     * @Assert\NotBlank
      *
      * @ORM\Column(name="telephone", type="string", length=255, nullable=true)
      */
@@ -57,6 +64,8 @@ class Correspondent
 
     /**
      * @JMS\Groups("correspondent")
+     *
+     * @Assert\NotBlank
      *
      * @ORM\Column(name="mail", type="string", length=255, nullable=true)
      */
@@ -87,22 +96,6 @@ class Correspondent
     /**
      * @JMS\Groups("correspondent")
      *
-     * @ORM\ManyToOne(targetEntity=SubDivision::class, inversedBy="correspondents")
-     * @ORM\JoinColumn(name="sous_direction_id", referencedColumnName="id")
-     */
-    private $subDivision;
-
-    /**
-     * @JMS\Groups("correspondent")
-     *
-     * @ORM\ManyToOne(targetEntity=Service::class, inversedBy="correspondents")
-     * @ORM\JoinColumn(name="service_id", referencedColumnName="id")
-     */
-    private $service;
-
-    /**
-     * @JMS\Groups("correspondent")
-     *
      * @ORM\ManyToMany(targetEntity=Movement::class, mappedBy="correspondents")
      */
     private $movements;
@@ -120,9 +113,33 @@ class Correspondent
      */
     private $login;
 
+    /**
+     * @JMS\Groups("correspondent")
+     *
+     * @ORM\ManyToMany(targetEntity=SubDivision::class, inversedBy="correspondents")
+     * @ORM\JoinTable(name="correspondant_sous_direction",
+     *      joinColumns={@ORM\JoinColumn(name="correspondant_id", referencedColumnName="id")},
+     *      inverseJoinColumns={@ORM\JoinColumn(name="sous_direction_id", referencedColumnName="id")}
+     *      )
+     */
+    private $subDivisions;
+
+    /**
+     * @JMS\Groups("correspondent")
+     *
+     * @ORM\ManyToMany(targetEntity=Service::class, inversedBy="correspondents")
+     * @ORM\JoinTable(name="correspondant_service",
+     *      joinColumns={@ORM\JoinColumn(name="correspondant_id", referencedColumnName="id")},
+     *      inverseJoinColumns={@ORM\JoinColumn(name="service_id", referencedColumnName="id")}
+     *      )
+     */
+    private $services;
+
     public function __construct()
     {
         $this->movements = new ArrayCollection();
+        $this->subDivisions = new ArrayCollection();
+        $this->services = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -226,30 +243,6 @@ class Correspondent
         return $this;
     }
 
-    public function getSubDivision(): ?SubDivision
-    {
-        return $this->subDivision;
-    }
-
-    public function setSubDivision(?SubDivision $subDivision): self
-    {
-        $this->subDivision = $subDivision;
-
-        return $this;
-    }
-
-    public function getService(): ?Service
-    {
-        return $this->service;
-    }
-
-    public function setService(?Service $service): self
-    {
-        $this->service = $service;
-
-        return $this;
-    }
-
     /**
      * @return Collection|Movement[]
      */
@@ -312,5 +305,53 @@ class Correspondent
     public function getFullName(): ?string
     {
         return $this->firstName . ' ' . $this->lastName;
+    }
+
+    /**
+     * @return Collection|SubDivision[]
+     */
+    public function getSubDivisions(): Collection
+    {
+        return $this->subDivisions;
+    }
+
+    public function addSubDivision(SubDivision $subDivision): self
+    {
+        if (!$this->subDivisions->contains($subDivision)) {
+            $this->subDivisions[] = $subDivision;
+        }
+
+        return $this;
+    }
+
+    public function removeSubDivision(SubDivision $subDivision): self
+    {
+        $this->subDivisions->removeElement($subDivision);
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|Service[]
+     */
+    public function getServices(): Collection
+    {
+        return $this->services;
+    }
+
+    public function addService(Service $service): self
+    {
+        if (!$this->services->contains($service)) {
+            $this->services[] = $service;
+        }
+
+        return $this;
+    }
+
+    public function removeService(Service $service): self
+    {
+        $this->services->removeElement($service);
+
+        return $this;
     }
 }

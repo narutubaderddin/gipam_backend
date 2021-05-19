@@ -8,16 +8,19 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use JMS\Serializer\Annotation as JMS;
+use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
+use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * @ORM\Entity(repositoryClass=EraRepository::class)
  * @ORM\Table(name="epoque")
+ * @UniqueEntity("label", repositoryMethod="iFindBy", message="Une époque avec ce libellé existe déjà!")
  */
 class Era
 {
     use TimestampableEntity;
     /**
-     * @JMS\Groups("id", "era", "artwork")
+     * @JMS\Groups("id", "era", "artwork", "short")
      *
      * @ORM\Id
      * @ORM\GeneratedValue
@@ -26,7 +29,10 @@ class Era
     private $id;
 
     /**
-     * @JMS\Groups({"era","era_furniture","art_work_details"})
+     * @JMS\Groups({"era","era_furniture","art_work_details", "short"})
+     *
+     * @Assert\NotBlank()
+     *
      * @ORM\Column(name="libelle", type="string", length=255, nullable=true)
      */
     private $label;

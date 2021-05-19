@@ -65,12 +65,6 @@ class SubDivision
      */
     private $locations;
 
-    /**
-     * @JMS\Exclude()
-     *
-     * @ORM\OneToMany(targetEntity=Correspondent::class, mappedBy="subDivision")
-     */
-    private $correspondents;
 
     /**
      * @JMS\Exclude()
@@ -87,11 +81,23 @@ class SubDivision
      */
     private $establishment;
 
+    /**
+     * @JMS\Exclude()
+     * @ORM\OneToMany(targetEntity=Request::class, mappedBy="subDivision")
+     */
+    private $requests;
+
+    /**
+     * @ORM\ManyToMany(targetEntity=Correspondent::class, mappedBy="subDivisions")
+     */
+    private $correspondents;
+
     public function __construct()
     {
         $this->locations = new ArrayCollection();
-        $this->correspondents = new ArrayCollection();
         $this->services = new ArrayCollection();
+        $this->requests = new ArrayCollection();
+        $this->correspondents = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -178,36 +184,6 @@ class SubDivision
     }
 
     /**
-     * @return Collection|Correspondent[]
-     */
-    public function getCorrespondents(): Collection
-    {
-        return $this->correspondents;
-    }
-
-    public function addCorrespondent(Correspondent $correspondent): self
-    {
-        if (!$this->correspondents->contains($correspondent)) {
-            $this->correspondents[] = $correspondent;
-            $correspondent->setSubDivision($this);
-        }
-
-        return $this;
-    }
-
-    public function removeCorrespondent(Correspondent $correspondent): self
-    {
-        if ($this->correspondents->removeElement($correspondent)) {
-            // set the owning side to null (unless already changed)
-            if ($correspondent->getSubDivision() === $this) {
-                $correspondent->setSubDivision(null);
-            }
-        }
-
-        return $this;
-    }
-
-    /**
      * @return Collection|Service[]
      */
     public function getServices(): Collection
@@ -249,4 +225,60 @@ class SubDivision
         return $this;
     }
 
+    /**
+     * @return Collection|Request[]
+     */
+    public function getRequests(): Collection
+    {
+        return $this->requests;
+    }
+
+    public function addRequest(Request $request): self
+    {
+        if (!$this->requests->contains($request)) {
+            $this->requests[] = $request;
+            $request->setSubDivision($this);
+        }
+
+        return $this;
+    }
+
+    public function removeRequest(Request $request): self
+    {
+        if ($this->requests->removeElement($request)) {
+            // set the owning side to null (unless already changed)
+            if ($request->getSubDivision() === $this) {
+                $request->setSubDivision(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|Correspondent[]
+     */
+    public function getCorrespondents(): Collection
+    {
+        return $this->correspondents;
+    }
+
+    public function addCorrespondent(Correspondent $correspondent): self
+    {
+        if (!$this->correspondents->contains($correspondent)) {
+            $this->correspondents[] = $correspondent;
+            $correspondent->addSubDivision($this);
+        }
+
+        return $this;
+    }
+
+    public function removeCorrespondent(Correspondent $correspondent): self
+    {
+        if ($this->correspondents->removeElement($correspondent)) {
+            $correspondent->removeSubDivision($this);
+        }
+
+        return $this;
+    }
 }

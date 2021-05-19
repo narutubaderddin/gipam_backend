@@ -8,14 +8,18 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use JMS\Serializer\Annotation as JMS;
+use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Validator\Constraints as Assert;
+
 /**
  * @ORM\Entity(repositoryClass=ResponsibleRepository::class)
  * @ORM\Table(name="responsable")
+ * @UniqueEntity("mail", repositoryMethod="iFindBy", message="Un responsable avec ce courriel existe déjà!")
  */
 class Responsible
 {
     use TimestampableEntity;
+
     /**
      * @JMS\Groups("id","short")
      * @ORM\Id
@@ -26,12 +30,18 @@ class Responsible
 
     /**
      * @JMS\Groups("responsible")
+     *
+     * @Assert\NotBlank
+     *
      * @ORM\Column(name="prenom", type="string", length=255, nullable=true)
      */
     private $firstName;
 
     /**
      * @JMS\Groups("responsible")
+     *
+     * @Assert\NotBlank
+     *
      * @ORM\Column(name="nom", type="string", length=255, nullable=true)
      */
     private $lastName;
@@ -68,6 +78,7 @@ class Responsible
 
     /**
      * @JMS\Groups("responsible", "id")
+     *
      * @ORM\ManyToMany(targetEntity=Building::class, inversedBy="responsibles")
      * @ORM\JoinTable(name="responsable_batiment",
      *      joinColumns={@ORM\JoinColumn(name="responsable_id", referencedColumnName="id")},
@@ -78,13 +89,34 @@ class Responsible
 
     /**
      * @JMS\Groups("responsible")
+     *
      * @ORM\Column(name="connexion", type="string", length=255, nullable=true)
      */
     private $login;
 
+    /**
+     * @JMS\Groups("responsible")
+     *
+     * @ORM\ManyToMany(targetEntity=Department::class, inversedBy="responsibles")
+     * @ORM\JoinTable(name="responsable_departement",
+     *      joinColumns={@ORM\JoinColumn(name="responsable_id", referencedColumnName="id")},
+     *      inverseJoinColumns={@ORM\JoinColumn(name="departement_id", referencedColumnName="id")}
+     *      )
+     */
+    private $departments;
+
+    /**
+     * @JMS\Groups("responsible")
+     *
+     * @ORM\ManyToOne(targetEntity=Region::class, inversedBy="responsibles")
+     * @ORM\JoinColumn(name="region_id", referencedColumnName="id")
+     */
+    private $region;
+
     public function __construct()
     {
         $this->buildings = new ArrayCollection();
+        $this->departments = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -221,5 +253,41 @@ class Responsible
     public function getFullName(): ?string
     {
         return $this->firstName . ' ' . $this->lastName;
+    }
+
+    /**
+     * @return Collection|Department[]
+     */
+    public function getDepartments(): Collection
+    {
+        return $this->departments;
+    }
+
+    public function addDepartment(Department $department): self
+    {
+        if (!$this->departments->contains($department)) {
+            $this->departments[] = $department;
+        }
+
+        return $this;
+    }
+
+    public function removeDepartment(Department $department): self
+    {
+        $this->departments->removeElement($department);
+
+        return $this;
+    }
+
+    public function getRegion(): ?Region
+    {
+        return $this->region;
+    }
+
+    public function setRegion(?Region $region): self
+    {
+        $this->region = $region;
+
+        return $this;
     }
 }

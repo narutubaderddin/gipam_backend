@@ -14,8 +14,6 @@ use Symfony\Component\Form\FormEvent;
 use Symfony\Component\Form\FormEvents;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\OptionsResolver\OptionsResolver;
-use Symfony\Component\Validator\Constraints as Assert;
-use Symfony\Component\Validator\Constraints\File;
 
 class PhotographyType extends AbstractType
 {
@@ -23,7 +21,7 @@ class PhotographyType extends AbstractType
     {
         $builder
             ->add('imagePreview', FileType::class,['data_class'=>null,'required'=>false,'empty_data'=>''])
-            ->add('date',DateTimeType::class, ['widget' => 'single_text', 'required'=>true])
+            ->add('date',DateTimeType::class, ['widget' => 'single_text', 'required'=>false])
             ->add('photographyType', EntityType::class, [
                 'class' => Type::class,
                 'choice_label' => 'id',
@@ -36,7 +34,6 @@ class PhotographyType extends AbstractType
                 if (!$entity) {
                     return;
                 }
-
                 if (isset($form['imagePreview']) && ($form['imagePreview']->getData() instanceof UploadedFile)){
                     $entity->setImageName($form['imagePreview']->getData()->getClientOriginalName());
                     $event->setData($entity);
