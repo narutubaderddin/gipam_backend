@@ -8,11 +8,13 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use JMS\Serializer\Annotation as JMS;
+use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * @ORM\Entity(repositoryClass=CommuneRepository::class)
  * @ORM\Table(name="commune")
+ * @UniqueEntity("name", repositoryMethod="iFindBy", message="Une commune avec ce nom existe déjà!")
  */
 class Commune
 {
