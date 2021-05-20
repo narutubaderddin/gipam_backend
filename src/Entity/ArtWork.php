@@ -4,6 +4,8 @@ namespace App\Entity;
 
 use App\Repository\ArtWorkRepository;
 use App\Services\ArtWorkService;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\Common\Persistence\ObjectManagerAware;
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\Mapping as ORM;
@@ -52,21 +54,21 @@ class ArtWork extends Furniture implements ObjectManagerAware
     private $entityManager;
 
     /**
-     * @ORM\ManyToOne(targetEntity=Request::class, inversedBy="artWorks")
-     */
-    private $request;
-
-    /**
      * @JMS\Groups("artwork")
      * @ORM\Column(type="boolean", nullable=true)
      */
     private $isCreated;
 
     /**
-     * @JMS\Groups("request_list","request_details")
-     * @ORM\Column(type="string", length=255, nullable=true)
+     * @ORM\OneToMany(targetEntity=RequestedArtWorks::class, mappedBy="artWork")
      */
-    private $requestStatus;
+    private $requestedArtWorks;
+
+    public function __construct()
+    {
+        parent::__construct();
+        $this->requestedArtWorks = new ArrayCollection();
+    }
 
     public function getTotalLength(): ?float
     {
@@ -141,18 +143,6 @@ class ArtWork extends Furniture implements ObjectManagerAware
         $this->entityManager = $objectManager;
     }
 
-    public function getRequest(): ?Request
-    {
-        return $this->request;
-    }
-
-    public function setRequest(?Request $request): self
-    {
-        $this->request = $request;
-
-        return $this;
-    }
-
     /**
      *
      * @JMS\Groups("art_work_list","art_work_details")
@@ -161,7 +151,12 @@ class ArtWork extends Furniture implements ObjectManagerAware
      */
     public function isInRequest()
     {
-        return $this->getRequest() !== null;
+        foreach ($this->getRequestedArtWorks() as $requestedArtWork){
+            if(in_array($requestedArtWork->getStatus(),['En cours','Accepté'])){
+                return true;
+            }
+        }
+        return false;
     }
 
     public function getIsCreated(): ?bool
@@ -176,14 +171,32 @@ class ArtWork extends Furniture implements ObjectManagerAware
         return $this;
     }
 
-    public function getRequestStatus(): ?string
+    /**
+     * @return Collection|RequestedArtWorks[]
+     */
+    public function getRequestedArtWorks(): Collection
     {
-        return $this->requestStatus;
+        return $this->requestedArtWorks;
     }
 
-    public function setRequestStatus(?string $requestStatus): self
+    public function addRequestedArtWork(RequestedArtWorks $requestedArtWork): self
     {
-        $this->requestStatus = $requestStatus;
+        if (!$this->requestedArtWorks->contains($requestedArtWork)) {
+            $this->requestedArtWorks[] = $requestedArtWork;
+            $requestedArtWork->setArtWork($this);
+        }
+
+        return $this;
+    }
+
+    public function removeRequestedArtWork(RequestedArtWorks $requestedArtWork): self
+    {
+        if ($this->requestedArtWorks->removeElement($requestedArtWork)) {
+            // set the owning side to null (unless already changed)
+            if ($requestedArtWork->getArtWork() === $this) {
+                $requestedArtWork->setArtWork(null);
+            }
+        }
 
         return $this;
     }

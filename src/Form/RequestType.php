@@ -36,17 +36,6 @@ class RequestType extends AbstractType
                 ->add('firstNameApplicant', TextType::class)
                 ->add('lastNameApplicant', TextType::class)
                 ->add('comment', TextType::class)
-                ->add('artWorks', CollectionType::class, array(
-                    'entry_type' => EntityType::class,
-                    'entry_options' => array(   'class'=> ArtWork::class,
-                        'label'=>false,
-                        'choice_label'=>'id',
-                    ),
-                    'allow_delete' =>true,
-                    'allow_add' => true,
-                    'prototype' => true,
-                    'by_reference' => false,
-                ))
         ;
     }
 
