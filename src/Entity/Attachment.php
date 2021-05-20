@@ -17,7 +17,7 @@ class Attachment
 {
     use TimestampableEntity;
     /**
-     * @JMS\Groups("artwork")
+     * @JMS\Groups("artwork","art_work_details")
      *
      * @ORM\Id
      * @ORM\GeneratedValue
