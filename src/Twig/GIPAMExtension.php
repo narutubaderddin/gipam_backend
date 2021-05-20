@@ -51,10 +51,10 @@ class GIPAMExtension extends AbstractExtension
      * @param $value
      * @return string
      */
-    public function PDFValues($value)
+    public function PDFValues($value, $unit = "")
     {
         if(!is_null($value))
-            return $value;
+            return "$value $unit";
         else
             return "-";
     }

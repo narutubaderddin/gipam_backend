@@ -25,7 +25,7 @@ class PhotographyType
         'detail' => 'Photo de détail',
     ];
     /**
-     * @JMS\Groups("artwork", "id", "photography_type", "photography")
+     * @JMS\Groups("artwork", "id", "photography_type", "art_work_details", "photography")
      *
      * @ORM\Id
      * @ORM\GeneratedValue
@@ -43,7 +43,7 @@ class PhotographyType
     private $type;
 
     /**
-     * @JMS\Groups("photography_type","photography")
+     * @JMS\Groups("photography_type", "art_work_details","photography")
      *
      * @ORM\Column(name="actif", type="boolean", nullable=true)
      */
