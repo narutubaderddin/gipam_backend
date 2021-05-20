@@ -19,7 +19,7 @@ class Field
 {
     use TimestampableEntity;
     /**
-     * @JMS\Groups("id", "field", "field_id", "artwork","field_list", "short")
+     * @JMS\Groups("id", "field", "field_id", "artwork","field_list", "short", "short_art_work")
      *
      * @ORM\Id
      * @ORM\GeneratedValue
@@ -28,7 +28,7 @@ class Field
     private $id;
 
     /**
-     * @JMS\Groups("field","field_furniture","field_list","art_work_list","art_work_details", "short")
+     * @JMS\Groups("field","field_furniture","field_list","art_work_list","art_work_details", "short", "short_art_work")
      *
      * @ORM\Column(name="libelle", type="string", length=255, nullable=true)
      */
