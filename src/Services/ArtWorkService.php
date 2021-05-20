@@ -43,8 +43,7 @@ class ArtWorkService
         $globalQuery= $paramFetcher->get('globalSearch')??'';
         $result = $this->entityManager->getRepository(ArtWork::class)->getArtWorkList($filter, $advancedFilter, $headerFilters,$query,$globalQuery, $page, $limit, $sortBy, $sort);
         $filtredQuantity = $this->entityManager->getRepository(ArtWork::class)->getArtWorkList($filter, $advancedFilter, $headerFilters,$query,$globalQuery, $page, $limit, $sortBy, $sort, true);
-        $totalQuantity = $this->entityManager->getRepository(ArtWork::class)->getArtWorkList($filter, $advancedFilter, $headerFilters,$query,$globalQuery, $page, $limit, $sortBy, $sort, true,true);
-
+        $totalQuantity = $this->entityManager->getRepository(ArtWork::class)->getArtWorkList($filter, $advancedFilter, $headerFilters,$query,$globalQuery, $page, $limit, $sortBy, $sort, false,true);
         return new ApiResponse(
             $page,
             $limit,
@@ -53,6 +52,42 @@ class ArtWorkService
             $result
         );
 
+    }
+
+    /**
+     * @param ParamFetcherInterface $paramFetcher
+     * @param $filter
+     * @param $advancedFilter
+     * @param $headerFilters
+     * @return array
+     */
+    public function findArtWorkDetails(ParamFetcherInterface $paramFetcher, $filter, $advancedFilter, $headerFilters)
+    {
+        $offset = $paramFetcher->get('offset', true) ?? 0;
+        $sortBy = $paramFetcher->get('sort_by') ?? 'id';
+        $sort = $paramFetcher->get('sort') ?? 'asc';
+        $query = $paramFetcher->get('search') ?? '';
+        $globalQuery = $paramFetcher->get('globalSearch') ?? '';
+        $repoOffset = $offset;
+        if ($offset == 0) {
+            $limit = 2;
+        } else {
+            $repoOffset = $offset - 1;
+            $limit = 3;
+        }
+        $records = $this->entityManager->getRepository(ArtWork::class)
+            ->getArtWorkListByOffset($filter, $advancedFilter, $headerFilters, $query, $globalQuery, $repoOffset, $limit, $sortBy, $sort);
+        $record = null;
+        if ($offset == 0) {
+            $previousId = null;
+            $nextId = ($records[1])->getId();
+            $record = $records[0];
+        } else {
+            $previousId = isset($records[0]) ? ($records[0])->getId() : null;
+            $nextId = isset($records[2]) ? ($records[2])->getId() : null;
+            $record = $records[1] ?? null;
+        }
+        return ['result' => $record, 'previousId' => $previousId, 'nextId' => $nextId];
     }
 
     public function findAutocompleteData($searchQuery, $type)
