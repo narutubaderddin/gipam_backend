@@ -16,7 +16,7 @@ class Hyperlink
 {
     use TimestampableEntity;
     /**
-     * @JMS\Groups("artwork","id")
+     * @JMS\Groups("artwork","id","art_work_details")
      *
      * @ORM\Id
      * @ORM\GeneratedValue
@@ -25,7 +25,7 @@ class Hyperlink
     private $id;
 
     /**
-     * @JMS\Groups("artwork","hyperLink_furniture")
+     * @JMS\Groups("artwork","hyperLink_furniture","art_work_details")
      *
      * @Assert\Url()
      * @Assert\NotBlank()
@@ -35,7 +35,7 @@ class Hyperlink
     private $url;
 
     /**
-     * @JMS\Groups("artwork","hyperLink_furniture")
+     * @JMS\Groups("artwork","hyperLink_furniture","art_work_details")
      *
      * @ORM\Column(name="nom", type="string", length=50)
      */

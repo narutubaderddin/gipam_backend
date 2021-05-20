@@ -184,7 +184,7 @@ abstract class Furniture
 
     /**
      * @JMS\Groups("art_work_details")
-     * @JMS\Exclude()
+     *
      * @JMS\MaxDepth(1)
      * @ORM\OneToMany(targetEntity=Furniture::class, mappedBy="parent")
      */
