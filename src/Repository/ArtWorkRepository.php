@@ -107,8 +107,8 @@ class ArtWorkRepository extends ServiceEntityRepository
      */
     public function getArtWorkList(array $filter, array $advancedFilter, array $headerFilters,$searchQuery,$globalSearchQuery, $page, $limit, $sortBy = 'id', $sort = 'desc', $count = false,$countTotal=false)
     {
-        $query = $this->createArtWorkListQuery($filter, $advancedFilter, $headerFilters, $searchQuery, $globalSearchQuery);
-        if ($count) {
+        $query = $this->createArtWorkListQuery($filter, $advancedFilter, $headerFilters, $searchQuery, $globalSearchQuery, $countTotal);
+        if ($count || $countTotal) {
             $query->select('count(artWork.id)');
             return $query->getQuery()->getSingleScalarResult();
         }
@@ -131,7 +131,7 @@ class ArtWorkRepository extends ServiceEntityRepository
         return $query->getQuery()->getResult();
     }
 
-    private function createArtWorkListQuery(array $filter, array $advancedFilter, array $headerFilters, $searchQuery, $globalSearchQuery)
+    private function createArtWorkListQuery(array $filter, array $advancedFilter, array $headerFilters, $searchQuery, $globalSearchQuery, $countTotal=false)
     {
         $query = $this->createQueryBuilder('artWork');
         $query->where($query->expr()->isInstanceOf('artWork', ArtWork::class));
@@ -173,6 +173,9 @@ class ArtWorkRepository extends ServiceEntityRepository
             //                        ->leftJoin('sub_divisions.services','services')
         ;
         $query->andWhere('artWork.isCreated = true');
+        if ($countTotal) {
+            return $query;
+        }
         foreach ($filter as $key => $value) {
             if (array_key_exists($key, self::$columns)) {
                 if ($key == 'id' && is_array($filter['id'])) {
