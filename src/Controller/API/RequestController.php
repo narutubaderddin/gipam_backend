@@ -4,11 +4,13 @@ namespace App\Controller\API;
 
 use App\Entity\ArtWork;
 use App\Entity\Request as Requests;
+use App\Entity\RequestedArtWorks;
 use App\Exception\FormValidationException;
 use App\Form\FieldType;
 use App\Form\RequestType;
 use App\Model\ApiResponse;
 use App\Services\ApiManager;
+use App\Services\MailerService;
 use Doctrine\ORM\EntityManagerInterface;
 use FOS\RestBundle\Controller\AbstractFOSRestController;
 use FOS\RestBundle\Controller\Annotations as Rest;
@@ -101,6 +103,7 @@ class RequestController extends AbstractFOSRestController
      * @Rest\QueryParam(name="lastNameApplicant", map=true, nullable=false, description="filter by lastNameApplicant.")
      * @Rest\QueryParam(name="firstName", map=true, nullable=false, description="filter by firstName.")
      * @Rest\QueryParam(name="lastName", map=true, nullable=false, description="filter by lastName.")
+     * @Rest\QueryParam(name="createdAt", map=true, nullable=false, description="filter by createdAt.")
      * @Rest\QueryParam(name="search", map=false, nullable=true, description="search. example: search=text")
      *
      * @Rest\View(serializerGroups={"response","request_list"})
@@ -148,11 +151,22 @@ class RequestController extends AbstractFOSRestController
      */
     public function postRequest(Request $request)
     {
+        $artWorks = $request->request->get('artWorks');
+        $request->request->remove('artWorks');
         $form = $this->createForm(RequestType::class);
         $form->submit($request->request->all());
         if ($form->isValid()) {
-            $field = $this->apiManager->save($form->getData());
-            return $this->view($field, Response::HTTP_CREATED);
+            $req = $this->apiManager->save($form->getData());
+            foreach ($artWorks as $artWorkId){
+                $requestedArtWork = new RequestedArtWorks();
+                $artWork = $this->em->getRepository(ArtWork::class)->find($artWorkId);
+                $requestedArtWork->setArtWork($artWork);
+                $requestedArtWork->setRequest($req);
+                $requestedArtWork->setStatus('En cours');
+                $this->em->persist($requestedArtWork);
+            }
+            $this->em->flush();
+            return $this->view($req, Response::HTTP_CREATED);
         } else {
             throw new FormValidationException($form);
         }
@@ -188,20 +202,9 @@ class RequestController extends AbstractFOSRestController
      * @throws \Doctrine\ORM\ORMException
      * @throws \Doctrine\ORM\OptimisticLockException
      */
-    public function updateField(Request $request, Requests $requests)
+    public function updateRequest(Request $request, Requests $requests)
     {
-        $params = $request->request->all();
-        if($params['listArtWorks']) {
-            $request->request->remove('listArtWorks');
-            foreach ($params['listArtWorks'] as $item){
-                $artWork = $this->em->getRepository(ArtWork::class)->find($item['id']);
-                if(isset($item['requestStatus'])) {
-                    $artWork->setRequestStatus($item['requestStatus']);
-                }
-                $this->em->persist($artWork);
-            }
-            $this->em->flush();
-        }
+        $this->updateRequestArtWorks($request);
         $form = $this->createForm(RequestType::class, $requests);
         $form->submit($request->request->all(), false);
 
@@ -262,6 +265,26 @@ class RequestController extends AbstractFOSRestController
         $html2pdf->Output($path, 'F');
         return $this->file($path,'Oeuvres_Graphiques.pdf')->deleteFileAfterSend();
 
+    }
+
+    /**
+     * @param Request $request
+     */
+    public function updateRequestArtWorks(Request $request): void
+    {
+        $params = $request->request->all();
+        if (isset($params['listArtWorks'])) {
+            $listArtWorks = $params['listArtWorks'];
+            foreach ($listArtWorks as $item) {
+                $reqWork = $this->em->getRepository(RequestedArtWorks::class)->find($item['requestedArtWorkId']);
+                if (isset($item['status'])) {
+                    $reqWork->setStatus($item['status']);
+                    $this->em->persist($reqWork);
+                }
+            }
+            $this->em->flush();
+        }
+        $request->request->remove('listArtWorks');
     }
 
 }

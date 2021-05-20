@@ -27,7 +27,7 @@ class EntryMode
         'artistique' => '1% artistique',
     ];
     /**
-     * @JMS\Groups("artwork","short", "id")
+     * @JMS\Groups("artwork","short", "id","art_work_details")
      *
      * @ORM\Id
      * @ORM\GeneratedValue
@@ -36,7 +36,7 @@ class EntryMode
     private $id;
 
     /**
-     * @JMS\Groups("short", "entrymode")
+     * @JMS\Groups("short", "entrymode", "art_work_details")
      * @ORM\Column(name="libelle", type="string", length=255, nullable=true)
      */
     private $label;

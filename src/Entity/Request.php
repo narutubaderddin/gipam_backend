@@ -68,12 +68,6 @@ class Request
 
     /**
      * @JMS\Groups("request_list","request_details")
-     * @ORM\OneToMany(targetEntity=ArtWork::class, mappedBy="request")
-     */
-    private $artWorks;
-
-    /**
-     * @JMS\Groups("request_list","request_details")
      * @ORM\Column(type="string", length=255, nullable=true)
      */
     private $level;
@@ -120,9 +114,15 @@ class Request
      */
     private $lastNameApplicant;
 
+    /**
+     * @JMS\Groups("request_list","request_details")
+     * @ORM\OneToMany(targetEntity=RequestedArtWorks::class, mappedBy="request")
+     */
+    private $requestedArtWorks;
+
     public function __construct()
     {
-        $this->artWorks = new ArrayCollection();
+        $this->requestedArtWorks = new ArrayCollection();
     }
 
 
@@ -219,36 +219,6 @@ class Request
         return $this;
     }
 
-    /**
-     * @return Collection|ArtWork[]
-     */
-    public function getArtWorks(): Collection
-    {
-        return $this->artWorks;
-    }
-
-    public function addArtWork(ArtWork $artWork): self
-    {
-        if (!$this->artWorks->contains($artWork)) {
-            $this->artWorks[] = $artWork;
-            $artWork->setRequest($this);
-        }
-
-        return $this;
-    }
-
-    public function removeArtWork(ArtWork $artWork): self
-    {
-        if ($this->artWorks->removeElement($artWork)) {
-            // set the owning side to null (unless already changed)
-            if ($artWork->getRequest() === $this) {
-                $artWork->setRequest(null);
-            }
-        }
-
-        return $this;
-    }
-
     public function getLevel(): ?string
     {
         return $this->level;
@@ -341,6 +311,36 @@ class Request
     public function setLastNameApplicant(?string $lastNameApplicant): self
     {
         $this->lastNameApplicant = $lastNameApplicant;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|RequestedArtWorks[]
+     */
+    public function getRequestedArtWorks(): Collection
+    {
+        return $this->requestedArtWorks;
+    }
+
+    public function addRequestedArtWork(RequestedArtWorks $requestedArtWork): self
+    {
+        if (!$this->requestedArtWorks->contains($requestedArtWork)) {
+            $this->requestedArtWorks[] = $requestedArtWork;
+            $requestedArtWork->setRequest($this);
+        }
+
+        return $this;
+    }
+
+    public function removeRequestedArtWork(RequestedArtWorks $requestedArtWork): self
+    {
+        if ($this->requestedArtWorks->removeElement($requestedArtWork)) {
+            // set the owning side to null (unless already changed)
+            if ($requestedArtWork->getRequest() === $this) {
+                $requestedArtWork->setRequest(null);
+            }
+        }
 
         return $this;
     }
