@@ -62,35 +62,23 @@
         <page>
     {% endif %}
     <div class="pdf-page-content">
-        {#<div class="row pdf-page-header pdf-component">
-        <div class="borders text-center">
-            <h3>MAQUETTES DES NOTICES</h3>
-            <h3>PROJET GIPAM</h3>
-        </div>
-    </div>#}
-
         <div class="pdf-component">
             <div class="smal-container borders inline-component">
-                <div class="col-md-6">
-                    décomposant
-                </div>
-                <div class="col-md-6">
-                    <span>{{ notice.id }}</span>
-                </div>
+                <table style="border: none;">
+                    <tr>
+                        <td style="border: none; text-align: left; width:550px" >décomposant: {{ PDFValues(notice.status.DepositorName) }}<br/></td>
+                        <td style="border: none; text-align: right">{{ notice.id }}</td>
+                    </tr>
+                </table>
             </div>
         </div>
 
         <div class="pdf-component ">
             <div class="smal-container borders" style="{% if notice.attachments|length == 0 %}height: 250px{% endif %}">
-                {% if notice.attachments|length %}
-                    {% for attachment in notice.attachments %}
-                        {% if attachment.attachmentType.isActive %}
-                            <img src="{{ asset(attachment.link) }}"  alt="{{ attachment.comment }}" />
-                        {% endif %}
-
-                    {% endfor %}
+                {% if notice.getPrincipalPhoto is not null %}
+                    <img src="{{ notice.getPrincipalPhoto | notice_image }}" alt="images"/>
                 {% else %}
-                    <p style="text-align: center">images</p>
+                    <img src="{{ "uploads/000.jpg" }}"  style="max-width: 300px; max-height: 400px; margin-left: 20%;" alt="images"/>
                 {% endif %}
             </div>
         </div>
@@ -151,7 +139,7 @@
                 <!--notice date de création  -->
                 <div class="element-component">
                     <div class="margin-let-2">
-                        Style : {{ notice.createdAt | date("m/d/Y") }}
+                        Date de création : {{ notice.createdAt | date("m/d/Y") }}
                     </div>
                 </div>
                 <!--notice Dimensions totales  -->
