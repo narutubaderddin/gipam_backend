@@ -155,7 +155,7 @@ abstract class Furniture
      * @JMS\Groups("artwork","status_furniture","art_work_details", "short")
      * @Assert\Valid()
      * @ORM\ManyToOne(targetEntity=Status::class, inversedBy="furniture", cascade={"persist", "remove"})
-     * @JMS\MaxDepth(1)
+     * @JMS\MaxDepth(2)
      * @ORM\ManyToOne(targetEntity=Status::class, inversedBy="furniture")
      * @ORM\JoinColumn(name="status_id", referencedColumnName="id")
      */

@@ -20,7 +20,7 @@ class Depositor
     use TimestampableEntity;
 
     /**
-     * @JMS\Groups("id")
+     * @JMS\Groups("id", "art_work_details")
      * @ORM\Id
      * @ORM\GeneratedValue
      * @ORM\Column(type="integer")
@@ -38,7 +38,7 @@ class Depositor
     private $acronym;
 
     /**
-     * @JMS\Groups("depositor", "depositors")
+     * @JMS\Groups("depositor", "depositors", "art_work_details")
      *
      * @Assert\NotBlank
      *

@@ -25,7 +25,7 @@ class PropertyStatusCategory
         'bienUsuel' => 'Bien usuel',
     ];
     /**
-     * @JMS\Groups("id", "category", "artwork")
+     * @JMS\Groups("id", "category", "artwork", "art_work_details")
      *
      * @ORM\Id
      * @ORM\GeneratedValue
@@ -34,7 +34,7 @@ class PropertyStatusCategory
     private $id;
 
     /**
-     * @JMS\Groups("category")
+     * @JMS\Groups("category", "art_work_details")
      *
      * @ORM\Column(name="libelle", type="string", length=255, nullable=true)
      */
