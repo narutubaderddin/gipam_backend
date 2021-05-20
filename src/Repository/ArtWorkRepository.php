@@ -146,12 +146,7 @@ class ArtWorkRepository extends ServiceEntityRepository
             ->leftJoin('propertyStatus.entryMode', 'entryMode')
             //                        ->leftJoin('sub_divisions.services','services')
         ;
-        $query->andWhere('(
-        artWork.title IS NOT NULL and artWork.numberOfUnit IS NOT NULL  )');
-       if($countTotal){
-           $query->select('count(artWork.id)');
-           return $query->getQuery()->getSingleScalarResult();
-       }
+        $query->andWhere('artWork.isCreated = true');
         foreach ($filter as $key => $value) {
             if (array_key_exists($key, self::$columns)) {
                 if ($key == 'id' && is_array($filter['id'])) {
