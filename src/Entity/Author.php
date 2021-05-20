@@ -166,7 +166,7 @@ class Author
      * @return string|null
      * @JMS\VirtualProperty()
      * @JMS\SerializedName("label")
-     * @JMS\Groups("authors","furniture_author", "short")
+     * @JMS\Groups("authors","furniture_author", "short","request_list","art_work_list","art_work_details")
      */
     public function getFullName(): ?string
     {
