@@ -70,7 +70,8 @@ class ArtWorkType extends AbstractType
                     'choice_label' => 'id',
                 ]
             )
-            ->add('isCreated', BooleanType::class);
+            ->add('isCreated', BooleanType::class)
+            ->add('creationDate', DateTimeType::class, ['widget' => 'single_text', 'required'=>false,'format' => 'yyyy-MM-dd']);
         $builder->addEventListener(FormEvents::PRE_SUBMIT, function (FormEvent $event) {
             $artWork = $event->getData();
             $form = $event->getForm();
@@ -122,12 +123,6 @@ class ArtWorkType extends AbstractType
                 $form->add('numberOfUnit',IntegerType::class);
             } else {
                 unset($artWork['numberOfUnit']);
-                $event->setData($artWork);
-            }
-            if (in_array('creationDate', $this->attributes)) {
-                $form->add('creationDate', DateTimeType::class, ['widget' => 'single_text','format' => 'yyyy']);
-            } else {
-                unset($artWork['creationDate']);
                 $event->setData($artWork);
             }
             if (in_array('authors', $this->attributes)) {

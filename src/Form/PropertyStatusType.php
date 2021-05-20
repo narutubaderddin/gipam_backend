@@ -20,7 +20,7 @@ class PropertyStatusType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $builder
-            ->add('entryDate',DateTimeType::class, ['widget' => 'single_text'])
+            ->add('entryDate',DateTimeType::class, ['widget' => 'single_text', 'format' => 'yyyy-MM-dd'])
             ->add('marking',TextType::class)
             ->add('entryMode', EntityType::class, [
                 'class' => EntryMode::class,
@@ -36,7 +36,7 @@ class PropertyStatusType extends AbstractType
             ->add('registrationSignature',TextType::class)
             ->add('descriptiveWords',TextType::class)
             ->add('insuranceValue',IntegerType::class)
-            ->add('insuranceValueDate',DateTimeType::class, ['widget' => 'single_text'])
+            ->add('insuranceValueDate',DateTimeType::class, ['widget' => 'single_text', 'format' => 'yyyy-MM-dd'])
             ->add('otherRegistrations',TextType::class)
             ->add('description',TextareaType::class)
         ;

@@ -585,7 +585,7 @@ class ArtWorkRepository extends ServiceEntityRepository
      * @param $limit
      * @return mixed
      */
-    public function getInProgressArtWorks($page = 2, $limit = 40) {
+    public function getInProgressArtWorks($page = 1, $limit = 40) {
         $query = $this->createQueryBuilder('artWork');
         $query->where('artWork.isCreated = false')
             ->orderBy('artWork.id', 'DESC');

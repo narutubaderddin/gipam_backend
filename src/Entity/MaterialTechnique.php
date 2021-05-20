@@ -19,7 +19,7 @@ class MaterialTechnique
 {
     use TimestampableEntity;
     /**
-     * @JMS\Groups("id", "material_technique", "artwork", "short")
+     * @JMS\Groups("id", "material_technique", "artwork", "short","art_work_details")
      *
      * @ORM\Id
      * @ORM\GeneratedValue

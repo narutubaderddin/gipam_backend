@@ -22,28 +22,28 @@ class ArtWork extends Furniture implements ObjectManagerAware
 {
 
     /**
-     * @JMS\Groups("artwork")
+     * @JMS\Groups("artwork","art_work_details")
      *
      * @ORM\Column(name="longueur_totale", type="float", nullable=true)
      */
     private $totalLength;
 
     /**
-     * @JMS\Groups("artwork")
+     * @JMS\Groups("artwork","art_work_details")
      *
      * @ORM\Column(name="largeur_totale", type="float", nullable=true)
      */
     private $totalWidth;
 
     /**
-     * @JMS\Groups("artwork")
+     * @JMS\Groups("artwork","art_work_details")
      *
      * @ORM\Column(name="hauteur_totale", type="float", nullable=true)
      */
     private $totalHeight;
 
     /**
-     * @JMS\Groups("artwork", "short")
+     * @JMS\Groups("artwork", "short","art_work_details")
      * @ORM\Column(name="date_creation_oeuvre", type="datetime", nullable=true)
      */
     private $creationDate;
