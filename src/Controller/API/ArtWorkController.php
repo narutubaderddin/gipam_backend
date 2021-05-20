@@ -85,7 +85,8 @@ class ArtWorkController extends AbstractFOSRestController
      * @param Request $request
      * @return View
      */
-    public function showArtWork(ArtWork $artWork, Request $request){
+    public function showArtWork(ArtWork $artWork, Request $request)
+    {
         $serializerGroups = $request->get('serializer_group', '["short", "art_work_details"]');
 
         $serializerGroups = json_decode($serializerGroups, true);
@@ -166,6 +167,82 @@ class ArtWorkController extends AbstractFOSRestController
     }
 
     /**
+     * @Rest\Post("/details")
+     *
+     * @SWG\Response(
+     *     response=200,
+     *     description="Returns the list of Art Works",
+     *     @SWG\Schema(
+     *         @SWG\Items(ref=@Model(type=ApiResponse::class))
+     *     )
+     * )
+     *
+     * @SWG\Parameter(
+     *     name="page",
+     *     in="query",
+     *     type="integer",
+     *     description="The field used to page number"
+     * )
+     * @SWG\Parameter(
+     *     name="limit",
+     *     in="query",
+     *     type="integer",
+     *     description="The field used to page size"
+     * )
+     * @SWG\Parameter(
+     *     name="sort_by",
+     *     in="query",
+     *     type="string",
+     *     description="The field used to sort by"
+     * )
+     * @SWG\Parameter(
+     *     name="sort",
+     *     in="query",
+     *     type="string",
+     *     description="The field used to sort type"
+     * )
+     * @SWG\Parameter(
+     *     name="name",
+     *     in="query",
+     *     type="string",
+     *     description="The field used to filter by name"
+     * )
+     * @SWG\Tag(name="ArtWorks")
+     *
+     * @Rest\QueryParam(name="offset", requirements="\d+", default="0", description="page number.")
+     * @Rest\QueryParam(name="limit", requirements="\d+", default="1", description="page size.")
+     * @Rest\QueryParam(name="sort_by", nullable=true, default="id", description="order by")
+     * @Rest\QueryParam(name="sort", requirements="(asc|desc)", nullable=true, default="asc", description="tri order asc|desc")
+     * @Rest\QueryParam(name="search", nullable=true, default="", description="search")
+     * @Rest\QueryParam(name="globalSearch", nullable=true, default="", description="Golbal search")
+     * @Rest\QueryParam(
+     *     name="sort", requirements="(asc|desc)",
+     *      nullable=true, default="asc",
+     *      description="sorting order asc|desc"
+     * )
+     * @Rest\View(serializerEnableMaxDepthChecks=true)
+     *
+     * @param Request $request
+     * @param ParamFetcherInterface $paramFetcher
+     * @param ArtWorkService $artWorkService
+     * @return View
+     */
+    public function ArtWorksDetails(Request $request, ParamFetcherInterface $paramFetcher, ArtWorkService $artWorkService)
+    {
+        $serializerGroups = $request->get('serializer_group', '["short", "art_work_details"]');
+        $serializerGroups = json_decode($serializerGroups, true);
+        $context = new Context();
+        $context->setGroups($serializerGroups);
+        $records = $artWorkService->findArtWorkDetails(
+            $paramFetcher,
+            $request->get('filter', []),
+            $request->get('advancedFilter', []),
+            $request->get('headerFilters', [])
+        );
+        return $this->view($records, Response::HTTP_OK)->setContext($context);
+    }
+
+    /**
      * @param ParamFetcherInterface $paramFetcher
      * @param ArtWorkService $artWorkService
      * @Rest\Get("/autocompleteData")
@@ -181,10 +258,10 @@ class ArtWorkController extends AbstractFOSRestController
      * @Rest\View()
      * @return array
      */
-    public function findDescriptionAutocompleteData(ParamFetcherInterface $paramFetcher,ArtWorkService $artWorkService){
-        return $artWorkService->findAutocompleteData($paramFetcher->get('query')??"", $paramFetcher->get('type')??'title');
+    public function findDescriptionAutocompleteData(ParamFetcherInterface $paramFetcher, ArtWorkService $artWorkService)
+    {
+        return $artWorkService->findAutocompleteData($paramFetcher->get('query') ?? "", $paramFetcher->get('type') ?? 'title');
     }
-
 
 
     /**
@@ -319,12 +396,12 @@ class ArtWorkController extends AbstractFOSRestController
         $html2pdf = new Html2Pdf('P', 'A4', 'fr');
         $html2pdf->setDefaultFont('Arial');
         $html = $this->renderView('artWorks/list-pdf.html.twig', array(
-            'artWorks'  => $artWorks
+            'artWorks' => $artWorks
         ));
         $html2pdf->writeHTML($html);
-        $path =  $this->getParameter('kernel.project_dir').DIRECTORY_SEPARATOR.'var' .DIRECTORY_SEPARATOR . 'file_xxxx.pdf';
+        $path = $this->getParameter('kernel.project_dir') . DIRECTORY_SEPARATOR . 'var' . DIRECTORY_SEPARATOR . 'file_xxxx.pdf';
         $html2pdf->Output($path, 'F');
-        return $this->file($path,'Oeuvres_Graphiques.pdf')->deleteFileAfterSend();
+        return $this->file($path, 'Oeuvres_Graphiques.pdf')->deleteFileAfterSend();
 
     }
 
@@ -368,7 +445,8 @@ class ArtWorkController extends AbstractFOSRestController
      * @return Response
      * @throws \Spipu\Html2Pdf\Exception\Html2PdfException
      */
-    public function exportArtWorks(Request $request, $exportType){
+    public function exportArtWorks(Request $request, $exportType)
+    {
 
         //Get Request parameters.
         $artWorksIds = $request->get('artWorks');
@@ -378,7 +456,7 @@ class ArtWorkController extends AbstractFOSRestController
         //Get requested art works.
         $artWorks = $this->artWorkService->getArtWorksByIds($artWorksIds, $sortBy, $sort);
 
-        switch ($exportType){
+        switch ($exportType) {
             case "techniques":
                 $view = "artWorks/technique_pdf.html.twig";
                 break;
@@ -386,18 +464,18 @@ class ArtWorkController extends AbstractFOSRestController
                 $view = "complete";
                 break;
             default:
-                $view =  "artWorks/catalogue_pdf.html.twig";
+                $view = "artWorks/catalogue_pdf.html.twig";
                 break;
         }
 
-        $content = $this->render($view, ['artWorks'=>$artWorks]);
+        $content = $this->render($view, ['artWorks' => $artWorks]);
 
         //Create a PDF File.
         $html2pdf = new Html2Pdf('P', 'A4', 'fr');
         $html2pdf->setDefaultFont('Arial');
         $html2pdf->writeHTML($content);
-        $path =  $this->getParameter('kernel.project_dir').DIRECTORY_SEPARATOR.'var' .DIRECTORY_SEPARATOR . 'file_xxxx.pdf';
+        $path = $this->getParameter('kernel.project_dir') . DIRECTORY_SEPARATOR . 'var' . DIRECTORY_SEPARATOR . 'file_xxxx.pdf';
         $html2pdf->Output($path, 'F');
-        return $this->file($path,'file_xxxx.pdf')->deleteFileAfterSend();
+        return $this->file($path, 'file_xxxx.pdf')->deleteFileAfterSend();
     }
 }
