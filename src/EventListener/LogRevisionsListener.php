@@ -1,0 +1,274 @@
+<?php
+
+namespace App\EventListener;
+
+
+
+use App\Entity\User;
+use App\Services\AuditReader;
+use App\Talan\AuditBundle\Services\AuditConfiguration;
+use App\Talan\AuditBundle\Services\AuditManager;
+use App\Talan\AuditBundle\Services\MetadataFactory;
+use Doctrine\Common\EventSubscriber;
+use Doctrine\Common\Persistence\Mapping\ClassMetadata;
+use Doctrine\DBAL\DBALException;
+use Doctrine\DBAL\Types\Type;
+use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\ORM\Event\LifecycleEventArgs;
+use Doctrine\ORM\Event\OnFlushEventArgs;
+use Doctrine\ORM\Events;
+use Doctrine\ORM\Mapping\ClassMetadataInfo;
+use Symfony\Component\EventDispatcher\EventDispatcherInterface;
+use Symfony\Component\Security\Core\Security;
+
+class LogRevisionsListener implements EventSubscriber
+{
+    /**
+     * @var AuditConfiguration
+     */
+    private $config;
+
+    /**
+     * @var MetadataFactory
+     */
+    private $metadataFactory;
+    /**
+     * @var \Doctrine\DBAL\Connection
+     */
+    private $conn;
+
+    /**
+     * @var \Doctrine\DBAL\Platforms\AbstractPlatform
+     */
+    private $platform;
+
+    /**
+     * @var \Doctrine\ORM\EntityManager
+     */
+    private $em;
+
+    /**
+     * @var array
+     */
+    private $insertRevisionSQL = array();
+
+    /**
+     * @var \Doctrine\ORM\UnitOfWork
+     */
+    private $uow;
+
+    /**
+     * @var int
+     */
+    private $revisionId;
+
+    private $security;
+    /**
+     * @var EventDispatcherInterface
+     */
+    private $dispatcher;
+    /**
+     * @var EntityManagerInterface
+     */
+    private $entityManager;
+    /**
+     * @var AuditReader
+     */
+    private $auditReader;
+
+    public function __construct(AuditManager $auditManager, Security $security, EventDispatcherInterface $dispatcher, EntityManagerInterface $entityManager, AuditReader $auditReader)
+    {
+        $this->auditReader = $auditReader;
+        $this->config = $auditManager->getConfiguration();
+        $this->metadataFactory = $auditManager->getMetadataFactory();
+        $this->security = $security;
+        $this->dispatcher = $dispatcher;
+        $this->entityManager = $entityManager;
+    }
+
+    public function getSubscribedEvents()
+    {
+        return array(Events::onFlush, Events::postPersist, Events::postUpdate);
+    }
+
+    public function postPersist(LifecycleEventArgs $eventArgs)
+    {
+        // onFlush was executed before, everything already initialized
+        $entity = $eventArgs->getEntity();
+
+        $class = $this->em->getClassMetadata(get_class($entity));
+        if (!$this->metadataFactory->isAudited($class->name)) {
+            return;
+        }
+
+        if (!is_null($this->security->getUser())) {
+            $user = $this->security->getUser()->getId();
+        } else {
+            $user = "";
+        }
+        $action ="";
+        $this->saveRevisionEntityData($class, $this->getOriginalEntityData($entity), 'INS*', $user, $action);
+    }
+
+    /**
+     * @param ClassMetadata $class
+     * @param array $entityData
+     * @param string $revType
+     * @param null $actor
+     * @param null $action
+     * @throws DBALException
+     */
+    private function saveRevisionEntityData($class, $entityData, $revType, $actor = null, $action = null)
+    {
+        $params = array($this->getRevisionId(), $revType);
+        $types = array(\PDO::PARAM_INT, \PDO::PARAM_STR);
+
+        $fields = array();
+        foreach ($class->associationMappings as $field => $assoc) {
+            if (($assoc['type'] & ClassMetadataInfo::TO_ONE) > 0 && $assoc['isOwningSide']) {
+                $targetClass = $this->em->getClassMetadata($assoc['targetEntity']);
+
+                if ($entityData[$field] !== null) {
+                    $relatedId = $this->uow->getEntityIdentifier($entityData[$field]);
+                }
+
+                $targetClass = $this->em->getClassMetadata($assoc['targetEntity']);
+
+                foreach ($assoc['sourceToTargetKeyColumns'] as $sourceColumn => $targetColumn) {
+                    $fields[$sourceColumn] = true;
+                    if ($entityData[$field] === null) {
+                        $params[] = null;
+                        $types[] = \PDO::PARAM_STR;
+                    } else {
+                        $params[] = $relatedId[$targetClass->fieldNames[$targetColumn]];
+                        $types[] = $targetClass->getTypeOfColumn($targetColumn);
+                    }
+                }
+            }
+        }
+        foreach ($class->fieldNames as $field) {
+            if (array_key_exists($field, $fields)) {
+                continue;
+            }
+            if (isset($entityData[$field])) {
+                $params[] = $entityData[$field];
+            } else {
+                $params[] = null;
+            }
+            $types[] = $class->fieldMappings[$field]['type'];
+        }
+        $params[] = new \DateTime('now');
+        $types[] = 'datetime';
+        $params[] = $actor;
+        $types[] = 'integer';
+        $params[] = $action;
+        $types[] = 'string';
+        $this->conn->executeUpdate($this->getInsertRevisionSQL($class), $params, $types);
+    }
+
+    private function getRevisionId()
+    {
+        if ($this->revisionId === null) {
+            $this->conn->insert($this->config->getRevisionTableName(), array(
+                'timestamp' => date_create('now'),
+                'username' => $this->config->getCurrentUsername(),
+            ), array(
+                Type::DATETIME,
+                Type::STRING
+            ));
+
+            $sequenceName = $this->platform->supportsSequences()
+                ? 'REVISIONS_ID_SEQ'
+                : null;
+
+            $this->revisionId = $this->conn->lastInsertId($sequenceName);
+        }
+        return $this->revisionId;
+    }
+
+    private function getInsertRevisionSQL($class)
+    {
+        if (!isset($this->insertRevisionSQL[$class->name])) {
+            $placeholders = array('?', '?');
+            $tableName = $this->config->getTablePrefix() . $class->table['name'] . $this->config->getTableSuffix();
+
+            $sql = "INSERT INTO " . $tableName . " (" .
+                $this->config->getRevisionFieldName() . ", " . $this->config->getRevisionTypeFieldName();
+
+            $fields = array();
+
+            foreach ($class->associationMappings as $assoc) {
+                if (($assoc['type'] & ClassMetadataInfo::TO_ONE) > 0 && $assoc['isOwningSide']) {
+                    foreach ($assoc['targetToSourceKeyColumns'] as $sourceCol) {
+                        $fields[$sourceCol] = true;
+                        $sql .= ', ' . $sourceCol;
+                        $placeholders[] = '?';
+                    }
+                }
+            }
+
+            foreach ($class->fieldNames as $field) {
+                if (array_key_exists($field, $fields)) {
+                    continue;
+                }
+                $type = Type::getType($class->fieldMappings[$field]['type']);
+                $placeholders[] = (!empty($class->fieldMappings[$field]['requireSQLConversion']))
+                    ? $type->convertToDatabaseValueSQL('?', $this->platform)
+                    : '?';
+                $sql .= ', ' . $class->getQuotedColumnName($field, $this->platform);
+            }
+            $placeholders[] = '?, ? , ?';
+            $sql .= ', operationDate, actor, actionType ';
+            $sql .= ") VALUES (" . implode(", ", $placeholders) . ")";
+            $this->insertRevisionSQL[$class->name] = $sql;
+        }
+
+        return $this->insertRevisionSQL[$class->name];
+    }
+
+    /**
+     * get original entity data, including versioned field, if "version" constraint is used
+     *
+     * @param mixed $entity
+     * @return array
+     */
+    private function getOriginalEntityData($entity)
+    {
+
+        $class = $this->em->getClassMetadata(get_class($entity));
+        $data = $this->uow->getOriginalEntityData($entity);
+        if ($class->isVersioned) {
+            $versionField = $class->versionField;
+            $data[$versionField] = $class->reflFields[$versionField]->getValue($entity);
+        }
+        return $data;
+    }
+
+
+
+    public function onFlush(OnFlushEventArgs $eventArgs)
+    {
+        $this->em = $eventArgs->getEntityManager();
+        $this->conn = $this->em->getConnection();
+        $this->uow = $this->em->getUnitOfWork();
+        $this->platform = $this->conn->getDatabasePlatform();
+        $this->revisionId = null; // reset revision
+        if (!is_null($this->security->getUser())) {
+            $user = $this->security->getUser()->getId();
+        } else {
+            $user = 0;
+        }
+        foreach ($this->uow->getScheduledEntityDeletions() as $entity) {
+            $class = $this->em->getClassMetadata(get_class($entity));
+            if (!$this->metadataFactory->isAudited($class->name)) {
+                continue;
+            }
+            $entityData = array_merge($this->getOriginalEntityData($entity), $this->uow->getEntityIdentifier($entity));
+            $this->saveRevisionEntityData($class, $entityData, 'DEL*', $user, 'suppression');
+        }
+    }
+
+
+
+
+}
