@@ -50,7 +50,7 @@ trait TimestampableEntity
      */
     public function getCreatedAt()
     {
-        return $this->createdAt->format('Y-M-D');
+        return $this->createdAt;
     }
 
     /**
