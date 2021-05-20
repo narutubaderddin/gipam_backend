@@ -7,6 +7,7 @@ use App\Exception\FormValidationException;
 use App\Form\EstablishmentType;
 use App\Model\ApiResponse;
 use App\Services\ApiManager;
+use FOS\RestBundle\Context\Context;
 use FOS\RestBundle\Controller\AbstractFOSRestController;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use FOS\RestBundle\Controller\Annotations\Route;
@@ -109,16 +110,21 @@ class EstablishmentController extends AbstractFOSRestController
      * @Rest\QueryParam(name="type", map=true, nullable=false, description="filter by type. example: type[eq]=value")
      * @Rest\QueryParam(name="search", map=false, nullable=true, description="search. example: search=text")
      *
-     * @Rest\View(serializerGroups={"response", "establishment", "short"})
+     * @Rest\View()
      *
      * @param ParamFetcherInterface $paramFetcher
      *
      * @return View
      */
-    public function listEstablishments(ParamFetcherInterface $paramFetcher)
+    public function listEstablishments(ParamFetcherInterface $paramFetcher, Request $request)
     {
+        $serializerGroups = $request->get('serializer_group', '["establishment", "id", "short"]');
+        $serializerGroups = json_decode($serializerGroups, true);
+        $serializerGroups[] = "response";
+        $context = new Context();
+        $context->setGroups($serializerGroups);
         $records = $this->apiManager->findRecordsByEntityName(Establishment::class, $paramFetcher);
-        return $this->view($records, Response::HTTP_OK);
+        return $this->view($records, Response::HTTP_OK)->setContext($context);
     }
 
     /**

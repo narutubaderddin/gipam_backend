@@ -124,12 +124,52 @@ class ApiManager
     }
 
     /**
+     * Recursive function to display members of array with indentation
+     *
+     * @param array $arr Array to process
+     * @return array
+     * @throws \Exception
+     */
+    function formatArrayValue($arr) {
+        $result = [];
+        if ($arr) {
+            foreach ($arr as $key => $value) {
+                if (is_array($value)) {
+                    $result[$key] = $this->formatArrayValue($value);
+                } else {
+                    if ($value == "null") {
+                        $result[$key] = null;
+                    } else {
+                        if (in_array($key, ['date','entryDate', 'insuranceValueDate'])) {
+                            $result[$key] = date($value);
+                        }  elseif (in_array($key, ['creationDate'])) {
+                            $result[$key] = date(json_decode($value).'-01-01');
+                        } elseif (in_array($key, ['materialTechnique', 'authors'])) {
+                            $array = ['['.$value.']'];
+                            $result[$key] = json_decode($array[0]);
+                        }  elseif (in_array($key, ['url','descriptiveWords', 'title', 'marking', 'registrationSignature','insuranceValue', 'otherRegistrations', 'description_commentaire', 'name'])) {
+                            $result[$key] = $value;
+                        }else{
+                            $result[$key] = (int)json_decode($value);
+                        }
+                    }
+
+                }
+            }
+        }
+        return $result;
+    }
+
+    /**
      * @param Request $request
      * @return array
      */
-    public function getPostDataFromRequest(Request $request):array
+    public function getPostDataFromRequest(Request $request, ?bool  $noticeCreation = false):array
     {
         $data = $request->request->all();
+        if ($noticeCreation) {
+            $data = $this->formatArrayValue($data);
+        }
         foreach($request->files->all() as $key => $file){
             if (isset($data[$key])){
                 foreach ($data[$key] as $k => &$value){
@@ -154,6 +194,7 @@ class ApiManager
         $repo = $this->em->getRepository($fgcn);
         $filteredCount = $repo->findRecordsByEntityNameAndCriteria($paramFetcher,true);
         $record = $repo->findRecordsByEntityNameAndCriteria($paramFetcher,false,$page,$limit);
+
         return  new ApiResponse(
             $page,
             $limit,

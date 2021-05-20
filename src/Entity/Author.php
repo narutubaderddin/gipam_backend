@@ -29,7 +29,7 @@ class Author
     private $id;
 
     /**
-     * @JMS\Groups({"furniture_author","authors","request_list","art_work_list","art_work_details", "short"})
+     * @JMS\Groups({"furniture_author","authors","request_list","art_work_list"})
      *
      * @Assert\NotBlank
      *
@@ -38,7 +38,7 @@ class Author
     private $firstName;
 
     /**
-     * @JMS\Groups({"furniture_author","authors","request_list","art_work_list","art_work_details", "short"})
+     * @JMS\Groups({"furniture_author","authors","request_list","art_work_list"})
      *
      * @Assert\NotBlank
      *
@@ -166,7 +166,7 @@ class Author
      * @return string|null
      * @JMS\VirtualProperty()
      * @JMS\SerializedName("label")
-     * @JMS\Groups("authors","furniture_author", "short")
+     * @JMS\Groups("authors","furniture_author", "short","request_list","art_work_list","art_work_details")
      */
     public function getFullName(): ?string
     {

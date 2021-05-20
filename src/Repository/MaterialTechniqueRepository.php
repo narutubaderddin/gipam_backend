@@ -20,7 +20,11 @@ class MaterialTechniqueRepository extends ServiceEntityRepository
 {
     use RepositoryTrait;
 
-    public const SEARCH_FIELDS = ['label_param' => 'label'];
+    public const SEARCH_FIELDS = [
+        'label_param' => 'label',
+        'type_param' => 'type',
+        'denominations_label_param' => 'denominations_label',
+        ];
 
     public function __construct(ManagerRegistry $registry)
     {
@@ -55,6 +59,7 @@ class MaterialTechniqueRepository extends ServiceEntityRepository
                       ->leftJoin('materialTechnique.denominations','denominations')
                       ->leftJoin('denominations.field','field')
                        ->where('materialTechnique.active = true') ;
+
         if($field!=""){
             $field = json_decode($field, true);
             if(!is_array($field)){
@@ -74,6 +79,7 @@ class MaterialTechniqueRepository extends ServiceEntityRepository
                 $query->andWhere('denominations.id in (:denomination)')->setParameter('denomination',$denomination);
             }
         }
+
         if($count){
             $query->select('count(materialTechnique.id)');
             return $query->getQuery()->getSingleScalarResult();
@@ -84,6 +90,7 @@ class MaterialTechniqueRepository extends ServiceEntityRepository
         if($limit && $limit!= ""){
             $query->setMaxResults($limit);
         }
+
         return  $query->getQuery()->getResult();
     }
 }

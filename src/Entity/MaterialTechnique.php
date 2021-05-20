@@ -8,16 +8,18 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use JMS\Serializer\Annotation as JMS;
+use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 
 /**
  * @ORM\Entity(repositoryClass=MaterialTechniqueRepository::class)
  * @ORM\Table(name="matiere_technique")
+ * @UniqueEntity("label", repositoryMethod="iFindBy", message="Une entité avec ce libellé existe déjà!")
  */
 class MaterialTechnique
 {
     use TimestampableEntity;
     /**
-     * @JMS\Groups("id", "material_technique", "artwork", "short")
+     * @JMS\Groups("id", "material_technique", "artwork", "short","art_work_details")
      *
      * @ORM\Id
      * @ORM\GeneratedValue

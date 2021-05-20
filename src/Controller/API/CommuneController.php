@@ -206,8 +206,16 @@ class CommuneController extends AbstractFOSRestController
      * @param ApiManager $apiManager
      * @return View
      */
-    public function listCommuneByCriteria(ParamFetcherInterface $paramFetcher,ApiManager $apiManager){
-
+    public function listCommuneByCriteria(ParamFetcherInterface $paramFetcher,ApiManager $apiManager, Request $request)
+    {
+        $serializerGroups = $request->get('serializer_group') ?? null;
+        if ($serializerGroups) {
+            $serializerGroups = json_decode($serializerGroups, true);
+            $context = new Context();
+            $context->setGroups($serializerGroups);
+            $records = $this->apiManager->findRecordsByEntityNameAndCriteria(Commune::class, $paramFetcher);
+            return $this->view($records, Response::HTTP_OK)->setContext($context);
+        }
         $records =$apiManager->findRecordsByEntityNameAndCriteria(Commune::class,$paramFetcher);
         return $this->view($records, Response::HTTP_OK);
     }

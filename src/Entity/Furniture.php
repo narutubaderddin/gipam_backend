@@ -25,7 +25,7 @@ use Symfony\Component\Validator\Context\ExecutionContextInterface;
 abstract class Furniture
 {
     /**
-     * @JMS\Groups("artwork", "artwork_id","id","art_work_list","art_work_details","request_list","request_details","request_list", "short")
+     * @JMS\Groups("artwork", "artwork_id","id","art_work_list","art_work_details","request_details","request_list", "short")
      * @ORM\Id
      * @ORM\GeneratedValue
      * @ORM\Column(type="integer")
@@ -33,7 +33,7 @@ abstract class Furniture
     protected $id;
 
     /**
-     * @JMS\Groups({"art_work_list","artwork","art_work_details","request_list","request_details","request_list", "short"})
+     * @JMS\Groups({"art_work_list","artwork","art_work_details","request_details","request_list", "short"})
      * @ORM\Column(name="titre", type="string", length=255, nullable=true)
      */
     protected $title;
@@ -145,7 +145,7 @@ abstract class Furniture
     protected $reports;
 
     /**
-     * @JMS\Groups("artwork","art_work_list","art_work_details")
+     * @JMS\Groups("artwork","art_work_list","art_work_details", "attachment")
      * @Assert\Valid()
      * @ORM\OneToMany(targetEntity=Attachment::class, mappedBy="furniture", cascade={"persist", "remove"})
      */
@@ -162,14 +162,14 @@ abstract class Furniture
     protected $status;
 
     /**
-     * @JMS\Groups("artwork", "art_work_details")
+     * @JMS\Groups("artwork", "art_work_details", "hyperLink_furniture")
      * @Assert\Valid()
      * @ORM\OneToMany(targetEntity=Hyperlink::class, mappedBy="furniture", cascade={"persist", "remove"})
      */
     protected $hyperlinks;
 
     /**
-     * @JMS\Groups("artwork", "art_work_details")
+     * @JMS\Groups("artwork", "art_work_details","photography")
      * @Assert\Valid()
      * @ORM\OneToMany(targetEntity=Photography::class, mappedBy="furniture", cascade={"persist", "remove"})
      */
@@ -184,14 +184,14 @@ abstract class Furniture
 
     /**
      * @JMS\Groups("art_work_details")
-     * @JMS\Exclude()
+     *
      * @JMS\MaxDepth(1)
      * @ORM\OneToMany(targetEntity=Furniture::class, mappedBy="parent")
      */
     protected $children;
 
     /**
-     * @JMS\Groups("artwork", "art_work_details")
+     * @JMS\Groups("artwork", "art_work_details", "short")
      * @JMS\MaxDepth(1)
      * @ORM\ManyToOne(targetEntity=Furniture::class, inversedBy="children")
      * @ORM\JoinColumn(name="parent_id", referencedColumnName="id")
@@ -219,6 +219,10 @@ abstract class Furniture
     /**
      * @JMS\Groups("artwork","material_technique","art_work_details","art_work_list", "short")
      * @ORM\ManyToMany(targetEntity=MaterialTechnique::class, inversedBy="furniture")
+     * @ORM\JoinTable(name="objet_mobilier_matiere_technique",
+     *      joinColumns={@ORM\JoinColumn(name="objet_mobilier_id", referencedColumnName="id")},
+     *      inverseJoinColumns={@ORM\JoinColumn(name="matiere_technique_id", referencedColumnName="id")}
+     *      )
      */
     private $materialTechnique;
 
@@ -772,6 +776,29 @@ abstract class Furniture
      */
     public function getCreatedAt(){
         return $this->createdAt;
+    }
+
+    /**
+     * @return string|null
+     * @JMS\VirtualProperty()
+     * @JMS\SerializedName("authorsName")
+     * @JMS\Groups("authors","furniture_author", "short","request_list","art_work_list","art_work_details")
+     */
+    public function getFullAuthorsName(): ?string
+    {
+        $result = "";
+        foreach ($this->getAuthors() as $key => $author){
+            if($author->getFirstName()){
+                $result.= $author->getFirstName();
+            }
+            if($author->getLastName()){
+                $result.= " ".$author->getLastName();
+            }
+            if($key<count($this->getAuthors())-1){
+                $result.=", ";
+            }
+        }
+        return $result;
     }
 
 }

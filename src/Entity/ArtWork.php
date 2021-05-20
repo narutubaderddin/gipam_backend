@@ -4,6 +4,8 @@ namespace App\Entity;
 
 use App\Repository\ArtWorkRepository;
 use App\Services\ArtWorkService;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\Common\Persistence\ObjectManagerAware;
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\Mapping as ORM;
@@ -20,28 +22,28 @@ class ArtWork extends Furniture implements ObjectManagerAware
 {
 
     /**
-     * @JMS\Groups("artwork")
+     * @JMS\Groups("artwork","art_work_details")
      *
      * @ORM\Column(name="longueur_totale", type="float", nullable=true)
      */
     private $totalLength;
 
     /**
-     * @JMS\Groups("artwork")
+     * @JMS\Groups("artwork","art_work_details")
      *
      * @ORM\Column(name="largeur_totale", type="float", nullable=true)
      */
     private $totalWidth;
 
     /**
-     * @JMS\Groups("artwork")
+     * @JMS\Groups("artwork","art_work_details")
      *
      * @ORM\Column(name="hauteur_totale", type="float", nullable=true)
      */
     private $totalHeight;
 
     /**
-     * @JMS\Groups("artwork", "short")
+     * @JMS\Groups("artwork", "short","art_work_details")
      * @ORM\Column(name="date_creation_oeuvre", type="datetime", nullable=true)
      */
     private $creationDate;
@@ -52,15 +54,21 @@ class ArtWork extends Furniture implements ObjectManagerAware
     private $entityManager;
 
     /**
-     * @ORM\ManyToOne(targetEntity=Request::class, inversedBy="artWorks")
-     */
-    private $request;
-
-    /**
      * @JMS\Groups("artwork")
      * @ORM\Column(type="boolean", nullable=true)
      */
     private $isCreated;
+
+    /**
+     * @ORM\OneToMany(targetEntity=RequestedArtWorks::class, mappedBy="artWork")
+     */
+    private $requestedArtWorks;
+
+    public function __construct()
+    {
+        parent::__construct();
+        $this->requestedArtWorks = new ArrayCollection();
+    }
 
     public function getTotalLength(): ?float
     {
@@ -135,18 +143,6 @@ class ArtWork extends Furniture implements ObjectManagerAware
         $this->entityManager = $objectManager;
     }
 
-    public function getRequest(): ?Request
-    {
-        return $this->request;
-    }
-
-    public function setRequest(?Request $request): self
-    {
-        $this->request = $request;
-
-        return $this;
-    }
-
     /**
      *
      * @JMS\Groups("art_work_list","art_work_details")
@@ -155,7 +151,12 @@ class ArtWork extends Furniture implements ObjectManagerAware
      */
     public function isInRequest()
     {
-        return $this->getRequest() !== null;
+        foreach ($this->getRequestedArtWorks() as $requestedArtWork){
+            if(in_array($requestedArtWork->getStatus(),['En cours','Accepté'])){
+                return true;
+            }
+        }
+        return false;
     }
 
     public function getIsCreated(): ?bool
@@ -166,6 +167,36 @@ class ArtWork extends Furniture implements ObjectManagerAware
     public function setIsCreated(?bool $isCreated = false): self
     {
         $this->isCreated = $isCreated;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|RequestedArtWorks[]
+     */
+    public function getRequestedArtWorks(): Collection
+    {
+        return $this->requestedArtWorks;
+    }
+
+    public function addRequestedArtWork(RequestedArtWorks $requestedArtWork): self
+    {
+        if (!$this->requestedArtWorks->contains($requestedArtWork)) {
+            $this->requestedArtWorks[] = $requestedArtWork;
+            $requestedArtWork->setArtWork($this);
+        }
+
+        return $this;
+    }
+
+    public function removeRequestedArtWork(RequestedArtWorks $requestedArtWork): self
+    {
+        if ($this->requestedArtWorks->removeElement($requestedArtWork)) {
+            // set the owning side to null (unless already changed)
+            if ($requestedArtWork->getArtWork() === $this) {
+                $requestedArtWork->setArtWork(null);
+            }
+        }
 
         return $this;
     }

@@ -2,32 +2,25 @@
 
 namespace App\Repository;
 
-use App\Entity\Request;
+use App\Entity\RequestedArtWorks;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
 /**
- * @method Request|null find($id, $lockMode = null, $lockVersion = null)
- * @method Request|null findOneBy(array $criteria, array $orderBy = null)
- * @method Request[]    findAll()
- * @method Request[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
+ * @method RequestedArtWorks|null find($id, $lockMode = null, $lockVersion = null)
+ * @method RequestedArtWorks|null findOneBy(array $criteria, array $orderBy = null)
+ * @method RequestedArtWorks[]    findAll()
+ * @method RequestedArtWorks[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
  */
-class RequestRepository extends ServiceEntityRepository
+class RequestedArtWorksRepository extends ServiceEntityRepository
 {
-    use RepositoryTrait;
-    public const SEARCH_FIELDS = [
-        'firstName' => 'firstName',
-        'lastName'=>'lastName',
-        'firstNameApplicant'=>'firstNameApplicant',
-        'lastNameApplicant'=>'lastNameApplicant'
-    ];
     public function __construct(ManagerRegistry $registry)
     {
-        parent::__construct($registry, Request::class);
+        parent::__construct($registry, RequestedArtWorks::class);
     }
 
     // /**
-    //  * @return Request[] Returns an array of Request objects
+    //  * @return RequestedArtWorks[] Returns an array of RequestedArtWorks objects
     //  */
     /*
     public function findByExampleField($value)
@@ -44,7 +37,7 @@ class RequestRepository extends ServiceEntityRepository
     */
 
     /*
-    public function findOneBySomeField($value): ?Request
+    public function findOneBySomeField($value): ?RequestedArtWorks
     {
         return $this->createQueryBuilder('r')
             ->andWhere('r.exampleField = :val')

@@ -17,7 +17,7 @@ class SubDivisionRepository extends ServiceEntityRepository
 {
     use RepositoryTrait;
 
-    public const SEARCH_FIELDS = ['label_param' => 'label', 'acronym_param' => 'acronym'];
+    public const SEARCH_FIELDS = ['label_param' => 'label', 'acronym_param' => 'acronym', 'establishment_label_param' => 'establishment_label'];
 
     public function __construct(ManagerRegistry $registry)
     {

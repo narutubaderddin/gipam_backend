@@ -81,13 +81,12 @@ class ArtWorkController extends AbstractFOSRestController
      * )
      * @SWG\Tag(name="ArtWorks")
      * @Rest\View(serializerEnableMaxDepthChecks=true)
-     *
      * @param ArtWork $artWork
      * @param Request $request
      * @return View
      */
     public function showArtWork(ArtWork $artWork, Request $request){
-        $serializerGroups = $request->get('serializer_group', '["art_work_list"]');
+        $serializerGroups = $request->get('serializer_group', '["short", "art_work_details"]');
 
         $serializerGroups = json_decode($serializerGroups, true);
         $context = new Context();
@@ -381,7 +380,7 @@ class ArtWorkController extends AbstractFOSRestController
 
         switch ($exportType){
             case "techniques":
-                $view = "techniques";
+                $view = "artWorks/technique_pdf.html.twig";
                 break;
             case "complete":
                 $view = "complete";

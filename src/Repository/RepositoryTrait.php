@@ -233,6 +233,12 @@ trait RepositoryTrait
             case 'gtOrNull':
                 $queryBuilder->andWhere("$field > :$parameter OR $field IS NULL")->setParameter($parameter, $value);
                 break;
+            case 'equalDate':
+                $date = new \DateTime($value);
+                $queryBuilder->andWhere($queryBuilder->expr()->between("$field", ':date_start', ':date_end'))
+                ->setParameter('date_start', $date->format('Y-m-d 00:00:00'))
+                ->setParameter('date_end',   $date->format('Y-m-d 23:59:59'));
+                break;
             default:
                 throw new \RuntimeException('Unknown comparison operator: ' . $operator);
         }

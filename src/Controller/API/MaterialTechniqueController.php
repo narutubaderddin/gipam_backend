@@ -10,6 +10,7 @@ use App\Services\ApiManager;
 use App\Services\MaterialTechniqueService;
 use Doctrine\ORM\NonUniqueResultException;
 use Doctrine\ORM\NoResultException;
+use FOS\RestBundle\Context\Context;
 use FOS\RestBundle\Controller\AbstractFOSRestController;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use FOS\RestBundle\Controller\Annotations\Route;
@@ -107,6 +108,7 @@ class MaterialTechniqueController extends AbstractFOSRestController
      * @Rest\QueryParam(name="type",map=true, nullable=false, description="filter by type. example: type[eq]=value")
      * @Rest\QueryParam(name="active" ,map=true, nullable=false, description="filter by active. example: active[eq]=1")
      * @Rest\QueryParam(name="denominations", map=true, nullable=false, description="filter by denomination. denominations: field[eq]=1")
+     * @Rest\QueryParam(name="denominations_id", map=true, nullable=false, description="filter by denominations id. denominations_id[eq]=1")
      * @Rest\QueryParam(name="search", map=false, nullable=true, description="search. example: search=text")
      *
      * @Rest\View()
@@ -170,11 +172,17 @@ class MaterialTechniqueController extends AbstractFOSRestController
      *
      * @param ParamFetcherInterface $paramFetcher
      * @param ApiManager $apiManager
+     * @param Request $request
      * @return View
      */
-    public function listMaterialTechniqueByCriteria(ParamFetcherInterface $paramFetcher,ApiManager $apiManager){
+    public function listMaterialTechniqueByCriteria(ParamFetcherInterface $paramFetcher,ApiManager $apiManager, Request $request){
+        $serializerGroups = $request->get('serializer_group', '["short"]');
+        $serializerGroups = json_decode($serializerGroups, true);
+        $serializerGroups[] = "response";
+        $context = new Context();
+        $context->setGroups($serializerGroups);
         $records =$apiManager->findRecordsByEntityNameAndCriteria(MaterialTechnique::class,$paramFetcher);
-        return $this->view($records, Response::HTTP_OK);
+        return $this->view($records, Response::HTTP_OK)->setContext($context);
     }
 
     /**
