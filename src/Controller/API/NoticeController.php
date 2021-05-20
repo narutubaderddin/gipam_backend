@@ -89,16 +89,19 @@ class NoticeController extends AbstractFOSRestController
      *     @Model(type=ArtWork::class, groups={"artwork"})
      * )
      *
-     *
+     * @Rest\QueryParam(name="id", requirements="\d+", default="null", description="id of notice if exists")
      * @Rest\View(serializerGroups={"artwork"}, serializerEnableMaxDepthChecks=true)
      * @param Request $request
      *
+     * @param FurnitureService $furnitureService
+     * @param ParamFetcherInterface $paramFetcher
+     * @param ArtWorkRepository $artWorkRepository
      * @return View
-     *
      */
-    public function createDepositNotice(Request $request, FurnitureService $furnitureService)
+    public function createDepositNotice(Request $request, FurnitureService $furnitureService, ParamFetcherInterface $paramFetcher, ArtWorkRepository $artWorkRepository)
     {
-        $artWork = new ArtWork();
+        $id = $paramFetcher->get('id');
+        $id != "null" ? $artWork = $artWorkRepository->findOneBy(['id' => $id]) : $artWork = new ArtWork();
         $form = $this->createArtWorkForm(ArtWorkType::DEPOSIT_STATUS, $artWork);
         $form->submit($this->apiManager->getPostDataFromRequest($request, true));
 
@@ -108,7 +111,7 @@ class NoticeController extends AbstractFOSRestController
                 return $this->view($formattedResult, Response::HTTP_CREATED);
             } else {
                 $attribues = $furnitureService->getAttributesByDenominationIdAndFieldId($form->getData()->getDenomination()->getId(), $form->getData()->getField()->getId());
-                if ((in_array('materialTechnique', $attribues) && $form->getData()->getMaterialTechnique()->isEmpty()) || (in_array('numberOfUnit', $attribues) && $form->getData()->getNumberOfUnit()->isEmpty())) {
+                if ((in_array('materialTechnique', $attribues) && $form->getData()->getMaterialTechnique()->isEmpty()) || (in_array('numberOfUnit', $attribues) && $form->getData()->getNumberOfUnit())) {
                     $formattedResult = ['msg' => 'Notice enregistrée en mode brouillon avec succès', 'res' => $this->apiManager->save($form->getData())];
                     return $this->view($formattedResult, Response::HTTP_CREATED);
                 } else {
@@ -206,7 +209,7 @@ class NoticeController extends AbstractFOSRestController
     {
         $id = $paramFetcher->get('id');
         $id != "null" ? $artWork = $artWorkRepository->findOneBy(['id' => $id]) : $artWork = new ArtWork();
-        
+
         $form =  $form = $this->createArtWorkForm( ArtWorkType::PROPERTY_STATUS, $artWork);
         $data =$this->apiManager->getPostDataFromRequest($request, true);
 
@@ -217,7 +220,7 @@ class NoticeController extends AbstractFOSRestController
                 return $this->view($formattedResult, Response::HTTP_CREATED);
             } else {
                 $attribues = $furnitureService->getAttributesByDenominationIdAndFieldId($form->getData()->getDenomination()->getId(), $form->getData()->getField()->getId());
-                if ((in_array('materialTechnique', $attribues) && $form->getData()->getMaterialTechnique()->isEmpty()) || (in_array('numberOfUnit', $attribues) && !$form->getData()->getNumberOfUnit()->isEmpty())) {
+                if ((in_array('materialTechnique', $attribues) && $form->getData()->getMaterialTechnique()->isEmpty()) || (in_array('numberOfUnit', $attribues) && !$form->getData()->getNumberOfUnit())) {
                     $formattedResult = ['msg' => 'Notice enregistrée en mode brouillon avec succès', 'res' => $this->apiManager->save($form->getData())];
                     return $this->view($formattedResult, Response::HTTP_CREATED);
                 } else {
@@ -244,7 +247,7 @@ class NoticeController extends AbstractFOSRestController
      * @Rest\QueryParam(name="page", requirements="\d+", default="1", description="page number.")
      * @Rest\QueryParam(name="limit", requirements="\d+", default="20", description="page size.")
      * @SWG\Tag(name="art_works_in_progress")
-     * @Rest\View(serializerGroups={"short"},serializerEnableMaxDepthChecks=true)
+     * @Rest\View(serializerGroups={"short","photography", "hyperLink_furniture", "attachment"},serializerEnableMaxDepthChecks=true)
      * @param ArtWorkRepository $artWorkRepository
      * @return View
      */

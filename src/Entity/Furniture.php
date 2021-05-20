@@ -145,7 +145,7 @@ abstract class Furniture
     protected $reports;
 
     /**
-     * @JMS\Groups("artwork","art_work_list","art_work_details")
+     * @JMS\Groups("artwork","art_work_list","art_work_details", "attachment")
      * @Assert\Valid()
      * @ORM\OneToMany(targetEntity=Attachment::class, mappedBy="furniture", cascade={"persist", "remove"})
      */
@@ -162,14 +162,14 @@ abstract class Furniture
     protected $status;
 
     /**
-     * @JMS\Groups("artwork", "art_work_details")
+     * @JMS\Groups("artwork", "art_work_details", "hyperLink_furniture")
      * @Assert\Valid()
      * @ORM\OneToMany(targetEntity=Hyperlink::class, mappedBy="furniture", cascade={"persist", "remove"})
      */
     protected $hyperlinks;
 
     /**
-     * @JMS\Groups("artwork", "art_work_details")
+     * @JMS\Groups("artwork", "art_work_details","photography")
      * @Assert\Valid()
      * @ORM\OneToMany(targetEntity=Photography::class, mappedBy="furniture", cascade={"persist", "remove"})
      */
@@ -191,7 +191,7 @@ abstract class Furniture
     protected $children;
 
     /**
-     * @JMS\Groups("artwork", "art_work_details")
+     * @JMS\Groups("artwork", "art_work_details", "short")
      * @JMS\MaxDepth(1)
      * @ORM\ManyToOne(targetEntity=Furniture::class, inversedBy="children")
      * @ORM\JoinColumn(name="parent_id", referencedColumnName="id")
