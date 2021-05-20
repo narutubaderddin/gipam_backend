@@ -17,6 +17,7 @@ trait TimestampableEntity
      *
      * @JMS\Groups("request_list","request_details")
      * @Gedmo\Timestampable(on="create")
+     * @JMS\Type("DateTime<'Y-m-d'>")
      * @ORM\Column(name="date_creation", type="datetime",options={"default"="CURRENT_TIMESTAMP"})
      */
     protected $createdAt;
@@ -49,7 +50,7 @@ trait TimestampableEntity
      */
     public function getCreatedAt()
     {
-        return $this->createdAt;
+        return $this->createdAt->format('Y-M-D');
     }
 
     /**
