@@ -17,7 +17,7 @@ class Attachment
 {
     use TimestampableEntity;
     /**
-     * @JMS\Groups("artwork","art_work_details")
+     * @JMS\Groups("artwork","art_work_details", "attachment")
      *
      * @ORM\Id
      * @ORM\GeneratedValue
@@ -33,7 +33,7 @@ class Attachment
     private $comment;
 
     /**
-     * @JMS\Groups("artwork","art_work_list","art_work_details")
+     * @JMS\Groups("artwork","art_work_list","art_work_details", "attachment")
      * @ORM\Column(name="lien", type="string", length=255)
      */
     private $link;
@@ -47,7 +47,7 @@ class Attachment
     private $furniture;
 
     /**
-     * @JMS\Groups("artwork","art_work_details")
+     * @JMS\Groups("artwork","art_work_details", "attachment")
      *
      * @Assert\Valid()
      *

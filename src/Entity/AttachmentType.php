@@ -21,7 +21,7 @@ class AttachmentType
     use TimestampableEntity;
 
     /**
-     * @JMS\Groups("artwork", "id")
+     * @JMS\Groups("artwork", "id", "attachment")
      *
      * @ORM\Id
      * @ORM\GeneratedValue
@@ -30,7 +30,7 @@ class AttachmentType
     private $id;
 
     /**
-     * @JMS\Groups("artwork", "attachment_type","art_work_details")
+     * @JMS\Groups("artwork", "attachment_type","art_work_details", "attachment")
      *
      * @Assert\NotBlank()
      *
