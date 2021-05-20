@@ -166,7 +166,7 @@ abstract class Status
      * @JMS\Groups("status_furniture", "art_work_details")
      */
     public function getDepositorName(){
-        if($this instanceof  DepositStatus){
+        if($this instanceof  DepositStatus && $this->getDepositor()){
             return  $this->getDepositor()->getName();
         }
         return null;
