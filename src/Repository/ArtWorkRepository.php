@@ -105,12 +105,12 @@ class ArtWorkRepository extends ServiceEntityRepository
      * @throws NoResultException
      * @throws NonUniqueResultException
      */
-    public function getArtWorkList(array $filter, array $advancedFilter, array $headerFilters,$searchQuery,$globalSearchQuery, $page, $limit, $sortBy = 'id', $sort = 'desc', $count = false)
+    public function getArtWorkList(array $filter, array $advancedFilter, array $headerFilters,$searchQuery,$globalSearchQuery, $page, $limit, $sortBy = 'id', $sort = 'desc', $count = false,$countTotal=false)
     {
         $query = $this->createQueryBuilder('artWork');
         $query->where($query->expr()->isInstanceOf('artWork', ArtWork::class));
-        $query->leftJoin('artWork.field', 'field')
-            ->leftJoin('artWork.denomination', 'denomination')
+        $query->innerJoin('artWork.field', 'field')
+            ->innerJoin('artWork.denomination', 'denomination')
             ->leftJoin('artWork.materialTechnique', 'materialTechnique')
             ->leftJoin('artWork.authors', 'authors')
             ->leftJoin('artWork.era', 'era')
@@ -146,7 +146,12 @@ class ArtWorkRepository extends ServiceEntityRepository
             ->leftJoin('propertyStatus.entryMode', 'entryMode')
             //                        ->leftJoin('sub_divisions.services','services')
         ;
-
+        $query->andWhere('(
+        artWork.title IS NOT NULL and artWork.numberOfUnit IS NOT NULL  )');
+       if($countTotal){
+           $query->select('count(artWork.id)');
+           return $query->getQuery()->getSingleScalarResult();
+       }
         foreach ($filter as $key => $value) {
             if (array_key_exists($key, self::$columns)) {
                 if ($key == 'id' && is_array($filter['id'])) {
