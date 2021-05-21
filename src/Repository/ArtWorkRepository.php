@@ -105,12 +105,38 @@ class ArtWorkRepository extends ServiceEntityRepository
      * @throws NoResultException
      * @throws NonUniqueResultException
      */
-    public function getArtWorkList(array $filter, array $advancedFilter, array $headerFilters,$searchQuery,$globalSearchQuery, $page, $limit, $sortBy = 'id', $sort = 'desc', $count = false)
+    public function getArtWorkList(array $filter, array $advancedFilter, array $headerFilters,$searchQuery,$globalSearchQuery, $page, $limit, $sortBy = 'id', $sort = 'desc', $count = false,$countTotal=false)
+    {
+        $query = $this->createArtWorkListQuery($filter, $advancedFilter, $headerFilters, $searchQuery, $globalSearchQuery, $countTotal);
+        if ($count || $countTotal) {
+            $query->select('count(artWork.id)');
+            return $query->getQuery()->getSingleScalarResult();
+        }
+        $query->setFirstResult(($page - 1) * $limit)->setMaxResults($limit);
+        if (array_key_exists($sortBy, self::$tableColumns)) {
+            $sortDataKey = self::$tableColumns[$sortBy]['entity'] . '.' . self::$tableColumns[$sortBy]['field'];
+            $query->orderBy($sortDataKey, $sort);
+        }
+        return $query->getQuery()->getResult();
+    }
+
+    public function getArtWorkListByOffset(array $filter, array $advancedFilter, array $headerFilters, $searchQuery, $globalSearchQuery, $offset, $limit, $sortBy = 'id', $sort = 'desc')
+    {
+        $query = $this->createArtWorkListQuery($filter, $advancedFilter, $headerFilters, $searchQuery, $globalSearchQuery);
+        $query->setFirstResult($offset)->setMaxResults($limit);
+        if (array_key_exists($sortBy, self::$tableColumns)) {
+            $sortDataKey = self::$tableColumns[$sortBy]['entity'] . '.' . self::$tableColumns[$sortBy]['field'];
+            $query->orderBy($sortDataKey, $sort);
+        }
+        return $query->getQuery()->getResult();
+    }
+
+    private function createArtWorkListQuery(array $filter, array $advancedFilter, array $headerFilters, $searchQuery, $globalSearchQuery, $countTotal=false)
     {
         $query = $this->createQueryBuilder('artWork');
         $query->where($query->expr()->isInstanceOf('artWork', ArtWork::class));
-        $query->leftJoin('artWork.field', 'field')
-            ->leftJoin('artWork.denomination', 'denomination')
+        $query->innerJoin('artWork.field', 'field')
+            ->innerJoin('artWork.denomination', 'denomination')
             ->leftJoin('artWork.materialTechnique', 'materialTechnique')
             ->leftJoin('artWork.authors', 'authors')
             ->leftJoin('artWork.era', 'era')
@@ -146,7 +172,10 @@ class ArtWorkRepository extends ServiceEntityRepository
             ->leftJoin('propertyStatus.entryMode', 'entryMode')
             //                        ->leftJoin('sub_divisions.services','services')
         ;
-
+        $query->andWhere('artWork.isCreated = true');
+        if ($countTotal) {
+            return $query;
+        }
         foreach ($filter as $key => $value) {
             if (array_key_exists($key, self::$columns)) {
                 if ($key == 'id' && is_array($filter['id'])) {
@@ -156,24 +185,14 @@ class ArtWorkRepository extends ServiceEntityRepository
                 }
             }
         }
-        if(strlen($globalSearchQuery)>0){
-            $query = $this->addGlobalQueryFilter($query,$globalSearchQuery);
+        if (strlen($globalSearchQuery) > 0) {
+            $query = $this->addGlobalQueryFilter($query, $globalSearchQuery);
         }
 
-        if(strlen($searchQuery)>0){
-            $query= $this->addQueryFilter($query,$searchQuery);
+        if (strlen($searchQuery) > 0) {
+            $query = $this->addQueryFilter($query, $searchQuery);
         }
-        $query = $this->addAdvancedFilter($query, $advancedFilter, $headerFilters);
-        if ($count) {
-            $query->select('count(artWork.id)');
-            return $query->getQuery()->getSingleScalarResult();
-        }
-        $query->setFirstResult(($page - 1) * $limit)->setMaxResults($limit);
-        if (array_key_exists($sortBy, self::$tableColumns)) {
-            $sortDataKey = self::$tableColumns[$sortBy]['entity'] . '.' . self::$tableColumns[$sortBy]['field'];
-            $query->orderBy($sortDataKey, $sort);
-        }
-        return $query->getQuery()->getResult();
+        return $this->addAdvancedFilter($query, $advancedFilter, $headerFilters);
     }
 
     public function addColumnFilter(QueryBuilder $query, array $filter, array $headerFilters, string $column, string $queryKey, string $type, string $entity)
