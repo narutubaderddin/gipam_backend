@@ -41,9 +41,7 @@ class GIPAMExtension extends AbstractExtension
         if(is_null($photography))
             return "";
         $uri = strpos($photography->getImagePreview(),'uploads')!==false ?$photography->getImagePreview():'uploads'.DIRECTORY_SEPARATOR.$photography->getImagePreview();
-        $path = $this->baseUrl . DIRECTORY_SEPARATOR . $uri;
-        $path = preg_replace('/\\\\/', "/", $path);
-        return $path;
+        return preg_replace('/\\\\/', "/", $uri);
 
     }
 

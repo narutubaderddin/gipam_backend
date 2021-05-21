@@ -196,9 +196,9 @@
                                 </div>
                             </div>
                         </td>
-                        <td class="border-left"  style="width: 390px;">
+                        <td class="border-left" >
                             {% if notice.getPrincipalPhoto is not null %}
-                                <img src="{{ notice.getPrincipalPhoto | notice_image }}" alt="images"/>
+                                <img style="max-width: 480px;max-height: 250px;" src="{{ notice.getPrincipalPhoto | notice_image }}" alt="images"/>
                             {% else %}
                                 <p style="text-align: center">image</p>
                             {% endif %}
