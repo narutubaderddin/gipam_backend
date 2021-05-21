@@ -174,7 +174,6 @@ class ArtWorkRepository extends ServiceEntityRepository
             //                        ->leftJoin('sub_divisions.services','services')
         ;
         $query->andWhere('artWork.isCreated = true');
-        $query->distinct('artWork.id');
         if ($countTotal) {
             return $query;
         }
