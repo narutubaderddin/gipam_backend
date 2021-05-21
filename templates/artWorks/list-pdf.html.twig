@@ -121,17 +121,19 @@
                                                             <td><div style="width:10px"></div></td>
                                                             <td align="center">
                                                                 <div style="width:300px;float: right">
-                                                                {% if file_exists(artWork.principalPhoto.imagePreview)  %}
-                                                                    <img
-                                                                            src={{ "uploads/"~artWork.principalPhoto.imagePreview }}
-                                                                            align=center
-                                                                            style="max-width: 300px;
+                                                                {% if artWork.principalPhoto is not null %}
+                                                                    {% if file_exists(artWork.principalPhoto.imagePreview)  %}
+                                                                        <img
+                                                                                src={{ "uploads/"~artWork.principalPhoto.imagePreview }}
+                                                                                align=center
+                                                                                style="max-width: 300px;
                                                                                                                                     max-height: 400px;"
-                                                                            alt="images"/>
+                                                                                alt="images"/>
                                                                     {% else %}
                                                                         <img src="{{ "uploads/000.jpg" }}"
                                                                              style="max-width: 300px; max-height: 400px; margin-left: 20%;"
                                                                              alt="images"/>
+                                                                    {% endif %}
                                                                 {% endif %}
                                                                 </div>
                                                             </td>
