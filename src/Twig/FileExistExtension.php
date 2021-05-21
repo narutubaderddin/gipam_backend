@@ -1,13 +1,13 @@
 <?php
 
-namespace App\Extension;
+namespace App\Twig;
 
 use Twig\Extension\AbstractExtension;
 use Twig\TwigFunction;
 use Symfony\Component\Filesystem\Filesystem;
 
 
-class FileExist extends AbstractExtension
+class FileExistExtension extends AbstractExtension
 {
     private $fileSystem;
     private $projectDir;
@@ -35,7 +35,7 @@ class FileExist extends AbstractExtension
         if (!$this->fileSystem->isAbsolutePath($path)) {
             $path = "{$this->projectDir}/public/uploads/{$path}";
         }
-        if (strpos($path, '00Photo non disponible.jpg') !== false) {
+        if (strpos($path, ' ') !== false) {
            return false;
         }
 
