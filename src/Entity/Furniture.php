@@ -25,7 +25,7 @@ use Symfony\Component\Validator\Context\ExecutionContextInterface;
 abstract class Furniture
 {
     /**
-     * @JMS\Groups("artwork", "artwork_id","id","art_work_list","art_work_details","request_details","request_list", "short")
+     * @JMS\Groups("artwork", "artwork_id","id","art_work_list","art_work_details","request_details","request_list", "short", "short_art_work")
      * @ORM\Id
      * @ORM\GeneratedValue
      * @ORM\Column(type="integer")
@@ -33,7 +33,7 @@ abstract class Furniture
     protected $id;
 
     /**
-     * @JMS\Groups({"art_work_list","artwork","art_work_details","request_details","request_list", "short"})
+     * @JMS\Groups({"art_work_list","artwork","art_work_details","request_details","request_list", "short", "short_art_work"})
      * @ORM\Column(name="titre", type="string", length=255, nullable=true)
      */
     protected $title;
@@ -117,7 +117,7 @@ abstract class Furniture
     protected $denomination;
 
     /**
-     * @JMS\Groups("artwork","field_furniture","art_work_details","art_work_list", "short")
+     * @JMS\Groups("artwork","field_furniture","art_work_details","art_work_list", "short", "short_art_work")
      * @JMS\MaxDepth(1)
      * @ORM\ManyToOne(targetEntity=Field::class, inversedBy="furniture")
      * @ORM\JoinColumn(name="domaine_id", referencedColumnName="id")

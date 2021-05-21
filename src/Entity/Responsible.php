@@ -15,6 +15,7 @@ use Symfony\Component\Validator\Constraints as Assert;
  * @ORM\Entity(repositoryClass=ResponsibleRepository::class)
  * @ORM\Table(name="responsable")
  * @UniqueEntity("mail", repositoryMethod="iFindBy", message="Un responsable avec ce courriel existe déjà!")
+ * @UniqueEntity("login", repositoryMethod="iFindBy", message="Un responsable avec ce login existe déjà!")
  */
 class Responsible
 {

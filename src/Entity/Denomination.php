@@ -35,7 +35,7 @@ class Denomination
     private $label;
 
     /**
-     * @JMS\Groups("denomination", "id")
+     * @JMS\Groups("denomination", "id", "short")
      *
      * @ORM\ManyToOne(targetEntity=Field::class, inversedBy="denominations")
      * @ORM\JoinColumn(name="domaine_id", referencedColumnName="id")
