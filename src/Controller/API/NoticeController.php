@@ -176,7 +176,7 @@ class NoticeController extends AbstractFOSRestController
      * )
      *
      * @Rest\QueryParam(name="id", requirements="\d+", default="null", description="id of notice if exists")
-     * @Rest\View(serializerGroups={"artwork", "art_work_details"}, serializerEnableMaxDepthChecks=true)
+     * @Rest\View(serializerGroups={"artwork", "art_work_details", "id"}, serializerEnableMaxDepthChecks=true)
      *
      * @param Request $request
      *
@@ -212,9 +212,9 @@ class NoticeController extends AbstractFOSRestController
      *     name="form",
      *     in="body",
      *     description="update progress ArtWork",
-     *     @Model(type=ArtWork::class, groups={""})
+     *     @Model(type=ArtWork::class, groups={"artwork"})
      * )
-     * @Rest\View(serializerGroups={"artwork", "art_work_details"}, serializerEnableMaxDepthChecks=true)
+     * @Rest\View(serializerGroups={"artwork", "art_work_details", "id"}, serializerEnableMaxDepthChecks=true)
      *
      * @param Request $request
      *
@@ -231,7 +231,9 @@ class NoticeController extends AbstractFOSRestController
         $form->submit($data, false);
         if($form->isValid()){
             $artWork = $this->apiManager->save($form->getData());
-            return $this->view($artWork,Response::HTTP_OK);
+            $formattedResult = ['msg' => 'Notice enregistrée en mode brouillon avec succès', 'res' => $artWork];
+
+            return $this->view($formattedResult,Response::HTTP_OK);
         }
         throw new FormValidationException($form);
     }
