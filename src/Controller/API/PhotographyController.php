@@ -137,6 +137,11 @@ class PhotographyController extends AbstractFOSRestController
             /**
              * @var Photography $photography
              */
+            $furniture= $photography->getFurniture();
+            $principalPhoto=$furniture->getPrincipalPhoto();
+            if(!$principalPhoto instanceof Photography){
+                $furniture->setIsCreated(false);
+            }
             $photography = $this->apiManager->save($form->getData());
             return $this->view($photography, Response::HTTP_OK);
         }

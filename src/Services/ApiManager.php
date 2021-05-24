@@ -140,14 +140,14 @@ class ApiManager
                     if ($value == "null") {
                         $result[$key] = null;
                     } else {
-                        if (in_array($key, ['date','entryDate', 'insuranceValueDate'])) {
+                        if (in_array($key, ['date','entryDate', 'insuranceValueDate', 'depositDate'])) {
                             $result[$key] = date($value);
                         }  elseif (in_array($key, ['creationDate'])) {
                             $result[$key] = date(json_decode($value).'-01-01');
                         } elseif (in_array($key, ['materialTechnique', 'authors'])) {
                             $array = ['['.$value.']'];
                             $result[$key] = json_decode($array[0]);
-                        }  elseif (in_array($key, ['url','descriptiveWords', 'title', 'marking', 'registrationSignature','insuranceValue', 'otherRegistrations', 'description', 'name'])) {
+                        }  elseif (in_array($key, ['url','descriptiveWords', 'title', 'marking', 'registrationSignature','insuranceValue', 'otherRegistrations', 'description', 'name', 'inventoryNumber'])) {
                             $result[$key] = $value;
                         }else{
                             $result[$key] = (int)json_decode($value);
