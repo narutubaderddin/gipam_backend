@@ -174,7 +174,6 @@ class ArtWorkRepository extends ServiceEntityRepository
             //                        ->leftJoin('sub_divisions.services','services')
         ;
         $query->andWhere('artWork.isCreated = true');
-        $query->distinct('artWork.id');
         if ($countTotal) {
             return $query;
         }
@@ -358,12 +357,23 @@ class ArtWorkRepository extends ServiceEntityRepository
                         $query->setParameter('value2', $value['value'][1]);
                         break;
                     case 'equalDate':
-                        $startDate = new \DateTime();
-                        $startDate->setDate($value['value'], 1, 1);
-                        $startDate->setTime(0, 0, 0);
-                        $endDate = new \DateTime();
-                        $endDate->setDate($value['value'], 12, 31);
-                        $endDate->setTime(23, 59, 59);
+                        if($isColumnAdvancedFilterExist){
+                            $startDate = new \DateTime();
+                            $startDate->setDate($value['value'], 1, 1);
+                            $startDate->setTime(0, 0, 0);
+                            $endDate = new \DateTime();
+                            $endDate->setDate($value['value'], 12, 31);
+                            $endDate->setTime(23, 59, 59);
+                        }else{
+                            $value=$headerFilter[$key];
+                            $startDate = new \DateTime();
+                            $startDate->setDate((int)$value['value'], 1, 1);
+                            $startDate->setTime(0, 0, 0);
+                            $endDate = new \DateTime();
+                            $endDate->setDate((int)$value['value'], 12, 31);
+                            $endDate->setTime(23, 59, 59);
+                        }
+
                         $query->setParameter('value1', $startDate);
                         $query->setParameter('value2', $endDate);
                         break;
