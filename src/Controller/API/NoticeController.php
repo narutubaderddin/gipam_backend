@@ -8,6 +8,7 @@ use App\Exception\FormValidationException;
 use App\Form\ArtWorkType;
 use App\Repository\ArtWorkRepository;
 use App\Services\ApiManager;
+use App\Services\ArtWorkService;
 use App\Services\FurnitureService;
 use FOS\RestBundle\Controller\AbstractFOSRestController;
 use FOS\RestBundle\Controller\Annotations as Rest;
@@ -93,14 +94,16 @@ class NoticeController extends AbstractFOSRestController
      * @param Request $request
      *
      * @param FurnitureService $furnitureService
+     * @param ArtWorkService $artWorkService
      * @return View
      * @throws \Exception
      */
-    public function createDepositNotice(Request $request, FurnitureService $furnitureService)
+    public function createDepositNotice(Request $request, FurnitureService $furnitureService, ArtWorkService $artWorkService)
     {
         $artWork = new ArtWork();
         $form = $this->createArtWorkForm(ArtWorkType::DEPOSIT_STATUS, $artWork);
-        return $this->createNotice($request, $form, $furnitureService);
+        $result = $artWorkService->createNotice($request, $form, $furnitureService, ArtWorkType::DEPOSIT_STATUS);
+        return $this->view($result, Response::HTTP_CREATED);
     }
 
     /**
@@ -182,15 +185,16 @@ class NoticeController extends AbstractFOSRestController
      *
      * @param FurnitureService $furnitureService
      * @param ParamFetcherInterface $paramFetcher
-     * @param ArtWorkRepository $artWorkRepository
+     * @param ArtWorkService $artWorkService
      * @return View
      * @throws \Exception
      */
-    public function createPropertyNotice(Request $request, FurnitureService $furnitureService, ParamFetcherInterface $paramFetcher, ArtWorkRepository $artWorkRepository)
+    public function createPropertyNotice(Request $request, FurnitureService $furnitureService, ParamFetcherInterface $paramFetcher, ArtWorkService $artWorkService)
     {
         $artWork = new ArtWork();
         $form =  $this->createArtWorkForm( ArtWorkType::PROPERTY_STATUS, $artWork);
-        return $this->createNotice($request, $form, $furnitureService);
+        $result = $artWorkService->createNotice($request, $form, $furnitureService, ArtWorkType::PROPERTY_STATUS);
+        return $this->view($result, Response::HTTP_CREATED);
     }
 
     /**
@@ -238,35 +242,7 @@ class NoticeController extends AbstractFOSRestController
         throw new FormValidationException($form);
     }
 
-    /**
-     * @param Request $request
-     * @param FormInterface $form
-     * @param FurnitureService $furnitureService
-     * @return View
-     * @throws \Exception
-     */
-    public function createNotice(Request $request,FormInterface $form, FurnitureService $furnitureService) {
-        $data =$this->apiManager->getPostDataFromRequest($request, true);
-        $form->submit($data);
-        if ($form->isSubmitted() && $form->isValid()) {
-            if (!$form->getData()->getField() || !$form->getData()->getDenomination() || !$form->getData()->getTitle() || !$form->getData()->getStatus()->getEntryMode() || !$form->getData()->getStatus()->getEntryDate() || !$form->getData()->getStatus()->getCategory()) {
-                $formattedResult = ['msg' => 'Notice enregistrée en mode brouillon avec succès', 'res' => $this->apiManager->save($form->getData())];
-                return $this->view($formattedResult, Response::HTTP_CREATED);
-            } else {
-                $attribues = $furnitureService->getAttributesByDenominationIdAndFieldId($form->getData()->getDenomination()->getId(), $form->getData()->getField()->getId());
-                if ((in_array('materialTechnique', $attribues) && $form->getData()->getMaterialTechnique()->isEmpty()) || (in_array('numberOfUnit', $attribues) && !$form->getData()->getNumberOfUnit())) {
-                    $formattedResult = ['msg' => 'Notice enregistrée en mode brouillon avec succès', 'res' => $this->apiManager->save($form->getData())];
-                    return $this->view($formattedResult, Response::HTTP_CREATED);
-                } else {
-                    $form->getData()->setIsCreated(true);
-                    $formattedResult = ['msg' => 'Notice enregistrée avec succès', 'res' => $this->apiManager->save($form->getData())];
-                    return $this->view($formattedResult, Response::HTTP_CREATED);
-                }
-            }
-        } else {
-            throw new FormValidationException($form);
-        }
-    }
+   
 
     /**
      * @Rest\Get("/get-art-works-in-progress")
