@@ -7,6 +7,7 @@ namespace App\Services;
 use App\Entity\ArtWork;
 use App\Entity\Furniture;
 use App\Entity\Photography;
+use App\Entity\PhotographyType;
 use App\Entity\PropertyStatus;
 use App\Exception\FormValidationException;
 use App\Model\ApiResponse;
@@ -207,14 +208,14 @@ class ArtWorkService
         /**
          * @var ArtWork $furniture
          */
-        if((!$principalPhoto instanceof Photography && $photoType!=='Identification')){
+        if((!$principalPhoto instanceof Photography && $photoType!==PhotographyType::TYPE['principle'])){
             $furniture->setIsCreated(false);
             return false;
         }
-        if (($photography->getId() !== $principalPhoto->getId() ) && $photoType==='Identification') {
-            return ['msg' => $principalPhoto->getId(). 'Photographie de type "Identification" existe déjà', 'code' => 400];
+        if (($photography->getId() !== $principalPhoto->getId() ) && $photoType===PhotographyType::TYPE['principle']) {
+            return ['msg' => $principalPhoto->getId(). 'Photographie de type '. PhotographyType::TYPE['principle'] .' existe déjà', 'code' => 400];
         }
-        if(($principalPhoto->getId()===$photography->getId()) && $photoType==='Identification'){
+        if(($principalPhoto->getId()===$photography->getId()) && $photoType===PhotographyType::TYPE['principle']){
             if((in_array('materialTechnique', $attribues) && $furniture->getMaterialTechnique()->isEmpty()) ||
                 (in_array('numberOfUnit', $attribues) && !$furniture->getNumberOfUnit())){
                 $furniture->setIsCreated(false);
