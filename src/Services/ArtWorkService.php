@@ -144,35 +144,6 @@ class ArtWorkService
         return $this->entityManager->getRepository(ArtWork::class)
             ->getArtworksByIds($artWorks, $sortBy, $sort);
     }
-    /**
-     * @param Request $request
-     * @param FormInterface $form
-     * @param FurnitureService $furnitureService
-     * @return View
-     * @throws \Exception
-     */
-    public function createNotice(Request $request,FormInterface $form, FurnitureService $furnitureService) {
-        $data =$this->apiManager->getPostDataFromRequest($request, true);
-        $form->submit($data);
-        if ($form->isSubmitted() && $form->isValid()) {
-            if (!$form->getData()->getField() || !$form->getData()->getDenomination() || !$form->getData()->getTitle() || !$form->getData()->getStatus()->getEntryMode() || !$form->getData()->getStatus()->getEntryDate() || !$form->getData()->getStatus()->getCategory()) {
-                $formattedResult = ['msg' => 'Notice enregistrée en mode brouillon avec succès', 'res' => $this->apiManager->save($form->getData())];
-                return $this->view($formattedResult, Response::HTTP_CREATED);
-            } else {
-                $attribues = $furnitureService->getAttributesByDenominationIdAndFieldId($form->getData()->getDenomination()->getId(), $form->getData()->getField()->getId());
-                if ((in_array('materialTechnique', $attribues) && $form->getData()->getMaterialTechnique()->isEmpty()) || (in_array('numberOfUnit', $attribues) && !$form->getData()->getNumberOfUnit())) {
-                    $formattedResult = ['msg' => 'Notice enregistrée en mode brouillon avec succès', 'res' => $this->apiManager->save($form->getData())];
-                    return $this->view($formattedResult, Response::HTTP_CREATED);
-                } else {
-                    $form->getData()->setIsCreated(true);
-                    $formattedResult = ['msg' => 'Notice enregistrée avec succès', 'res' => $this->apiManager->save($form->getData())];
-                    return $this->view($formattedResult, Response::HTTP_CREATED);
-                }
-            }
-        } else {
-            throw new FormValidationException($form);
-        }
-    }
 
     /**
      * @param Furniture $furniture
