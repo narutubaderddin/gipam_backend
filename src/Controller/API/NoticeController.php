@@ -214,7 +214,6 @@ class NoticeController extends AbstractFOSRestController
      *     description="update progress ArtWork",
      *     @Model(type=ArtWork::class, groups={""})
      * )
-     * @Rest\QueryParam(name="_method", requirements="\d+", default="PATCH", description="id of notice if exists")
      * @Rest\View(serializerGroups={"artwork", "art_work_details"}, serializerEnableMaxDepthChecks=true)
      *
      * @param Request $request
@@ -227,8 +226,14 @@ class NoticeController extends AbstractFOSRestController
     public function updateInProgressNotice(Request $request, FurnitureService $furnitureService, ArtWork $artWork)
     {
         $status = ($artWork->getStatus() instanceof  DepositStatus)?ArtWorkType::DEPOSIT_STATUS:ArtWorkType::PROPERTY_STATUS;
-        $form = $this->createArtWorkForm($status, $artWork);
-        return $this->createNotice($request, $form, $furnitureService);
+        $form = $this->createArtWorkForm($status,$artWork);
+        $data = $this->apiManager->getPostDataFromRequest($request, true);
+        $form->submit($data, false);
+        if($form->isValid()){
+            $artWork = $this->apiManager->save($form->getData());
+            return $this->view($artWork,Response::HTTP_OK);
+        }
+        throw new FormValidationException($form);
     }
 
     /**
