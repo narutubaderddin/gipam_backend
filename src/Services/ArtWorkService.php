@@ -6,6 +6,7 @@ namespace App\Services;
 
 use App\Entity\ArtWork;
 use App\Entity\Furniture;
+use App\Entity\Photography;
 use App\Entity\PropertyStatus;
 use App\Exception\FormValidationException;
 use App\Model\ApiResponse;
@@ -24,10 +25,15 @@ class ArtWorkService
      * @var EntityManagerInterface
      */
     private $entityManager;
+    /**
+     * @var FurnitureService
+     */
+    private $furnitureService;
 
-    public function __construct(EntityManagerInterface $entityManager)
+    public function __construct(EntityManagerInterface $entityManager,FurnitureService $furnitureService)
     {
         $this->entityManager = $entityManager;
+        $this->furnitureService=$furnitureService;
     }
 
     /**
@@ -166,5 +172,37 @@ class ArtWorkService
         } else {
             throw new FormValidationException($form);
         }
+    }
+
+    /**
+     * @param Furniture $furniture
+     * @param Photography $photography
+     * @param $photoType
+     * @return array|false
+     */
+    public function checkPrincipalPhoto(Furniture $furniture, Photography $photography, $photoType)
+    {
+        $principalPhoto=$furniture->getPrincipalPhoto();
+
+        $attribues = $this->furnitureService->getAttributesByDenominationIdAndFieldId($furniture->getDenomination()->getId(), $furniture->getField()->getId());
+        /**
+         * @var ArtWork $furniture
+         */
+        if((!$principalPhoto instanceof Photography && $photoType!=='Identification')){
+            $furniture->setIsCreated(false);
+            return false;
+        }
+        if (($photography->getId() !== $principalPhoto->getId() ) && $photoType==='Identification') {
+                return ['msg' => $principalPhoto->getId(). 'Photographie de type "Identification" existe déjà', 'code' => 400];
+        }
+        if(($principalPhoto->getId()===$photography->getId()) && $photoType==='Identification'){
+            if((in_array('materialTechnique', $attribues) && $furniture->getMaterialTechnique()->isEmpty()) ||
+                (in_array('numberOfUnit', $attribues) && !$furniture->getNumberOfUnit())){
+                $furniture->setIsCreated(false);
+            }else {
+                $furniture->setIsCreated(true);
+            }
+        }
+
     }
 }
