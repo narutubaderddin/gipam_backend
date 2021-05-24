@@ -87,7 +87,7 @@ class PropertyStatus extends Status
     private $otherRegistrations;
 
     /**
-     * @JMS\Groups("artwork")
+     * @JMS\Groups("artwork", "art_work_details")
      *
      * @ORM\Column(name="description_commentaire", type="text", nullable=true)
      */
