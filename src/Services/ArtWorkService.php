@@ -7,18 +7,15 @@ namespace App\Services;
 use App\Entity\ArtWork;
 use App\Entity\Furniture;
 use App\Entity\Photography;
-use App\Entity\Photography;
 use App\Entity\PropertyStatus;
 use App\Exception\FormValidationException;
 use App\Model\ApiResponse;
-use App\Repository\FurnitureRepository;
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\EntityManagerInterface;
 use FOS\RestBundle\Request\ParamFetcherInterface;
 use FOS\RestBundle\View\View;
 use Symfony\Component\Form\FormInterface;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\Response;
 
 class ArtWorkService
 {
