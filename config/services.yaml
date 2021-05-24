@@ -66,6 +66,9 @@ services:
             - method: setArguments
               arguments:
                   $baseRoute: '%env(string:SERVER_BASE_URL)%'
+
+    App\Twig\FileExistExtension:
+        $projectDir: '%kernel.project_dir%'
     talan.audit.audit_reader:
         class: App\Services\AuditReader
         arguments: ["@doctrine.orm.default_entity_manager","@talan.audit.audit_configuration"]

@@ -162,7 +162,9 @@ class ApiManager
 
     /**
      * @param Request $request
+     * @param bool|null $noticeCreation
      * @return array
+     * @throws \Exception
      */
     public function getPostDataFromRequest(Request $request, ?bool  $noticeCreation = false):array
     {
