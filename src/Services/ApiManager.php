@@ -140,7 +140,7 @@ class ApiManager
                     if ($value == "null") {
                         $result[$key] = null;
                     } else {
-                        if (in_array($key, ['date','entryDate', 'insuranceValueDate'])) {
+                        if (in_array($key, ['date','entryDate', 'insuranceValueDate', 'depositDate'])) {
                             $result[$key] = date($value);
                         }  elseif (in_array($key, ['creationDate'])) {
                             $result[$key] = date(json_decode($value).'-01-01');
