@@ -24,10 +24,20 @@ class ArtWorkService
      * @var EntityManagerInterface
      */
     private $entityManager;
+    /**
+     * @var  ApiManager
+     */
+    private $apiManager;
 
-    public function __construct(EntityManagerInterface $entityManager)
+    /**
+     * ArtWorkService constructor.
+     * @param EntityManagerInterface $entityManager
+     * @param ApiManager $apiManager
+     */
+    public function __construct(EntityManagerInterface $entityManager, ApiManager $apiManager)
     {
         $this->entityManager = $entityManager;
+        $this->apiManager = $apiManager;
     }
 
     /**
@@ -142,27 +152,37 @@ class ArtWorkService
      * @param Request $request
      * @param FormInterface $form
      * @param FurnitureService $furnitureService
-     * @return View
+     * @return array
      * @throws \Exception
      */
-    public function createNotice(Request $request,FormInterface $form, FurnitureService $furnitureService) {
+    public function createNotice(Request $request,FormInterface $form, FurnitureService $furnitureService, $status) {
         $data =$this->apiManager->getPostDataFromRequest($request, true);
         $form->submit($data);
         if ($form->isSubmitted() && $form->isValid()) {
-            if (!$form->getData()->getField() || !$form->getData()->getDenomination() || !$form->getData()->getTitle() || !$form->getData()->getStatus()->getEntryMode() || !$form->getData()->getStatus()->getEntryDate() || !$form->getData()->getStatus()->getCategory()) {
-                $formattedResult = ['msg' => 'Notice enregistrée en mode brouillon avec succès', 'res' => $this->apiManager->save($form->getData())];
-                return $this->view($formattedResult, Response::HTTP_CREATED);
-            } else {
-                $attribues = $furnitureService->getAttributesByDenominationIdAndFieldId($form->getData()->getDenomination()->getId(), $form->getData()->getField()->getId());
-                if ((in_array('materialTechnique', $attribues) && $form->getData()->getMaterialTechnique()->isEmpty()) || (in_array('numberOfUnit', $attribues) && !$form->getData()->getNumberOfUnit())) {
-                    $formattedResult = ['msg' => 'Notice enregistrée en mode brouillon avec succès', 'res' => $this->apiManager->save($form->getData())];
-                    return $this->view($formattedResult, Response::HTTP_CREATED);
+            if ($status == 'deposit') {
+                if (!$form->getData()->getField() || !$form->getData()->getDenomination() || !$form->getData()->getTitle() || !$form->getData()->getStatus()->getDepositDate() || !$form->getData()->getStatus()->getStopNumber()) {
+                    return ['msg' => 'Notice enregistrée en mode brouillon avec succès', 'res' => $this->apiManager->save($form->getData())];
                 } else {
-                    $form->getData()->setIsCreated(true);
-                    $formattedResult = ['msg' => 'Notice enregistrée avec succès', 'res' => $this->apiManager->save($form->getData())];
-                    return $this->view($formattedResult, Response::HTTP_CREATED);
+                    $attribues = $furnitureService->getAttributesByDenominationIdAndFieldId($form->getData()->getDenomination()->getId(), $form->getData()->getField()->getId());
+                    if ((in_array('materialTechnique', $attribues) && $form->getData()->getMaterialTechnique()->isEmpty()) || (in_array('numberOfUnit', $attribues) && !$form->getData()->getNumberOfUnit())) {
+                        return ['msg' => 'Notice enregistrée en mode brouillon avec succès', 'res' => $this->apiManager->save($form->getData())];
+                    } else {
+                        return ['msg' => 'Notice enregistrée avec succès en mode brouillon', 'res' => $this->apiManager->save($form->getData())];
+                    }
+                }
+            } else {
+                if (!$form->getData()->getField() || !$form->getData()->getDenomination() || !$form->getData()->getTitle() || !$form->getData()->getStatus()->getEntryMode() || !$form->getData()->getStatus()->getEntryDate() || !$form->getData()->getStatus()->getCategory()) {
+                    return ['msg' => 'Notice enregistrée en mode brouillon avec succès', 'res' => $this->apiManager->save($form->getData())];
+                } else {
+                    $attribues = $furnitureService->getAttributesByDenominationIdAndFieldId($form->getData()->getDenomination()->getId(), $form->getData()->getField()->getId());
+                    if ((in_array('materialTechnique', $attribues) && $form->getData()->getMaterialTechnique()->isEmpty()) || (in_array('numberOfUnit', $attribues) && !$form->getData()->getNumberOfUnit())) {
+                        return ['msg' => 'Notice enregistrée en mode brouillon avec succès', 'res' => $this->apiManager->save($form->getData())];
+                    } else {
+                        return ['msg' => 'Notice enregistrée en mode brouillon avec succès', 'res' => $this->apiManager->save($form->getData())];
+                    }
                 }
             }
+
         } else {
             throw new FormValidationException($form);
         }

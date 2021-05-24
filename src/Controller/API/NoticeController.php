@@ -96,12 +96,14 @@ class NoticeController extends AbstractFOSRestController
      * @param FurnitureService $furnitureService
      * @param ArtWorkService $artWorkService
      * @return View
+     * @throws \Exception
      */
     public function createDepositNotice(Request $request, FurnitureService $furnitureService, ArtWorkService $artWorkService)
     {
         $artWork = new ArtWork();
         $form = $this->createArtWorkForm(ArtWorkType::DEPOSIT_STATUS, $artWork);
-        return $artWorkService->createNotice($request, $form, $furnitureService);
+        $result = $artWorkService->createNotice($request, $form, $furnitureService, ArtWorkType::DEPOSIT_STATUS);
+        return $this->view($result, Response::HTTP_CREATED);
     }
 
     /**
@@ -191,7 +193,8 @@ class NoticeController extends AbstractFOSRestController
     {
         $artWork = new ArtWork();
         $form =  $this->createArtWorkForm( ArtWorkType::PROPERTY_STATUS, $artWork);
-        return $artWorkService->createNotice($request, $form, $furnitureService);
+        $result = $artWorkService->createNotice($request, $form, $furnitureService, ArtWorkType::PROPERTY_STATUS);
+        return $this->view($result, Response::HTTP_CREATED);
     }
 
     /**
