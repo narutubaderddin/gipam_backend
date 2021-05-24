@@ -134,6 +134,7 @@ class ArtWorkRepository extends ServiceEntityRepository
     private function createArtWorkListQuery(array $filter, array $advancedFilter, array $headerFilters, $searchQuery, $globalSearchQuery, $countTotal=false)
     {
         $query = $this->createQueryBuilder('artWork');
+
         $query->where($query->expr()->isInstanceOf('artWork', ArtWork::class));
         $query->innerJoin('artWork.field', 'field')
             ->innerJoin('artWork.denomination', 'denomination')
