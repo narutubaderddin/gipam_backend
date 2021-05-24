@@ -8,9 +8,11 @@ use DateTimeInterface;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use App\Talan\AuditBundle\Annotation as Audit;
 
 /**
  * @ORM\Entity(repositoryClass=ActionRepository::class)
+ * @Audit\Auditable()
  */
 class Action
 {
