@@ -117,7 +117,7 @@ class ArtWorkService
         $result = [];
         foreach ($queryData as $query) {
 
-            $options = $type == 'description' ? explode(" ", $query['descriptiveWords']) : explode(" ", $query['title']);
+            $options = $type == 'description' ? explode(",", $query['descriptiveWords']) : explode(" ", $query['title']);
             foreach ($options as $option) {
                 $option = strtolower(preg_replace('/[^A-Za-z0-9\-]/', '', $option)); // Removes special chars.
                 if (strpos($option, strtolower($searchQuery)) !== false && !in_array($option, $result)) {
