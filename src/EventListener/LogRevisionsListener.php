@@ -105,13 +105,14 @@ class LogRevisionsListener implements EventSubscriber
                 }
             }
         }
-        // if we have no changes left => don't create revision log
+        // if we have no changes left => don't create revision lognotic
         if ( count($changeset) == 0 ) {
             return;
         }
+        $updatedAttibutes = array_diff(array_keys($changeset),['updatedAt']);
 
         $entityData = array_merge($this->getOriginalEntityData($entity), $this->uow->getEntityIdentifier($entity));
-        dd($entityData);
+
 
         $this->saveRevisionEntityData($class, $entityData, 'UPD');
     }

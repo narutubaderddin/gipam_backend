@@ -73,6 +73,7 @@ class CreateSchemaListener implements EventSubscriber
             $revisionTable->addColumn('operationDate', 'datetime');
             $revisionTable->addColumn('actor', 'string',array('length' => 200));
             $revisionTable->addColumn('actionType', 'string',array('length' => 200));
+            $revisionTable->addColumn('attribus_modifiee', 'string',array('length' => 200));
             $pkColumns = $entityTable->getPrimaryKey()->getColumns();
             $pkColumns[] = $this->config->getRevisionFieldName();
             $revisionTable->setPrimaryKey($pkColumns);
