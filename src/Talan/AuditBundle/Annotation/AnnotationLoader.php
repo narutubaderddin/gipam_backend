@@ -5,6 +5,8 @@ namespace App\Talan\AuditBundle\Annotation;
 
 use Doctrine\Common\Annotations\AnnotationReader;
 use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\ORM\Mapping\Column;
+use Doctrine\ORM\Mapping\JoinColumn;
 use ReflectionClass;
 use Symfony\Component\Finder\Finder;
 
@@ -46,7 +48,6 @@ class AnnotationLoader
                 if ($this->isAuditable($class)) {
                     $configuration['classes'][] = $class;
                     $configuration['ignored'][$class] = $this->getIgnoredFields($class);
-
                 }
             }
         }
@@ -165,7 +166,17 @@ class AnnotationLoader
         $properties = [];
         foreach ($reflection->getProperties() as $property) {
             if (null != $this->reader->getPropertyAnnotation($property, Ignore::class)) {
-                array_push($properties, $property->getName());
+                if (((null != $annotationData = $this->reader->getPropertyAnnotation($property, Column::class)) ||
+                    (null != $annotationData = $this->reader->getPropertyAnnotation($property, JoinColumn::class))) &&
+                    (property_exists($annotationData,'name'))
+                ) {
+                    $key = $annotationData->name;
+                } else {
+                    $key = $property->getName();
+                }
+
+
+                array_push($properties, $key);
             }
         }
         return $properties;

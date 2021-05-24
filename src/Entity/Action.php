@@ -12,7 +12,6 @@ use App\Talan\AuditBundle\Annotation as Audit;
 
 /**
  * @ORM\Entity(repositoryClass=ActionRepository::class)
- * @Audit\Auditable()
  */
 class Action
 {

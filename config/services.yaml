@@ -66,17 +66,17 @@ services:
             - method: setArguments
               arguments:
                   $baseRoute: '%env(string:SERVER_BASE_URL)%'
-#    talan.audit.audit_reader:
-#        class: App\Services\AuditReader
-#        arguments: ["@doctrine.orm.default_entity_manager","@talan.audit.audit_configuration"]
-#        public: true
-#    talan.audit.event.log_revision_listener:
-#        class: App\EventListener\LogRevisionsListener
-#        arguments: ["@talan.audit.audit_manager","@security.helper"]
-#        tags:
-#            - { name: doctrine.event_subscriber, connection: default }
-#    talan.audit.event.create_schema_listener:
-#        class: App\EventListener\CreateSchemaListener
-#        arguments: ["@talan.audit.audit_manager"]
-#        tags:
-#            - { name: doctrine.event_subscriber, connection: default }
+    talan.audit.audit_reader:
+        class: App\Services\AuditReader
+        arguments: ["@doctrine.orm.default_entity_manager","@talan.audit.audit_configuration"]
+        public: true
+    talan.audit.event.log_revision_listener:
+        class: App\EventListener\LogRevisionsListener
+        arguments: ["@talan.audit.audit_manager","@security.helper"]
+        tags:
+            - { name: doctrine.event_subscriber, connection: default }
+    talan.audit.event.create_schema_listener:
+        class: App\EventListener\CreateSchemaListener
+        arguments: ["@talan.audit.audit_manager"]
+        tags:
+            - { name: doctrine.event_subscriber, connection: default }

@@ -13,7 +13,7 @@ use JMS\Serializer\Annotation as JMS;
 use Symfony\Component\Validator\Constraints as Assert;
 use Gedmo\Mapping\Annotation as Gedmo;
 use Symfony\Component\Validator\Context\ExecutionContextInterface;
-
+use App\Talan\AuditBundle\Annotation as Audit;
 
 /**
  * @ORM\Entity(repositoryClass=FurnitureRepository::class)
@@ -21,6 +21,7 @@ use Symfony\Component\Validator\Context\ExecutionContextInterface;
  * @ORM\InheritanceType("JOINED")
  * @ORM\DiscriminatorColumn(name="table_associee", type="string")
  * @ORM\DiscriminatorMap({"oeuvre_art"="ArtWork", "mobilier_bureau"="OfficeFurniture"})
+ * @Audit\Auditable()
  */
 abstract class Furniture
 {
@@ -88,7 +89,7 @@ abstract class Furniture
      *      joinColumns={@ORM\JoinColumn(name="objet_mobilier_id", referencedColumnName="id")},
      *      inverseJoinColumns={@ORM\JoinColumn(name="auteur_id", referencedColumnName="id")}
      *      )
-     *
+     * @Audit\Ignore()
      */
     protected $authors;
 
@@ -97,6 +98,7 @@ abstract class Furniture
      * @JMS\MaxDepth(1)
      * @ORM\ManyToOne(targetEntity=Era::class, inversedBy="furniture")
      * @ORM\JoinColumn(name="epoque_id", referencedColumnName="id")
+     * @Audit\Ignore()
      */
     protected $era;
 
@@ -105,6 +107,7 @@ abstract class Furniture
      * @JMS\MaxDepth(1)
      * @ORM\ManyToOne(targetEntity=Style::class, inversedBy="furniture")
      * @ORM\JoinColumn(name="style_id", referencedColumnName="id")
+     * @Audit\Ignore()
      */
     protected $style;
 
@@ -113,6 +116,7 @@ abstract class Furniture
      * @JMS\MaxDepth(1)
      * @ORM\ManyToOne(targetEntity=Denomination::class, inversedBy="furniture")
      * @ORM\JoinColumn(name="denomination_id", referencedColumnName="id")
+     * @Audit\Ignore()
      */
     protected $denomination;
 
@@ -121,12 +125,14 @@ abstract class Furniture
      * @JMS\MaxDepth(1)
      * @ORM\ManyToOne(targetEntity=Field::class, inversedBy="furniture")
      * @ORM\JoinColumn(name="domaine_id", referencedColumnName="id")
+     * @Audit\Ignore()
      */
     protected $field;
 
     /**
      * @JMS\Groups("artwork")
      * @ORM\OneToMany(targetEntity=ArtWorkLog::class, mappedBy="furniture")
+     * @Audit\Ignore()
      */
     protected $artWorkLogs;
 
@@ -134,12 +140,14 @@ abstract class Furniture
      * @JMS\Groups("artwork","mouvement_furniture","art_work_details")
      * @JMS\MaxDepth(1)
      * @ORM\OneToMany(targetEntity=Movement::class, mappedBy="furniture")
+     * @Audit\Ignore()
      */
     protected $movements;
 
     /**
      * @JMS\Groups("artwork","art_work_details")
      * @ORM\OneToMany(targetEntity=Report::class, mappedBy="furniture")
+     * @Audit\Ignore()
      * @JMS\MaxDepth(1)
      */
     protected $reports;
@@ -148,6 +156,7 @@ abstract class Furniture
      * @JMS\Groups("artwork","art_work_list","art_work_details", "attachment")
      * @Assert\Valid()
      * @ORM\OneToMany(targetEntity=Attachment::class, mappedBy="furniture", cascade={"persist", "remove"})
+     * @Audit\Ignore()
      */
     protected $attachments;
 
@@ -158,6 +167,7 @@ abstract class Furniture
      * @JMS\MaxDepth(2)
      * @ORM\ManyToOne(targetEntity=Status::class, inversedBy="furniture")
      * @ORM\JoinColumn(name="status_id", referencedColumnName="id")
+     * @Audit\Ignore()
      */
     protected $status;
 
@@ -165,6 +175,7 @@ abstract class Furniture
      * @JMS\Groups("artwork", "art_work_details", "hyperLink_furniture")
      * @Assert\Valid()
      * @ORM\OneToMany(targetEntity=Hyperlink::class, mappedBy="furniture", cascade={"persist", "remove"})
+     * @Audit\Ignore()
      */
     protected $hyperlinks;
 
@@ -172,6 +183,7 @@ abstract class Furniture
      * @JMS\Groups("artwork", "art_work_details","photography")
      * @Assert\Valid()
      * @ORM\OneToMany(targetEntity=Photography::class, mappedBy="furniture", cascade={"persist", "remove"})
+     * @Audit\Ignore()
      */
     protected $photographies;
 
@@ -179,6 +191,7 @@ abstract class Furniture
      * @JMS\Groups("artwork","status_furniture")
      * @ORM\Column(type="boolean")
      * @ORM\Column(type="boolean",options={"default"=true})
+     * @Audit\Ignore()
      */
     protected $visible = true;
 
@@ -187,6 +200,7 @@ abstract class Furniture
      *
      * @JMS\MaxDepth(1)
      * @ORM\OneToMany(targetEntity=Furniture::class, mappedBy="parent")
+     * @Audit\Ignore()
      */
     protected $children;
 
@@ -195,6 +209,7 @@ abstract class Furniture
      * @JMS\MaxDepth(1)
      * @ORM\ManyToOne(targetEntity=Furniture::class, inversedBy="children")
      * @ORM\JoinColumn(name="parent_id", referencedColumnName="id")
+     * @Audit\Ignore()
      */
     protected $parent;
 
@@ -223,6 +238,7 @@ abstract class Furniture
      *      joinColumns={@ORM\JoinColumn(name="objet_mobilier_id", referencedColumnName="id")},
      *      inverseJoinColumns={@ORM\JoinColumn(name="matiere_technique_id", referencedColumnName="id")}
      *      )
+     * @Audit\Ignore()
      */
     private $materialTechnique;
 

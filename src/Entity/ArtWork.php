@@ -4,6 +4,8 @@ namespace App\Entity;
 
 use App\Repository\ArtWorkRepository;
 use App\Services\ArtWorkService;
+use App\Talan\AuditBundle\Annotation\Auditable;
+use App\Talan\AuditBundle\Annotation\Ignore;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\Common\Persistence\ObjectManagerAware;
@@ -17,6 +19,7 @@ use JMS\Serializer\Annotation as JMS;
  * @ORM\Entity(repositoryClass=ArtWorkRepository::class)
  * @ORM\Table(name="oeuvre_art")
  * @ORM\HasLifecycleCallbacks()
+ * @Auditable()
  */
 class ArtWork extends Furniture implements ObjectManagerAware
 {
@@ -61,6 +64,7 @@ class ArtWork extends Furniture implements ObjectManagerAware
 
     /**
      * @ORM\OneToMany(targetEntity=RequestedArtWorks::class, mappedBy="artWork")
+     * @Ignore()
      */
     private $requestedArtWorks;
 
