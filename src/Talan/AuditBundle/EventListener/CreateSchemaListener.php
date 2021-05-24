@@ -6,6 +6,7 @@ use App\Talan\AuditBundle\Services\AuditConfiguration;
 use App\Talan\AuditBundle\Services\AuditManager;
 use App\Talan\AuditBundle\Services\MetadataFactory;
 use Doctrine\Common\EventSubscriber;
+use Doctrine\DBAL\Schema\Column;
 use Doctrine\ORM\Tools\Event\GenerateSchemaEventArgs;
 use Doctrine\ORM\Tools\Event\GenerateSchemaTableEventArgs;
 use Doctrine\ORM\Tools\ToolEvents;
@@ -56,7 +57,9 @@ class CreateSchemaListener implements EventSubscriber
             if(isset($globalIgnoredColumns[$cm->name])){
               $ignoredColumns =  $globalIgnoredColumns[$cm->name];
             }
+
             foreach ($entityTable->getColumns() AS $column) {
+
                 /* @var $column Column */
                 if(false == array_search($column->getName(), $ignoredColumns)){
                     $revisionTable->addColumn($column->getName(), $column->getType()->getName(), array_merge(
