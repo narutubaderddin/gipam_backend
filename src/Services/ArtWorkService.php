@@ -6,17 +6,17 @@ namespace App\Services;
 
 use App\Entity\ArtWork;
 use App\Entity\Furniture;
+use App\Entity\Photography;
+use App\Entity\PhotographyType;
 use App\Entity\PropertyStatus;
 use App\Exception\FormValidationException;
 use App\Model\ApiResponse;
-use App\Repository\FurnitureRepository;
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\EntityManagerInterface;
 use FOS\RestBundle\Request\ParamFetcherInterface;
 use FOS\RestBundle\View\View;
 use Symfony\Component\Form\FormInterface;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\Response;
 
 class ArtWorkService
 {
@@ -28,16 +28,21 @@ class ArtWorkService
      * @var  ApiManager
      */
     private $apiManager;
+    /**
+     * @var FurnitureService
+     */
+    private $furnitureService;
 
     /**
      * ArtWorkService constructor.
      * @param EntityManagerInterface $entityManager
      * @param ApiManager $apiManager
      */
-    public function __construct(EntityManagerInterface $entityManager, ApiManager $apiManager)
+    public function __construct(EntityManagerInterface $entityManager, ApiManager $apiManager,FurnitureService $furnitureService)
     {
         $this->entityManager = $entityManager;
         $this->apiManager = $apiManager;
+        $this->furnitureService=$furnitureService;
     }
 
     /**
@@ -148,6 +153,7 @@ class ArtWorkService
         return $this->entityManager->getRepository(ArtWork::class)
             ->getArtworksByIds($artWorks, $sortBy, $sort);
     }
+
     /**
      * @param Request $request
      * @param FormInterface $form
@@ -186,5 +192,37 @@ class ArtWorkService
         } else {
             throw new FormValidationException($form);
         }
+
+    }
+    /**
+     * @param Furniture $furniture
+     * @param Photography $photography
+     * @param $photoType
+     * @return array|false
+     */
+    public function checkPrincipalPhoto(Furniture $furniture, Photography $photography, $photoType)
+    {
+        $principalPhoto=$furniture->getPrincipalPhoto();
+
+        $attribues = $this->furnitureService->getAttributesByDenominationIdAndFieldId($furniture->getDenomination()->getId(), $furniture->getField()->getId());
+        /**
+         * @var ArtWork $furniture
+         */
+        if((!$principalPhoto instanceof Photography && $photoType!==PhotographyType::TYPE['principle'])){
+            $furniture->setIsCreated(false);
+            return false;
+        }
+        if (($photography->getId() !== $principalPhoto->getId() ) && $photoType===PhotographyType::TYPE['principle']) {
+            return ['msg' => $principalPhoto->getId(). 'Photographie de type '. PhotographyType::TYPE['principle'] .' existe déjà', 'code' => 400];
+        }
+        if(($principalPhoto->getId()===$photography->getId()) && $photoType===PhotographyType::TYPE['principle']){
+            if((in_array('materialTechnique', $attribues) && $furniture->getMaterialTechnique()->isEmpty()) ||
+                (in_array('numberOfUnit', $attribues) && !$furniture->getNumberOfUnit())){
+                $furniture->setIsCreated(false);
+            }else {
+                $furniture->setIsCreated(true);
+            }
+        }
+
     }
 }
