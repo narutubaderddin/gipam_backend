@@ -7,6 +7,7 @@ use App\Entity\DepositStatus;
 use App\Exception\FormValidationException;
 use App\Form\ArtWorkType;
 use App\Repository\ArtWorkRepository;
+use App\Repository\PhotographyRepository;
 use App\Services\ApiManager;
 use App\Services\ArtWorkService;
 use App\Services\FurnitureService;
@@ -178,7 +179,7 @@ class NoticeController extends AbstractFOSRestController
      *     @Model(type=ArtWork::class, groups={"artwork"})
      * )
      *
-     * @Rest\QueryParam(name="id", requirements="\d+", default="null", description="id of notice if exists")
+     * @Rest\QueryParam(name="duplication", requirements="\d+", default="null", description="id of notice if exists")
      * @Rest\View(serializerGroups={"artwork", "art_work_details", "id"}, serializerEnableMaxDepthChecks=true)
      *
      * @param Request $request
@@ -189,11 +190,22 @@ class NoticeController extends AbstractFOSRestController
      * @return View
      * @throws \Exception
      */
-    public function createPropertyNotice(Request $request, FurnitureService $furnitureService, ParamFetcherInterface $paramFetcher, ArtWorkService $artWorkService)
+    public function createPropertyNotice(Request $request, FurnitureService $furnitureService, ParamFetcherInterface $paramFetcher, ArtWorkService $artWorkService, PhotographyRepository $photographyRepository)
     {
+        $id = $paramFetcher->get('duplication');
         $artWork = new ArtWork();
         $form =  $this->createArtWorkForm( ArtWorkType::PROPERTY_STATUS, $artWork);
         $result = $artWorkService->createNotice($request, $form, $furnitureService, ArtWorkType::PROPERTY_STATUS);
+        if($id != 'null') {
+            $photographies = $photographyRepository->findBy(['furniture'=>$id]);
+            if ($photographies) {
+                foreach ($photographies as $photography) {
+                    $b = clone $photography;
+                    $b->setFurniture($artWork);
+                    $this->apiManager->save($b);
+                }
+            }
+        }
         return $this->view($result, Response::HTTP_CREATED);
     }
 
