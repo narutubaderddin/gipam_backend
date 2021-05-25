@@ -4,9 +4,11 @@ namespace App\Controller\API;
 
 use App\Entity\ArtWork;
 use App\Entity\DepositStatus;
+use App\Entity\Photography;
 use App\Exception\FormValidationException;
 use App\Form\ArtWorkType;
 use App\Repository\ArtWorkRepository;
+use App\Repository\PhotographyRepository;
 use App\Services\ApiManager;
 use App\Services\ArtWorkService;
 use App\Services\FurnitureService;
@@ -110,6 +112,9 @@ class NoticeController extends AbstractFOSRestController
      * @param ArtWork $artWork
      * @param Request $request
      ** @Rest\Patch("/{id}",requirements={"id"="\d+"})
+     * @param ArtWorkService $artWorkService
+     * @return View
+     * @throws \Exception
      * @SWG\Response(
      *     response=200,
      *     description="Returns updated Art Work",
@@ -128,13 +133,13 @@ class NoticeController extends AbstractFOSRestController
      *     description="update Art Work")
      * @SWG\Tag(name="notices")
      * @Rest\View(serializerGroups={"artwork"},serializerEnableMaxDepthChecks=true)
-     * @return View
-     * @throws \Exception
      */
-    public function updateArtWork(ArtWork $artWork,Request $request){
+    public function updateArtWork(ArtWork $artWork,Request $request, ArtWorkService $artWorkService){
         $status = ($artWork->getStatus() instanceof  DepositStatus)?ArtWorkType::DEPOSIT_STATUS:ArtWorkType::PROPERTY_STATUS;
         $form = $this->createArtWorkForm($status,$artWork);
         $form->submit($this->apiManager->getPostDataFromRequest($request),false);
+        $isCreated=$artWorkService->checkFurniture($artWork);
+        $artWork->setIsCreated($isCreated);
         if($form->isValid()){
             $artWork = $this->apiManager->save($form->getData());
             return $this->view($artWork,Response::HTTP_OK);
@@ -178,7 +183,7 @@ class NoticeController extends AbstractFOSRestController
      *     @Model(type=ArtWork::class, groups={"artwork"})
      * )
      *
-     * @Rest\QueryParam(name="id", requirements="\d+", default="null", description="id of notice if exists")
+     * @Rest\QueryParam(name="duplication", requirements="\d+", default="null", description="id of notice if exists")
      * @Rest\View(serializerGroups={"artwork", "art_work_details", "id"}, serializerEnableMaxDepthChecks=true)
      *
      * @param Request $request
@@ -189,11 +194,22 @@ class NoticeController extends AbstractFOSRestController
      * @return View
      * @throws \Exception
      */
-    public function createPropertyNotice(Request $request, FurnitureService $furnitureService, ParamFetcherInterface $paramFetcher, ArtWorkService $artWorkService)
+    public function createPropertyNotice(Request $request, FurnitureService $furnitureService, ParamFetcherInterface $paramFetcher, ArtWorkService $artWorkService, PhotographyRepository $photographyRepository)
     {
+        $id = $paramFetcher->get('duplication');
         $artWork = new ArtWork();
         $form =  $this->createArtWorkForm( ArtWorkType::PROPERTY_STATUS, $artWork);
         $result = $artWorkService->createNotice($request, $form, $furnitureService, ArtWorkType::PROPERTY_STATUS);
+        if($id != 'null') {
+            $photographies = $photographyRepository->findBy(['furniture'=>$id]);
+            if ($photographies) {
+                foreach ($photographies as $photography) {
+                    $b = clone $photography;
+                    $b->setFurniture($artWork);
+                    $this->apiManager->save($b);
+                }
+            }
+        }
         return $this->view($result, Response::HTTP_CREATED);
     }
 

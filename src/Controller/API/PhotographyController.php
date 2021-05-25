@@ -100,8 +100,16 @@ class PhotographyController extends AbstractFOSRestController
             /**
              * @var Photography $photography
              */
-            $photography = $this->apiManager->save($form->getData());
-            return $this->view($photography, Response::HTTP_CREATED);
+            $furniture= $form->getData()->getFurniture();
+
+            $response=$this->artWorkService->checkPrincipalPhoto($furniture, $form->getData(), $form->getData()->getPhotographyType()->getType());
+            if(is_array($response)){
+                return $this->view($response, Response::HTTP_BAD_REQUEST);
+            }else {
+                $photography = $this->apiManager->save($form->getData());
+                return $this->view($photography, Response::HTTP_CREATED);
+            }
+
         }
         throw new FormValidationException($form);
 
@@ -173,6 +181,10 @@ class PhotographyController extends AbstractFOSRestController
      */
     public function removePhotographie(Photography $photography){
         $furniture = $photography->getFurniture();
+        $type=$photography->getPhotographyType()->getType();
+
+        $this->artWorkService->checkPrincipalPhoto($furniture, $photography, $type);
+
         $furniture->removePhotography($photography);
         $this->apiManager->delete($photography);
         return $this->view(null,Response::HTTP_NO_CONTENT);
