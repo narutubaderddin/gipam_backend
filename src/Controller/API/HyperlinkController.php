@@ -94,7 +94,7 @@ class HyperlinkController extends AbstractFOSRestController
             if(!$form->isValid()){
                 throw new FormValidationException($form);
             }
-            $hyperLink = $this->apiManager->save($form->getData(),false);
+            $hyperLink = $this->apiManager->save($form->getData());
             $result[]=$hyperLink;
         }
         return $this->view($result, Response::HTTP_CREATED);
