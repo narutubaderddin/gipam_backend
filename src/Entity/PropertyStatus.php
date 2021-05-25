@@ -59,7 +59,7 @@ class PropertyStatus extends Status
     private $registrationSignature;
 
     /**
-     * @JMS\Groups("artwork", "art_work_details")
+     * @JMS\Groups("artwork", "art_work_details","art_work_list")
      *
      * @ORM\Column(name="mots_descriptifs", type="string", length=255, nullable=true)
      */

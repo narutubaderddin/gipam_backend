@@ -3,6 +3,7 @@
 namespace App\Twig;
 
 use Twig\Extension\AbstractExtension;
+use Twig\TwigFilter;
 use Twig\TwigFunction;
 use Symfony\Component\Filesystem\Filesystem;
 
@@ -18,27 +19,20 @@ class FileExistExtension extends AbstractExtension
         $this->projectDir = $projectDir;
     }
 
-    public function getFunctions(): array
+    public function getFilters()
     {
         return [
-            new TwigFunction('file_exists', [$this, 'fileExists']),
+            new TwigFilter('file_exists', [$this, 'getUrlFile'])
         ];
     }
 
-    /**
-     * @param string An absolute or relative to public folder path
-     *
-     * @return bool True if file exists, false otherwise
-     */
-    public function fileExists(string $path): bool
+    public function getUrlFile(string $path): string
     {
-        if (!$this->fileSystem->isAbsolutePath($path)) {
-            $path = "{$this->projectDir}/public/uploads/{$path}";
+        $path = "{$this->projectDir}/public/uploads/{$path}";
+        if($this->fileSystem->exists($path)) {
+            return $path;
         }
-        if (strpos($path, ' ') !== false) {
-           return false;
-        }
-
-        return $this->fileSystem->exists($path);
+        return  "{$this->projectDir}/public/uploads/image-not-found.png";
     }
+
 }
