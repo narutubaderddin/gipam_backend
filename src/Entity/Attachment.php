@@ -114,7 +114,7 @@ class Attachment
      * @return string|null
      * @JMS\VirtualProperty()
      * @JMS\SerializedName("name")
-     * @JMS\Groups("artwork")
+     * @JMS\Groups("artwork", "art_work_details")
      */
     public function getName(){
         $linkParts =explode('/', $this->link);
