@@ -8,6 +8,7 @@ use App\Exception\FormValidationException;
 use App\Form\HyperlinkType;
 use App\Model\ApiResponse;
 use App\Services\ApiManager;
+use Exception;
 use FOS\RestBundle\Controller\AbstractFOSRestController;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use FOS\RestBundle\Controller\Annotations\Route;
@@ -62,6 +63,7 @@ class HyperlinkController extends AbstractFOSRestController
     /**
      * @param Request $request
      * @return View
+     * @throws Exception
      * @Rest\Post("")
      * @SWG\Response(
      *     response=201,
@@ -84,19 +86,25 @@ class HyperlinkController extends AbstractFOSRestController
      */
     public function postHyperLink(Request $request)
     {
-        $form = $this->createForm(HyperlinkType::class);
-        $data = $this->apiManager->getPostDataFromRequest($request);
-        $form->submit($data);
-        if ($form->isValid()) {
-            $hyperLink = $this->apiManager->save($form->getData());
-            return $this->view($hyperLink, Response::HTTP_CREATED);
+        $formsData = $this->apiManager->getPostDataFromRequest($request);
+        $result=[];
+        foreach ($formsData as $data){
+            $form = $this->createForm(HyperlinkType::class);
+            $form->submit($data);
+            if(!$form->isValid()){
+                throw new FormValidationException($form);
+            }
+            $hyperLink = $this->apiManager->save($form->getData(),false);
+            $result[]=$hyperLink;
         }
-        throw new FormValidationException($form);
+        return $this->view($result, Response::HTTP_CREATED);
     }
 
     /**
      * @param Hyperlink $hyperlink
      * @param Request $request
+     * @return View
+     * @throws Exception
      * @Rest\Patch("/{id}",requirements={"id"="\d+"})
      * @SWG\Response(
      *     response=200,
@@ -117,7 +125,6 @@ class HyperlinkController extends AbstractFOSRestController
      * @SWG\Tag(name="hyperLink")
      * @Rest\View(serializerGroups={"artwork", "id"})
      *
-     * @return View
      */
     public function updateHyperLink(Hyperlink $hyperlink, Request $request)
     {
