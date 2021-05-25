@@ -98,7 +98,6 @@ abstract class Furniture
      * @JMS\MaxDepth(1)
      * @ORM\ManyToOne(targetEntity=Era::class, inversedBy="furniture")
      * @ORM\JoinColumn(name="epoque_id", referencedColumnName="id")
-     * @Audit\Ignore()
      */
     protected $era;
 

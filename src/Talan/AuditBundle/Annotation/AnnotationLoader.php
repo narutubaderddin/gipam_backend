@@ -166,8 +166,10 @@ class AnnotationLoader
         $properties = [];
         foreach ($reflection->getProperties() as $property) {
             if (null != $this->reader->getPropertyAnnotation($property, Ignore::class)) {
-                if (((null != $annotationData = $this->reader->getPropertyAnnotation($property, Column::class)) ||
-                    (null != $annotationData = $this->reader->getPropertyAnnotation($property, JoinColumn::class))) &&
+
+                if (((null != $annotationData = $this->reader->getPropertyAnnotation($property, Column::class))
+                    || (null != $annotationData = $this->reader->getPropertyAnnotation($property, JoinColumn::class)))
+&&
                     (property_exists($annotationData,'name'))
                 ) {
                     $key = $annotationData->name;
@@ -177,6 +179,7 @@ class AnnotationLoader
 
 
                 array_push($properties, $key);
+
             }
         }
         return $properties;

@@ -6,9 +6,11 @@ namespace App\EventListener;
 
 use App\Entity\User;
 use App\Services\AuditReader;
+use App\Talan\AuditBundle\Annotation\AnnotationLoader;
 use App\Talan\AuditBundle\Services\AuditConfiguration;
 use App\Talan\AuditBundle\Services\AuditManager;
 use App\Talan\AuditBundle\Services\MetadataFactory;
+use Doctrine\Common\Annotations\AnnotationReader;
 use Doctrine\Common\EventSubscriber;
 use Doctrine\Common\Persistence\Mapping\ClassMetadata;
 use Doctrine\DBAL\DBALException;
@@ -18,6 +20,7 @@ use Doctrine\ORM\Event\LifecycleEventArgs;
 use Doctrine\ORM\Event\OnFlushEventArgs;
 use Doctrine\ORM\Events;
 use Doctrine\ORM\Mapping\ClassMetadataInfo;
+use ReflectionClass;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\Security\Core\Security;
 
@@ -61,11 +64,17 @@ class LogRevisionsListener implements EventSubscriber
      * @var int
      */
     private $revisionId;
+    /**
+     * @var AnnotationLoader
+     */
+    private $annotationLoader;
 
-    public function __construct(AuditManager $auditManager)
+
+    public function __construct(AuditManager $auditManager,AnnotationLoader $annotationLoader)
     {
         $this->config = $auditManager->getConfiguration();
         $this->metadataFactory = $auditManager->getMetadataFactory();
+        $this->annotationLoader = $annotationLoader;
     }
 
     public function getSubscribedEvents()
@@ -82,8 +91,10 @@ class LogRevisionsListener implements EventSubscriber
         if (!$this->metadataFactory->isAudited($class->name)) {
             return;
         }
+        $action='creation';
+        $user='';
 
-        $this->saveRevisionEntityData($class, $this->getOriginalEntityData($entity), 'INS');
+        $this->saveRevisionEntityData($class, $this->getOriginalEntityData($entity), 'INS',$user,$action);
     }
 
     public function postUpdate(LifecycleEventArgs $eventArgs)
@@ -110,11 +121,11 @@ class LogRevisionsListener implements EventSubscriber
             return;
         }
         $updatedAttibutes = array_diff(array_keys($changeset),['updatedAt']);
-
         $entityData = array_merge($this->getOriginalEntityData($entity), $this->uow->getEntityIdentifier($entity));
+        $action = 'update';
+        $actor='';
 
-
-        $this->saveRevisionEntityData($class, $entityData, 'UPD');
+        $this->saveRevisionEntityData($class, $entityData, 'UPD',$actor,$action,$updatedAttibutes);
     }
 
     public function onFlush(OnFlushEventArgs $eventArgs)
@@ -131,7 +142,8 @@ class LogRevisionsListener implements EventSubscriber
                 continue;
             }
             $entityData = array_merge($this->getOriginalEntityData($entity), $this->uow->getEntityIdentifier($entity));
-            $this->saveRevisionEntityData($class, $entityData, 'DEL');
+            $actor='';
+            $this->saveRevisionEntityData($class, $entityData, 'DEL',$actor,'suppression');
         }
     }
 
@@ -223,9 +235,7 @@ class LogRevisionsListener implements EventSubscriber
     {
         $params = array($this->getRevisionId(), $revType);
         $types = array(\PDO::PARAM_INT, \PDO::PARAM_STR);
-
         $fields = array();
-
         foreach ($class->associationMappings AS $field => $assoc) {
             if (($assoc['type'] & ClassMetadataInfo::TO_ONE) > 0 && $assoc['isOwningSide']) {
                 $targetClass = $this->em->getClassMetadata($assoc['targetEntity']);

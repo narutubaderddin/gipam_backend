@@ -75,7 +75,7 @@ services:
         public: true
     talan.audit.event.log_revision_listener:
         class: App\EventListener\LogRevisionsListener
-        arguments: ["@talan.audit.audit_manager","@security.helper"]
+        arguments: ["@talan.audit.audit_manager"]
         tags:
             - { name: doctrine.event_subscriber, connection: default }
     talan.audit.event.create_schema_listener:
