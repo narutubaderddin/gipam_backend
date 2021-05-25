@@ -78,6 +78,9 @@ class ArtWorkService
         $records = $this->entityManager->getRepository(ArtWork::class)
             ->getArtWorkListByOffset($filter, $advancedFilter, $headerFilters, $query, $globalQuery, $repoOffset, $limit, $sortBy, $sort);
         $record = null;
+        if (count($records) === 1) {
+            return ['result' => $records[0], 'previousId' => null, 'nextId' => null];
+        }
         if ($offset == 0) {
             $previousId = null;
             $nextId = ($records[1])->getId();
