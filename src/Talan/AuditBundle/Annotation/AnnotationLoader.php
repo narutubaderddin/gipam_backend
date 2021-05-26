@@ -44,10 +44,17 @@ class AnnotationLoader
         foreach ($finder as $file) {
             $classes = self::findClasses($file->getPathname());
             foreach ($classes as $class) {
-
                 if ($this->isAuditable($class)) {
-                    $configuration['classes'][] = $class;
-                    $configuration['ignored'][$class] = $this->getIgnoredFields($class);
+                    if($this->isAbstractClass($class)){
+                        $childrenClass = $this->getChildrenClass($class);
+                        foreach ($childrenClass as $class){
+                            $configuration['classes'][] = $class;
+                            $configuration['ignored'][$class] = $this->getIgnoredFields($class);
+                        }
+                    }else{
+                        $configuration['classes'][] = $class;
+                        $configuration['ignored'][$class] = $this->getIgnoredFields($class);
+                    }
                 }
             }
         }
@@ -160,6 +167,23 @@ class AnnotationLoader
         return $annotationReader->getClassAnnotation($reflectionClass, Auditable::class) !== null;
     }
 
+    public function isAbstractClass($class): bool
+    {
+        $annotationReader = new AnnotationReader();
+        $reflectionClass = new ReflectionClass($class);
+        return $annotationReader->getClassAnnotation($reflectionClass, AbstractClass::class) !== null;
+    }
+    public function getChildrenClass($class):array
+    {
+        $annotationReader = new AnnotationReader();
+        $reflectionClass = new ReflectionClass($class);
+        $classAnnotation=$annotationReader->getClassAnnotation($reflectionClass, AbstractClass::class);
+        $children=[];
+        if($classAnnotation!=null){
+            $children = $classAnnotation->children;
+        }
+        return $children;
+    }
     public function getIgnoredFields($class): array
     {
         $reflection = new ReflectionClass($class);
@@ -168,9 +192,9 @@ class AnnotationLoader
             if (null != $this->reader->getPropertyAnnotation($property, Ignore::class)) {
 
                 if (((null != $annotationData = $this->reader->getPropertyAnnotation($property, Column::class))
-                    || (null != $annotationData = $this->reader->getPropertyAnnotation($property, JoinColumn::class)))
-&&
-                    (property_exists($annotationData,'name'))
+                        || (null != $annotationData = $this->reader->getPropertyAnnotation($property, JoinColumn::class)))
+                    &&
+                    (property_exists($annotationData, 'name'))
                 ) {
                     $key = $annotationData->name;
                 } else {

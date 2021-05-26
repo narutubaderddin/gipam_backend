@@ -22,13 +22,21 @@ class FileUploader
 
     /**
      * @param UploadedFile $file
+     * @param null $fileName
      * @return string
      */
-    public function upload(UploadedFile $file)
+    public function upload(UploadedFile $file,$fileName=null)
     {
-        $originalFilename = pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME);
-        $safeFilename = iconv('UTF-8','ASCII//TRANSLIT',$originalFilename);
-        $fileName = $safeFilename.'-'.uniqid().'.'.$file->getClientOriginalExtension();
+
+        if(!$fileName){
+            $originalFilename = pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME);
+            $safeFilename = iconv('UTF-8','ASCII//TRANSLIT',$originalFilename);
+            $fileName = $safeFilename.'-'.uniqid().'.'.$file->getClientOriginalExtension();
+        }else{
+            $fileName.='.'.$file->getClientOriginalExtension();
+        }
+
+
 
         try {
             $file->move($this->getTargetDirectory(), $fileName);

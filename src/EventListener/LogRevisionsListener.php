@@ -216,8 +216,8 @@ class LogRevisionsListener implements EventSubscriber
                     : '?';
                 $sql .= ', ' . $class->getQuotedColumnName($field, $this->platform);
             }
-            $placeholders[]= '?';
-            $sql .=', operationDate ';
+            $placeholders[]= '?, ?, ?, ?';
+            $sql .=', operationDate, actor, actionType, attribus_modifiee';
             $sql .= ") VALUES (" . implode(", ", $placeholders) . ")";
             $this->insertRevisionSQL[$class->name] = $sql;
         }
@@ -231,7 +231,7 @@ class LogRevisionsListener implements EventSubscriber
      * @param string $revType
      * @throws \Doctrine\DBAL\DBALException
      */
-    private function  saveRevisionEntityData($class, $entityData, $revType)
+    private function  saveRevisionEntityData($class, $entityData, $revType,$actor='',$actionType='',$attribueModifiee)
     {
         $params = array($this->getRevisionId(), $revType);
         $types = array(\PDO::PARAM_INT, \PDO::PARAM_STR);
@@ -271,6 +271,12 @@ class LogRevisionsListener implements EventSubscriber
         }
         $params[]= new \DateTime('now');
         $types[] = 'datetime';
+        $params[] = $actor;
+        $types[] = 'string';
+        $params[] = $actionType;
+        $types[] = 'string';
+        $params[] = json_encode($attribueModifiee);
+        $types[] = 'string';
         $this->conn->executeUpdate($this->getInsertRevisionSQL($class), $params, $types);
     }
 

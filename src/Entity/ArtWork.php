@@ -19,7 +19,6 @@ use JMS\Serializer\Annotation as JMS;
  * @ORM\Entity(repositoryClass=ArtWorkRepository::class)
  * @ORM\Table(name="oeuvre_art")
  * @ORM\HasLifecycleCallbacks()
- * @Auditable()
  */
 class ArtWork extends Furniture implements ObjectManagerAware
 {
