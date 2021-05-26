@@ -41,15 +41,15 @@ class PhotographyService
     {
         $result = [];
         foreach ($photographiesData as $data){
-            if(isset($data['id'])&& $data["id"]!='null')
+            if(isset($data['id'])&& $data['id']!=null)
             {
                 $photography = $this->getPhotographie($data,$photographies);
                 if(!$photography){
                     throw new \Exception('photographie does not belong to The Furniture');
                 }
                 $data = $this->formatUpdatePhotographyData($data,$photography);
-                unset($data['id']);
             }
+            unset($data['id']);
             $result[] =$data;
         }
         return $result;

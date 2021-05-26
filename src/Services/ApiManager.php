@@ -6,6 +6,7 @@ use App\Model\ApiResponse;
 use Doctrine\ORM\EntityManagerInterface;
 use FOS\RestBundle\Controller\Annotations\QueryParam;
 use FOS\RestBundle\Request\ParamFetcherInterface;
+use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\HttpFoundation\Request;
 
 /**
@@ -137,7 +138,7 @@ class ApiManager
                 if (is_array($value)) {
                     $result[$key] = $this->formatArrayValue($value);
                 } else {
-                    if ($value == "null") {
+                    if ($value == "null" || json_decode($value) == "null") {
                         $result[$key] = null;
                     } else {
                         if (in_array($key, ['date','entryDate', 'insuranceValueDate', 'depositDate'])) {
@@ -147,7 +148,7 @@ class ApiManager
                         } elseif (in_array($key, ['materialTechnique', 'authors'])) {
                             $array = ['['.$value.']'];
                             $result[$key] = json_decode($array[0]);
-                        }  elseif (in_array($key, ['url','descriptiveWords', 'title', 'marking', 'registrationSignature','insuranceValue', 'otherRegistrations', 'description', 'name', 'inventoryNumber'])) {
+                        }  elseif (in_array($key, ['url','descriptiveWords', 'title', 'marking', 'registrationSignature','insuranceValue', 'otherRegistrations', 'description', 'name', 'inventoryNumber', 'imagePreview'])) {
                             $result[$key] = $value;
                         }else{
                             $result[$key] = (int)json_decode($value);
@@ -175,7 +176,9 @@ class ApiManager
         foreach($request->files->all() as $key => $file){
             if (isset($data[$key])){
                 foreach ($data[$key] as $k => &$value){
-                    $value = array_merge($value, $file[$k]);
+                    if(array_key_exists($k, $file)) {
+                        $value = array_merge($value, $file[$k]);
+                    }
                 }
             }else{
                 $data[$key] = $file;

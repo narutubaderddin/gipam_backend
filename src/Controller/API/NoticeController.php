@@ -260,6 +260,7 @@ class NoticeController extends AbstractFOSRestController
             $data['photographies'] =$photographies;
         }
         $form->submit($data, false);
+
         if($form->isValid()){
             $artWork = $this->apiManager->save($form->getData());
             $formattedResult = ['msg' => 'Notice enregistrée en mode brouillon avec succès', 'res' => $artWork];
