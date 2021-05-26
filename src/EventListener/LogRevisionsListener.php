@@ -120,7 +120,7 @@ class LogRevisionsListener implements EventSubscriber
         if ( count($changeset) == 0 ) {
             return;
         }
-        dd($changeset);
+
         $updatedAttibutes = array_diff(array_keys($changeset),['updatedAt']);
         $entityData = array_merge($this->getOriginalEntityData($entity), $this->uow->getEntityIdentifier($entity));
         $action = 'update';
