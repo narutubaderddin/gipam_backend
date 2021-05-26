@@ -397,7 +397,7 @@ class AuditReader
         return $return;
     }
 
-    public function getEntityHistoryCount($className, $id){
+    public function getEntityHistoryCount($className, $id,$search=false){
         if (!$this->metadataFactory->isAudited($className)) {
             throw AuditException::notAudited($className);
         }
@@ -424,12 +424,18 @@ class AuditReader
 
         $whereSQL  = implode(' AND ', $whereId);
         $values = array_values($id);
-        $query = "SELECT count(*) FROM " . $tableName . " e WHERE " . $whereSQL . " ORDER BY e.rev DESC";
+        $query = "SELECT count(*) FROM " . $tableName . " e WHERE " . $whereSQL;
+        if($search && strlen($search)>0){
+            $query.=' AND  (lower(actor) like ? or lower(actionType) like ?) ';
+            $values[]='%'.strtolower($search).'%';
+            $values[]='%'.strtolower($search).'%';
+        }
         $stmt = $this->em->getConnection()->executeQuery($query, $values);
         return $stmt->fetchColumn();
 
     }
-    public function getEntityHistory($className, $id,$page=1,$pageLength=10,$arrayFormat=false)
+
+    public function getEntityHistory($className, $id,$page=1,$pageLength=10,$search=null,$arrayFormat=false)
     {
 
         $offset = ( $pageLength * $page ) - $pageLength;
@@ -492,7 +498,14 @@ class AuditReader
             $columnList .= ' , '.$this->config->getRevisionFieldName(). ' as revision , '.
                                  $this->config->getRevisionTypeFieldName() .' as revisionType , operationDate, actor, actionType';
         }
-        $query = "SELECT " . $columnList . " FROM " . $tableName . " e WHERE " . $whereSQL . "  ORDER BY e.rev DESC ";
+
+        $query = "SELECT " . $columnList . " FROM " . $tableName . " e WHERE " . $whereSQL ;
+        if(strlen($search)>0){
+            $query.=' AND  (lower(actor) like ? or lower(actionType) like ?) ';
+            $values[]='%'.strtolower($search).'%';
+            $values[]='%'.strtolower($search).'%';
+        }
+        $query.= "  ORDER BY e.rev DESC ";
         $query .= " Limit ".$pageLength. " offset ".$offset;
         $stmt = $this->em->getConnection()->executeQuery($query, $values);
 
