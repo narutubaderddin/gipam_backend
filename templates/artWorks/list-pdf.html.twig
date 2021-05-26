@@ -122,7 +122,7 @@
                                                             <td align="center">
                                                                 <div style="width:300px;float: right">
                                                                     {% if artWork.principalPhoto is not null %}
-                                                                            <img src="{{ artWork.principalPhoto.imagePreview | file_exists }}"
+                                                                            <img src="{{ artWork.principalPhoto.imagePreview | file_exists | raw }}"
                                                                                  align=center
                                                                                  style="max-width: 300px;
                                                                                 max-height: 400px;"
