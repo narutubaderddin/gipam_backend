@@ -399,6 +399,8 @@ class ArtWorkRepository extends ServiceEntityRepository
             $qb->orderBy("e.$orderBy", $order);
         }
 
+        $this->addSortBy($criteria, $qb);
+
         return $qb->getQuery()->getResult();
     }
 
@@ -501,6 +503,7 @@ class ArtWorkRepository extends ServiceEntityRepository
             unset($criteria['field']);
             unset($criteria['denomination']);
         }
+        unset($criteria['orderByFields']);
         $qb = $this->addCriteria($qb, $criteria);
         return $qb;
     }
@@ -618,5 +621,20 @@ class ArtWorkRepository extends ServiceEntityRepository
             $query->setMaxResults($limit);
         }
         return ['result' => $query->getQuery()->getResult(), 'totalQuantity' => $totalQuantity];
+    }
+
+    /**
+     * @param array $criteria
+     * @param QueryBuilder $qb
+     */
+    public function addSortBy(array $criteria, QueryBuilder $qb): void
+    {
+        if (isset($criteria['orderByFields'])) {
+            $orderByFields = json_decode($criteria['orderByFields']);
+            foreach ($orderByFields as $orderByField) {
+                $qb->addOrderBy("e.$orderByField");
+            }
+            unset($criteria['orderByFields']);
+        }
     }
 }
