@@ -764,7 +764,7 @@ abstract class Furniture
      */
     public function getPrincipalPhoto(){
         foreach ($this->photographies as $photography){
-            if($photography->getPhotographyType()->getType()==PhotographyType::TYPE['principle']){
+            if($photography->getPhotographyType()->getType()===PhotographyType::TYPE['principle']){
                 return $photography;
             }
         }
