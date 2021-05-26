@@ -13,7 +13,7 @@ use JMS\Serializer\Annotation as JMS;
 use Symfony\Component\Validator\Constraints as Assert;
 use Gedmo\Mapping\Annotation as Gedmo;
 use Symfony\Component\Validator\Context\ExecutionContextInterface;
-
+use App\Talan\AuditBundle\Annotation as Audit;
 
 /**
  * @ORM\Entity(repositoryClass=FurnitureRepository::class)
@@ -21,6 +21,7 @@ use Symfony\Component\Validator\Context\ExecutionContextInterface;
  * @ORM\InheritanceType("JOINED")
  * @ORM\DiscriminatorColumn(name="table_associee", type="string")
  * @ORM\DiscriminatorMap({"oeuvre_art"="ArtWork", "mobilier_bureau"="OfficeFurniture"})
+
  */
 abstract class Furniture
 {
@@ -105,6 +106,7 @@ abstract class Furniture
      * @JMS\MaxDepth(1)
      * @ORM\ManyToOne(targetEntity=Style::class, inversedBy="furniture")
      * @ORM\JoinColumn(name="style_id", referencedColumnName="id")
+     *
      */
     protected $style;
 
@@ -113,6 +115,7 @@ abstract class Furniture
      * @JMS\MaxDepth(1)
      * @ORM\ManyToOne(targetEntity=Denomination::class, inversedBy="furniture")
      * @ORM\JoinColumn(name="denomination_id", referencedColumnName="id")
+     *
      */
     protected $denomination;
 
@@ -121,12 +124,14 @@ abstract class Furniture
      * @JMS\MaxDepth(1)
      * @ORM\ManyToOne(targetEntity=Field::class, inversedBy="furniture")
      * @ORM\JoinColumn(name="domaine_id", referencedColumnName="id")
+     *
      */
     protected $field;
 
     /**
      * @JMS\Groups("artwork")
      * @ORM\OneToMany(targetEntity=ArtWorkLog::class, mappedBy="furniture")
+     *
      */
     protected $artWorkLogs;
 
@@ -134,12 +139,14 @@ abstract class Furniture
      * @JMS\Groups("artwork","mouvement_furniture","art_work_details")
      * @JMS\MaxDepth(1)
      * @ORM\OneToMany(targetEntity=Movement::class, mappedBy="furniture")
+     *
      */
     protected $movements;
 
     /**
      * @JMS\Groups("artwork","art_work_details")
      * @ORM\OneToMany(targetEntity=Report::class, mappedBy="furniture")
+     *
      * @JMS\MaxDepth(1)
      */
     protected $reports;
@@ -148,16 +155,18 @@ abstract class Furniture
      * @JMS\Groups("artwork","art_work_list","art_work_details", "attachment")
      * @Assert\Valid()
      * @ORM\OneToMany(targetEntity=Attachment::class, mappedBy="furniture", cascade={"persist", "remove"})
+     *
      */
     protected $attachments;
 
     /**
-     * @JMS\Groups("artwork","status_furniture","art_work_details", "short")
+     * @JMS\Groups("artwork","status_furniture","art_work_details", "short","art_work_list")
      * @Assert\Valid()
      * @ORM\ManyToOne(targetEntity=Status::class, inversedBy="furniture", cascade={"persist", "remove"})
      * @JMS\MaxDepth(2)
      * @ORM\ManyToOne(targetEntity=Status::class, inversedBy="furniture")
      * @ORM\JoinColumn(name="status_id", referencedColumnName="id")
+     *
      */
     protected $status;
 
@@ -165,6 +174,7 @@ abstract class Furniture
      * @JMS\Groups("artwork", "art_work_details", "hyperLink_furniture")
      * @Assert\Valid()
      * @ORM\OneToMany(targetEntity=Hyperlink::class, mappedBy="furniture", cascade={"persist", "remove"})
+     *
      */
     protected $hyperlinks;
 
@@ -172,6 +182,7 @@ abstract class Furniture
      * @JMS\Groups("artwork", "art_work_details","photography")
      * @Assert\Valid()
      * @ORM\OneToMany(targetEntity=Photography::class, mappedBy="furniture", cascade={"persist", "remove"})
+     *
      */
     protected $photographies;
 
@@ -179,6 +190,7 @@ abstract class Furniture
      * @JMS\Groups("artwork","status_furniture")
      * @ORM\Column(type="boolean")
      * @ORM\Column(type="boolean",options={"default"=true})
+     *
      */
     protected $visible = true;
 
@@ -187,6 +199,7 @@ abstract class Furniture
      *
      * @JMS\MaxDepth(1)
      * @ORM\OneToMany(targetEntity=Furniture::class, mappedBy="parent")
+     *
      */
     protected $children;
 
@@ -195,6 +208,7 @@ abstract class Furniture
      * @JMS\MaxDepth(1)
      * @ORM\ManyToOne(targetEntity=Furniture::class, inversedBy="children")
      * @ORM\JoinColumn(name="parent_id", referencedColumnName="id")
+     *
      */
     protected $parent;
 
@@ -223,6 +237,7 @@ abstract class Furniture
      *      joinColumns={@ORM\JoinColumn(name="objet_mobilier_id", referencedColumnName="id")},
      *      inverseJoinColumns={@ORM\JoinColumn(name="matiere_technique_id", referencedColumnName="id")}
      *      )
+     *
      */
     private $materialTechnique;
 
@@ -673,8 +688,8 @@ abstract class Furniture
     }
 
 
-
-    public function getLastReport(){
+    public function getLastReport()
+    {
 
     }
 
@@ -723,8 +738,8 @@ abstract class Furniture
         if ($this->getDenomination() instanceof Denomination &&
             $this->getDenomination()->getField() instanceof Field &&
             $this->getField() instanceof Field
-        ){
-            if ($this->getDenomination()->getField() != $this->getField()){
+        ) {
+            if ($this->getDenomination()->getField() != $this->getField()) {
                 $context->buildViolation('This Denomination have mapping with another Field')
                     ->atPath('field')
                     ->addViolation();
@@ -768,13 +783,14 @@ abstract class Furniture
                 return $photography;
             }
         }
-        return  null;
+        return null;
     }
 
     /**
      * @return \DateTime
      */
-    public function getCreatedAt(){
+    public function getCreatedAt()
+    {
         return $this->createdAt;
     }
 
@@ -787,15 +803,15 @@ abstract class Furniture
     public function getFullAuthorsName(): ?string
     {
         $result = "";
-        foreach ($this->getAuthors() as $key => $author){
-            if($author->getFirstName()){
-                $result.= $author->getFirstName();
+        foreach ($this->getAuthors() as $key => $author) {
+            if ($author->getFirstName()) {
+                $result .= $author->getFirstName();
             }
-            if($author->getLastName()){
-                $result.= " ".$author->getLastName();
+            if ($author->getLastName()) {
+                $result .= " " . $author->getLastName();
             }
-            if($key<count($this->getAuthors())-1){
-                $result.=", ";
+            if ($key < count($this->getAuthors()) - 1) {
+                $result .= ", ";
             }
         }
         return $result;

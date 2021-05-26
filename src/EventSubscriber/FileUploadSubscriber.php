@@ -8,6 +8,8 @@ use App\Entity\Attachment;
 use App\Entity\Photography;
 use App\Services\FileUploader;
 use Doctrine\Common\EventSubscriber;
+use Doctrine\ORM\EntityManager;
+use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Event\LifecycleEventArgs;
 use Doctrine\ORM\Event\PreUpdateEventArgs;
 use Doctrine\ORM\Events;
@@ -16,14 +18,20 @@ use Symfony\Component\HttpFoundation\File\UploadedFile;
 class FileUploadSubscriber implements EventSubscriber
 {
     private $uploader;
+    /**
+     * @var EntityManagerInterface
+     */
+    private $entityManager;
 
     /**
      * FileUploadSubscriber constructor.
      * @param FileUploader $uploader
      */
-    public function __construct(FileUploader $uploader)
+    public function __construct(FileUploader $uploader,EntityManagerInterface $entityManager)
     {
         $this->uploader = $uploader;
+        $this->entityManager = $entityManager;
+
     }
 
     /**
@@ -62,8 +70,12 @@ class FileUploadSubscriber implements EventSubscriber
      */
     private function uploadFile($entity)
     {
+        $fileName=null;
         if ($entity instanceof Photography){
             $file = $entity->getImagePreview();
+            $fileIncrement=$this->entityManager->getRepository(Photography::class)->getMaxIncrement();
+            $fileIncrement= intval($fileIncrement['value']);
+            $fileName= $entity->getFurniture()->getId().'-'.($fileIncrement+1);
         }elseif ($entity instanceof Attachment){
             $file = $entity->getLink();
         }else{
@@ -75,7 +87,7 @@ class FileUploadSubscriber implements EventSubscriber
         }
 
         $fileName = $this->uploader->upload($file);
-        $path = $this->uploader->getTargetDirectory().'/'.$fileName;
+        $path =$fileName;
         if ($entity instanceof Photography){
             $entity->setImagePreview($path);
         }

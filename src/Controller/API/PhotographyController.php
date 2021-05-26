@@ -9,6 +9,8 @@ use App\Entity\Furniture;
 use App\Exception\FormValidationException;
 use App\Form\PhotographyType;
 use App\Services\ApiManager;
+use App\Services\FileUploader;
+use App\Services\PhotographyService;
 use App\Services\ArtWorkService;
 use FOS\RestBundle\Controller\AbstractFOSRestController;
 use FOS\RestBundle\Controller\Annotations as Rest;
@@ -100,8 +102,16 @@ class PhotographyController extends AbstractFOSRestController
             /**
              * @var Photography $photography
              */
-            $photography = $this->apiManager->save($form->getData());
-            return $this->view($photography, Response::HTTP_CREATED);
+            $furniture= $form->getData()->getFurniture();
+
+            $response=$this->artWorkService->checkPrincipalPhoto($furniture, $form->getData(), $form->getData()->getPhotographyType()->getType());
+            if(is_array($response)){
+                return $this->view($response, Response::HTTP_BAD_REQUEST);
+            }else {
+                $photography = $this->apiManager->save($form->getData());
+                return $this->view($photography, Response::HTTP_CREATED);
+            }
+
         }
         throw new FormValidationException($form);
 
@@ -110,6 +120,9 @@ class PhotographyController extends AbstractFOSRestController
     /**
      * @param Photography $photography
      * @param Request $request
+     * @param PhotographyService $photographyService
+     * @return View
+     * @throws \Exception
      * @Rest\Patch("/{id}",requirements={"id"="\d+"})
      * To Send File in Request URL must be spoofed
      *Send Post Request and add  ?_method=PATCH to the URL
@@ -133,12 +146,12 @@ class PhotographyController extends AbstractFOSRestController
      * @SWG\Tag(name="photography")
      * @Rest\View(serializerGroups={})
      *
-     * @return View
      */
-    public function updatePhotography(Photography $photography, Request $request)
+    public function updatePhotography(Photography $photography, Request $request,PhotographyService $photographyService)
     {
         $form = $this->createForm(PhotographyType::class, $photography);
-        $data = $this->apiManager->getPostDataFromRequest($request);
+        $data = $this->apiManager->getPostDataFromRequest($request);dd($data);
+        $data = $photographyService->formatUpdatePhotographyData($data,$photography);
         $form->submit($data,false);
         if ($form->isValid()) {
             /**
@@ -173,6 +186,10 @@ class PhotographyController extends AbstractFOSRestController
      */
     public function removePhotographie(Photography $photography){
         $furniture = $photography->getFurniture();
+        $type=$photography->getPhotographyType()->getType();
+
+        $this->artWorkService->checkPrincipalPhoto($furniture, $photography, $type);
+
         $furniture->removePhotography($photography);
         $this->apiManager->delete($photography);
         return $this->view(null,Response::HTTP_NO_CONTENT);

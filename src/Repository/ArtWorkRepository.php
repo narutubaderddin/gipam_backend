@@ -357,12 +357,23 @@ class ArtWorkRepository extends ServiceEntityRepository
                         $query->setParameter('value2', $value['value'][1]);
                         break;
                     case 'equalDate':
-                        $startDate = new \DateTime();
-                        $startDate->setDate($value['value'], 1, 1);
-                        $startDate->setTime(0, 0, 0);
-                        $endDate = new \DateTime();
-                        $endDate->setDate($value['value'], 12, 31);
-                        $endDate->setTime(23, 59, 59);
+                        if($isColumnAdvancedFilterExist){
+                            $startDate = new \DateTime();
+                            $startDate->setDate($value['value'], 1, 1);
+                            $startDate->setTime(0, 0, 0);
+                            $endDate = new \DateTime();
+                            $endDate->setDate($value['value'], 12, 31);
+                            $endDate->setTime(23, 59, 59);
+                        }else{
+                            $value=$headerFilter[$key];
+                            $startDate = new \DateTime();
+                            $startDate->setDate((int)$value['value'], 1, 1);
+                            $startDate->setTime(0, 0, 0);
+                            $endDate = new \DateTime();
+                            $endDate->setDate((int)$value['value'], 12, 31);
+                            $endDate->setTime(23, 59, 59);
+                        }
+
                         $query->setParameter('value1', $startDate);
                         $query->setParameter('value2', $endDate);
                         break;
@@ -398,6 +409,8 @@ class ArtWorkRepository extends ServiceEntityRepository
         if (in_array($order, ['asc', 'desc'])) {
             $qb->orderBy("e.$orderBy", $order);
         }
+
+        $this->addSortBy($criteria, $qb);
 
         return $qb->getQuery()->getResult();
     }
@@ -501,6 +514,7 @@ class ArtWorkRepository extends ServiceEntityRepository
             unset($criteria['field']);
             unset($criteria['denomination']);
         }
+        unset($criteria['orderByFields']);
         $qb = $this->addCriteria($qb, $criteria);
         return $qb;
     }
@@ -618,5 +632,20 @@ class ArtWorkRepository extends ServiceEntityRepository
             $query->setMaxResults($limit);
         }
         return ['result' => $query->getQuery()->getResult(), 'totalQuantity' => $totalQuantity];
+    }
+
+    /**
+     * @param array $criteria
+     * @param QueryBuilder $qb
+     */
+    public function addSortBy(array $criteria, QueryBuilder $qb): void
+    {
+        if (isset($criteria['orderByFields'])) {
+            $orderByFields = json_decode($criteria['orderByFields']);
+            foreach ($orderByFields as $orderByField) {
+                $qb->addOrderBy("e.$orderByField");
+            }
+            unset($criteria['orderByFields']);
+        }
     }
 }

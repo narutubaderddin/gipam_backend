@@ -5,11 +5,13 @@ namespace App\Services;
 
 
 use App\Entity\ArtWork;
+use App\Entity\DepositStatus;
 use App\Entity\Furniture;
 use App\Entity\Photography;
 use App\Entity\PhotographyType;
 use App\Entity\PropertyStatus;
 use App\Exception\FormValidationException;
+use App\Form\ArtWorkType;
 use App\Model\ApiResponse;
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\EntityManagerInterface;
@@ -98,6 +100,9 @@ class ArtWorkService
         $records = $this->entityManager->getRepository(ArtWork::class)
             ->getArtWorkListByOffset($filter, $advancedFilter, $headerFilters, $query, $globalQuery, $repoOffset, $limit, $sortBy, $sort);
         $record = null;
+        if (count($records) === 1) {
+            return ['result' => $records[0], 'previousId' => null, 'nextId' => null];
+        }
         if ($offset == 0) {
             $previousId = null;
             $nextId = ($records[1])->getId();
@@ -204,25 +209,55 @@ class ArtWorkService
     {
         $principalPhoto=$furniture->getPrincipalPhoto();
 
-        $attribues = $this->furnitureService->getAttributesByDenominationIdAndFieldId($furniture->getDenomination()->getId(), $furniture->getField()->getId());
         /**
          * @var ArtWork $furniture
          */
         if((!$principalPhoto instanceof Photography && $photoType!==PhotographyType::TYPE['principle'])){
             $furniture->setIsCreated(false);
+            $this->apiManager->save($furniture);
             return false;
         }
-        if (($photography->getId() !== $principalPhoto->getId() ) && $photoType===PhotographyType::TYPE['principle']) {
-            return ['msg' => $principalPhoto->getId(). 'Photographie de type '. PhotographyType::TYPE['principle'] .' existe déjà', 'code' => 400];
-        }
-        if(($principalPhoto->getId()===$photography->getId()) && $photoType===PhotographyType::TYPE['principle']){
-            if((in_array('materialTechnique', $attribues) && $furniture->getMaterialTechnique()->isEmpty()) ||
-                (in_array('numberOfUnit', $attribues) && !$furniture->getNumberOfUnit())){
-                $furniture->setIsCreated(false);
-            }else {
-                $furniture->setIsCreated(true);
+        if($photography && $principalPhoto) {
+            if (($photography->getId() !== $principalPhoto->getId()) && $photoType === PhotographyType::TYPE['principle']) {
+                return ['msg' => 'Photographie de type ' . PhotographyType::TYPE['principle'] . ' existe déjà', 'code' => 400];
+            }
+            if (($principalPhoto->getId() === $photography->getId()) && $photoType === PhotographyType::TYPE['principle']) {
+                $isCreated = $this->checkFurniture($furniture);
+                $furniture->setIsCreated($isCreated);
+                $this->apiManager->save($furniture);
             }
         }
+
+    }
+    public function checkFurniture(Furniture $furniture){
+        $status = ($furniture->getStatus() instanceof  DepositStatus)?ArtWorkType::DEPOSIT_STATUS:ArtWorkType::PROPERTY_STATUS;
+        if (!$furniture->getField() || !$furniture->getDenomination() || !$furniture->getTitle()){
+            return false;
+            }
+
+        if($status==(ArtWorkType::DEPOSIT_STATUS)){
+            if (!$furniture->getStatus()->getDepositDate() || !$furniture->getStatus()->getStopNumber()) {
+                return false;
+            }
+        }else {
+            if (!$furniture->getStatus()->getEntryMode() || !$furniture->getStatus()->getEntryDate() || !$furniture->getStatus()->getCategory()) {
+                return false;
+            }
+        }
+        $attribues = $this->furnitureService->getAttributesByDenominationIdAndFieldId($furniture->getDenomination()->getId(), $furniture->getField()->getId());
+
+        if((in_array('materialTechnique', $attribues) && $furniture->getMaterialTechnique()->isEmpty()) ||
+            (in_array('numberOfUnit', $attribues) && !$furniture->getNumberOfUnit())) {
+            return false;
+        }
+        $principalPhoto=$furniture->getPrincipalPhoto();
+        if(!$principalPhoto instanceof Photography){
+            dd(!$principalPhoto instanceof Photography);
+            return false;
+        }
+            return true;
+
+
 
     }
 }

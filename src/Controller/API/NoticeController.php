@@ -4,6 +4,7 @@ namespace App\Controller\API;
 
 use App\Entity\ArtWork;
 use App\Entity\DepositStatus;
+use App\Entity\Photography;
 use App\Exception\FormValidationException;
 use App\Form\ArtWorkType;
 use App\Repository\ArtWorkRepository;
@@ -11,6 +12,7 @@ use App\Repository\PhotographyRepository;
 use App\Services\ApiManager;
 use App\Services\ArtWorkService;
 use App\Services\FurnitureService;
+use App\Services\PhotographyService;
 use FOS\RestBundle\Controller\AbstractFOSRestController;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use FOS\RestBundle\Controller\Annotations\Route;
@@ -111,6 +113,10 @@ class NoticeController extends AbstractFOSRestController
      * @param ArtWork $artWork
      * @param Request $request
      ** @Rest\Patch("/{id}",requirements={"id"="\d+"})
+     * @param ArtWorkService $artWorkService
+     * @return View
+     * @throws \Exception
+     * @param PhotographyService $photographyService
      * @SWG\Response(
      *     response=200,
      *     description="Returns updated Art Work",
@@ -129,13 +135,18 @@ class NoticeController extends AbstractFOSRestController
      *     description="update Art Work")
      * @SWG\Tag(name="notices")
      * @Rest\View(serializerGroups={"artwork"},serializerEnableMaxDepthChecks=true)
-     * @return View
-     * @throws \Exception
      */
-    public function updateArtWork(ArtWork $artWork,Request $request){
+    public function updateArtWork(ArtWork $artWork,Request $request,PhotographyService $photographyService,ArtWorkService $artWorkService){
         $status = ($artWork->getStatus() instanceof  DepositStatus)?ArtWorkType::DEPOSIT_STATUS:ArtWorkType::PROPERTY_STATUS;
         $form = $this->createArtWorkForm($status,$artWork);
-        $form->submit($this->apiManager->getPostDataFromRequest($request),false);
+        $data = $this->apiManager->getPostDataFromRequest($request);
+        if(isset($data['photographies'])){
+            $photographies = $photographyService->formatUpdateNoticeData($data['photographies'],$artWork->getPhotographies());
+            $data['photographies'] =$photographies;
+        }
+        $form->submit($data,false);
+        $isCreated=$artWorkService->checkFurniture($artWork);
+        $artWork->setIsCreated($isCreated);
         if($form->isValid()){
             $artWork = $this->apiManager->save($form->getData());
             return $this->view($artWork,Response::HTTP_OK);
@@ -234,16 +245,20 @@ class NoticeController extends AbstractFOSRestController
      *
      * @param Request $request
      *
-     * @param FurnitureService $furnitureService
+     * @param PhotographyService $photographyService
      * @param ArtWork $artWork
      * @return View
      * @throws \Exception
      */
-    public function updateInProgressNotice(Request $request, FurnitureService $furnitureService, ArtWork $artWork)
+    public function updateInProgressNotice(Request $request, PhotographyService $photographyService, ArtWork $artWork)
     {
         $status = ($artWork->getStatus() instanceof  DepositStatus)?ArtWorkType::DEPOSIT_STATUS:ArtWorkType::PROPERTY_STATUS;
         $form = $this->createArtWorkForm($status,$artWork);
         $data = $this->apiManager->getPostDataFromRequest($request, true);
+        if(isset($data['photographies'])){
+            $photographies = $photographyService->formatUpdateNoticeData($data['photographies'],$artWork->getPhotographies());
+            $data['photographies'] =$photographies;
+        }
         $form->submit($data, false);
         if($form->isValid()){
             $artWork = $this->apiManager->save($form->getData());
@@ -254,7 +269,7 @@ class NoticeController extends AbstractFOSRestController
         throw new FormValidationException($form);
     }
 
-   
+
 
     /**
      * @Rest\Get("/get-art-works-in-progress")
