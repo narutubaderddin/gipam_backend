@@ -4,10 +4,13 @@ namespace App\Controller\API;
 
 use App\Entity\ArtWork;
 use App\Entity\DepositStatus;
+use App\Entity\Photography;
 use App\Exception\FormValidationException;
 use App\Form\ArtWorkType;
 use App\Repository\ArtWorkRepository;
+use App\Repository\PhotographyRepository;
 use App\Services\ApiManager;
+use App\Services\ArtWorkService;
 use App\Services\FurnitureService;
 use App\Services\PhotographyService;
 use FOS\RestBundle\Controller\AbstractFOSRestController;
@@ -94,23 +97,26 @@ class NoticeController extends AbstractFOSRestController
      * @param Request $request
      *
      * @param FurnitureService $furnitureService
+     * @param ArtWorkService $artWorkService
      * @return View
      * @throws \Exception
      */
-    public function createDepositNotice(Request $request, FurnitureService $furnitureService)
+    public function createDepositNotice(Request $request, FurnitureService $furnitureService, ArtWorkService $artWorkService)
     {
         $artWork = new ArtWork();
         $form = $this->createArtWorkForm(ArtWorkType::DEPOSIT_STATUS, $artWork);
-        return $this->createNotice($request, $form, $furnitureService);
+        $result = $artWorkService->createNotice($request, $form, $furnitureService, ArtWorkType::DEPOSIT_STATUS);
+        return $this->view($result, Response::HTTP_CREATED);
     }
 
     /**
      * @param ArtWork $artWork
      * @param Request $request
      ** @Rest\Patch("/{id}",requirements={"id"="\d+"})
-     * @param PhotographyService $photographyService
+     * @param ArtWorkService $artWorkService
      * @return View
      * @throws \Exception
+     * @param PhotographyService $photographyService
      * @SWG\Response(
      *     response=200,
      *     description="Returns updated Art Work",
@@ -130,7 +136,7 @@ class NoticeController extends AbstractFOSRestController
      * @SWG\Tag(name="notices")
      * @Rest\View(serializerGroups={"artwork"},serializerEnableMaxDepthChecks=true)
      */
-    public function updateArtWork(ArtWork $artWork,Request $request,PhotographyService $photographyService){
+    public function updateArtWork(ArtWork $artWork,Request $request,PhotographyService $photographyService,ArtWorkService $artWorkService){
         $status = ($artWork->getStatus() instanceof  DepositStatus)?ArtWorkType::DEPOSIT_STATUS:ArtWorkType::PROPERTY_STATUS;
         $form = $this->createArtWorkForm($status,$artWork);
         $data = $this->apiManager->getPostDataFromRequest($request);
@@ -139,6 +145,8 @@ class NoticeController extends AbstractFOSRestController
             $data['photographies'] =$photographies;
         }
         $form->submit($data,false);
+        $isCreated=$artWorkService->checkFurniture($artWork);
+        $artWork->setIsCreated($isCreated);
         if($form->isValid()){
             $artWork = $this->apiManager->save($form->getData());
             return $this->view($artWork,Response::HTTP_OK);
@@ -182,22 +190,34 @@ class NoticeController extends AbstractFOSRestController
      *     @Model(type=ArtWork::class, groups={"artwork"})
      * )
      *
-     * @Rest\QueryParam(name="id", requirements="\d+", default="null", description="id of notice if exists")
-     * @Rest\View(serializerGroups={"artwork", "art_work_details"}, serializerEnableMaxDepthChecks=true)
+     * @Rest\QueryParam(name="duplication", requirements="\d+", default="null", description="id of notice if exists")
+     * @Rest\View(serializerGroups={"artwork", "art_work_details", "id"}, serializerEnableMaxDepthChecks=true)
      *
      * @param Request $request
      *
      * @param FurnitureService $furnitureService
      * @param ParamFetcherInterface $paramFetcher
-     * @param ArtWorkRepository $artWorkRepository
+     * @param ArtWorkService $artWorkService
      * @return View
      * @throws \Exception
      */
-    public function createPropertyNotice(Request $request, FurnitureService $furnitureService, ParamFetcherInterface $paramFetcher, ArtWorkRepository $artWorkRepository)
+    public function createPropertyNotice(Request $request, FurnitureService $furnitureService, ParamFetcherInterface $paramFetcher, ArtWorkService $artWorkService, PhotographyRepository $photographyRepository)
     {
+        $id = $paramFetcher->get('duplication');
         $artWork = new ArtWork();
         $form =  $this->createArtWorkForm( ArtWorkType::PROPERTY_STATUS, $artWork);
-        return $this->createNotice($request, $form, $furnitureService);
+        $result = $artWorkService->createNotice($request, $form, $furnitureService, ArtWorkType::PROPERTY_STATUS);
+        if($id != 'null') {
+            $photographies = $photographyRepository->findBy(['furniture'=>$id]);
+            if ($photographies) {
+                foreach ($photographies as $photography) {
+                    $b = clone $photography;
+                    $b->setFurniture($artWork);
+                    $this->apiManager->save($b);
+                }
+            }
+        }
+        return $this->view($result, Response::HTTP_CREATED);
     }
 
     /**
@@ -219,9 +239,9 @@ class NoticeController extends AbstractFOSRestController
      *     name="form",
      *     in="body",
      *     description="update progress ArtWork",
-     *     @Model(type=ArtWork::class, groups={""})
+     *     @Model(type=ArtWork::class, groups={"artwork"})
      * )
-     * @Rest\View(serializerGroups={"artwork", "art_work_details"}, serializerEnableMaxDepthChecks=true)
+     * @Rest\View(serializerGroups={"artwork", "art_work_details", "id"}, serializerEnableMaxDepthChecks=true)
      *
      * @param Request $request
      *
@@ -242,40 +262,14 @@ class NoticeController extends AbstractFOSRestController
         $form->submit($data, false);
         if($form->isValid()){
             $artWork = $this->apiManager->save($form->getData());
-            return $this->view($artWork,Response::HTTP_OK);
+            $formattedResult = ['msg' => 'Notice enregistrée en mode brouillon avec succès', 'res' => $artWork];
+
+            return $this->view($formattedResult,Response::HTTP_OK);
         }
         throw new FormValidationException($form);
     }
 
-    /**
-     * @param Request $request
-     * @param FormInterface $form
-     * @param FurnitureService $furnitureService
-     * @return View
-     * @throws \Exception
-     */
-    public function createNotice(Request $request,FormInterface $form, FurnitureService $furnitureService) {
-        $data =$this->apiManager->getPostDataFromRequest($request, true);
-        $form->submit($data);
-        if ($form->isSubmitted() && $form->isValid()) {
-            if (!$form->getData()->getField() || !$form->getData()->getDenomination() || !$form->getData()->getTitle() || !$form->getData()->getStatus()->getEntryMode() || !$form->getData()->getStatus()->getEntryDate() || !$form->getData()->getStatus()->getCategory()) {
-                $formattedResult = ['msg' => 'Notice enregistrée en mode brouillon avec succès', 'res' => $this->apiManager->save($form->getData())];
-                return $this->view($formattedResult, Response::HTTP_CREATED);
-            } else {
-                $attribues = $furnitureService->getAttributesByDenominationIdAndFieldId($form->getData()->getDenomination()->getId(), $form->getData()->getField()->getId());
-                if ((in_array('materialTechnique', $attribues) && $form->getData()->getMaterialTechnique()->isEmpty()) || (in_array('numberOfUnit', $attribues) && !$form->getData()->getNumberOfUnit())) {
-                    $formattedResult = ['msg' => 'Notice enregistrée en mode brouillon avec succès', 'res' => $this->apiManager->save($form->getData())];
-                    return $this->view($formattedResult, Response::HTTP_CREATED);
-                } else {
-                    $form->getData()->setIsCreated(true);
-                    $formattedResult = ['msg' => 'Notice enregistrée avec succès', 'res' => $this->apiManager->save($form->getData())];
-                    return $this->view($formattedResult, Response::HTTP_CREATED);
-                }
-            }
-        } else {
-            throw new FormValidationException($form);
-        }
-    }
+
 
     /**
      * @Rest\Get("/get-art-works-in-progress")

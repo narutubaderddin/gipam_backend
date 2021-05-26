@@ -108,4 +108,16 @@ class Attachment
 
         return $this;
     }
+
+    /**
+     * @return mixed
+     * @return string|null
+     * @JMS\VirtualProperty()
+     * @JMS\SerializedName("name")
+     * @JMS\Groups("artwork", "art_work_details")
+     */
+    public function getName(){
+        $linkParts =explode('/', $this->link);
+       return $linkParts[count($linkParts)-1];
+    }
 }

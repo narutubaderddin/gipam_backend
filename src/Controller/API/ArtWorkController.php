@@ -92,8 +92,21 @@ class ArtWorkController extends AbstractFOSRestController
         $serializerGroups = json_decode($serializerGroups, true);
         $context = new Context();
         $context->setGroups($serializerGroups);
-
-        return $this->view($artWork, Response::HTTP_OK)->setContext($context);
+        $step1 = false;
+        if ($artWork->getStatus()->getStatusType() == 'PropertyStatus') {
+            if (!$artWork->getField() || !$artWork->getDenomination() || !$artWork->getTitle() || !$artWork->getStatus()->getEntryMode() || !$artWork->getStatus()->getEntryDate() || !$artWork->getStatus()->getCategory()) {
+                $step1 = false;
+            } else {
+                $step1 = true;
+            }
+        } else {
+            if (!$artWork->getField() || !$artWork->getDenomination() || !$artWork->getTitle() || !$artWork->getStatus()->getStopNumber() || !$artWork->getStatus()->getDepositDate()) {
+                $step1 = false;
+            } else {
+                $step1 = true;
+            }
+        }
+        return $this->view(['artwork' => $artWork, 'step1' => $step1], Response::HTTP_OK)->setContext($context);
     }
 
     /**
@@ -317,6 +330,7 @@ class ArtWorkController extends AbstractFOSRestController
      * @Rest\QueryParam(name="page", requirements="\d+", default="1", description="page number.")
      * @Rest\QueryParam(name="limit", requirements="\d+", default="20", description="page size.")
      * @Rest\QueryParam(name="sort_by", nullable=true, default="id", description="order by")
+     * @Rest\QueryParam(name="orderByFields", nullable=true, description="order by")
      * @Rest\QueryParam(name="sort", requirements="(asc|desc)", nullable=true, default="asc", description="tri order asc|desc")
      * @Rest\View(serializerGroups={"response","art_work_list"})
      *

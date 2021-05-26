@@ -31,7 +31,7 @@ class FileUploadSubscriber implements EventSubscriber
     {
         $this->uploader = $uploader;
         $this->entityManager = $entityManager;
-        
+
     }
 
     /**
@@ -81,13 +81,13 @@ class FileUploadSubscriber implements EventSubscriber
         }else{
             return;
         }
-        dd($file);
+
         if (!$file instanceof UploadedFile) {
             return;
         }
 
-        $fileName = $this->uploader->upload($file,$fileName);
-        $path = $this->uploader->getTargetDirectory().'/'.$fileName;
+        $fileName = $this->uploader->upload($file);
+        $path =$fileName;
         if ($entity instanceof Photography){
             $entity->setImagePreview($path);
         }

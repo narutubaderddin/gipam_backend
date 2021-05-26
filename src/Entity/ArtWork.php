@@ -56,7 +56,7 @@ class ArtWork extends Furniture implements ObjectManagerAware
     private $entityManager;
 
     /**
-     * @JMS\Groups("artwork")
+     * @JMS\Groups("artwork","art_work_details")
      * @ORM\Column(type="boolean", nullable=true)
      */
     private $isCreated;

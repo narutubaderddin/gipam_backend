@@ -160,7 +160,7 @@ abstract class Furniture
     protected $attachments;
 
     /**
-     * @JMS\Groups("artwork","status_furniture","art_work_details", "short")
+     * @JMS\Groups("artwork","status_furniture","art_work_details", "short","art_work_list")
      * @Assert\Valid()
      * @ORM\ManyToOne(targetEntity=Status::class, inversedBy="furniture", cascade={"persist", "remove"})
      * @JMS\MaxDepth(2)
@@ -777,10 +777,9 @@ abstract class Furniture
      * @JMS\VirtualProperty(name="principalPhoto")
      * @return string|null
      */
-    public function getPrincipalPhoto()
-    {
-        foreach ($this->photographies as $photography) {
-            if ($photography->getPhotographyType()->getType() == PhotographyType::TYPE['principle']) {
+    public function getPrincipalPhoto(){
+        foreach ($this->photographies as $photography){
+            if($photography->getPhotographyType()->getType()===PhotographyType::TYPE['principle']){
                 return $photography;
             }
         }
