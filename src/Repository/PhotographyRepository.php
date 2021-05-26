@@ -18,4 +18,9 @@ class PhotographyRepository extends ServiceEntityRepository
     {
         parent::__construct($registry, Photography::class);
     }
+    public function getMaxIncrement(){
+        $query = $this->createQueryBuilder('photography');
+        $query->select('MAX(photography.id) as value');
+        return $query->getQuery()->getSingleResult();
+    }
 }

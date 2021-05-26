@@ -1,0 +1,29 @@
+services:
+  talan.audit.annotation_loader:
+    class: App\Talan\AuditBundle\Annotation\AnnotationLoader
+    arguments: ["@doctrine.orm.default_entity_manager"]
+    public: true
+  talan.audit.audit_configuration:
+    class: App\Talan\AuditBundle\Services\AuditConfiguration
+    arguments:
+        $config: '%talan_audit.config%'
+        $annotationLoader: '@talan.audit.annotation_loader'
+    public: true
+  talan.audit.audit_manager:
+    class: App\Talan\AuditBundle\Services\AuditManager
+    arguments: ["@talan.audit.audit_configuration","@doctrine.orm.default_entity_manager"]
+    public: true
+  talan.audit.audit_reader:
+    class: App\Talan\AuditBundle\Services\AuditReader
+    arguments: ["@doctrine.orm.default_entity_manager","@talan.audit.audit_configuration"]
+    public: true
+  talan.audit.event.create_schema_listener:
+    class: App\Talan\AuditBundle\EventListener\CreateSchemaListener
+    arguments: ["@talan.audit.audit_manager"]
+    tags:
+      - { name: doctrine.event_subscriber, connection: default }
+  talan.audit.event.log_revision_listener:
+    class: App\Talan\AuditBundle\EventListener\LogRevisionsListener
+    arguments: ["@talan.audit.audit_manager"]
+    tags:
+      - { name: doctrine.event_subscriber, connection: default }

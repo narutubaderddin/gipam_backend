@@ -13,7 +13,7 @@ use JMS\Serializer\Annotation as JMS;
 use Symfony\Component\Validator\Constraints as Assert;
 use Gedmo\Mapping\Annotation as Gedmo;
 use Symfony\Component\Validator\Context\ExecutionContextInterface;
-
+use App\Talan\AuditBundle\Annotation as Audit;
 
 /**
  * @ORM\Entity(repositoryClass=FurnitureRepository::class)
@@ -21,6 +21,8 @@ use Symfony\Component\Validator\Context\ExecutionContextInterface;
  * @ORM\InheritanceType("JOINED")
  * @ORM\DiscriminatorColumn(name="table_associee", type="string")
  * @ORM\DiscriminatorMap({"oeuvre_art"="ArtWork", "mobilier_bureau"="OfficeFurniture"})
+ * @Audit\Auditable()
+ * @Audit\AbstractClass(children={ArtWork::class,OfficeFurniture::class})
  */
 abstract class Furniture
 {
@@ -152,7 +154,7 @@ abstract class Furniture
     protected $attachments;
 
     /**
-     * @JMS\Groups("artwork","status_furniture","art_work_details", "short","art_work_list")
+     * @JMS\Groups("artwork","status_furniture","art_work_details", "short")
      * @Assert\Valid()
      * @ORM\ManyToOne(targetEntity=Status::class, inversedBy="furniture", cascade={"persist", "remove"})
      * @JMS\MaxDepth(2)
@@ -764,7 +766,7 @@ abstract class Furniture
      */
     public function getPrincipalPhoto(){
         foreach ($this->photographies as $photography){
-            if($photography->getPhotographyType()->getType()===PhotographyType::TYPE['principle']){
+            if($photography->getPhotographyType()->getType()==PhotographyType::TYPE['principle']){
                 return $photography;
             }
         }

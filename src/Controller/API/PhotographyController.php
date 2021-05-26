@@ -9,6 +9,8 @@ use App\Entity\Furniture;
 use App\Exception\FormValidationException;
 use App\Form\PhotographyType;
 use App\Services\ApiManager;
+use App\Services\FileUploader;
+use App\Services\PhotographyService;
 use App\Services\ArtWorkService;
 use FOS\RestBundle\Controller\AbstractFOSRestController;
 use FOS\RestBundle\Controller\Annotations as Rest;
@@ -118,6 +120,9 @@ class PhotographyController extends AbstractFOSRestController
     /**
      * @param Photography $photography
      * @param Request $request
+     * @param PhotographyService $photographyService
+     * @return View
+     * @throws \Exception
      * @Rest\Patch("/{id}",requirements={"id"="\d+"})
      * To Send File in Request URL must be spoofed
      *Send Post Request and add  ?_method=PATCH to the URL
@@ -141,12 +146,12 @@ class PhotographyController extends AbstractFOSRestController
      * @SWG\Tag(name="photography")
      * @Rest\View(serializerGroups={})
      *
-     * @return View
      */
-    public function updatePhotography(Photography $photography, Request $request)
+    public function updatePhotography(Photography $photography, Request $request,PhotographyService $photographyService)
     {
         $form = $this->createForm(PhotographyType::class, $photography);
-        $data = $this->apiManager->getPostDataFromRequest($request);
+        $data = $this->apiManager->getPostDataFromRequest($request);dd($data);
+        $data = $photographyService->formatUpdatePhotographyData($data,$photography);
         $form->submit($data,false);
         if ($form->isValid()) {
             /**
