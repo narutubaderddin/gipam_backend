@@ -21,7 +21,7 @@ class PhotographyType
     use TimestampableEntity;
 
     public const TYPE = [
-        'principle' => 'Photo Principale',
+        'principle' => 'Identification',
         'detail' => 'Photo de détail',
     ];
     /**

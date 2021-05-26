@@ -9,6 +9,7 @@ use App\Entity\Furniture;
 use App\Exception\FormValidationException;
 use App\Form\PhotographyType;
 use App\Services\ApiManager;
+use App\Services\ArtWorkService;
 use FOS\RestBundle\Controller\AbstractFOSRestController;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use FOS\RestBundle\View\View;
@@ -31,13 +32,19 @@ class PhotographyController extends AbstractFOSRestController
      * @var ApiManager
      */
     protected $apiManager;
+    /**
+     * @var ArtWorkService
+     */
+    private $artWorkService;
 
 
     public function __construct(
-        ApiManager $apiManager
+        ApiManager $apiManager,
+        ArtWorkService $artWorkService
     )
     {
         $this->apiManager = $apiManager;
+        $this->artWorkService = $artWorkService;
 
     }
 
@@ -93,8 +100,16 @@ class PhotographyController extends AbstractFOSRestController
             /**
              * @var Photography $photography
              */
-            $photography = $this->apiManager->save($form->getData());
-            return $this->view($photography, Response::HTTP_CREATED);
+            $furniture= $form->getData()->getFurniture();
+
+            $response=$this->artWorkService->checkPrincipalPhoto($furniture, $form->getData(), $form->getData()->getPhotographyType()->getType());
+            if(is_array($response)){
+                return $this->view($response, Response::HTTP_BAD_REQUEST);
+            }else {
+                $photography = $this->apiManager->save($form->getData());
+                return $this->view($photography, Response::HTTP_CREATED);
+            }
+
         }
         throw new FormValidationException($form);
 
@@ -136,9 +151,17 @@ class PhotographyController extends AbstractFOSRestController
         if ($form->isValid()) {
             /**
              * @var Photography $photography
+             * @var ArtWork $furniture
              */
-            $photography = $this->apiManager->save($form->getData());
-            return $this->view($photography, Response::HTTP_OK);
+            $furniture= $photography->getFurniture();
+
+            $response=$this->artWorkService->checkPrincipalPhoto($furniture, $photography, $form->getData()->getPhotographyType()->getType());
+            if(is_array($response)){
+                return $this->view($response, Response::HTTP_BAD_REQUEST);
+            }else {
+                $photography = $this->apiManager->save($form->getData());
+                return $this->view($photography, Response::HTTP_OK);
+            }
         }
         throw new FormValidationException($form);
     }
@@ -158,6 +181,10 @@ class PhotographyController extends AbstractFOSRestController
      */
     public function removePhotographie(Photography $photography){
         $furniture = $photography->getFurniture();
+        $type=$photography->getPhotographyType()->getType();
+
+        $this->artWorkService->checkPrincipalPhoto($furniture, $photography, $type);
+
         $furniture->removePhotography($photography);
         $this->apiManager->delete($photography);
         return $this->view(null,Response::HTTP_NO_CONTENT);

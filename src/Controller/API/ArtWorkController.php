@@ -92,8 +92,21 @@ class ArtWorkController extends AbstractFOSRestController
         $serializerGroups = json_decode($serializerGroups, true);
         $context = new Context();
         $context->setGroups($serializerGroups);
-
-        return $this->view($artWork, Response::HTTP_OK)->setContext($context);
+        $step1 = false;
+        if ($artWork->getStatus()->getStatusType() == 'PropertyStatus') {
+            if (!$artWork->getField() || !$artWork->getDenomination() || !$artWork->getTitle() || !$artWork->getStatus()->getEntryMode() || !$artWork->getStatus()->getEntryDate() || !$artWork->getStatus()->getCategory()) {
+                $step1 = false;
+            } else {
+                $step1 = true;
+            }
+        } else {
+            if (!$artWork->getField() || !$artWork->getDenomination() || !$artWork->getTitle() || !$artWork->getStatus()->getStopNumber() || !$artWork->getStatus()->getDepositDate()) {
+                $step1 = false;
+            } else {
+                $step1 = true;
+            }
+        }
+        return $this->view(['artwork' => $artWork, 'step1' => $step1], Response::HTTP_OK)->setContext($context);
     }
 
     /**

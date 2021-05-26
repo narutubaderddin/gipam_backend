@@ -174,7 +174,6 @@ class ArtWorkRepository extends ServiceEntityRepository
             //                        ->leftJoin('sub_divisions.services','services')
         ;
         $query->andWhere('artWork.isCreated = true');
-        $query->distinct('artWork.id');
         if ($countTotal) {
             return $query;
         }
@@ -386,6 +385,7 @@ class ArtWorkRepository extends ServiceEntityRepository
         $columns = $this->getClassMetadata()->getFieldNames();
         $qb = $this->createQueryBuilder('e');
         $qb = $this->addSearchCriteria($criteria, $qb);
+        $qb->andWhere('e.isCreated = true');
 
         if ($offset != "") {
             $qb->setFirstResult($offset);

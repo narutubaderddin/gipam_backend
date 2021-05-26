@@ -5,13 +5,20 @@ namespace App\Services;
 
 
 use App\Entity\ArtWork;
+use App\Entity\DepositStatus;
 use App\Entity\Furniture;
+use App\Entity\Photography;
+use App\Entity\PhotographyType;
 use App\Entity\PropertyStatus;
+use App\Exception\FormValidationException;
+use App\Form\ArtWorkType;
 use App\Model\ApiResponse;
-use App\Repository\FurnitureRepository;
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\EntityManagerInterface;
 use FOS\RestBundle\Request\ParamFetcherInterface;
+use FOS\RestBundle\View\View;
+use Symfony\Component\Form\FormInterface;
+use Symfony\Component\HttpFoundation\Request;
 
 class ArtWorkService
 {
@@ -19,10 +26,25 @@ class ArtWorkService
      * @var EntityManagerInterface
      */
     private $entityManager;
+    /**
+     * @var  ApiManager
+     */
+    private $apiManager;
+    /**
+     * @var FurnitureService
+     */
+    private $furnitureService;
 
-    public function __construct(EntityManagerInterface $entityManager)
+    /**
+     * ArtWorkService constructor.
+     * @param EntityManagerInterface $entityManager
+     * @param ApiManager $apiManager
+     */
+    public function __construct(EntityManagerInterface $entityManager, ApiManager $apiManager,FurnitureService $furnitureService)
     {
         $this->entityManager = $entityManager;
+        $this->apiManager = $apiManager;
+        $this->furnitureService=$furnitureService;
     }
 
     /**
@@ -105,7 +127,7 @@ class ArtWorkService
         $result = [];
         foreach ($queryData as $query) {
 
-            $options = $type == 'description' ? explode(" ", $query['descriptiveWords']) : explode(" ", $query['title']);
+            $options = $type == 'description' ? explode(",", $query['descriptiveWords']) : explode(" ", $query['title']);
             foreach ($options as $option) {
                 $option = strtolower(preg_replace('/[^A-Za-z0-9\-]/', '', $option)); // Removes special chars.
                 if (strpos($option, strtolower($searchQuery)) !== false && !in_array($option, $result)) {
@@ -137,4 +159,105 @@ class ArtWorkService
             ->getArtworksByIds($artWorks, $sortBy, $sort);
     }
 
+    /**
+     * @param Request $request
+     * @param FormInterface $form
+     * @param FurnitureService $furnitureService
+     * @return array
+     * @throws \Exception
+     */
+    public function createNotice(Request $request,FormInterface $form, FurnitureService $furnitureService, $status) {
+        $data =$this->apiManager->getPostDataFromRequest($request, true);
+        $form->submit($data);
+        if ($form->isSubmitted() && $form->isValid()) {
+            if ($status == 'deposit') {
+                if (!$form->getData()->getField() || !$form->getData()->getDenomination() || !$form->getData()->getTitle() || !$form->getData()->getStatus()->getDepositDate() || !$form->getData()->getStatus()->getStopNumber()) {
+                    return ['msg' => 'Notice enregistrée en mode brouillon avec succès', 'res' => $this->apiManager->save($form->getData())];
+                } else {
+                    $attribues = $furnitureService->getAttributesByDenominationIdAndFieldId($form->getData()->getDenomination()->getId(), $form->getData()->getField()->getId());
+                    if ((in_array('materialTechnique', $attribues) && $form->getData()->getMaterialTechnique()->isEmpty()) || (in_array('numberOfUnit', $attribues) && !$form->getData()->getNumberOfUnit())) {
+                        return ['msg' => 'Notice enregistrée en mode brouillon avec succès', 'res' => $this->apiManager->save($form->getData())];
+                    } else {
+                        return ['msg' => 'Notice enregistrée avec succès en mode brouillon', 'res' => $this->apiManager->save($form->getData())];
+                    }
+                }
+            } else {
+                if (!$form->getData()->getField() || !$form->getData()->getDenomination() || !$form->getData()->getTitle() || !$form->getData()->getStatus()->getEntryMode() || !$form->getData()->getStatus()->getEntryDate() || !$form->getData()->getStatus()->getCategory()) {
+                    return ['msg' => 'Notice enregistrée en mode brouillon avec succès', 'res' => $this->apiManager->save($form->getData())];
+                } else {
+                    $attribues = $furnitureService->getAttributesByDenominationIdAndFieldId($form->getData()->getDenomination()->getId(), $form->getData()->getField()->getId());
+                    if ((in_array('materialTechnique', $attribues) && $form->getData()->getMaterialTechnique()->isEmpty()) || (in_array('numberOfUnit', $attribues) && !$form->getData()->getNumberOfUnit())) {
+                        return ['msg' => 'Notice enregistrée en mode brouillon avec succès', 'res' => $this->apiManager->save($form->getData())];
+                    } else {
+                        return ['msg' => 'Notice enregistrée en mode brouillon avec succès', 'res' => $this->apiManager->save($form->getData())];
+                    }
+                }
+            }
+
+        } else {
+            throw new FormValidationException($form);
+        }
+
+    }
+    /**
+     * @param Furniture $furniture
+     * @param Photography $photography
+     * @param $photoType
+     * @return array|false
+     */
+    public function checkPrincipalPhoto(Furniture $furniture, Photography $photography, $photoType)
+    {
+        $principalPhoto=$furniture->getPrincipalPhoto();
+
+        /**
+         * @var ArtWork $furniture
+         */
+        if((!$principalPhoto instanceof Photography && $photoType!==PhotographyType::TYPE['principle'])){
+            $furniture->setIsCreated(false);
+            $this->apiManager->save($furniture);
+            return false;
+        }
+        if($photography && $principalPhoto) {
+            if (($photography->getId() !== $principalPhoto->getId()) && $photoType === PhotographyType::TYPE['principle']) {
+                return ['msg' => 'Photographie de type ' . PhotographyType::TYPE['principle'] . ' existe déjà', 'code' => 400];
+            }
+            if (($principalPhoto->getId() === $photography->getId()) && $photoType === PhotographyType::TYPE['principle']) {
+                $isCreated = $this->checkFurniture($furniture);
+                $furniture->setIsCreated($isCreated);
+                $this->apiManager->save($furniture);
+            }
+        }
+
+    }
+    public function checkFurniture(Furniture $furniture){
+        $status = ($furniture->getStatus() instanceof  DepositStatus)?ArtWorkType::DEPOSIT_STATUS:ArtWorkType::PROPERTY_STATUS;
+        if (!$furniture->getField() || !$furniture->getDenomination() || !$furniture->getTitle()){
+            return false;
+            }
+
+        if($status==(ArtWorkType::DEPOSIT_STATUS)){
+            if (!$furniture->getStatus()->getDepositDate() || !$furniture->getStatus()->getStopNumber()) {
+                return false;
+            }
+        }else {
+            if (!$furniture->getStatus()->getEntryMode() || !$furniture->getStatus()->getEntryDate() || !$furniture->getStatus()->getCategory()) {
+                return false;
+            }
+        }
+        $attribues = $this->furnitureService->getAttributesByDenominationIdAndFieldId($furniture->getDenomination()->getId(), $furniture->getField()->getId());
+
+        if((in_array('materialTechnique', $attribues) && $furniture->getMaterialTechnique()->isEmpty()) ||
+            (in_array('numberOfUnit', $attribues) && !$furniture->getNumberOfUnit())) {
+            return false;
+        }
+        $principalPhoto=$furniture->getPrincipalPhoto();
+        if(!$principalPhoto instanceof Photography){
+            dd(!$principalPhoto instanceof Photography);
+            return false;
+        }
+            return true;
+
+
+
+    }
 }
