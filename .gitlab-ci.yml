@@ -4,7 +4,7 @@ stages:
   - build_assets
   - unit_tests
   - sonnar_scan
-  - load_dep_client
+  - load_deps_client
   - update_schema_client
   - build_assets_client
 before_script:
