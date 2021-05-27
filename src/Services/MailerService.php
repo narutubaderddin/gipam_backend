@@ -80,7 +80,7 @@ class MailerService
             $cciEmail = $bcc;
         }
 
-        $formattedSubject = ' [P2G] ' . $subject;
+        $formattedSubject =  $subject;
         //simulation
         $destination = (is_array($to)) ? $to[0] : $to;
         if ($this->debugModeEnabled) {
@@ -88,7 +88,7 @@ class MailerService
             $formattedCC = (is_array($cc)) ? implode(', ', $cc) : $cc;
             $formattedCCIEmail = (is_array($cciEmail)) ? implode(', ', $cciEmail) : $cciEmail;
             $templateName = ($isTemplate) ? $template . '.html.twig' : $template;
-            $parameters['simulation'] = true;
+            //$parameters['simulation'] = true;
             $templateContent = ($isTemplate) ? $this->environment->render($templateName, $parameters) : $template;
             $mailContent = $this->environment->render('Emails\MailContent.html.twig', [
                 'subject' => $formattedSubject,

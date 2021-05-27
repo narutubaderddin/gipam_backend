@@ -32,7 +32,7 @@ class FileExistExtension extends AbstractExtension
         if($this->fileSystem->exists($path)) {
             return $path;
         }
-        return  "{$this->projectDir}/public/uploads/image-not-found.png";
+        return  "{$this->projectDir}/public/images/image-not-found.png";
     }
 
 }

@@ -40,13 +40,20 @@ class RequestController extends AbstractFOSRestController
      */
     protected $em;
 
+    /**
+     * @var MailerService
+     */
+    protected $mailer;
+
     public function __construct(
         ApiManager $apiManager,
-        EntityManagerInterface $em
+        EntityManagerInterface $em,
+        MailerService $mailer
     )
     {
         $this->apiManager = $apiManager;
         $this->em = $em;
+        $this->mailer = $mailer;
     }
 
 
@@ -166,6 +173,17 @@ class RequestController extends AbstractFOSRestController
                 $this->em->persist($requestedArtWork);
             }
             $this->em->flush();
+            try {
+                $this->mailer->sendMail($req->getMail(),
+                    null,
+                    'Suite à votre demande',
+                    'Emails/request_status',
+                    ['message' => 'Votre demande des biens culturels enregistré sous la référence '.$req->getId().' est En cours'],
+                    []);
+
+            } catch (\Exception $e) {
+                return $this->view(['message'=>$e->getMessage()], Response::HTTP_BAD_GATEWAY);
+            }
             return $this->view($req, Response::HTTP_CREATED);
         } else {
             throw new FormValidationException($form);
@@ -205,6 +223,25 @@ class RequestController extends AbstractFOSRestController
     public function updateRequest(Request $request, Requests $requests)
     {
         $this->updateRequestArtWorks($request);
+        try {
+            $params = $request->request->all();
+            if($params['requestStatus'] !== 'Annulée') {
+                $paramsMailer = ['message' => 'Votre demande des  biens culturels enregistré sous la référence '.$requests->getId().' à été '. $params['requestStatus'],
+                    'request' => $requests];
+                if($params['requestStatus'] === ''){
+                    $paramsMailer['request'] = $requests;
+                }
+                $this->mailer->sendMail($requests->getMail(),
+                    null,
+                    'Suite à votre demande',
+                    'Emails/request_status',
+                    $paramsMailer
+                    ,
+                    []);
+            }
+        } catch (\Exception $e) {
+            return $this->view(['message'=>$e->getMessage()], Response::HTTP_BAD_GATEWAY);
+        }
         $form = $this->createForm(RequestType::class, $requests);
         $form->submit($request->request->all(), false);
 
@@ -270,7 +307,7 @@ class RequestController extends AbstractFOSRestController
     /**
      * @param Request $request
      */
-    public function updateRequestArtWorks(Request $request): void
+    public function updateRequestArtWorks(Request $request)
     {
         $params = $request->request->all();
         if (isset($params['listArtWorks'])) {
