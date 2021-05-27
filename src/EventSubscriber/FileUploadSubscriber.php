@@ -86,7 +86,7 @@ class FileUploadSubscriber implements EventSubscriber
             return;
         }
 
-        $fileName = $this->uploader->upload($file);
+        $fileName = $this->uploader->upload($file,$fileName);
         $path =$fileName;
         if ($entity instanceof Photography){
             $entity->setImagePreview($path);

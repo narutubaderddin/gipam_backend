@@ -10,9 +10,6 @@ use Symfony\Component\HttpFoundation\File\UploadedFile;
 class PhotographyService
 {
 
-//    public function __construct()
-//    {
-//    }
 
     /**
      * @param array $data
@@ -43,7 +40,7 @@ class PhotographyService
         foreach ($photographiesData as $data){
             if(isset($data['id'])&& $data['id']!=null)
             {
-                $photography = $this->getPhotographie($data,$photographies);
+                $photography = $this->getPhotography($data,$photographies);
                 if(!$photography){
                     throw new \Exception('photographie does not belong to The Furniture');
                 }
@@ -59,7 +56,7 @@ class PhotographyService
      * @param $data
      * @param Photography[] $photographies
      */
-    private function getPhotographie($data,$photographies){
+    private function getPhotography($data,$photographies){
         foreach ( $photographies as $photography){
             if($photography->getId() == $data['id']){
                 return $photography;
