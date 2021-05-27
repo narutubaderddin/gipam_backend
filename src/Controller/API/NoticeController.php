@@ -13,6 +13,7 @@ use App\Repository\ArtWorkRepository;
 use App\Repository\PhotographyRepository;
 use App\Services\ApiManager;
 use App\Services\ArtWorkService;
+use App\Services\AttachmentService;
 use App\Services\FurnitureService;
 use App\Services\HistoryService;
 use App\Services\PhotographyService;
@@ -254,7 +255,7 @@ class NoticeController extends AbstractFOSRestController
      * @return View
      * @throws \Exception
      */
-    public function updateInProgressNotice(Request $request, PhotographyService $photographyService, ArtWork $artWork)
+    public function updateInProgressNotice(Request $request, PhotographyService $photographyService, ArtWork $artWork, AttachmentService $attachmentService)
     {
         $status = ($artWork->getStatus() instanceof DepositStatus) ? ArtWorkType::DEPOSIT_STATUS : ArtWorkType::PROPERTY_STATUS;
         $form = $this->createArtWorkForm($status, $artWork);
@@ -262,6 +263,10 @@ class NoticeController extends AbstractFOSRestController
         if (isset($data['photographies'])) {
             $photographies = $photographyService->formatUpdateNoticeData($data['photographies'], $artWork->getPhotographies());
             $data['photographies'] = $photographies;
+        }
+        if(isset($data['attachments'])){
+            $attachments = $attachmentService->formatUpdateNoticeData($data['attachments'],$artWork->getAttachments());
+            $data['attachments'] =$attachments;
         }
         $form->submit($data, false);
         if ($form->isValid()) {
