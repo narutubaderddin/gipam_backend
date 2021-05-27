@@ -4,18 +4,18 @@ stages:
   - build_assets
   - unit_tests
   - sonnar_scan
-
+  - load_dep_client
+  - update_schema_client
+  - build_assets_client
 before_script:
-  - "cd /var/www/html/backend"
-  - whoami
-  - pwd
-  - git pull origin develop
+  - "cd /var/www/html/staging/backend"
 
 load_deps:
   stage: load_dep
   tags:
     - gipam
   script: 
+    - git pull origin develop
     - composer install
     - yarn install
     - yarn encore production
@@ -37,7 +37,39 @@ build_assets:
     - yarn install
     - yarn encore production
   only:
-    - dev
+    - develop
+
+load_deps_client:
+  stage: load_deps_client
+  tags:
+    - gipam
+  script: 
+    - cd /var/www/html/backend
+    - git pull origin master
+    - composer install
+    - yarn install
+    - yarn encore production
+  only:
+    - master
+update_schema_client:
+  stage: update_schema_client
+  tags:
+    - gipam
+  script: 
+    - cd /var/www/html/backend
+    - php bin/console doctrine:schema:update --force
+  only:
+    - master    
+build_assets_client:
+  stage: build_assets_client
+  tags:
+    - gipam
+  script:
+    - cd /var/www/html/backend
+    - yarn install
+    - yarn encore production
+  only:
+    - master
 
 unit_tests:
   stage: unit_tests
