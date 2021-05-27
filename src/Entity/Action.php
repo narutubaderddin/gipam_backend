@@ -9,6 +9,7 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use App\Talan\AuditBundle\Annotation as Audit;
+use JMS\Serializer\Annotation as JMS;
 
 /**
  * @ORM\Entity(repositoryClass=ActionRepository::class)
@@ -49,6 +50,7 @@ class Action
     private $actionNature;
 
     /**
+     * @JMS\Groups("movement_list")
      * @ORM\ManyToOne(targetEntity=ActionReportType::class, inversedBy="actions")
      * @ORM\JoinColumn(name="type_id", referencedColumnName="id")
      */

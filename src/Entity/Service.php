@@ -37,7 +37,7 @@ class Service
     private $label;
 
     /**
-     * @JMS\Groups("service")
+     * @JMS\Groups("service","movement_list")
      *
      * @ORM\Column(name="sigle", type="string", length=255, nullable=true)
      */

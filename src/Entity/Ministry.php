@@ -37,7 +37,7 @@ class Ministry
     private $name;
 
     /**
-     * @JMS\Groups("ministry")
+     * @JMS\Groups("ministry","movement_list")
      *
      * @ORM\Column(name="sigle", type="string", length=255, nullable=true)
      */

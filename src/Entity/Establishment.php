@@ -37,7 +37,7 @@ class Establishment
     private $label;
 
     /**
-     * @JMS\Groups("establishment")
+     * @JMS\Groups("establishment","movement_list")
      *
      * @ORM\Column(name="sigle", type="string", length=255, nullable=true)
      */
@@ -65,7 +65,7 @@ class Establishment
     private $locations;
 
     /**
-     * @JMS\Groups("establishment", "ministry_id")
+     * @JMS\Groups("establishment", "ministry_id","movement_list")
      *
      * @ORM\ManyToOne(targetEntity=Ministry::class, inversedBy="establishments")
      * @ORM\JoinColumn(name="ministere_id", referencedColumnName="id")

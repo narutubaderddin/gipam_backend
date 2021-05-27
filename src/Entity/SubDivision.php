@@ -38,7 +38,7 @@ class SubDivision
     private $label;
 
     /**
-     * @JMS\Groups("sub_division")
+     * @JMS\Groups("sub_division","movement_list")
      *
      * @ORM\Column(name="sigle", type="string", length=255, nullable=true)
      */

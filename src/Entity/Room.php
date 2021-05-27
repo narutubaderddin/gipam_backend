@@ -67,7 +67,7 @@ class Room
      * @ORM\ManyToOne(targetEntity=Building::class, inversedBy="rooms")
      * @ORM\JoinColumn(name="batiment_id", referencedColumnName="id")
      *
-     * @JMS\Groups("room")
+     * @JMS\Groups("room","movement_list")
      */
     private $building;
 

@@ -27,6 +27,7 @@ class Movement
     private $id;
 
     /**
+     * @JMS\Groups("movement_list")
      * @ORM\Column(name="date", type="datetime")
      */
     private $date;
@@ -38,6 +39,7 @@ class Movement
     private $comment;
 
     /**
+     * @JMS\Groups("movement_list")
      * @ORM\ManyToMany(targetEntity=Correspondent::class, inversedBy="movements")
      * @ORM\JoinTable(name="mouvement_correspondant",
      *      joinColumns={@ORM\JoinColumn(name="mouvement_id", referencedColumnName="id")},
@@ -47,18 +49,21 @@ class Movement
     private $correspondents;
 
     /**
+     * @JMS\Groups("movement_list")
      * @ORM\ManyToOne(targetEntity=Location::class, inversedBy="movements")
      * @ORM\JoinColumn(name="localisation_id", referencedColumnName="id")
      */
     private $location;
 
     /**
+     * @JMS\Groups("movement_list")
      * @ORM\ManyToOne(targetEntity=MovementType::class, inversedBy="movements")
      * @ORM\JoinColumn(name="type_id", referencedColumnName="id")
      */
     private $type;
 
     /**
+     * @JMS\Groups("movement_list")
      * @ORM\OneToMany(targetEntity=Action::class, mappedBy="movement")
      */
     private $actions;

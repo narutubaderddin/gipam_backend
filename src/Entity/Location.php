@@ -7,6 +7,7 @@ use App\Repository\LocationRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use JMS\Serializer\Annotation as JMS;
 
 /**
  * @ORM\Entity(repositoryClass=LocationRepository::class)
@@ -23,12 +24,14 @@ class Location
     private $id;
 
     /**
+     * @JMS\Groups("movement_list")
      * @ORM\ManyToOne(targetEntity=Establishment::class, inversedBy="locations")
      * @ORM\JoinColumn(name="etablissement_id", referencedColumnName="id")
      */
     private $establishment;
 
     /**
+     * @JMS\Groups("movement_list")
      * @ORM\ManyToOne(targetEntity=SubDivision::class, inversedBy="locations")
      * @ORM\JoinColumn(name="sous_direction_id", referencedColumnName="id")
      */
@@ -46,6 +49,7 @@ class Location
     private $type;
 
     /**
+     * @JMS\Groups("movement_list")
      * @ORM\ManyToOne(targetEntity=Room::class, inversedBy="locations")
      * @ORM\JoinColumn(name="piece_id", referencedColumnName="id")
      */

@@ -126,7 +126,7 @@ class Correspondent
     private $subDivisions;
 
     /**
-     * @JMS\Groups("correspondent")
+     * @JMS\Groups("correspondent","movement_list")
      *
      * @ORM\ManyToMany(targetEntity=Service::class, inversedBy="correspondents")
      * @ORM\JoinTable(name="correspondant_service",

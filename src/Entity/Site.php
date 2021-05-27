@@ -30,7 +30,7 @@ class Site
     private $id;
 
     /**
-     * @JMS\Groups("site","short")
+     * @JMS\Groups("site","short","movement_list")
      *
      * @ORM\Column(name="libelle", type="string", length=255, nullable=true)
      */

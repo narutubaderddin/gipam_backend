@@ -35,7 +35,7 @@ class MovementType
     private $id;
 
     /**
-     * @JMS\Groups("movement_type")
+     * @JMS\Groups("movement_type","movement_list")
      *
      * @Assert\NotBlank()
      *

@@ -35,7 +35,7 @@ class ActionReportType
     private $id;
 
     /**
-     * @JMS\Groups("action_type")
+     * @JMS\Groups("action_type","movement_list")
      *
      * @Assert\NotBlank
      *

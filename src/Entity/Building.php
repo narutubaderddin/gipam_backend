@@ -30,7 +30,7 @@ class Building
     private $id;
 
     /**
-     * @JMS\Groups("building","short")
+     * @JMS\Groups("building","short","movement_list")
      *
      * @Assert\NotBlank
      *
@@ -72,7 +72,7 @@ class Building
     private $disappearanceDate;
 
     /**
-     * @JMS\Groups("building")
+     * @JMS\Groups("building","movement_list")
      *
      * @ORM\ManyToOne(targetEntity=Site::class, inversedBy="buildings")
      * @ORM\JoinColumn(name="site_id", referencedColumnName="id")

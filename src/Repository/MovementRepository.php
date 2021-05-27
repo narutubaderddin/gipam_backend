@@ -14,6 +14,7 @@ use Doctrine\Persistence\ManagerRegistry;
  */
 class MovementRepository extends ServiceEntityRepository
 {
+    use RepositoryTrait;
     public function __construct(ManagerRegistry $registry)
     {
         parent::__construct($registry, Movement::class);
