@@ -178,6 +178,8 @@ class ArtWorkService
                     if ((in_array('materialTechnique', $attribues) && $form->getData()->getMaterialTechnique()->isEmpty()) || (in_array('numberOfUnit', $attribues) && !$form->getData()->getNumberOfUnit())) {
                         return ['msg' => 'Notice enregistrée en mode brouillon avec succès', 'res' => $this->apiManager->save($form->getData())];
                     } else {
+                        // to delete after second iteration ( add condition : existence of report and movement)
+                        $form->getData()->setIsCreated(true);
                         return ['msg' => 'Notice enregistrée avec succès en mode brouillon', 'res' => $this->apiManager->save($form->getData())];
                     }
                 }
@@ -189,6 +191,8 @@ class ArtWorkService
                     if ((in_array('materialTechnique', $attribues) && $form->getData()->getMaterialTechnique()->isEmpty()) || (in_array('numberOfUnit', $attribues) && !$form->getData()->getNumberOfUnit())) {
                         return ['msg' => 'Notice enregistrée en mode brouillon avec succès', 'res' => $this->apiManager->save($form->getData())];
                     } else {
+                        // to delete after second iteration ( add condition : existence of report and movement)
+                        $form->getData()->setIsCreated(true);
                         return ['msg' => 'Notice enregistrée en mode brouillon avec succès', 'res' => $this->apiManager->save($form->getData())];
                     }
                 }

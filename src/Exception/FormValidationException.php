@@ -53,6 +53,7 @@ class FormValidationException extends HttpException
         $errors = [];
         foreach ($form->all() as $field) {
             $fieldKey = $field->getName();
+
             if (1 < count($field->all())){
                 foreach ($field->all() as $i => $f){
                     $fkey = $f->getName();

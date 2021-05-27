@@ -42,7 +42,7 @@ class Attachment
      * @JMS\Exclude()
      *
      * @ORM\ManyToOne(targetEntity=Furniture::class, inversedBy="attachments")
-     * @ORM\JoinColumn(name="objet_mobilier_id", referencedColumnName="id")
+     * @ORM\JoinColumn(name="objet_mobilier_id", referencedColumnName="id", nullable=false)
      */
     private $furniture;
 

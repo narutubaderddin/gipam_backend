@@ -232,10 +232,9 @@ class ArtWorkType extends AbstractType
             if (in_array('attachments', $this->attributes)) {
                 $form->add('attachments', CollectionType::class, array(
                     'entry_type' => AttachmentType::class,
-                    'required'=>false,
                     'allow_add' => true,
                     'prototype' => true,
-                    'by_reference' => true,
+                    'by_reference' => false,
                 ));
             } else {
                 unset($artWork['attachments']);
