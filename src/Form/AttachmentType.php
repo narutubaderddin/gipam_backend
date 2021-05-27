@@ -37,8 +37,7 @@ class AttachmentType extends AbstractType
                 'choice_label' => 'id',
                 ]
             )
-            ->add('furniture',EntityType::class,['class'=>Furniture::class, 'choice_label' => 'id','required'=>false])
-        ;
+            ->add('furniture',EntityType::class,['class'=>Furniture::class, 'choice_label' => 'id','required'=>false]);
     }
 
     public function configureOptions(OptionsResolver $resolver)
@@ -46,6 +45,7 @@ class AttachmentType extends AbstractType
         $resolver->setDefaults([
             'csrf_protection' => false,
             'data_class' => Attachment::class,
+            'allow_extra_fields' => true
         ]);
     }
 }
