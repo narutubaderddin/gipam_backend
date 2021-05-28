@@ -27,7 +27,7 @@ class Report
 
     /**
      * @ORM\Column(name="date", type="datetime")
-     * @JMS\Groups("art_work_details")
+     * @JMS\Groups("art_work_details","report_list")
      */
     private $date;
 
@@ -50,6 +50,7 @@ class Report
     private $reportSubType;
 
     /**
+     * @JMS\Groups("report_list")
      * @ORM\OneToMany(targetEntity=Action::class, mappedBy="report")
      */
     private $actions;
@@ -59,6 +60,12 @@ class Report
      * @ORM\JoinColumn(name="objet_mobilier_id", referencedColumnName="id")
      */
     private $furniture;
+
+    /**
+     * @ORM\Column(type="string", length=255)
+     * @JMS\Groups("report_list")
+     */
+    private $status;
 
     public function __construct()
     {
@@ -158,5 +165,28 @@ class Report
         $this->furniture = $furniture;
 
         return $this;
+    }
+
+    public function getStatus(): ?string
+    {
+        return $this->status;
+    }
+
+    public function setStatus(string $status): self
+    {
+        $this->status = $status;
+
+        return $this;
+    }
+
+    /**
+     * @return mixed
+     * @return string|null
+     * @JMS\VirtualProperty()
+     * @JMS\SerializedName("conclusion")
+     * @JMS\Groups("report_list")
+     */
+    public function getConclusion (){
+        return $this->getStatus() === 'VU' ? $this->getComment() : null;
     }
 }

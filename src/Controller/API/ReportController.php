@@ -2,7 +2,8 @@
 
 namespace App\Controller\API;
 
-use App\Entity\Movement;
+
+use App\Entity\Report;
 use App\Services\ApiManager;
 use FOS\RestBundle\Context\Context;
 use FOS\RestBundle\Controller\AbstractFOSRestController;
@@ -19,9 +20,9 @@ use Nelmio\ApiDocBundle\Annotation\Model;
 /**
  * Class MovementController
  * @package App\Controller\API
- * @Route("/movements")
+ * @Route("/reports")
  */
-class MovementController extends AbstractFOSRestController
+class ReportController extends AbstractFOSRestController
 {
     /**
      * @var ApiManager
@@ -72,7 +73,7 @@ class MovementController extends AbstractFOSRestController
      *     type="string",
      *     description="The field used to filter by name"
      * )
-     * @SWG\Tag(name="movements")
+     * @SWG\Tag(name="reports")
      *
      * @Rest\QueryParam(name="page", requirements="\d+", default="1", description="page number.")
      * @Rest\QueryParam(name="limit", requirements="\d+", default="0", description="page size.")
@@ -82,11 +83,11 @@ class MovementController extends AbstractFOSRestController
      *      nullable=true, default="asc",
      *      description="sorting order asc|desc"
      * )
-     * @Rest\QueryParam(name="correspondents", map=true, nullable=true, description="filter by correspondents")
-     * @Rest\QueryParam(name="location", map=true, nullable=true, description="filter by location")
-     * @Rest\QueryParam(name="type", map=true, nullable=true, description="filter by type")
-     * @Rest\QueryParam(name="actions", map=true, nullable=true, description="filter by actions")
-     * @Rest\QueryParam(name="furniture", map=true, nullable=true, description="filter by furniture")
+     * @Rest\QueryParam(name="status", map=true, nullable=true, description="filter by status.")
+     * @Rest\QueryParam(name="furniture", map=true, nullable=true, description="filter furniture.")
+     * @Rest\QueryParam(name="actions", map=true, nullable=true, description="filter by actions.")
+     * @Rest\QueryParam(name="reportSubType", map=true, nullable=true, description="filter by reportSubType.")
+     * @Rest\QueryParam(name="collectionTitle", map=true, nullable=true, description="filter by collectionTitle")
      * @Rest\QueryParam(name="search", map=false, nullable=true, description="search. example: search=text")
      * @Rest\QueryParam(name="date",
      *      map=true, nullable=false,
@@ -94,20 +95,20 @@ class MovementController extends AbstractFOSRestController
      * )
      * @Rest\QueryParam(name="search", map=false, nullable=true, description="search. example: search=text")
      *
-     * @Rest\View( serializerGroups={"movement_list",},serializerEnableMaxDepthChecks=true)
+     * @Rest\View( serializerGroups={"report_list"},serializerEnableMaxDepthChecks=true)
      *
      * @param ParamFetcherInterface $paramFetcher
      * @param Request $request
      * @return View
      */
-    public function listMovements(ParamFetcherInterface $paramFetcher, Request $request)
+    public function listReports(ParamFetcherInterface $paramFetcher, Request $request)
     {
-        $serializerGroups = $request->get('serializer_group', '["movement", "id", "short"]');
+        $serializerGroups = $request->get('serializer_group', '["report", "id", "short"]');
         $serializerGroups = json_decode($serializerGroups, true);
         $serializerGroups[] = "response";
         $context = new Context();
         $context->setGroups($serializerGroups);
-        $records = $this->apiManager->findRecordsByEntityName(Movement::class, $paramFetcher);
+        $records = $this->apiManager->findRecordsByEntityName(Report::class, $paramFetcher);
         return $this->view($records, Response::HTTP_OK)->setContext($context);
     }
 }

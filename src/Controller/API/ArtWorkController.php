@@ -299,7 +299,7 @@ class ArtWorkController extends AbstractFOSRestController
      *     type="string",
      *     description="The field used to sort type"
      * )
-     * @SWG\Tag(name="art_works")
+     * @SWG\Tag(name="ArtWorks")
      *
      * @Rest\QueryParam(name="sort_by", nullable=true, default="id", description="order by")
      * @Rest\QueryParam(name="sort", requirements="(asc|desc)", nullable=true, default="asc", description="tri order asc|desc")

@@ -15,7 +15,7 @@ trait TimestampableEntity
     /**
      * @var \DateTime
      *
-     * @JMS\Groups("request_list","request_details")
+     * @JMS\Groups("request_list","request_details","report_list")
      * @Gedmo\Timestampable(on="create")
      * @JMS\Type("DateTime<'Y-m-d'>")
      * @ORM\Column(name="date_creation", type="datetime",options={"default"="CURRENT_TIMESTAMP"})

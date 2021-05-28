@@ -224,21 +224,7 @@ class RequestController extends AbstractFOSRestController
     {
         $this->updateRequestArtWorks($request);
         try {
-            $params = $request->request->all();
-            if($params['requestStatus'] !== 'Annulée') {
-                $paramsMailer = ['message' => 'Votre demande des  biens culturels enregistré sous la référence '.$requests->getId().' à été '. $params['requestStatus'],
-                    'request' => $requests];
-                if($params['requestStatus'] === ''){
-                    $paramsMailer['request'] = $requests;
-                }
-                $this->mailer->sendMail($requests->getMail(),
-                    null,
-                    'Suite à votre demande',
-                    'Emails/request_status',
-                    $paramsMailer
-                    ,
-                    []);
-            }
+            $this->requestNotification($request, $requests);
         } catch (\Exception $e) {
             return $this->view(['message'=>$e->getMessage()], Response::HTTP_BAD_GATEWAY);
         }
@@ -322,6 +308,32 @@ class RequestController extends AbstractFOSRestController
             $this->em->flush();
         }
         $request->request->remove('listArtWorks');
+    }
+
+    /**
+     * @param Request $request
+     * @param Requests $requests
+     * @throws \Twig\Error\LoaderError
+     * @throws \Twig\Error\RuntimeError
+     * @throws \Twig\Error\SyntaxError
+     */
+    public function requestNotification(Request $request, Requests $requests): void
+    {
+        $params = $request->request->all();
+        if ($params['requestStatus'] !== 'Annulée') {
+            $paramsMailer = ['message' => 'Votre demande des  biens culturels enregistré sous la référence ' . $requests->getId() . ' à été ' . $params['requestStatus'],
+                'request' => $requests];
+            if ($params['requestStatus'] === '') {
+                $paramsMailer['request'] = $requests;
+            }
+            $this->mailer->sendMail($requests->getMail(),
+                null,
+                'Suite à votre demande',
+                'Emails/request_status',
+                $paramsMailer
+                ,
+                []);
+        }
     }
 
 }

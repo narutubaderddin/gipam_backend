@@ -30,16 +30,19 @@ class Action
     private $comment;
 
     /**
+     * @JMS\Groups("report_list")
      * @ORM\Column(name="date_debut" ,type="datetime")
      */
     private $startDate;
 
     /**
+     * @JMS\Groups("report_list")
      * @ORM\Column(name="date_fin" ,type="datetime")
      */
     private $endDate;
 
     /**
+     * @JMS\Groups("report_list")
      * @ORM\Column(name="delai" ,type="integer")
      */
     private $period;
